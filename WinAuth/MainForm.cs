@@ -258,14 +258,19 @@ namespace WindowsAuthenticator
 			{
 				data = WinAuthHelper.LoadAuthenticator(authFile);
 			}
+			catch (InvalidConfigDataException )
+			{
+				MessageBox.Show(this, "The authenticator file " + authFile + " is not valid", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
 			catch (Exception ex)
 			{
-				MessageBox.Show(this, "Unable to load authenticator file " + authFile + ": " + ex.Message, "Load Authenticator", MessageBoxButtons.OK);
+				MessageBox.Show(this, "Unable to load authenticator file " + authFile + ": " + ex.Message, "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 			if (data == null)
 			{
-				MessageBox.Show(this, "The file does not contain valid authenticator data.", "Load Authenticator", MessageBoxButtons.OK);
+				MessageBox.Show(this, "The file does not contain valid authenticator data.", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
 			}
 

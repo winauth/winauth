@@ -32,113 +32,6 @@ using Org.BouncyCastle.Crypto.Digests;
 namespace WindowsAuthenticator
 {
 	/// <summary>
-	/// Class holding the authentication data that can be loaded/saved to secure storage. This contains the Authenticator's
-	/// Secret Key and Serial number which are used to calculate the authentication code.
-	/// </summary>
-	public class AuthenticatorData
-	{
-		/// <summary>
-		/// Private encrpytion key used to encrypt mobile authenticator data.
-		/// </summary>
-		private static byte[] MOBILE_AUTHENTICATOR_KEY = new byte[]
-			{
-				0x39,0x8e,0x27,0xfc,0x50,0x27,0x6a,0x65,0x60,0x65,0xb0,0xe5,0x25,0xf4,0xc0,0x6c,
-				0x04,0xc6,0x10,0x75,0x28,0x6b,0x8e,0x7a,0xed,0xa5,0x9d,0xa9,0x81,0x3b,0x5d,0xd6,
-				0xc8,0x0d,0x2f,0xb3,0x80,0x68,0x77,0x3f,0xa5,0x9b,0xa4,0x7c,0x17,0xca,0x6c,0x64,
-				0x79,0x01,0x5c,0x1d,0x5b,0x8b,0x8f,0x6b,0x9a
-			};
-
-		/// <summary>
-		/// Region for authenticator
-		/// </summary>
-		public string Region { get; set; }
-
-		/// <summary>
-		/// Secret key used for Authenticator
-		/// </summary>
-		public byte[] SecretKey { get; set; }
-
-		/// <summary>
-		/// Serial number of authenticator
-		/// </summary>
-		public string Serial { get; set; }
-
-		/// <summary>
-		/// Time difference in milliseconds of our machine and server
-		/// </summary>
-		public long ServerTimeDiff { get; set; }
-
-		/// <summary>
-		/// Create a blank AuthenticatorData object
-		/// </summary>
-		public AuthenticatorData()
-		{
-		}
-
-		/// <summary>
-		/// Create a new AuthenticatorData object loaded from saved data
-		/// </summary>
-		/// <param name="data">previous saved data</param>
-		public AuthenticatorData(string data)
-		{
-			byte[] bytes = Authenticator.StringToByteArray(data);
-			string full = Encoding.UTF8.GetString(bytes);
-			SecretKey = Authenticator.StringToByteArray(full.Substring(0, 40));
-			Serial = full.Substring(40, 17);
-			Region = full.Substring(57, 2);
-			byte[] serverTimeDiff = Authenticator.StringToByteArray(full.Substring(59, 16));
-			if (BitConverter.IsLittleEndian)
-			{
-				Array.Reverse(serverTimeDiff);
-			}
-			ServerTimeDiff = BitConverter.ToInt64(serverTimeDiff, 0);
-		}
-
-		/// <summary>
-		/// Get/set the data saved from the Mobile Authenticator AUTH_STORE.HASH value
-		/// </summary>
-		public string MobileAuthenticatorHash
-		{
-			get
-			{
-				string code = Authenticator.ByteArrayToString(SecretKey) + Serial;
-				byte[] plain = Encoding.UTF8.GetBytes(code);
-				for (int i = plain.Length - 1; i >= 0; i--)
-				{
-					plain[i] ^= MOBILE_AUTHENTICATOR_KEY[i];
-				}
-				return Authenticator.ByteArrayToString(plain);
-			}
-			set
-			{
-				byte[] bytes = Authenticator.StringToByteArray(value);
-				for (int i = bytes.Length - 1; i >= 0; i--)
-				{
-					bytes[i] ^= MOBILE_AUTHENTICATOR_KEY[i];
-				}
-				string full = Encoding.UTF8.GetString(bytes);
-				SecretKey = Authenticator.StringToByteArray(full.Substring(0, 40));
-				Serial = full.Substring(40);
-			}
-		}
-
-		/// <summary>
-		/// Get a string version of the authentication data that can be stored
-		/// </summary>
-		public override string ToString()
-		{
-			byte[] serverTimeDiff = BitConverter.GetBytes(ServerTimeDiff);
-			if (BitConverter.IsLittleEndian)
-			{
-				Array.Reverse(serverTimeDiff);
-			}
-			string code = Authenticator.ByteArrayToString(SecretKey) + Serial + Region + Authenticator.ByteArrayToString(serverTimeDiff);
-			byte[] plain = Encoding.UTF8.GetBytes(code);
-			return Authenticator.ByteArrayToString(plain);
-		}
-	}
-
-	/// <summary>
 	/// Class that implements Authenticator as per http://bnetauth.freeportal.us/specification.html
 	/// </summary>
 	public class Authenticator
@@ -286,7 +179,7 @@ namespace WindowsAuthenticator
 				// OK?
 				if (response.StatusCode != HttpStatusCode.OK)
 				{
-					throw new ApplicationException(string.Format("{0}: {1}", (int)response.StatusCode, response.StatusDescription));
+					throw new InvalidEnrollResponseException(string.Format("{0}: {1}", (int)response.StatusCode, response.StatusDescription));
 				}
 
 				// load back the buffer - should only be a byte[45]
@@ -305,7 +198,7 @@ namespace WindowsAuthenticator
 						// check it is correct size
 						if (responseData.Length != ENROLL_RESPONSE_SIZE)
 						{
-							throw new ApplicationException(string.Format("Invalid response data size (expected 45 got {0})", responseData.Length));
+							throw new InvalidEnrollResponseException(string.Format("Invalid response data size (expected 45 got {0})", responseData.Length));
 						}
 					}
 				}
@@ -362,7 +255,7 @@ namespace WindowsAuthenticator
 		{
 			if (Data == null || string.IsNullOrEmpty(Data.Region))
 			{
-				throw new ApplicationException("Not initialised with server data");
+				return;
 			}
 
 			// create a connection to time sync server
@@ -395,7 +288,7 @@ namespace WindowsAuthenticator
 						// check it is correct size
 						if (responseData.Length != SYNC_RESPONSE_SIZE)
 						{
-							throw new ApplicationException(string.Format("Invalid response data size (expected " + SYNC_RESPONSE_SIZE + " got {0}", responseData.Length));
+							throw new InvalidSyncResponseException(string.Format("Invalid response data size (expected " + SYNC_RESPONSE_SIZE + " got {0}", responseData.Length));
 						}
 					}
 				}

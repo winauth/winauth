@@ -133,22 +133,20 @@ namespace WindowsAuthenticator
 		/// <returns>new AuthenticatorData object</returns>
 		public static AuthenticatorData LoadAuthenticator(string configFile)
 		{
+			// no file?
 			if (File.Exists(configFile) == false)
 			{
 				return null;
 			}
 
-			XmlDocument doc = new XmlDocument();
-			doc.Load(configFile);
-
-			string data = null;
-			XmlNode node = doc.DocumentElement.SelectSingleNode("Data");
-			if (node != null)
+			// read the xml config
+			using (FileStream fs = new FileStream(configFile, FileMode.Open))
 			{
-				data = node.InnerText;
+				using (XmlReader xr = XmlReader.Create(fs))
+				{
+					return new AuthenticatorData(xr);
+				}
 			}
-
-			return new AuthenticatorData(data);
 		}
 
 		/// <summary>
@@ -158,28 +156,12 @@ namespace WindowsAuthenticator
 		/// <param name="authenticator">Authenticator object to save</param>
 		public static void SaveAuthenticator(string configFile, Authenticator authenticator)
 		{
-			// save config data
-			// get the version of the application
-			Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-
-			// create the xml
-			XmlDocument doc = new XmlDocument();
-			XmlDeclaration dec = doc.CreateXmlDeclaration("1.0", null, "yes");
-			doc.AppendChild(dec);
-			XmlElement root = doc.CreateElement("AuthenticatorData");
-			root.SetAttribute("version", version.ToString(2));
-			doc.AppendChild(root);
-
-			XmlElement node = doc.CreateElement("Data");
-			node.InnerText = authenticator.Data.ToString();
-			root.AppendChild(node);
-
 			// save the xml to the config file
 			XmlWriterSettings settings = new XmlWriterSettings();
 			settings.Indent = true;
 			using (XmlWriter xw = XmlWriter.Create(configFile, settings))
 			{
-				doc.Save(xw);
+				authenticator.Data.WriteXmlString(xw);
 			}
 		}
 	}
