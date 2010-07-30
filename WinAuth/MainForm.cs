@@ -321,7 +321,7 @@ namespace WindowsAuthenticator
 		/// Save the current Authenticator's data into a file
 		/// </summary>
 		/// <param name="authFile">file name to save data or prompt if null</param>
-		private void SaveAuthenticator(string authFile)
+		private bool SaveAuthenticator(string authFile)
 		{
 			if (authFile == null)
 			{
@@ -351,7 +351,7 @@ namespace WindowsAuthenticator
 				DialogResult result = sfd.ShowDialog(this);
 				if (result != System.Windows.Forms.DialogResult.OK)
 				{
-					return;
+					return false;
 				}
 				authFile = sfd.FileName;
 
@@ -360,7 +360,7 @@ namespace WindowsAuthenticator
 				result = requestPasswordForm.ShowDialog(this);
 				if (result != System.Windows.Forms.DialogResult.OK)
 				{
-					return;
+					return false;
 				}
 				Authenticator.Data.Password = (requestPasswordForm.UsePassword == true ? requestPasswordForm.Password : null);
 			}
@@ -376,11 +376,12 @@ namespace WindowsAuthenticator
 				MessageBox.Show(this,
 					"There was an error writing to your authenticator file " + authFile + " (" + ex.Message + ").",
 					"New Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
+				return false;
 			}
 
 			// update config file
 			WinAuthHelper.SaveConfig(this.Config);
+			return true;
 		}
 
 		/// <summary>
@@ -410,28 +411,6 @@ namespace WindowsAuthenticator
 			}
 			string region = form.SelectedRegion;
 
-			// use the user's directory to save files
-			string configDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuth.APPLICATION_NAME);
-			Directory.CreateDirectory(configDirectory);
-
-			// get the config file name
-			SaveFileDialog sfd = new SaveFileDialog();
-			sfd.AddExtension = true;
-			sfd.CheckPathExists = true;
-			sfd.DefaultExt = "xml";
-			sfd.Filter = "Configuration Files (*.xml)|*.xml";
-			sfd.InitialDirectory = (AuthenticatorFile != null ? Path.GetDirectoryName(AuthenticatorFile) : configDirectory);
-			sfd.FileName = "authenticator.xml";
-			sfd.OverwritePrompt = true;
-			sfd.RestoreDirectory = true;
-			sfd.Title = "Save Authentication Data";
-			result = sfd.ShowDialog(this);
-			if (result != System.Windows.Forms.DialogResult.OK)
-			{
-				return false;
-			}
-			string configFile = sfd.FileName;
-
 			// initialise the new authenticator
 			Authenticator authenticator = null;
 			try
@@ -447,34 +426,24 @@ namespace WindowsAuthenticator
 				return false;
 			}
 
-			// save config data
-			try
-			{
-				WinAuthHelper.SaveAuthenticator(configFile, authenticator);
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show(this,
-					"There was an error writing to your authenticator file " + configFile + "\n\n" + ex.Message + ".",
-					"New Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return false;
-			}
-
+			// remember old Auth
+			Authenticator oldAuth = this.Authenticator;
 			// set the new authenticator
 			Authenticator = authenticator;
-			AuthenticatorFile = configFile;
+
+			// save config data
+			if (SaveAuthenticator(null) == false)
+			{
+				// restore auth
+				this.Authenticator = oldAuth;
+				return false;
+			}
 
 			// update config file
 			WinAuthHelper.SaveConfig(this.Config);
 
 			InitializedForm initForm = new InitializedForm();
 			initForm.ShowDialog(this);
-
-			//MessageBox.Show(this,
-			//  "Your Authenticator has been successfully initialized.\n\nYou will need to add the follow serial number onto your account:\n\n"
-			//    + m_authenticator.Data.Serial + "\n\n"
-			//    + "You should also write it down as you may be asked to provide it if you ever need to remove the authenticator.",
-			//  "Initailized", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
 			return true;
 		}

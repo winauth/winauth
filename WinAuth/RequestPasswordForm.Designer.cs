@@ -106,10 +106,10 @@
 			this.rbPassword.Checked = true;
 			this.rbPassword.Location = new System.Drawing.Point(20, 55);
 			this.rbPassword.Name = "rbPassword";
-			this.rbPassword.Size = new System.Drawing.Size(265, 17);
+			this.rbPassword.Size = new System.Drawing.Size(253, 17);
 			this.rbPassword.TabIndex = 1;
 			this.rbPassword.TabStop = true;
-			this.rbPassword.Text = "I want to protected my secret data with a password";
+			this.rbPassword.Text = "I want to protect my secret data with a password";
 			this.rbPassword.UseVisualStyleBackColor = true;
 			this.rbPassword.CheckedChanged += new System.EventHandler(this.rbPassword_CheckedChanged);
 			// 
@@ -131,7 +131,7 @@
 			this.label1.Size = new System.Drawing.Size(317, 56);
 			this.label1.TabIndex = 2;
 			this.label1.Text = "It is recommended that you use a password to protect your secret data from any ma" +
-					"licious programs that might try and mimic your Authenticator.\r\n\r\n";
+					"licious programs that might try and read and mimic your Authenticator.\r\n\r\n";
 			// 
 			// btnOk
 			// 
