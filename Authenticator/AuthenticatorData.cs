@@ -1,4 +1,5 @@
-﻿/* Copyright (C) 2010 Colin Mackie.
+﻿/* 
+ * Copyright (C) 2010 Colin Mackie.
  * This software is distributed under the terms of the GNU General Public License.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,10 +26,13 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
+using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Crypto.Paddings;
 using Org.BouncyCastle.Crypto.Digests;
+using Org.BouncyCastle.Crypto.Generators;
 
 namespace WindowsAuthenticator
 {
@@ -38,6 +42,11 @@ namespace WindowsAuthenticator
 	/// </summary>
 	public class AuthenticatorData
 	{
+		/// <summary>
+		/// Number of bytes making up the salt
+		/// </summary>
+		private const int SALT_LENGTH = 8;
+
 		/// <summary>
 		/// Name attribute of the <string> hash element in the Mobile Authenticator file
 		/// </summary>
@@ -81,6 +90,16 @@ namespace WindowsAuthenticator
 		public long ServerTimeDiff { get; set; }
 
 		/// <summary>
+		/// Is the secret data encrpyted
+		/// </summary>
+		public bool SecretDataEncrpyted { get; set; }
+
+		/// <summary>
+		/// Password used to encrypt secretdata
+		/// </summary>
+		public string Password { get; set; }
+
+		/// <summary>
 		/// Get/set the data saved for the secret data value
 		/// </summary>
 		protected string SecretData
@@ -119,7 +138,7 @@ namespace WindowsAuthenticator
 		/// Create a new AuthenticatorData object loaded from saved data
 		/// </summary>
 		/// <param name="data">previous saved data</param>
-		public AuthenticatorData(XmlReader xr)
+		public AuthenticatorData(XmlReader xr, string password)
 		{
 			XmlDocument doc = new XmlDocument();
 			doc.Load(xr);
@@ -173,20 +192,54 @@ namespace WindowsAuthenticator
 				return;
 			}
 
-			// read our curent config string
-			node = doc.DocumentElement.SelectSingleNode("/map/string[@name='data']");
+			// read version 0.4 config
+			node = doc.DocumentElement.SelectSingleNode("/map[@version='0.4']/string[@name='data']");
 			if (node != null)
 			{
 				SecretData = node.InnerText;
-
+				//
 				long offset = 0;
 				node = doc.DocumentElement.SelectSingleNode("long[@name='servertimediff']");
 				if (node != null && long.TryParse(node.InnerText, out offset) == true)
 				{
 					ServerTimeDiff = offset;
 				}
-
+				//
 				node = doc.DocumentElement.SelectSingleNode("string[@name='region']");
+				if (node != null)
+				{
+					Region = node.InnerText;
+				}
+				//
+				return;
+			}
+
+			// read our curent config string
+			node = doc.DocumentElement.SelectSingleNode("secretdata");
+			if (node != null)
+			{
+				string data = node.InnerText;
+				XmlAttribute attr = node.Attributes["encrypted"];
+				if (attr != null && attr.InnerText == "y")
+				{
+					SecretDataEncrpyted = true;
+					if (string.IsNullOrEmpty(password) == true)
+					{
+						throw new EncrpytedSecretDataException();
+					}
+					Password = password;
+					data = Decrypt(data, password);
+				}
+				SecretData = data;
+
+				long offset = 0;
+				node = doc.DocumentElement.SelectSingleNode("servertimediff");
+				if (node != null && long.TryParse(node.InnerText, out offset) == true)
+				{
+					ServerTimeDiff = offset;
+				}
+
+				node = doc.DocumentElement.SelectSingleNode("region");
 				if (node != null)
 				{
 					Region = node.InnerText;
@@ -206,26 +259,122 @@ namespace WindowsAuthenticator
 		public void WriteXmlString(XmlWriter writer)
 		{
 			writer.WriteStartDocument(true);
-			writer.WriteStartElement("map");
+			writer.WriteStartElement("winauth");
 			writer.WriteAttributeString("version", System.Reflection.Assembly.GetAssembly(typeof(AuthenticatorData)).GetName().Version.ToString(2));
 			//
-			writer.WriteStartElement("long");
-			writer.WriteAttributeString("name", "servertimediff");
+			writer.WriteStartElement("servertimediff");
 			writer.WriteString(ServerTimeDiff.ToString());
 			writer.WriteEndElement();
 			//
-			writer.WriteStartElement("string");
-			writer.WriteAttributeString("name", "region");
+			writer.WriteStartElement("region");
 			writer.WriteString(Region);
 			writer.WriteEndElement();
 			//
-			writer.WriteStartElement("string");
-			writer.WriteAttributeString("name", "data");
-			writer.WriteString(SecretData);
+			writer.WriteStartElement("secretdata");
+			string data = SecretData;
+			if (string.IsNullOrEmpty(Password) == false)
+			{
+				data = Encrypt(data, Password);
+				writer.WriteAttributeString("encrypted", "y");
+			}
+			writer.WriteString(data);
 			writer.WriteEndElement();
 			//
 			writer.WriteEndElement();
 			writer.WriteEndDocument();
+		}
+
+		/// <summary>
+		/// Encrpyt the data stored in config file
+		/// </summary>
+		/// <param name="plain">blace data to encrypt - hex representation of byte array</param>
+		/// <param name="key">key to use to encrpyt</param>
+		/// <returns>hex coded encrpyted string</returns>
+		private string Encrypt(string plain, string key)
+		{
+			byte[] inBytes = Authenticator.StringToByteArray(plain);
+			byte[] keyBytes = Encoding.Default.GetBytes(key);
+
+			// build a new salt
+			Random random = new Random((int)DateTime.Now.Ticks);
+			byte[] saltedKey = new byte[SALT_LENGTH + keyBytes.Length];
+			for (int i = 0; i < SALT_LENGTH; i++)
+			{
+				saltedKey[i] = (byte)random.Next(256);
+			}
+			Array.Copy(keyBytes, 0, saltedKey, SALT_LENGTH, keyBytes.Length);
+			string salt = BitConverter.ToString(saltedKey, 0, SALT_LENGTH).Replace("-", string.Empty);
+			// create a key from the salt and original key
+			MD5 md5 = MD5.Create();
+			saltedKey = md5.ComputeHash(saltedKey);
+
+			// get our cihper
+			BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new BlowfishEngine(), new ISO10126d2Padding());
+			cipher.Init(true, new KeyParameter(saltedKey));
+
+			// encrypt data
+			int osize = cipher.GetOutputSize(inBytes.Length);
+			byte[] outBytes = new byte[osize];
+			int olen = cipher.ProcessBytes(inBytes, 0, inBytes.Length, outBytes, 0);
+			olen += cipher.DoFinal(outBytes, olen);
+			if (olen < osize)
+			{
+				byte[] t = new byte[olen];
+				Array.Copy(outBytes, 0, t, 0, olen);
+				outBytes = t;
+			}
+
+			// return encoded byte->hex string
+			return salt + Authenticator.ByteArrayToString(outBytes);
+		}
+
+		/// <summary>
+		/// Decrypt a config string from one hex-coded stirng into another
+		/// </summary>
+		/// <param name="data">data string to be decrypted</param>
+		/// <param name="key">decryption key</param>
+		/// <returns>hex coded decrypted string</returns>
+		private string Decrypt(string data, string key)
+		{
+			// extract the salt from the data
+			byte[] salt = Authenticator.StringToByteArray(data.Substring(0, SALT_LENGTH*2));
+			byte[] keyBytes = Encoding.Default.GetBytes(key);
+			byte[] saltedKey = new byte[salt.Length + keyBytes.Length];
+			Array.Copy(salt, saltedKey, salt.Length);
+			Array.Copy(keyBytes, 0, saltedKey, salt.Length, keyBytes.Length);
+			// build out combined key
+			MD5 md5 = MD5.Create();
+			saltedKey = md5.ComputeHash(saltedKey);
+
+			// extract the actual data to be decrypted
+			byte[] inBytes = Authenticator.StringToByteArray(data.Substring(SALT_LENGTH*2));
+
+			// get cipher
+			BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new BlowfishEngine(), new ISO10126d2Padding());
+			cipher.Init(false, new KeyParameter(saltedKey));
+
+			// decrypt the data
+			int osize = cipher.GetOutputSize(inBytes.Length);
+			byte[] outBytes = new byte[osize];
+			try
+			{
+				int olen = cipher.ProcessBytes(inBytes, 0, inBytes.Length, outBytes, 0);
+				olen += cipher.DoFinal(outBytes, olen);
+				if (olen < osize)
+				{
+					byte[] t = new byte[olen];
+					Array.Copy(outBytes, 0, t, 0, olen);
+					outBytes = t;
+				}
+			}
+			catch (Exception)
+			{
+				// an exception is due to bad password
+				throw new BadPasswordException();
+			}
+
+			// return encoded string
+			return Authenticator.ByteArrayToString(outBytes);
 		}
 
 	}

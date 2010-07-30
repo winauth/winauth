@@ -40,6 +40,11 @@ namespace WindowsAuthenticator
 		/// </summary>
 		public const int CODE_DISPLAY_DURATION = 10;
 
+		/// <summary>
+		/// Number of password attempts
+		/// </summary>
+		private const int MAX_PASSWORD_RETRIES = 3;
+
 		#region Initialization
 
 		/// <summary>
@@ -256,9 +261,41 @@ namespace WindowsAuthenticator
 			AuthenticatorData data = null;
 			try
 			{
-				data = WinAuthHelper.LoadAuthenticator(authFile);
+				try
+				{
+					data = WinAuthHelper.LoadAuthenticator(authFile);
+				}
+				catch (EncrpytedSecretDataException)
+				{
+					PasswordForm passwordForm = new PasswordForm();
+
+					int retries = 0;
+					do
+					{
+						passwordForm.Password = string.Empty;
+						DialogResult result = passwordForm.ShowDialog(this);
+						if (result != System.Windows.Forms.DialogResult.OK)
+						{
+							return;
+						}
+
+						try
+						{
+							data = WinAuthHelper.LoadAuthenticator(authFile, passwordForm.Password);
+							break;
+						}
+						catch (BadPasswordException)
+						{
+							MessageBox.Show(this, "Invalid password", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
+							if (retries++ >= MAX_PASSWORD_RETRIES-1)
+							{
+								return;
+							}
+						}
+					} while (true);
+				}
 			}
-			catch (InvalidConfigDataException )
+			catch (InvalidConfigDataException)
 			{
 				MessageBox.Show(this, "The authenticator file " + authFile + " is not valid", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return;
@@ -317,6 +354,15 @@ namespace WindowsAuthenticator
 					return;
 				}
 				authFile = sfd.FileName;
+
+				// request a password
+				RequestPasswordForm requestPasswordForm = new RequestPasswordForm();
+				result = requestPasswordForm.ShowDialog(this);
+				if (result != System.Windows.Forms.DialogResult.OK)
+				{
+					return;
+				}
+				Authenticator.Data.Password = (requestPasswordForm.UsePassword == true ? requestPasswordForm.Password : null);
 			}
 
 			// save data
@@ -460,6 +506,10 @@ namespace WindowsAuthenticator
 				}
 
 				serialLabel.Text = Authenticator.Data.Serial;
+				if (HideSerial == false)
+				{
+					serialLabel.Visible = true;
+				}
 				CodeDisplayed = DateTime.Now;
 			}
 			else
@@ -492,12 +542,13 @@ namespace WindowsAuthenticator
 			Config.AuthenticatorFile = null; // clear until we confirm we loaded
 			if (string.IsNullOrEmpty(authFile) == false && File.Exists(authFile) == true)
 			{
-				AuthenticatorData data = WinAuthHelper.LoadAuthenticator(authFile);
-				if (data != null)
-				{
-					this.Authenticator = new Authenticator(data);
-					Config.AuthenticatorFile = authFile;
-				}
+				LoadAuthenticator(authFile);
+				//AuthenticatorData data = WinAuthHelper.LoadAuthenticator(authFile);
+				//if (data != null)
+				//{
+				//  this.Authenticator = new Authenticator(data);
+				//  Config.AuthenticatorFile = authFile;
+				//}
 			}
 
 			Authenticator authenticator = this.Authenticator;
@@ -506,6 +557,8 @@ namespace WindowsAuthenticator
 			codeField.Text = (authenticator != null && Config.AutoRefresh == true ? authenticator.CalculateCode() : string.Empty);
 			progressBar.Value = 0;
 			progressBar.Visible = (authenticator != null && AutoRefresh == true);
+
+			refreshTimer.Enabled = true;
 		}
 
 		/// <summary>
@@ -688,6 +741,7 @@ namespace WindowsAuthenticator
 			{
 				CodeDisplayed = DateTime.MinValue;
 				codeField.Text = string.Empty;
+				serialLabel.Visible = false;
 			}
 
 			if (progressBar.Visible == true)

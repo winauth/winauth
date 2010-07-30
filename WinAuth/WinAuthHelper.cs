@@ -73,6 +73,13 @@ namespace WindowsAuthenticator
 				}
 			}
 
+			// override with any commandline
+			string[] args = Environment.GetCommandLineArgs();
+			for (int i=1; i<args.Length; i++)
+			{
+				data.AuthenticatorFile = args[i];
+			}
+
 			return data;
 		}
 
@@ -133,6 +140,17 @@ namespace WindowsAuthenticator
 		/// <returns>new AuthenticatorData object</returns>
 		public static AuthenticatorData LoadAuthenticator(string configFile)
 		{
+			return LoadAuthenticator(configFile, null);
+		}
+
+		/// <summary>
+		/// Load an authenticator's data file
+		/// </summary>
+		/// <param name="configFile">file name of data file</param>
+		/// <param name="password">password to use on config</param>
+		/// <returns>new AuthenticatorData object</returns>
+		public static AuthenticatorData LoadAuthenticator(string configFile, string password)
+		{
 			// no file?
 			if (File.Exists(configFile) == false)
 			{
@@ -144,7 +162,7 @@ namespace WindowsAuthenticator
 			{
 				using (XmlReader xr = XmlReader.Create(fs))
 				{
-					return new AuthenticatorData(xr);
+					return new AuthenticatorData(xr, password);
 				}
 			}
 		}

@@ -45,13 +45,13 @@
 			this.copyOnCodeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.autoRefreshMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.aboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			this.exitMeuuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.serialLabel = new System.Windows.Forms.Label();
 			this.refreshTimer = new System.Windows.Forms.Timer(this.components);
 			this.progressBar = new System.Windows.Forms.ProgressBar();
 			this.calcCodeButton = new WindowsAuthenticator.RoundButton();
-			this.aboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			this.contextMenuStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -179,6 +179,18 @@
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
 			this.toolStripSeparator1.Size = new System.Drawing.Size(225, 6);
 			// 
+			// aboutMenuItem
+			// 
+			this.aboutMenuItem.Name = "aboutMenuItem";
+			this.aboutMenuItem.Size = new System.Drawing.Size(228, 22);
+			this.aboutMenuItem.Text = "About...";
+			this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
+			// 
+			// toolStripSeparator5
+			// 
+			this.toolStripSeparator5.Name = "toolStripSeparator5";
+			this.toolStripSeparator5.Size = new System.Drawing.Size(225, 6);
+			// 
 			// exitMeuuItem
 			// 
 			this.exitMeuuItem.Name = "exitMeuuItem";
@@ -201,7 +213,6 @@
 			// 
 			// refreshTimer
 			// 
-			this.refreshTimer.Enabled = true;
 			this.refreshTimer.Interval = 500;
 			this.refreshTimer.Tick += new System.EventHandler(this.refreshTimer_Tick);
 			// 
@@ -229,18 +240,6 @@
 			this.calcCodeButton.TextStartPoint = new System.Drawing.Point(0, 0);
 			this.calcCodeButton.UseVisualStyleBackColor = false;
 			this.calcCodeButton.Click += new System.EventHandler(this.calcCodeButton_Click);
-			// 
-			// aboutMenuItem
-			// 
-			this.aboutMenuItem.Name = "aboutMenuItem";
-			this.aboutMenuItem.Size = new System.Drawing.Size(228, 22);
-			this.aboutMenuItem.Text = "About...";
-			this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
-			// 
-			// toolStripSeparator5
-			// 
-			this.toolStripSeparator5.Name = "toolStripSeparator5";
-			this.toolStripSeparator5.Size = new System.Drawing.Size(225, 6);
 			// 
 			// MainForm
 			// 

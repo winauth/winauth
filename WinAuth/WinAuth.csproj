@@ -56,11 +56,23 @@
     <Compile Include="AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PasswordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PasswordForm.Designer.cs">
+      <DependentUpon>PasswordForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="InitializedForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="InitializedForm.Designer.cs">
       <DependentUpon>InitializedForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RequestPasswordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RequestPasswordForm.Designer.cs">
+      <DependentUpon>RequestPasswordForm.cs</DependentUpon>
     </Compile>
     <Compile Include="WinAuthConfig.cs" />
     <Compile Include="WinAuthHelper.cs" />
@@ -84,6 +96,9 @@
     <EmbeddedResource Include="AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="PasswordForm.resx">
+      <DependentUpon>PasswordForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="EnrollForm.resx">
       <DependentUpon>EnrollForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -103,6 +118,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="RequestPasswordForm.resx">
+      <DependentUpon>RequestPasswordForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

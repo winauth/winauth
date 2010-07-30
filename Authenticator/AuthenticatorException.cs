@@ -1,4 +1,5 @@
-﻿/* Copyright (C) 2010 Colin Mackie.
+﻿/*
+ * Copyright (C) 2010 Colin Mackie.
  * This software is distributed under the terms of the GNU General Public License.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -70,5 +71,21 @@ namespace WindowsAuthenticator
 	public class InvalidSyncResponseException : AuthenticatorException
 	{
 		public InvalidSyncResponseException(string msg) : base(msg) { }
+	}
+
+	/// <summary>
+	/// Config has been encryoted and we need a key
+	/// </summary>
+	public class EncrpytedSecretDataException : AuthenticatorException
+	{
+		public EncrpytedSecretDataException() : base() { }
+	}
+
+	/// <summary>
+	/// Config decryption bad password
+	/// </summary>
+	public class BadPasswordException : AuthenticatorException
+	{
+		public BadPasswordException() : base() { }
 	}
 }
