@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (C) 2010 Colin Mackie.
  * This software is distributed under the terms of the GNU General Public License.
  *
@@ -50,5 +50,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.5.0.0")]
-[assembly: AssemblyFileVersion("0.5.0.0")]
+[assembly: AssemblyVersion("0.5.101.4")]
+[assembly: AssemblyFileVersion("0.5.101.4")]
