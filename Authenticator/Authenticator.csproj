@@ -39,7 +39,9 @@
     </StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BouncyCastle.Crypto" />
+    <Reference Include="BouncyCastle.Crypto">
+      <HintPath>..\..\Third Party\bouncycastle.org\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.XML" />

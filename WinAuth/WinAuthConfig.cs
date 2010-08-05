@@ -18,14 +18,102 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
+
+#if NUNIT
+using NUnit.Framework;
+#endif
 
 namespace WindowsAuthenticator
 {
 	/// <summary>
+	/// A hot key sequence and command containing the key, modifier and script
+	/// </summary>
+	public class HoyKeySequence
+	{
+		/// <summary>
+		/// Modifier for hotkey
+		/// </summary>
+		public WinAPI.KeyModifiers Modifiers;
+
+		/// <summary>
+		/// Hotkey code
+		/// </summary>
+		public WinAPI.VirtualKeyCode HotKey;
+
+		/// <summary>
+		/// Flag if custom script
+		/// </summary>
+		public bool Advanced;
+
+		/// <summary>
+		/// Any custom script
+		/// </summary>
+		public string AdvancedScript;
+
+		/// <summary>
+		/// Windows title for script
+		/// </summary>
+		public string WindowTitle;
+
+		/// <summary>
+		/// Create a new blank HotKeySequcen
+		/// </summary>
+		public HoyKeySequence()
+		{
+		}
+
+		/// <summary>
+		/// Create a new HotKeySequence from a loaded string
+		/// </summary>
+		/// <param name="data"></param>
+		public HoyKeySequence(string data)
+		{
+			if (string.IsNullOrEmpty(data) == false)
+			{
+				Match match = Regex.Match(data, @"([0-9a-fA-F]{8})([0-9a-fA-F]{4})\t([^\t]*)\t(Y|N)(.*)", RegexOptions.Multiline);
+				if (match.Success == true)
+				{
+					Modifiers = (WinAPI.KeyModifiers)BitConverter.ToInt32(Authenticator.StringToByteArray(match.Groups[1].Value), 0);
+					HotKey = (WinAPI.VirtualKeyCode)BitConverter.ToUInt16(Authenticator.StringToByteArray(match.Groups[2].Value), 0);
+					WindowTitle = match.Groups[3].Value;
+					Advanced = (match.Groups[4].Value == "Y");
+					if (Advanced == true)
+					{
+						AdvancedScript = match.Groups[5].Value;
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Get a string representation of the HotKeySequence
+		/// </summary>
+		/// <returns>string representation</returns>
+		public override string ToString()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.Append(Authenticator.ByteArrayToString(BitConverter.GetBytes((int)Modifiers)));
+			sb.Append(Authenticator.ByteArrayToString(BitConverter.GetBytes((ushort)HotKey)));
+			sb.Append("\t");
+			sb.Append(WindowTitle ?? string.Empty);
+			sb.Append("\t");
+			sb.Append(Advanced == true ? "Y" : "N");
+			if (Advanced == true)
+			{
+				sb.Append(AdvancedScript.Replace("\n", string.Empty));
+			}
+
+			return sb.ToString();
+		}
+	}
+
+	/// <summary>
 	/// Class holding configuration data for application
 	/// </summary>
-	public class WinAuthConfig
+	public class WinAuthConfig : ICloneable
 	{
 		/// <summary>
 		/// Get/set name of current authentication data file
@@ -43,6 +131,11 @@ namespace WindowsAuthenticator
 		public bool AlwaysOnTop { get; set; }
 
 		/// <summary>
+		/// Get/set allow copy flag
+		/// </summary>
+		public bool AllowCopy { get; set; }
+
+		/// <summary>
 		/// Get/set auto copy flag
 		/// </summary>
 		public bool CopyOnCode { get; set; }
@@ -53,6 +146,11 @@ namespace WindowsAuthenticator
 		public bool HideSerial { get; set; }
 
 		/// <summary>
+		/// Any auto login hotkey
+		/// </summary>
+		public HoyKeySequence AutoLogin { get; set; }
+
+		/// <summary>
 		/// Create a default config object
 		/// </summary>
 		public WinAuthConfig()
@@ -60,6 +158,66 @@ namespace WindowsAuthenticator
 			AutoRefresh = true;
 			AlwaysOnTop = true;
 		}
+
+		#region ICloneable
+
+		/// <summary>
+		/// Clone return a new WinAuthConfig object
+		/// </summary>
+		/// <returns></returns>
+		public object Clone()
+		{
+			return this.MemberwiseClone();
+		}
+
+		#endregion
 	}
 
+#if NUNIT
+	[TestFixture]
+	public class WinAuthConfig_Text
+	{
+		public WinAuthConfig_Text()
+		{
+		}
+
+		/// <summary>
+		/// Test cases to load and save each combination of modifiers and Vkeys
+		/// </summary>
+		[Test]
+		public void HoyKeySequence_Load()
+		{
+			// all possible modifiers
+			WinAPI.KeyModifiers[] modifiers = new WinAPI.KeyModifiers[]
+			{
+				WinAPI.KeyModifiers.None,
+				WinAPI.KeyModifiers.Alt,
+				WinAPI.KeyModifiers.Control,
+				WinAPI.KeyModifiers.Shift,
+				WinAPI.KeyModifiers.Alt | WinAPI.KeyModifiers.Control,
+				WinAPI.KeyModifiers.Alt | WinAPI.KeyModifiers.Shift,
+				WinAPI.KeyModifiers.Control | WinAPI.KeyModifiers.Shift,
+				WinAPI.KeyModifiers.Alt | WinAPI.KeyModifiers.Control | WinAPI.KeyModifiers.Shift
+			};
+
+			// loop through each VKey
+			foreach (WinAPI.KeyModifiers modifier in modifiers)
+			{
+				HoyKeySequence hk1 = new HoyKeySequence(null);
+				hk1.Modifiers = modifier;
+				hk1.Advanced = false;
+
+				foreach (WinAPI.VirtualKeyCode vk in Enum.GetValues(typeof(WinAPI.VirtualKeyCode)))
+				{
+					hk1.HotKey = vk;
+					string s1 = hk1.ToString();
+					HoyKeySequence hk2 = new HoyKeySequence(s1);
+					string s2 = hk2.ToString();
+					Console.Out.WriteLine(Convert.ToSingle(modifier) + ":" + Convert.ToString(vk));
+					Assert.AreEqual(s1, s2);
+				}
+			}
+		}
+	}
+#endif
 }

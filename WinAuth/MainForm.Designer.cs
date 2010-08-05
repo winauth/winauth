@@ -30,7 +30,7 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-			this.codeField = new System.Windows.Forms.TextBox();
+			this.codeField = new WindowsAuthenticator.SecretTextBox();
 			this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.registerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
@@ -40,7 +40,10 @@
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.syncServerTimeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.autoLoginMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
 			this.alwaysOnTopMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.allowCopyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.hideSerialMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.copyOnCodeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.autoRefreshMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -64,6 +67,7 @@
 			this.codeField.Location = new System.Drawing.Point(103, 45);
 			this.codeField.Name = "codeField";
 			this.codeField.ReadOnly = true;
+			this.codeField.SecretMode = false;
 			this.codeField.Size = new System.Drawing.Size(100, 19);
 			this.codeField.TabIndex = 0;
 			this.codeField.TabStop = false;
@@ -80,7 +84,10 @@
             this.toolStripSeparator2,
             this.syncServerTimeMenuItem,
             this.toolStripSeparator3,
+            this.autoLoginMenuItem,
+            this.toolStripSeparator6,
             this.alwaysOnTopMenuItem,
+            this.allowCopyMenuItem,
             this.hideSerialMenuItem,
             this.copyOnCodeMenuItem,
             this.autoRefreshMenuItem,
@@ -91,7 +98,7 @@
 			this.contextMenuStrip.Name = "contextMenuStrip1";
 			this.contextMenuStrip.ShowCheckMargin = true;
 			this.contextMenuStrip.ShowImageMargin = false;
-			this.contextMenuStrip.Size = new System.Drawing.Size(229, 298);
+			this.contextMenuStrip.Size = new System.Drawing.Size(229, 348);
 			this.contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip_Opening);
 			// 
 			// registerMenuItem
@@ -146,12 +153,31 @@
 			this.toolStripSeparator3.Name = "toolStripSeparator3";
 			this.toolStripSeparator3.Size = new System.Drawing.Size(225, 6);
 			// 
+			// autoLoginMenuItem
+			// 
+			this.autoLoginMenuItem.Name = "autoLoginMenuItem";
+			this.autoLoginMenuItem.Size = new System.Drawing.Size(228, 22);
+			this.autoLoginMenuItem.Text = "Auto Login...";
+			this.autoLoginMenuItem.Click += new System.EventHandler(this.autoLoginMenuItem_Click);
+			// 
+			// toolStripSeparator6
+			// 
+			this.toolStripSeparator6.Name = "toolStripSeparator6";
+			this.toolStripSeparator6.Size = new System.Drawing.Size(225, 6);
+			// 
 			// alwaysOnTopMenuItem
 			// 
 			this.alwaysOnTopMenuItem.Name = "alwaysOnTopMenuItem";
 			this.alwaysOnTopMenuItem.Size = new System.Drawing.Size(228, 22);
 			this.alwaysOnTopMenuItem.Text = "Always on Top";
 			this.alwaysOnTopMenuItem.Click += new System.EventHandler(this.alwaysOnTopMenuItem_Click);
+			// 
+			// allowCopyMenuItem
+			// 
+			this.allowCopyMenuItem.Name = "allowCopyMenuItem";
+			this.allowCopyMenuItem.Size = new System.Drawing.Size(228, 22);
+			this.allowCopyMenuItem.Text = "Allow Copy";
+			this.allowCopyMenuItem.Click += new System.EventHandler(this.allowCopyMenuItem_Click);
 			// 
 			// hideSerialMenuItem
 			// 
@@ -269,7 +295,7 @@
 
 		#endregion
 
-		private System.Windows.Forms.TextBox codeField;
+		private SecretTextBox codeField;
 		private RoundButton calcCodeButton;
 		private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
 		private System.Windows.Forms.ToolStripMenuItem autoRefreshMenuItem;
@@ -291,6 +317,9 @@
 		private System.Windows.Forms.ToolStripMenuItem hideSerialMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem aboutMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
+		private System.Windows.Forms.ToolStripMenuItem allowCopyMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem autoLoginMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
 
 	}
 }

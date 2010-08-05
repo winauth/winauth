@@ -24,7 +24,9 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
+using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -78,6 +80,16 @@ namespace WindowsAuthenticator
 		/// Time when code was displayed
 		/// </summary>
 		private DateTime m_codeDisplayed = DateTime.MinValue;
+
+		/// <summary>
+		/// Hook for hotkey to send code to window
+		/// </summary>
+		private KeyboardHook m_hook;
+
+		/// <summary>
+		/// Flag to say we are processing sending message to other window
+		/// </summary>
+		private object m_sendingKeys = new object();
 
 		#endregion
 
@@ -168,6 +180,22 @@ namespace WindowsAuthenticator
 			{
 				Config.HideSerial = value;
 				this.serialLabel.Visible = !value;
+			}
+		}
+
+		/// <summary>
+		/// Get/set flag to allow copy of code
+		/// </summary>
+		public bool AllowCopy
+		{
+			get
+			{
+				return Config.AllowCopy;
+			}
+			set
+			{
+				Config.AllowCopy = value;
+				codeField.SecretMode = !value;
 			}
 		}
 
@@ -294,6 +322,9 @@ namespace WindowsAuthenticator
 						}
 					} while (true);
 				}
+
+				// loaded, set the title and subtitle
+				this.Text = WinAuth.APPLICATION_NAME + " - " + Path.GetFileNameWithoutExtension(authFile);
 			}
 			catch (InvalidConfigDataException)
 			{
@@ -512,22 +543,64 @@ namespace WindowsAuthenticator
 			if (string.IsNullOrEmpty(authFile) == false && File.Exists(authFile) == true)
 			{
 				LoadAuthenticator(authFile);
-				//AuthenticatorData data = WinAuthHelper.LoadAuthenticator(authFile);
-				//if (data != null)
-				//{
-				//  this.Authenticator = new Authenticator(data);
-				//  Config.AuthenticatorFile = authFile;
-				//}
 			}
 
 			Authenticator authenticator = this.Authenticator;
 			serialLabel.Visible = !Config.HideSerial;
 			serialLabel.Text = (authenticator != null ? authenticator.Data.Serial : string.Empty);
 			codeField.Text = (authenticator != null && Config.AutoRefresh == true ? authenticator.CalculateCode() : string.Empty);
+			codeField.SecretMode = !AllowCopy;
 			progressBar.Value = 0;
 			progressBar.Visible = (authenticator != null && AutoRefresh == true);
 
-			refreshTimer.Enabled = true;
+			// hook our hotkey to send code to target window (e.g . Ctrl-Alt-C)
+			if (this.Config.AutoLogin != null)
+			{
+				Dictionary<Keys, WinAPI.KeyModifiers> keys = new Dictionary<Keys, WinAPI.KeyModifiers>();
+				keys.Add((Keys)this.Config.AutoLogin.HotKey, this.Config.AutoLogin.Modifiers);
+				m_hook = new KeyboardHook(keys);
+				m_hook.KeyDown += new KeyboardHook.KeyboardHookEventHandler(Hotkey_KeyDown);
+			}
+
+			// finally enable the timer to show code changes
+			refreshTimer.Enabled = true;			
+		}
+
+		/// <summary>
+		/// A hotkey keyboard event occured, e.g. "Ctrl-Alt-C"
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		void Hotkey_KeyDown(object sender, KeyboardHookEventArgs e)
+		{
+			// avoid multiple keypresses being sent
+			if (Monitor.TryEnter(m_sendingKeys) == true)
+			{
+				try
+				{
+					// get keyboard sender
+					KeyboardSender keysend = new KeyboardSender(null, this.Config.AutoLogin.WindowTitle);
+
+					// get the current code
+					string code = Authenticator.CalculateCode();
+
+					// get the script and execute it
+					string script = (string.IsNullOrEmpty(this.Config.AutoLogin.AdvancedScript) == false ? this.Config.AutoLogin.AdvancedScript : "{CODE}{ENTER 4000}");
+
+					// replace any {CODE} items
+					script = script.Replace("{CODE}", code);
+
+					// send the whole script
+					keysend.SendKeys(script);
+
+					// mark event as handled
+					e.Handled = true;
+				}
+				finally
+				{
+					Monitor.Exit(m_sendingKeys);
+				}
+			}
 		}
 
 		/// <summary>
@@ -537,7 +610,15 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			// save current config
 			WinAuthHelper.SaveConfig(this.Config);
+
+			// remove the hotkey hook
+			if (m_hook != null)
+			{
+				m_hook.UnHook();
+				m_hook = null;
+			}
 		}
 
 		/// <summary>
@@ -559,6 +640,7 @@ namespace WindowsAuthenticator
 		{
 			syncServerTimeMenuItem.Enabled = (Authenticator != null);
 			copyOnCodeMenuItem.Enabled = (Authenticator != null);
+			allowCopyMenuItem.Enabled = (Authenticator != null);
 			autoRefreshMenuItem.Enabled = (Authenticator != null);
 
 			saveAsMenuItem.Enabled = (Authenticator != null);
@@ -566,6 +648,7 @@ namespace WindowsAuthenticator
 
 			autoRefreshMenuItem.Checked = (autoRefreshMenuItem.Enabled == true ? AutoRefresh : false);
 			copyOnCodeMenuItem.Checked = (copyOnCodeMenuItem.Enabled == true ? CopyOnCode : false);
+			allowCopyMenuItem.Checked = (allowCopyMenuItem.Enabled == true ? AllowCopy : false);
 			alwaysOnTopMenuItem.Checked = (alwaysOnTopMenuItem.Enabled == true ? AlwaysOnTop : false);
 			hideSerialMenuItem.Checked = (hideSerialMenuItem.Enabled == true ? HideSerial : false);
 		}
@@ -639,6 +722,36 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Click the AutoLogin menu item
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void autoLoginMenuItem_Click(object sender, EventArgs e)
+		{
+			AutoLoginForm options = new AutoLoginForm();
+			options.Sequence = this.Config.AutoLogin;
+			if (options.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+			{
+				this.Config.AutoLogin = options.Sequence;
+
+				// remove the old hook
+				if (m_hook != null)
+				{
+					m_hook.UnHook();
+					m_hook = null;
+				}
+				// install the new hook
+				if (this.Config.AutoLogin != null)
+				{
+					Dictionary<Keys, WinAPI.KeyModifiers> keys = new Dictionary<Keys, WinAPI.KeyModifiers>();
+					keys.Add((Keys)this.Config.AutoLogin.HotKey, this.Config.AutoLogin.Modifiers);
+					m_hook = new KeyboardHook(keys);
+					m_hook.KeyDown += new KeyboardHook.KeyboardHookEventHandler(Hotkey_KeyDown);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Click menu item to toggle auto refresh
 		/// </summary>
 		/// <param name="sender"></param>
@@ -646,6 +759,16 @@ namespace WindowsAuthenticator
 		private void autoRefreshMenuItem_Click(object sender, EventArgs e)
 		{
 			AutoRefresh = !autoRefreshMenuItem.Checked;
+		}
+
+		/// <summary>
+		/// Click menu item to toggle allow copy
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void allowCopyMenuItem_Click(object sender, EventArgs e)
+		{
+			AllowCopy = !allowCopyMenuItem.Checked;
 		}
 
 		/// <summary>
@@ -730,5 +853,6 @@ namespace WindowsAuthenticator
 		}
 
 		#endregion
+
 	}
 }

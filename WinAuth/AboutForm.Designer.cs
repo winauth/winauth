@@ -31,54 +31,53 @@
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutForm));
 			this.aboutLabel = new System.Windows.Forms.Label();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.textBox1 = new System.Windows.Forms.TextBox();
+			this.richTextBox1 = new System.Windows.Forms.RichTextBox();
 			this.btnOK = new System.Windows.Forms.Button();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// aboutLabel
 			// 
+			this.aboutLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+									| System.Windows.Forms.AnchorStyles.Right)));
 			this.aboutLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.aboutLabel.Location = new System.Drawing.Point(6, 16);
 			this.aboutLabel.Name = "aboutLabel";
-			this.aboutLabel.Size = new System.Drawing.Size(479, 54);
+			this.aboutLabel.Size = new System.Drawing.Size(381, 85);
 			this.aboutLabel.TabIndex = 1;
-			this.aboutLabel.Text = "WinAuth {0}. Copyright (C) 2010. Colin Mackie. All rights reserved.\r\n\r\nLicense:\r\n" +
-					"";
+			this.aboutLabel.Text = "WinAuth {0}.\r\n\r\nCopyright (C) 2010. Colin Mackie. All rights reserved.\r\n\r\nLicense" +
+					":\r\n";
 			// 
 			// groupBox1
 			// 
 			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 									| System.Windows.Forms.AnchorStyles.Left)
 									| System.Windows.Forms.AnchorStyles.Right)));
-			this.groupBox1.Controls.Add(this.textBox1);
+			this.groupBox1.Controls.Add(this.richTextBox1);
 			this.groupBox1.Controls.Add(this.aboutLabel);
 			this.groupBox1.Location = new System.Drawing.Point(12, 12);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(491, 249);
+			this.groupBox1.Size = new System.Drawing.Size(393, 355);
 			this.groupBox1.TabIndex = 2;
 			this.groupBox1.TabStop = false;
 			// 
-			// textBox1
+			// richTextBox1
 			// 
-			this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 									| System.Windows.Forms.AnchorStyles.Left)
 									| System.Windows.Forms.AnchorStyles.Right)));
-			this.textBox1.Location = new System.Drawing.Point(9, 73);
-			this.textBox1.Multiline = true;
-			this.textBox1.Name = "textBox1";
-			this.textBox1.ReadOnly = true;
-			this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.textBox1.Size = new System.Drawing.Size(476, 161);
-			this.textBox1.TabIndex = 2;
-			this.textBox1.TabStop = false;
-			this.textBox1.Text = resources.GetString("textBox1.Text");
+			this.richTextBox1.Location = new System.Drawing.Point(6, 104);
+			this.richTextBox1.Name = "richTextBox1";
+			this.richTextBox1.ReadOnly = true;
+			this.richTextBox1.Size = new System.Drawing.Size(381, 245);
+			this.richTextBox1.TabIndex = 3;
+			this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
 			// 
 			// btnOK
 			// 
 			this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnOK.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btnOK.Location = new System.Drawing.Point(428, 267);
+			this.btnOK.Location = new System.Drawing.Point(330, 373);
 			this.btnOK.Name = "btnOK";
 			this.btnOK.Size = new System.Drawing.Size(75, 23);
 			this.btnOK.TabIndex = 3;
@@ -92,7 +91,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.btnOK;
-			this.ClientSize = new System.Drawing.Size(515, 302);
+			this.ClientSize = new System.Drawing.Size(417, 408);
 			this.Controls.Add(this.btnOK);
 			this.Controls.Add(this.groupBox1);
 			this.Name = "AboutForm";
@@ -100,7 +99,6 @@
 			this.Text = "About Windows Authenticator";
 			this.Load += new System.EventHandler(this.AboutForm_Load);
 			this.groupBox1.ResumeLayout(false);
-			this.groupBox1.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -109,7 +107,7 @@
 
 		private System.Windows.Forms.Label aboutLabel;
 		private System.Windows.Forms.GroupBox groupBox1;
-		private System.Windows.Forms.TextBox textBox1;
 		private System.Windows.Forms.Button btnOK;
+		private System.Windows.Forms.RichTextBox richTextBox1;
 	}
 }

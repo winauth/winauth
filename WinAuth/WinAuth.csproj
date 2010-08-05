@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NUNIT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -42,6 +42,10 @@
     <ApplicationIcon>auth.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.framework, Version=2.5.5.10112, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Program Files (x86)\NUnit 2.5.5\bin\net-2.0\framework\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -55,6 +59,16 @@
     </Compile>
     <Compile Include="AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Keyboard.cs" />
+    <Compile Include="AutoLoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AutoLoginForm.Designer.cs">
+      <DependentUpon>AutoLoginForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SecretTextBox.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="PasswordForm.cs">
       <SubType>Form</SubType>
@@ -96,6 +110,9 @@
     <EmbeddedResource Include="AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="AutoLoginForm.resx">
+      <DependentUpon>AutoLoginForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="PasswordForm.resx">
       <DependentUpon>PasswordForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -121,6 +138,7 @@
     <EmbeddedResource Include="RequestPasswordForm.resx">
       <DependentUpon>RequestPasswordForm.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

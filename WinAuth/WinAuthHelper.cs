@@ -56,6 +56,11 @@ namespace WindowsAuthenticator
 				{
 					data.AutoRefresh = boolVal;
 				}
+				node = doc.DocumentElement.SelectSingleNode("AllowCopy");
+				if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
+				{
+					data.AllowCopy = boolVal;
+				}
 				node = doc.DocumentElement.SelectSingleNode("CopyOnCode");
 				if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
 				{
@@ -65,6 +70,11 @@ namespace WindowsAuthenticator
 				if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
 				{
 					data.HideSerial = boolVal;
+				}
+				node = doc.DocumentElement.SelectSingleNode("AutoLogin");
+				if (node != null && node.InnerText.Length != 0)
+				{
+					data.AutoLogin = new HoyKeySequence(node.InnerText);
 				}
 				node = doc.DocumentElement.SelectSingleNode("AuthenticatorFile");
 				if (node != null && node.InnerText.Length != 0)
@@ -111,12 +121,21 @@ namespace WindowsAuthenticator
 			node = doc.CreateElement("AutoRefresh");
 			node.InnerText = data.AutoRefresh.ToString();
 			root.AppendChild(node);
+			node = doc.CreateElement("AllowCopy");
+			node.InnerText = data.AllowCopy.ToString();
+			root.AppendChild(node);
 			node = doc.CreateElement("CopyOnCode");
 			node.InnerText = data.CopyOnCode.ToString();
 			root.AppendChild(node);
 			node = doc.CreateElement("HideSerial");
 			node.InnerText = data.HideSerial.ToString();
 			root.AppendChild(node);
+			if (data.AutoLogin != null)
+			{
+				node = doc.CreateElement("AutoLogin");
+				node.InnerText = data.AutoLogin.ToString();
+				root.AppendChild(node);
+			}
 			if (string.IsNullOrEmpty(data.AuthenticatorFile) == false)
 			{
 				node = doc.CreateElement("AuthenticatorFile");

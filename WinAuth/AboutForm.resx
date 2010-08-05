@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="textBox1.Text" xml:space="preserve">
+  <data name="richTextBox1.Text" xml:space="preserve">
     <value>                    GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
@@ -750,6 +750,7 @@ for more details.
 
   You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses/.
+
 </value>
   </data>
 </root>
