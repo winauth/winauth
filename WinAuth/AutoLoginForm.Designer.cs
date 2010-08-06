@@ -28,11 +28,13 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AutoLoginForm));
 			this.btnOK = new System.Windows.Forms.Button();
 			this.btnCancel = new System.Windows.Forms.Button();
 			this.ckHotKey = new System.Windows.Forms.CheckBox();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.label3 = new System.Windows.Forms.Label();
 			this.tbAdvanced = new System.Windows.Forms.RichTextBox();
 			this.cbHotKey = new System.Windows.Forms.ComboBox();
 			this.cbHotKeyMod3 = new System.Windows.Forms.ComboBox();
@@ -43,7 +45,7 @@
 			this.label1 = new System.Windows.Forms.Label();
 			this.label5 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
-			this.label3 = new System.Windows.Forms.Label();
+			this.tooltip = new System.Windows.Forms.ToolTip(this.components);
 			this.groupBox2.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -101,6 +103,15 @@
 			this.groupBox2.Size = new System.Drawing.Size(516, 310);
 			this.groupBox2.TabIndex = 0;
 			this.groupBox2.TabStop = false;
+			// 
+			// label3
+			// 
+			this.label3.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+			this.label3.Location = new System.Drawing.Point(127, 193);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(371, 32);
+			this.label3.TabIndex = 7;
+			this.label3.Text = "e.g. {CODE}{ENTER}\r\n       my@email.com{TAB}password{ENTER 3000}{CODE}{ENTER}";
 			// 
 			// tbAdvanced
 			// 
@@ -251,14 +262,11 @@
 			this.label2.TabIndex = 0;
 			this.label2.Text = "Window Title";
 			// 
-			// label3
+			// tooltip
 			// 
-			this.label3.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-			this.label3.Location = new System.Drawing.Point(127, 193);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(371, 32);
-			this.label3.TabIndex = 7;
-			this.label3.Text = "e.g. {CODE}{ENTER}\r\n       my@email.com{TAB}password{ENTER 3000}{CODE}{ENTER}";
+			this.tooltip.AutoPopDelay = 30000;
+			this.tooltip.InitialDelay = 500;
+			this.tooltip.ReshowDelay = 100;
 			// 
 			// AutoLoginForm
 			// 
@@ -298,5 +306,6 @@
 		private System.Windows.Forms.ComboBox cbHotKeyMod3;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.ToolTip tooltip;
 	}
 }

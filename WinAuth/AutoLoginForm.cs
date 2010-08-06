@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Resources;
 using System.Text;
 using System.Windows.Forms;
 
@@ -252,6 +253,11 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void OptionsForm_Load(object sender, EventArgs e)
 		{
+			// set tooltips
+			ResourceManager rm = new ResourceManager("WindowsAuthenticator.Properties.Resources", typeof(AutoLoginForm).Assembly);
+			tooltip.SetToolTip(ckAdvanced, rm.GetString("AUTOLOGIN_SCRIPT_TOOLTIP"));
+			tooltip.SetToolTip(tbAdvanced, rm.GetString("AUTOLOGIN_TBADVANCED_TOOLTIP"));
+
 			// load up the combos
 			foreach (ComboBox cb in m_modCombos)
 			{

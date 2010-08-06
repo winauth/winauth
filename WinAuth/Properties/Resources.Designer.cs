@@ -59,5 +59,34 @@ namespace WindowsAuthenticator.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In Advanced mode you are able to edit the script that is used to send the code keys to your application..
+        /// </summary>
+        internal static string AUTOLOGIN_SCRIPT_TOOLTIP {
+            get {
+                return ResourceManager.GetString("AUTOLOGIN_SCRIPT_TOOLTIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can use a mixture of key command and plain text to build up your string.
+        ///
+        ///The default is {CODE}{ENTER 4000} which sends the Authenticator code and an ENTER key with a 4 second delay.
+        ///
+        ///Commands can be {COMMAND delay repeat} where delay is milliseconds to wait after each command, and repeat is the number of times to repeat the command. Delay and repeat are optional.
+        ///
+        ///Commands are:
+        ///{CODE} to insert the current code
+        ///{ENTER} to send the ENTER key
+        ///{TAB} to send the TAB key
+        ///
+        ///To login an account, you [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string AUTOLOGIN_TBADVANCED_TOOLTIP {
+            get {
+                return ResourceManager.GetString("AUTOLOGIN_TBADVANCED_TOOLTIP", resourceCulture);
+            }
+        }
     }
 }
