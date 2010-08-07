@@ -117,6 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="label3.Text" xml:space="preserve">
+    <value>Your Authenticator data will be added to a Zip file and emailed to the address you specify.
+
+We will try and send the email directly to your mail host avoiding any third party servers. If you get an error, you will need to use your own server below.</value>
+  </data>
   <data name="label8.Text" xml:space="preserve">
     <value>We try and send the email directly to your mail server. However some domains, Yahoo for instance, will not accept mail directly. In that can you must specify your own outgoing mail server from your ISP.</value>
   </data>

@@ -474,9 +474,22 @@ namespace WindowsAuthenticator
 			WinAuthHelper.SaveConfig(this.Config);
 
 			InitializedForm initForm = new InitializedForm();
-			initForm.ShowDialog(this);
+			if (initForm.ShowDialog(this) == System.Windows.Forms.DialogResult.Yes)
+			{
+				BackupData();
+			}
 
 			return true;
+		}
+
+		/// <summary>
+		/// Show the form to backup the data
+		/// </summary>
+		private void BackupData()
+		{
+			BackupForm backup = new BackupForm();
+			backup.CurrentConfig = this.Config;
+			backup.ShowDialog(this);
 		}
 
 		/// <summary>
@@ -718,9 +731,7 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void createBackupMenuItem_Click(object sender, EventArgs e)
 		{
-			BackupForm backup = new BackupForm();
-			backup.CurrentConfig = this.Config;
-			backup.ShowDialog(this);
+			BackupData();
 		}
 
 		/// <summary>

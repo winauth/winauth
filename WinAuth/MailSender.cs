@@ -258,6 +258,7 @@ namespace WindowsAuthenticator
 					{
 						smtpClient.Host = mx;
 						smtpClient.Send(message);
+						firstException = null;
 						break;
 					}
 					catch (Exception ex)

@@ -117,7 +117,7 @@ namespace WindowsAuthenticator
 			string zipfile = Path.Combine(Path.GetTempPath(), Path.GetFileName(datafile) + ".zip");
 			try {
 				// send wait cursor
-				Application.UseWaitCursor = true;
+				Cursor.Current = Cursors.WaitCursor;
 
 				using (FileStream zipfs = File.Create(zipfile))
 				{
@@ -154,21 +154,22 @@ namespace WindowsAuthenticator
 
 				// now send the file
 				MailSender ms = new MailSender();
-				if (this.cbSmtpServer.Text.Length != 0)
+				if (this.ckSmtpServer.Checked == true)
 				{
 					ms.SmtpServer = this.cbSmtpServer.Text;
 					ms.SmtpPort = Convert.ToInt32(cbSmtpPorts.Text);
 					ms.SmtpSSL = ckSmtpSSL.Checked;
-				}
-				if (this.tbSmtpUsername.Text.Length != 0)
-				{
-					ms.SmtpUsername = this.tbSmtpUsername.Text;
-					ms.SmtpPasword = this.tbSmtpPassword.Text;
+
+					if (this.tbSmtpUsername.Text.Length != 0)
+					{
+						ms.SmtpUsername = this.tbSmtpUsername.Text;
+						ms.SmtpPasword = this.tbSmtpPassword.Text;
+					}
 				}
 				ms.Send(new MailAddress(WinAuth.WINAUTHBACKUP_EMAIL), new MailAddress(this.tbEmail.Text), this.tbSubject.Text, string.Empty, new string[] { zipfile });
 
 				// reset cursor
-				Application.UseWaitCursor = false;
+				Cursor.Current = Cursors.Default;
 
 				// confirm dialog
 				MessageBox.Show(this, "Your email has been sent.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -176,7 +177,7 @@ namespace WindowsAuthenticator
 			catch (Exception ex)
 			{
 				// reset cursor
-				Application.UseWaitCursor = false;
+				Cursor.Current = Cursors.Default;
 				return MessageBox.Show(this, "An error occured sending your backup: " + ex.Message, this.Text, MessageBoxButtons.RetryCancel, MessageBoxIcon.Exclamation);
 			}
 			finally
@@ -204,6 +205,8 @@ namespace WindowsAuthenticator
 			{
 				this.cbSmtpServer.Items.Add(smtpserver);
 			}
+
+			this.ActiveControl = tbEmail;
 		}
 
 		/// <summary>
@@ -217,6 +220,11 @@ namespace WindowsAuthenticator
 			if (this.tbPassword.Text.Length != 0 && this.tbPassword.Text != this.tbPasswordVerify.Text)
 			{
 				MessageBox.Show(this, "Passwords do not match", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				return;
+			}
+			if (this.ckSmtpServer.Checked == true && this.cbSmtpServer.Text.Length == 0)
+			{
+				MessageBox.Show(this, "Please enter your SMTP Server details.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				return;
 			}
 
