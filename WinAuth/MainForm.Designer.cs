@@ -38,6 +38,8 @@
 			this.saveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.createBackupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
 			this.syncServerTimeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.autoLoginMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -82,6 +84,8 @@
             this.saveMenuItem,
             this.saveAsMenuItem,
             this.toolStripSeparator2,
+            this.createBackupMenuItem,
+            this.toolStripSeparator7,
             this.syncServerTimeMenuItem,
             this.toolStripSeparator3,
             this.autoLoginMenuItem,
@@ -98,7 +102,7 @@
 			this.contextMenuStrip.Name = "contextMenuStrip1";
 			this.contextMenuStrip.ShowCheckMargin = true;
 			this.contextMenuStrip.ShowImageMargin = false;
-			this.contextMenuStrip.Size = new System.Drawing.Size(229, 348);
+			this.contextMenuStrip.Size = new System.Drawing.Size(229, 376);
 			this.contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip_Opening);
 			// 
 			// registerMenuItem
@@ -140,6 +144,18 @@
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
 			this.toolStripSeparator2.Size = new System.Drawing.Size(225, 6);
+			// 
+			// createBackupMenuItem
+			// 
+			this.createBackupMenuItem.Name = "createBackupMenuItem";
+			this.createBackupMenuItem.Size = new System.Drawing.Size(228, 22);
+			this.createBackupMenuItem.Text = "Send Backup Email...";
+			this.createBackupMenuItem.Click += new System.EventHandler(this.createBackupMenuItem_Click);
+			// 
+			// toolStripSeparator7
+			// 
+			this.toolStripSeparator7.Name = "toolStripSeparator7";
+			this.toolStripSeparator7.Size = new System.Drawing.Size(225, 6);
 			// 
 			// syncServerTimeMenuItem
 			// 
@@ -320,6 +336,8 @@
 		private System.Windows.Forms.ToolStripMenuItem allowCopyMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem autoLoginMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
+		private System.Windows.Forms.ToolStripMenuItem createBackupMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
 
 	}
 }

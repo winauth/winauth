@@ -712,6 +712,18 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Click to create a backup authenticator
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void createBackupMenuItem_Click(object sender, EventArgs e)
+		{
+			BackupForm backup = new BackupForm();
+			backup.CurrentConfig = this.Config;
+			backup.ShowDialog(this);
+		}
+
+		/// <summary>
 		/// Click menu item to close
 		/// </summary>
 		/// <param name="sender"></param>
@@ -853,6 +865,7 @@ namespace WindowsAuthenticator
 		}
 
 		#endregion
+
 
 	}
 }

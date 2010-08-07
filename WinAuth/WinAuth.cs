@@ -43,6 +43,11 @@ namespace WindowsAuthenticator
 		public const string DEFAULT_AUTHENTICATOR_FILE_NAME = "authenticator.xml";
 
 		/// <summary>
+		/// Winuath email address used as sender to backup emails
+		/// </summary>
+		public const string WINAUTHBACKUP_EMAIL = "winauth-backup@gmail.com";
+
+		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
 		[STAThread]
