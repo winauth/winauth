@@ -42,18 +42,48 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Get/set flag to use a password
 		/// </summary>
-		public bool UsePassword
+		public AuthenticatorData.PasswordTypes PasswordType
 		{
 			get
 			{
-				return rbPassword.Checked;
+				if (rbAccountPassword.Checked == true)
+				{
+					return AuthenticatorData.PasswordTypes.User;
+				}
+				else if (rbMachinePassword.Checked == true)
+				{
+					return AuthenticatorData.PasswordTypes.Machine;
+				}
+				else if (rbPassword.Checked == true)
+				{
+					return AuthenticatorData.PasswordTypes.Explicit;
+				}
+				else
+				{
+					return AuthenticatorData.PasswordTypes.None;
+				}
 			}
 			set
 			{
-				rbNoPassword.Checked = !value;
-				rbPassword.Checked = value;
-				tbPassword.Enabled = value;
-				tbVerify.Enabled = value;
+				if (value == AuthenticatorData.PasswordTypes.User)
+				{
+					rbAccountPassword.Checked = true;
+				}
+				else if (value == AuthenticatorData.PasswordTypes.Machine)
+				{
+					rbMachinePassword.Checked = true;
+				}
+				else if (value == AuthenticatorData.PasswordTypes.Explicit)
+				{
+					rbPassword.Checked = true;
+				}
+				else
+				{
+					rbNoPassword.Checked = true;
+				}
+
+				tbPassword.Enabled = (value == AuthenticatorData.PasswordTypes.Explicit);
+				tbVerify.Enabled = (value == AuthenticatorData.PasswordTypes.Explicit);
 			}
 		}
 
@@ -70,7 +100,6 @@ namespace WindowsAuthenticator
 			{
 				tbVerify.Text = value;
 				tbVerify.Text = value;
-				UsePassword = string.IsNullOrEmpty(value);
 			}
 		}
 
@@ -81,18 +110,15 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void RequestPasswordForm_Load(object sender, EventArgs e)
 		{
-			UsePassword = true;
-			this.ActiveControl = tbPassword;
-		}
+			rbNoPassword.Tag = AuthenticatorData.PasswordTypes.None;
+			rbAccountPassword.Tag = AuthenticatorData.PasswordTypes.User;
+			rbMachinePassword.Tag = AuthenticatorData.PasswordTypes.Machine;
+			rbPassword.Tag = AuthenticatorData.PasswordTypes.Explicit;
 
-		/// <summary>
-		/// Toggle password choice
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void rbPassword_CheckedChanged(object sender, EventArgs e)
-		{
-			UsePassword = rbPassword.Checked;
+			rbAccountPassword.Text += " (" + System.Environment.UserName + ")";
+			rbMachinePassword.Text += " (" + System.Environment.MachineName + ")";
+
+			//this.ActiveControl = rbNoPassword;
 		}
 
 		/// <summary>
@@ -102,7 +128,12 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void btnOk_Click(object sender, EventArgs e)
 		{
-			if (UsePassword == true && this.tbPassword.Text.Length == 0)
+			if (rbAccountPassword.Checked == false && rbMachinePassword.Checked == false && rbNoPassword.Checked == false && rbPassword.Checked == false)
+			{
+				MessageBox.Show(this, "Please choose a password method.", WinAuth.APPLICATION_NAME, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				return;
+			}
+			if (PasswordType == AuthenticatorData.PasswordTypes.Explicit && this.tbPassword.Text.Length == 0)
 			{
 				MessageBox.Show(this, "Please enter a password.", WinAuth.APPLICATION_NAME, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				tbPassword.Focus();
@@ -117,6 +148,23 @@ namespace WindowsAuthenticator
 			}
 
 			this.DialogResult = System.Windows.Forms.DialogResult.OK;
+		}
+
+		/// <summary>
+		/// Click any of the password type radio button
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void PasswordType_CheckedChanged(object sender, EventArgs e)
+		{
+			if (sender is RadioButton && ((RadioButton)sender).Checked == true)
+			{
+				this.PasswordType = (AuthenticatorData.PasswordTypes)((RadioButton)sender).Tag;
+				if (this.PasswordType == AuthenticatorData.PasswordTypes.Explicit)
+				{
+					tbPassword.Focus();
+				}
+			}
 		}
 
 	}

@@ -42,9 +42,16 @@
     <Reference Include="BouncyCastle.Crypto">
       <HintPath>..\..\Third Party\bouncycastle.org\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.XML" />
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Authenticator.cs" />

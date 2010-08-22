@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (C) 2010 Colin Mackie.
  * This software is distributed under the terms of the GNU General Public License.
  *
@@ -303,9 +303,6 @@ namespace WindowsAuthenticator
 		{
 		}
 
-		/// <summary>
-		/// Test cases to load and save each combination of modifiers and Vkeys
-		/// </summary>
 		[Test]
 		public void MXLookup()
 		{
@@ -326,7 +323,7 @@ namespace WindowsAuthenticator
 		public void Send()
 		{
 			MailSender ms = new MailSender();
-			ms.Send(new MailAddress("test@test.com"), new MailAddress("cdm@legmail.com"), "Test Send 1", "this is a test", null);
+			ms.Send(new MailAddress("test@test.com"), new MailAddress("winauth@gmail.com"), "Test Send 1", "this is a test", null);
 		}
 	}
 #endif

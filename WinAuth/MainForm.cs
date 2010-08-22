@@ -393,7 +393,8 @@ namespace WindowsAuthenticator
 				{
 					return false;
 				}
-				Authenticator.Data.Password = (requestPasswordForm.UsePassword == true ? requestPasswordForm.Password : null);
+				Authenticator.Data.PasswordType = requestPasswordForm.PasswordType;
+				Authenticator.Data.Password = (requestPasswordForm.PasswordType == AuthenticatorData.PasswordTypes.Explicit ? requestPasswordForm.Password : null);
 			}
 
 			// save data

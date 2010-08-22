@@ -34,6 +34,10 @@ using Org.BouncyCastle.Crypto.Paddings;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Generators;
 
+#if NETCF
+using OpenNETCF.Security.Cryptography;
+#endif
+
 namespace WindowsAuthenticator
 {
 	/// <summary>
@@ -68,6 +72,16 @@ namespace WindowsAuthenticator
 				0x79,0x01,0x5c,0x1d,0x5b,0x8b,0x8f,0x6b,0x9a
 			};
 
+		/// <summary>
+		/// Type of password to use to encrpyt secret data
+		/// </summary>
+		public enum PasswordTypes
+		{
+			None = 0,
+			Explicit,
+			User,
+			Machine
+		}
 
 		/// <summary>
 		/// Region for authenticator
@@ -92,10 +106,15 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Is the secret data encrpyted
 		/// </summary>
-		public bool SecretDataEncrpyted { get; set; }
+		//public bool SecretDataEncrpyted { get; set; }
 
 		/// <summary>
-		/// Password used to encrypt secretdata
+		/// Type of password used to encrypt secretdata
+		/// </summary>
+		public PasswordTypes PasswordType { get; set; }
+
+		/// <summary>
+		/// Password used to encrypt secretdata (if PasswordType == Explict)
 		/// </summary>
 		public string Password { get; set; }
 
@@ -121,7 +140,7 @@ namespace WindowsAuthenticator
 				{
 					bytes[i] ^= MOBILE_AUTHENTICATOR_KEY[i];
 				}
-				string full = Encoding.UTF8.GetString(bytes);
+				string full = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
 				SecretKey = Authenticator.StringToByteArray(full.Substring(0, 40));
 				Serial = full.Substring(40);
 			}
@@ -157,14 +176,14 @@ namespace WindowsAuthenticator
 					bytes[i] ^= MOBILE_AUTHENTICATOR_KEY[i];
 				}
 				// decode and set members
-				string full = Encoding.UTF8.GetString(bytes);
+				string full = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
 				SecretKey = Authenticator.StringToByteArray(full.Substring(0, 40));
 				Serial = full.Substring(40);
 
 				// get offset value
 				long offset = 0;
 				node = doc.DocumentElement.SelectSingleNode("/map/long[@name='" + BMA_OFFSET_NAME + "']");
-				if (node != null && long.TryParse(node.Attributes["value"].InnerText, out offset) == true)
+				if (node != null && LongTryParse(node.Attributes["value"].InnerText, out offset) /* long.TryParse(node.Attributes["value"].InnerText, out offset) == true */)
 				{
 					ServerTimeDiff = offset;
 				}
@@ -179,7 +198,7 @@ namespace WindowsAuthenticator
 				string data = node.InnerText;
 
 				byte[] bytes = Authenticator.StringToByteArray(data);
-				string full = Encoding.UTF8.GetString(bytes);
+				string full = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
 				SecretKey = Authenticator.StringToByteArray(full.Substring(0, 40));
 				Serial = full.Substring(40, 17);
 				Region = full.Substring(57, 2);
@@ -200,7 +219,7 @@ namespace WindowsAuthenticator
 				//
 				long offset = 0;
 				node = doc.DocumentElement.SelectSingleNode("long[@name='servertimediff']");
-				if (node != null && long.TryParse(node.InnerText, out offset) == true)
+				if (node != null && LongTryParse(node.InnerText, out offset) == true /* long.TryParse(node.InnerText, out offset) == true */)
 				{
 					ServerTimeDiff = offset;
 				}
@@ -220,21 +239,32 @@ namespace WindowsAuthenticator
 			{
 				string data = node.InnerText;
 				XmlAttribute attr = node.Attributes["encrypted"];
-				if (attr != null && attr.InnerText == "y")
+				if (attr != null && attr.InnerText.Length != 0)
 				{
-					SecretDataEncrpyted = true;
-					if (string.IsNullOrEmpty(password) == true)
+					string encryptedType = attr.InnerText;
+					if (encryptedType == "u" || encryptedType == "m")
 					{
-						throw new EncrpytedSecretDataException();
+						PasswordType = PasswordTypes.User;
+						byte[] cipher = Authenticator.StringToByteArray(data);
+						byte[] plain = ProtectedData.Unprotect(cipher, null, (encryptedType == "m" ? DataProtectionScope.LocalMachine : DataProtectionScope.CurrentUser));
+						data = Authenticator.ByteArrayToString(plain);
 					}
-					Password = password;
-					data = Decrypt(data, password);
+					else if (encryptedType == "y")
+					{
+						if (string.IsNullOrEmpty(password) == true)
+						{
+							throw new EncrpytedSecretDataException();
+						}
+						PasswordType = PasswordTypes.Explicit;
+						Password = password;
+						data = Decrypt(data, password);
+					}
 				}
 				SecretData = data;
 
 				long offset = 0;
 				node = doc.DocumentElement.SelectSingleNode("servertimediff");
-				if (node != null && long.TryParse(node.InnerText, out offset) == true)
+				if (node != null && LongTryParse(node.InnerText, out offset) == true /* long.TryParse(node.InnerText, out offset) == true */)
 				{
 					ServerTimeDiff = offset;
 				}
@@ -260,7 +290,7 @@ namespace WindowsAuthenticator
 		{
 			writer.WriteStartDocument(true);
 			writer.WriteStartElement("winauth");
-			writer.WriteAttributeString("version", System.Reflection.Assembly.GetAssembly(typeof(AuthenticatorData)).GetName().Version.ToString(2));
+			writer.WriteAttributeString("version", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(2));
 			//
 			writer.WriteStartElement("servertimediff");
 			writer.WriteString(ServerTimeDiff.ToString());
@@ -272,10 +302,18 @@ namespace WindowsAuthenticator
 			//
 			writer.WriteStartElement("secretdata");
 			string data = SecretData;
-			if (string.IsNullOrEmpty(Password) == false)
+			if (PasswordType == AuthenticatorData.PasswordTypes.Explicit)
 			{
 				data = Encrypt(data, Password);
 				writer.WriteAttributeString("encrypted", "y");
+			}
+			else if (PasswordType == AuthenticatorData.PasswordTypes.User || PasswordType == AuthenticatorData.PasswordTypes.Machine)
+			{
+				// encrypt as bytes - put original size in first byte
+				byte[] plain = Authenticator.StringToByteArray(data);
+				byte[] cipher = ProtectedData.Protect(plain, null, (PasswordType == AuthenticatorData.PasswordTypes.Machine ? DataProtectionScope.LocalMachine : DataProtectionScope.CurrentUser));
+				data = Authenticator.ByteArrayToString(cipher);
+				writer.WriteAttributeString("encrypted", "u");
 			}
 			writer.WriteString(data);
 			writer.WriteEndElement();
@@ -377,6 +415,29 @@ namespace WindowsAuthenticator
 			return Authenticator.ByteArrayToString(outBytes);
 		}
 
+		/// <summary>
+		/// Wrapped TryParse for compatability with NETCF35 to simulate long.TryParse
+		/// </summary>
+		/// <param name="s">string of value to parse</param>
+		/// <param name="val">out long value</param>
+		/// <returns>true if value was parsed</returns>
+		private static bool LongTryParse(string s, out long val)
+		{
+#if NETCF
+			try
+			{
+				val = long.Parse(s);
+				return true;
+			}
+			catch (Exception )
+			{
+				val = 0;
+				return false;
+			}
+#else
+			return long.TryParse(s, out val);
+#endif
+		}
 	}
 
 }

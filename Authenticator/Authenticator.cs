@@ -23,7 +23,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Web;
+//using System.Web;
 
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Macs;
@@ -186,7 +186,8 @@ namespace WindowsAuthenticator
 				// load back the buffer - should only be a byte[45]
 				using (MemoryStream ms = new MemoryStream())
 				{
-					using (BufferedStream bs = new BufferedStream(response.GetResponseStream()))
+					//using (BufferedStream bs = new BufferedStream(response.GetResponseStream()))
+					using (Stream bs = response.GetResponseStream())
 					{
 						byte[] temp = new byte[RESPONSE_BUFFER_SIZE];
 						int read;
@@ -276,7 +277,8 @@ namespace WindowsAuthenticator
 				// load back the buffer - should only be a byte[8]
 				using (MemoryStream ms = new MemoryStream())
 				{
-					using (BufferedStream bs = new BufferedStream(response.GetResponseStream()))
+					// using (BufferedStream bs = new BufferedStream(response.GetResponseStream()))
+					using (Stream bs = response.GetResponseStream())
 					{
 						byte[] temp = new byte[RESPONSE_BUFFER_SIZE];
 						int read;
