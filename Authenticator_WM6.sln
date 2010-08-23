@@ -4,7 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMAuth", "WMAuth\WMAuth.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthenticatorCF", "Authenticator\AuthenticatorCF.csproj", "{32881C8B-08BA-40CC-B328-6B3438D0DF55}"
 EndProject
-Project("{B900F1C2-3D47-4FEC-85B3-04AAF18C3634}") = "WMCabSetup", "WMAuth\WMCabSetup\WMCabSetup.vddproj", "{CB1097DA-ECA0-46BB-A528-25D01BC1420F}"
+Project("{B900F1C2-3D47-4FEC-85B3-04AAF18C3634}") = "WMCabSetup", "WMAuth\WMCabSetup\WMCabSetup.vddproj", "{1D6D3AE5-E6A1-4C2D-82BC-1F673AA94B92}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,10 +22,10 @@ Global
 		{32881C8B-08BA-40CC-B328-6B3438D0DF55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{32881C8B-08BA-40CC-B328-6B3438D0DF55}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{32881C8B-08BA-40CC-B328-6B3438D0DF55}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CB1097DA-ECA0-46BB-A528-25D01BC1420F}.Debug|Any CPU.ActiveCfg = Debug
-		{CB1097DA-ECA0-46BB-A528-25D01BC1420F}.Debug|Any CPU.Build.0 = Debug
-		{CB1097DA-ECA0-46BB-A528-25D01BC1420F}.Release|Any CPU.ActiveCfg = Release
-		{CB1097DA-ECA0-46BB-A528-25D01BC1420F}.Release|Any CPU.Build.0 = Release
+		{1D6D3AE5-E6A1-4C2D-82BC-1F673AA94B92}.Debug|Any CPU.ActiveCfg = Debug
+		{1D6D3AE5-E6A1-4C2D-82BC-1F673AA94B92}.Debug|Any CPU.Build.0 = Debug
+		{1D6D3AE5-E6A1-4C2D-82BC-1F673AA94B92}.Release|Any CPU.ActiveCfg = Release
+		{1D6D3AE5-E6A1-4C2D-82BC-1F673AA94B92}.Release|Any CPU.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -18,13 +18,15 @@
     <NativePlatformName>Windows Mobile 6.5.3 Professional DTK</NativePlatformName>
     <FormFactorID>
     </FormFactorID>
+    <StartupObject>WindowsAuthenticator.WMAuth</StartupObject>
+    <ApplicationIcon>auth.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;$(PlatformFamilyName)</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;PocketPC,NETCF</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
@@ -36,7 +38,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;$(PlatformFamilyName)</DefineConstants>
+    <DefineConstants>TRACE;PocketPC,NETCF</DefineConstants>
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
@@ -78,6 +80,7 @@
     <Compile Include="Transparent.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="WinAPI.cs" />
     <Compile Include="WinAuthConfig.cs" />
     <Compile Include="WMAuth.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -110,6 +113,15 @@
       <Name>AuthenticatorCF</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="field.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="battle.net.icon-64x64.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="auth.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
@@ -125,4 +137,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PreBuildEvent>"$(SolutionDir)GitWCRev.exe" -t -g "c:\Program Files\TortoiseGit\msysgit\bin\git.exe" "$(ProjectDir).." "$(ProjectDir)Properties\AssemblyInfo.cs.template" "$(ProjectDir)Properties\AssemblyInfo.cs"</PreBuildEvent>
+  </PropertyGroup>
 </Project>

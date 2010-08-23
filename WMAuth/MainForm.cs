@@ -23,6 +23,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Reflection;
 using System.Xml;
 using System.Windows.Forms;
 
@@ -172,6 +173,11 @@ namespace WindowsAuthenticator
 				Config.CurrentAuthenticator = enrollForm.Authenticator;
 				Config.SaveAuthenticator();
 
+				// first time we show the serial
+				ShowSerial = true;
+				// and the intro
+				introPanel.Visible = true;
+
 				ShowCode();
 			}
 		}
@@ -206,23 +212,15 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void MainForm_Load(object sender, EventArgs e)
 		{
+			// set title
+			this.Text = WMAuth.APPLICATION_NAME;
+
 			// default config
 			AutoRefresh = true;
 			ShowSerial = false;
 
 			// load authenticator else enroll a new one
 			Config.LoadAuthenticator();
-			//if (Config.LoadAuthenticator() == false || Config.CurrentAuthenticator == null)
-			//{
-			//  this.Update();
-			//  Application.DoEvents();
-
-			//  ShowEnroll();
-			//  if (Config.CurrentAuthenticator == null)
-			//  {
-			//    this.Close();
-			//  }
-			//}
 
 			// if one exist, show code
 			if (Config.CurrentAuthenticator != null)
@@ -276,6 +274,47 @@ namespace WindowsAuthenticator
 			ShowEnroll();
 		}
 
+		/// <summary>
+		/// Click the Sync menu item
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void syncMenuItem_Click(object sender, EventArgs e)
+		{
+			if (Config.CurrentAuthenticator != null)
+			{
+				try
+				{
+					// sync and save
+					Config.CurrentAuthenticator.Sync();
+					Config.SaveAuthenticator();
+
+					MessageBox.Show("Authenticator synced successfully.", WMAuth.APPLICATION_NAME);
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show("Cannot sync with Battle.net: " + ex.Message, WMAuth.APPLICATION_NAME);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Click the About menu item
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void aboutMenuItem_Click(object sender, EventArgs e)
+		{
+			Assembly assembly = Assembly.GetExecutingAssembly();
+			MessageBox.Show(
+				((AssemblyTitleAttribute)assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false)[0]).Title + " " + assembly.GetName().Version.ToString(2) + Environment.NewLine +
+				((AssemblyCopyrightAttribute)assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false)[0]).Copyright + Environment.NewLine + Environment.NewLine +
+				"Licensed under GNU General Public License v3 (http://www.gnu.org/licenses)" + Environment.NewLine + Environment.NewLine
+				+ "http://code.google.com/p/winauth",
+				WMAuth.APPLICATION_NAME);
+				//MessageBoxButtons.OK, MessageBoxIcon.None, MessageBoxDefaultButton.Button1);
+		}
+	
 		/// <summary>
 		/// Tick for timer
 		/// </summary>

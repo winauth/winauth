@@ -48,19 +48,19 @@ namespace WindowsAuthenticator
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EnrollForm));
 			this.enrollTimer = new System.Windows.Forms.Timer();
-			this.enrollLabel = new TransparentLabel();
+			this.enrollLabel = new WindowsAuthenticator.TransparentLabel();
 			this.enrollProgressBar = new System.Windows.Forms.ProgressBar();
-			this.enrollIntroLabel = new TransparentLabel();
+			this.enrollIntroLabel = new WindowsAuthenticator.TransparentLabel();
 			this.rbRegionUS = new System.Windows.Forms.RadioButton();
 			this.enrollRegionPanel = new System.Windows.Forms.Panel();
 			this.rbRegionEU = new System.Windows.Forms.RadioButton();
 			this.enrollMenu = new System.Windows.Forms.MainMenu();
 			this.registerMenuItem = new System.Windows.Forms.MenuItem();
 			this.enrollExitMenuItem = new System.Windows.Forms.MenuItem();
-			this.codeLabel = new TransparentLabel();
+			this.codeLabel = new WindowsAuthenticator.TransparentLabel();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
-			this.label2 = new TransparentLabel();
-			this.label1 = new TransparentLabel();
+			this.label2 = new WindowsAuthenticator.TransparentLabel();
+			this.label1 = new WindowsAuthenticator.TransparentLabel();
 			this.codePictureBox = new System.Windows.Forms.PictureBox();
 			this.enrollRegionPanel.SuspendLayout();
 			this.SuspendLayout();
@@ -75,14 +75,15 @@ namespace WindowsAuthenticator
 			// 
 			this.enrollLabel.BackColor = System.Drawing.Color.Black;
 			this.enrollLabel.ForeColor = System.Drawing.Color.White;
-			this.enrollLabel.Location = new System.Drawing.Point(40, 282);
+			this.enrollLabel.Location = new System.Drawing.Point(42, 305);
 			this.enrollLabel.Name = "enrollLabel";
 			this.enrollLabel.Size = new System.Drawing.Size(403, 40);
+			this.enrollLabel.TabIndex = 7;
 			this.enrollLabel.Text = "statusLabel";
 			// 
 			// enrollProgressBar
 			// 
-			this.enrollProgressBar.Location = new System.Drawing.Point(40, 338);
+			this.enrollProgressBar.Location = new System.Drawing.Point(42, 279);
 			this.enrollProgressBar.Maximum = 20;
 			this.enrollProgressBar.Name = "enrollProgressBar";
 			this.enrollProgressBar.Size = new System.Drawing.Size(403, 20);
@@ -95,13 +96,14 @@ namespace WindowsAuthenticator
 			this.enrollIntroLabel.Location = new System.Drawing.Point(40, 208);
 			this.enrollIntroLabel.Name = "enrollIntroLabel";
 			this.enrollIntroLabel.Size = new System.Drawing.Size(103, 36);
+			this.enrollIntroLabel.TabIndex = 6;
 			this.enrollIntroLabel.Text = "Region:";
 			// 
 			// rbRegionUS
 			// 
 			this.rbRegionUS.Checked = true;
 			this.rbRegionUS.ForeColor = System.Drawing.Color.White;
-			this.rbRegionUS.Location = new System.Drawing.Point(8, 8);
+			this.rbRegionUS.Location = new System.Drawing.Point(0, 0);
 			this.rbRegionUS.Name = "rbRegionUS";
 			this.rbRegionUS.Size = new System.Drawing.Size(88, 40);
 			this.rbRegionUS.TabIndex = 0;
@@ -109,19 +111,19 @@ namespace WindowsAuthenticator
 			// 
 			// enrollRegionPanel
 			// 
-			this.enrollRegionPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(6)))), ((int)(((byte)(21)))), ((int)(((byte)(45)))));
+			this.enrollRegionPanel.BackColor = System.Drawing.Color.Black;
 			this.enrollRegionPanel.Controls.Add(this.rbRegionUS);
 			this.enrollRegionPanel.Controls.Add(this.rbRegionEU);
-			this.enrollRegionPanel.Location = new System.Drawing.Point(161, 199);
+			this.enrollRegionPanel.Location = new System.Drawing.Point(161, 205);
 			this.enrollRegionPanel.Name = "enrollRegionPanel";
-			this.enrollRegionPanel.Size = new System.Drawing.Size(196, 58);
+			this.enrollRegionPanel.Size = new System.Drawing.Size(176, 40);
 			// 
 			// rbRegionEU
 			// 
 			this.rbRegionEU.ForeColor = System.Drawing.Color.White;
-			this.rbRegionEU.Location = new System.Drawing.Point(102, 8);
+			this.rbRegionEU.Location = new System.Drawing.Point(88, 0);
 			this.rbRegionEU.Name = "rbRegionEU";
-			this.rbRegionEU.Size = new System.Drawing.Size(86, 40);
+			this.rbRegionEU.Size = new System.Drawing.Size(88, 40);
 			this.rbRegionEU.TabIndex = 1;
 			this.rbRegionEU.TabStop = false;
 			this.rbRegionEU.Text = "EU";
@@ -145,10 +147,11 @@ namespace WindowsAuthenticator
 			// 
 			this.codeLabel.BackColor = System.Drawing.Color.Black;
 			this.codeLabel.ForeColor = System.Drawing.Color.White;
+			this.codeLabel.Image = ((System.Drawing.Image)(resources.GetObject("codeLabel.Image")));
 			this.codeLabel.Location = new System.Drawing.Point(40, 110);
-			this.codeLabel.Image = ((System.Drawing.Image)(resources.GetObject("codePictureBox.Image")));
 			this.codeLabel.Name = "codeLabel";
 			this.codeLabel.Size = new System.Drawing.Size(403, 68);
+			this.codeLabel.TabIndex = 4;
 			this.codeLabel.Text = "Setup New Authenticator";
 			this.codeLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
@@ -167,7 +170,8 @@ namespace WindowsAuthenticator
 			this.label2.Location = new System.Drawing.Point(108, 58);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(335, 26);
-			this.label2.Text = "Mobile Authenticator";
+			this.label2.TabIndex = 2;
+			this.label2.Text = "Windows Mobile Authenticator";
 			// 
 			// label1
 			// 
@@ -177,6 +181,7 @@ namespace WindowsAuthenticator
 			this.label1.Location = new System.Drawing.Point(108, 20);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(335, 38);
+			this.label1.TabIndex = 3;
 			this.label1.Text = "BATTLE.NET";
 			// 
 			// codePictureBox
@@ -193,6 +198,8 @@ namespace WindowsAuthenticator
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.AutoScroll = true;
 			this.ClientSize = new System.Drawing.Size(480, 696);
+			this.ControlBox = false;
+			this.Controls.Add(this.enrollLabel);
 			this.Controls.Add(this.codePictureBox);
 			this.Controls.Add(this.pictureBox1);
 			this.Controls.Add(this.label2);
@@ -200,13 +207,12 @@ namespace WindowsAuthenticator
 			this.Controls.Add(this.codeLabel);
 			this.Controls.Add(this.enrollProgressBar);
 			this.Controls.Add(this.enrollIntroLabel);
-			this.Controls.Add(this.enrollLabel);
 			this.Controls.Add(this.enrollRegionPanel);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Location = new System.Drawing.Point(0, 52);
 			this.Menu = this.enrollMenu;
 			this.Name = "EnrollForm";
-			this.Text = "EnrollForm";
+			this.Text = "Setup";
 			this.Load += new System.EventHandler(this.EnrollForm_Load);
 			this.Closing += new System.ComponentModel.CancelEventHandler(this.EnrollForm_Closing);
 			this.enrollRegionPanel.ResumeLayout(false);

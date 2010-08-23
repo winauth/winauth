@@ -32,13 +32,6 @@ namespace WindowsAuthenticator
 	/// </summary>
 	public class Enroller
 	{
-#if DEBUG
-		/// <summary>
-		/// Simulate config from Battle.net
-		/// </summary>
-		public const string TESTAUTH = @"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?><winauth version=""0.7""><servertimediff>-100619</servertimediff><region>US</region><secretdata>00C814C868632E212324F2A366C2F72F418226441B2DB943D9E7D8EBC70F1CE78A3D6985B059447AF0C8894D27FA54494936652976BFB85DA9</secretdata></winauth>";
-#endif
-
 		/// <summary>
 		/// Region to enroll
 		/// </summary>
@@ -114,14 +107,25 @@ namespace WindowsAuthenticator
 				{
 #if DEBUG
 					// this is just a test to save hitting servers each time
-					StringReader sr = new StringReader(TESTAUTH);
-					using (XmlReader xr = XmlReader.Create(sr))
+					if (MessageBox.Show("Simulate Battle.net?",
+								"Debug Version",
+								MessageBoxButtons.YesNo,
+								MessageBoxIcon.Question,
+								MessageBoxDefaultButton.Button1) == DialogResult.Yes)
 					{
-						data = new AuthenticatorData(xr, null);
-						auth = new Authenticator(data);
-						System.Threading.Thread.Sleep(3000);
-						UpdateStatus("Reading from Battle.net...");
-						System.Threading.Thread.Sleep(2000);
+						StringReader sr = new StringReader(@"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?><winauth version=""0.7""><servertimediff>-100619</servertimediff><region>US</region><secretdata>00C814C868632E212324F2A366C2F72F418226441B2DB943D9E7D8EBC70F1CE78A3D6985B059447AF0C8894D27FA54494936652976BFB85DA9</secretdata></winauth>");
+						using (XmlReader xr = XmlReader.Create(sr))
+						{
+							data = new AuthenticatorData(xr, null);
+							auth = new Authenticator(data);
+							System.Threading.Thread.Sleep(3000);
+							UpdateStatus("Reading from Battle.net...");
+							System.Threading.Thread.Sleep(2000);
+						}
+					}
+					else
+					{
+						data = auth.Enroll();
 					}
 #else
 					// enroll the authenticator

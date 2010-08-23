@@ -221,7 +221,7 @@
   <data name="codePictureBox.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAZMAAABECAIAAADLMk8VAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        vgAADr4B6kKxwAAAABl0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuNUmK/OAAACUtSURBVHhe7Z2J
+        vAAADrwBlbxySQAAABl0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuNUmK/OAAACUtSURBVHhe7Z2J
         WxpJtPbFDZfEBRVEFGQXEHdccZfNXXEBFNy3LGbVaMw2SWbm3uf+099bVd1NswitmUzifD3PmX6qq0+f
         OnWo30t1a5KC0qoaYjXqisaBuraQbjCmH9/XTx3rp8/0M09kkysgV0CuwC+rAFRo4ljv3W3yRGqtvgqN
         p7RazSSrAP8ra9WPW0fqXaHm0YR57oVl6cISvrasf7Csf5RNroBcAbkCv64CHyyr15alt6bQc91wTOXw
@@ -386,7 +386,7 @@
   <data name="codeField.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAZMAAABECAIAAADLMk8VAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        vgAADr4B6kKxwAAAABl0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuNUmK/OAAACUtSURBVHhe7Z2J
+        vAAADrwBlbxySQAAABl0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuNUmK/OAAACUtSURBVHhe7Z2J
         WxpJtPbFDZfEBRVEFGQXEHdccZfNXXEBFNy3LGbVaMw2SWbm3uf+099bVd1NswitmUzifD3PmX6qq0+f
         OnWo30t1a5KC0qoaYjXqisaBuraQbjCmH9/XTx3rp8/0M09kkysgV0CuwC+rAFRo4ljv3W3yRGqtvgqN
         p7RazSSrAP8ra9WPW0fqXaHm0YR57oVl6cISvrasf7Csf5RNroBcAbkCv64CHyyr15alt6bQc91wTOXw
@@ -547,6 +547,14 @@
         IbRIPXXQNLPfNLah7pmqanWUVNUoCosK8J+iqLi4rLK8TlvvGsKPGk1zR9aVM/oPjuFfK5JNroBcAbkC
         v6gC+Lfa8K8Bze43j4exu1JW1xcpy7HZgmr9P1Hte1cpLV++AAAAAElFTkSuQmCC
 </value>
+  </data>
+  <data name="introLabel.Text" xml:space="preserve">
+    <value>To use the Mobile Authenticator, you now need to associate the above serial number with your Battle.net account.
+
+1. Go to www.battle.net and login to your account.
+2. Click the "Account" link
+3. Click "Manage Security Options".
+4. Under Battle,net Mobile Authenticator, click "Add this Authenticator", and follow the instructions.</value>
   </data>
   <metadata name="$this.FormFactorShadowProperty" xml:space="preserve">
     <value>ppc_phone_480x800</value>

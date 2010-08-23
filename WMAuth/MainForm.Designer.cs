@@ -56,17 +56,20 @@ namespace WindowsAuthenticator
 			this.menuItem6 = new System.Windows.Forms.MenuItem();
 			this.setupMenuItem = new System.Windows.Forms.MenuItem();
 			this.menuItem1 = new System.Windows.Forms.MenuItem();
-			this.menuItem4 = new System.Windows.Forms.MenuItem();
+			this.syncMenuItem = new System.Windows.Forms.MenuItem();
 			this.menuItem7 = new System.Windows.Forms.MenuItem();
-			this.menuItem5 = new System.Windows.Forms.MenuItem();
+			this.aboutMenuItem = new System.Windows.Forms.MenuItem();
 			this.timeToLiveBar = new System.Windows.Forms.ProgressBar();
 			this.mainTimer = new System.Windows.Forms.Timer();
-			this.serialField = new TransparentLabel();
+			this.serialField = new WindowsAuthenticator.TransparentLabel();
 			this.iconPictureBox = new System.Windows.Forms.PictureBox();
-			this.titleLabel = new TransparentLabel();
-			this.subtitleLabel = new TransparentLabel();
+			this.titleLabel = new WindowsAuthenticator.TransparentLabel();
+			this.subtitleLabel = new WindowsAuthenticator.TransparentLabel();
 			this.codePictureBox = new System.Windows.Forms.PictureBox();
 			this.codeField = new WindowsAuthenticator.TransparentLabel();
+			this.introPanel = new System.Windows.Forms.Panel();
+			this.introLabel = new System.Windows.Forms.Label();
+			this.introPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// mainMenu
@@ -86,9 +89,9 @@ namespace WindowsAuthenticator
 			this.menuItem2.MenuItems.Add(this.menuItem6);
 			this.menuItem2.MenuItems.Add(this.setupMenuItem);
 			this.menuItem2.MenuItems.Add(this.menuItem1);
-			this.menuItem2.MenuItems.Add(this.menuItem4);
+			this.menuItem2.MenuItems.Add(this.syncMenuItem);
 			this.menuItem2.MenuItems.Add(this.menuItem7);
-			this.menuItem2.MenuItems.Add(this.menuItem5);
+			this.menuItem2.MenuItems.Add(this.aboutMenuItem);
 			this.menuItem2.Text = "Menu";
 			// 
 			// showSerialMenuItem
@@ -114,17 +117,19 @@ namespace WindowsAuthenticator
 			// 
 			this.menuItem1.Text = "-";
 			// 
-			// menuItem4
+			// syncMenuItem
 			// 
-			this.menuItem4.Text = "Sync Time";
+			this.syncMenuItem.Text = "Sync Time";
+			this.syncMenuItem.Click += new System.EventHandler(this.syncMenuItem_Click);
 			// 
 			// menuItem7
 			// 
 			this.menuItem7.Text = "-";
 			// 
-			// menuItem5
+			// aboutMenuItem
 			// 
-			this.menuItem5.Text = "About";
+			this.aboutMenuItem.Text = "About";
+			this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
 			// 
 			// timeToLiveBar
 			// 
@@ -146,7 +151,8 @@ namespace WindowsAuthenticator
 			this.serialField.ForeColor = System.Drawing.SystemColors.ControlLight;
 			this.serialField.Location = new System.Drawing.Point(40, 232);
 			this.serialField.Name = "serialField";
-			this.serialField.Size = new System.Drawing.Size(403, 60);
+			this.serialField.Size = new System.Drawing.Size(403, 58);
+			this.serialField.TabIndex = 2;
 			this.serialField.Text = "SERIAL";
 			this.serialField.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
@@ -165,6 +171,7 @@ namespace WindowsAuthenticator
 			this.titleLabel.Location = new System.Drawing.Point(108, 20);
 			this.titleLabel.Name = "titleLabel";
 			this.titleLabel.Size = new System.Drawing.Size(335, 38);
+			this.titleLabel.TabIndex = 4;
 			this.titleLabel.Text = "BATTLE.NET";
 			// 
 			// subtitleLabel
@@ -175,7 +182,8 @@ namespace WindowsAuthenticator
 			this.subtitleLabel.Location = new System.Drawing.Point(108, 60);
 			this.subtitleLabel.Name = "subtitleLabel";
 			this.subtitleLabel.Size = new System.Drawing.Size(335, 24);
-			this.subtitleLabel.Text = "Mobile Authenticator";
+			this.subtitleLabel.TabIndex = 3;
+			this.subtitleLabel.Text = "Windows Mobile Authenticator";
 			// 
 			// codePictureBox
 			// 
@@ -198,12 +206,35 @@ namespace WindowsAuthenticator
 			this.codeField.Text = "12345678";
 			this.codeField.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
+			// introPanel
+			// 
+			this.introPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+									| System.Windows.Forms.AnchorStyles.Left)
+									| System.Windows.Forms.AnchorStyles.Right)));
+			this.introPanel.AutoScroll = true;
+			this.introPanel.BackColor = System.Drawing.Color.Black;
+			this.introPanel.Controls.Add(this.introLabel);
+			this.introPanel.Location = new System.Drawing.Point(40, 296);
+			this.introPanel.Name = "introPanel";
+			this.introPanel.Size = new System.Drawing.Size(403, 384);
+			this.introPanel.Visible = false;
+			// 
+			// introLabel
+			// 
+			this.introLabel.BackColor = System.Drawing.Color.Black;
+			this.introLabel.ForeColor = System.Drawing.Color.White;
+			this.introLabel.Location = new System.Drawing.Point(9, 10);
+			this.introLabel.Name = "introLabel";
+			this.introLabel.Size = new System.Drawing.Size(356, 456);
+			this.introLabel.Text = resources.GetString("introLabel.Text");
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(192F, 192F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.AutoScroll = true;
 			this.ClientSize = new System.Drawing.Size(480, 696);
+			this.Controls.Add(this.introPanel);
 			this.Controls.Add(this.codePictureBox);
 			this.Controls.Add(this.iconPictureBox);
 			this.Controls.Add(this.serialField);
@@ -215,8 +246,9 @@ namespace WindowsAuthenticator
 			this.Location = new System.Drawing.Point(0, 52);
 			this.Menu = this.mainMenu;
 			this.Name = "MainForm";
-			this.Text = "MainForm";
+			this.Text = "Windows Authenticator";
 			this.Load += new System.EventHandler(this.MainForm_Load);
+			this.introPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -225,9 +257,9 @@ namespace WindowsAuthenticator
 
 		private System.Windows.Forms.MenuItem exitMenuItem;
 		private System.Windows.Forms.MenuItem menuItem2;
-		private System.Windows.Forms.MenuItem menuItem5;
+		private System.Windows.Forms.MenuItem aboutMenuItem;
 		private System.Windows.Forms.MenuItem menuItem6;
-		private System.Windows.Forms.MenuItem menuItem4;
+		private System.Windows.Forms.MenuItem syncMenuItem;
 		private System.Windows.Forms.MenuItem menuItem7;
 		private System.Windows.Forms.MenuItem setupMenuItem;
 		private System.Windows.Forms.ProgressBar timeToLiveBar;
@@ -241,6 +273,8 @@ namespace WindowsAuthenticator
 		private TransparentLabel titleLabel;
 		private TransparentLabel subtitleLabel;
 		private System.Windows.Forms.PictureBox codePictureBox;
+		private System.Windows.Forms.Panel introPanel;
+		private System.Windows.Forms.Label introLabel;
 	}
 }
 

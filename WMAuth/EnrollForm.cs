@@ -206,6 +206,36 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Ceck if we actually need to create the Authenticator
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void EnrollForm_Closing(object sender, CancelEventArgs e)
+		{
+			if (this.DialogResult == DialogResult.OK && this.Authenticator == null)
+			{
+				// cancel close
+				e.Cancel = true;
+
+				// start Enroll
+				string region = (rbRegionUS.Checked == true ? REGION_US : REGION_EU);
+				UpdateEnrollStatus("Registering...");
+				BeginEnroll(region);
+			}
+		}
+
+		/// <summary>
+		/// Hande the paint to hide the default OK and X button that WM creates
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnPaint(PaintEventArgs e)
+		{
+			WinAPI.HideDoneButton(this.Handle);
+			WinAPI.HideXButton(this.Handle);
+ 			base.OnPaint(e);
+		}
+
+		/// <summary>
 		/// Click the Register option to start enrolling
 		/// </summary>
 		/// <param name="sender"></param>
@@ -243,18 +273,6 @@ namespace WindowsAuthenticator
 		}
 
 		#endregion
-
-		private void EnrollForm_Closing(object sender, CancelEventArgs e)
-		{
-			if (this.DialogResult == DialogResult.OK && this.Authenticator == null)
-			{
-				e.Cancel = true;
-
-				string region = (rbRegionUS.Checked == true ? REGION_US : REGION_EU);
-				UpdateEnrollStatus("Registering...");
-				BeginEnroll(region);
-			}
-		}
 
 	}
 

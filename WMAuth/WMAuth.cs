@@ -31,7 +31,7 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Name of application for dialog titles
 		/// </summary>
-		public const string APPLICATION_NAME = "WM Authenticator";
+		public const string APPLICATION_NAME = "Windows Authenticator";
 
 		/// <summary>
 		/// The main entry point for the application.

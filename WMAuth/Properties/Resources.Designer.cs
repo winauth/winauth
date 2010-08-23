@@ -63,5 +63,19 @@ namespace WindowsAuthenticator.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        internal static System.Drawing.Bitmap battle_net_icon_64x64 {
+            get {
+                object obj = ResourceManager.GetObject("battle_net_icon_64x64", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap field {
+            get {
+                object obj = ResourceManager.GetObject("field", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }
