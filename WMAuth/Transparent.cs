@@ -107,6 +107,8 @@ namespace WindowsAuthenticator
 		/// </summary>
 		Bitmap m_backImage = null;
 
+		public Image Image {get; set;}
+
 		/// <summary>
 		/// Create a new transparent label
 		/// </summary>
@@ -154,9 +156,23 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		protected override void OnPaint(PaintEventArgs e)
 		{
-			if (base.Background == false)
+			// build the image if we don't have one
+			if (Image != null)
 			{
-				// build the image if we don't have one
+				using (Bitmap backImage = new Bitmap(Image))
+				{
+					using (Graphics g = Graphics.FromImage(backImage))
+					{
+						using (SolidBrush brush = new SolidBrush(ForeColor))
+						{
+							g.DrawString(Text, Font, brush, new Rectangle(0, 0, Width, Height), m_format);
+							e.Graphics.DrawImage(backImage, 0, 0);
+						}
+					}
+				}
+			}
+			else if (base.Background == false)
+			{
 				if (m_backImage == null)
 				{
 					m_backImage = new Bitmap(ClientSize.Width, ClientSize.Height);
@@ -177,6 +193,46 @@ namespace WindowsAuthenticator
 				using (SolidBrush brush = new SolidBrush(ForeColor))
 				{
 					e.Graphics.DrawString(Text, Font, brush, new Rectangle(0, 0, Width, Height), m_format);
+				}
+			}
+		}
+	}
+
+	public class TransparentPanel : TransparentControl
+	{
+		/// <summary>
+		/// Background image
+		/// </summary>
+		Bitmap m_backImage = null;
+
+		/// <summary>
+		/// Create a new transparent label
+		/// </summary>
+		public TransparentPanel()
+		{
+		}
+
+		/// <summary>
+		/// Draw the panel
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnPaint(PaintEventArgs e)
+		{
+			if (base.Background == false)
+			{
+				// build the image if we don't have one
+				if (m_backImage == null)
+				{
+					m_backImage = new Bitmap(ClientSize.Width, ClientSize.Height);
+				}
+				// clear the background image
+				using (Graphics g = Graphics.FromImage(m_backImage))
+				{
+					using (SolidBrush brush = new SolidBrush(Parent.BackColor))
+					{
+						g.Clear(BackColor);
+						g.FillRectangle(brush, ClientRectangle);
+					}
 				}
 			}
 		}

@@ -36,16 +36,6 @@ namespace WindowsAuthenticator
 		#region Data Members
 
 		/// <summary>
-		/// Region string for US
-		/// </summary>
-		private const string REGION_US = "US";
-
-		/// <summary>
-		/// Regions string for EU
-		/// </summary>
-		private const string REGION_EU = "EU";
-
-		/// <summary>
 		/// Current Config object
 		/// </summary>
 		private WinAuthConig m_config;
@@ -127,7 +117,6 @@ namespace WindowsAuthenticator
 				showSerialMenuItem.Checked = value;
 				serialField.Text = (value == true && Config.CurrentAuthenticator != null ? Config.CurrentAuthenticator.Data.Serial : string.Empty);
 				serialField.Visible = value;
-				serialLabel.Visible = value;
 			}
 		}
 
@@ -160,12 +149,12 @@ namespace WindowsAuthenticator
 		/// Show/hide the enroll choice
 		/// </summary>
 		/// <param name="show"></param>
-		private void ShowEnroll(bool show)
+		private void ShowEnroll()
 		{
 			// confirm if we already have authenticator
-			if (show == true && Config.CurrentAuthenticator != null)
+			if (Config.CurrentAuthenticator != null)
 			{
-				if (MessageBox.Show("You already have an Authenticator registered on this device.\n\nMake sure you have removed it from your Battle.net account.\n\nContinue?",
+				if (MessageBox.Show("You already have an Authenticator registered.\n\nMake sure it has been removed from your Battle.net account.\n\nContinue?",
 							WMAuth.APPLICATION_NAME,
 							MessageBoxButtons.YesNo,
 							MessageBoxIcon.Question,
@@ -173,132 +162,18 @@ namespace WindowsAuthenticator
 				{
 					return;
 				}
-			} 
-			
-			// set menu and show fields
-			this.Menu = (show == true ? this.enrollMenu : this.mainMenu);
-			enrollIntroLabel.Visible = show;
-			enrollRegionPanel.Visible = show;
-			UpdateEnrollStatus(string.Empty);
-		}
-
-		/// <summary>
-		/// Set the status field whilst enrolling
-		/// </summary>
-		/// <param name="status">status text</param>
-		public void UpdateEnrollStatus(string status)
-		{
-			enrollLabel.Text = status;
-		}
-
-		/// <summary>
-		/// Update enrolling status bar
-		/// </summary>
-		public void UpdateEnrollProgressBar()
-		{
-			// get the enroller object
-			Enroller enroller = enrollProgressBar.Tag as Enroller;
-			if (enroller != null)
-			{
-				// just update the bar with number of seconds since we started, wrap if neccessary
-				DateTime started = enroller.Started;
-				TimeSpan diff = DateTime.Now.Subtract(started);
-				int value = (diff.TotalSeconds >= 0 ? (int)diff.TotalSeconds % (enrollProgressBar.Maximum + 1) : 0);
-				enrollProgressBar.Value = value;
 			}
-		}
 
-		/// <summary>
-		/// Begin the enrolling
-		/// </summary>
-		/// <param name="region">region to enroll</param>
-		private void BeginEnroll(string region)
-		{
-			// set labels
-			enrollLabel.Text = "Enrolling...";
-			enrollLabel.Visible = true;
-			enrollProgressBar.Visible = true;
-
-			// create enroller and hook events
-			Enroller enroller = new Enroller(region);
-			enroller.StatusChanged += new Enroller.StatusChangedHandler(enroller_StatusChanged);
-			enroller.Completed += new Enroller.CompleteHandler(enroller_Completed);
-			enrollProgressBar.Tag = enroller;
-		}
-
-		/// <summary>
-		/// Delegate to update status since enroller is on different thread
-		/// </summary>
-		/// <param name="status"></param>
-		public delegate void UpdateEnrollStatusCallback(string status);
-
-		/// <summary>
-		/// Enroller status changed event. On different thread so we must invoke.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="args"></param>
-		void enroller_StatusChanged(object sender, StatusChangedEventArgs args)
-		{
-			if (this.InvokeRequired == true)
+			EnrollForm enrollForm = new EnrollForm();
+			DialogResult result = enrollForm.ShowDialog();
+			if (result == DialogResult.OK && enrollForm.Authenticator != null)
 			{
-				this.Invoke(new UpdateEnrollStatusCallback(UpdateEnrollStatus), new object[] { args.Status });
-			}
-			else
-			{
-			  UpdateEnrollStatus(args.Status);
-			}
-		}
-
-		/// <summary>
-		/// Delegate for EndEnroll method
-		/// </summary>
-		/// <param name="auth"></param>
-		public delegate void EndEnrollCallback(Authenticator auth);
-
-		/// <summary>
-		/// Enroller Completed veenta handler, which is on different thread so we Invoke.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="args"></param>
-		void enroller_Completed(object sender, CompletedEventArgs args)
-		{
-			if (this.InvokeRequired == true)
-			{
-				this.Invoke(new EndEnrollCallback(EndEnroll), new object[] { args.Authenticator });
-			}
-			else
-			{
-				EndEnroll(args.Authenticator);
-			}
-		}
-
-		/// <summary>
-		/// End the enrolling in the GUI
-		/// </summary>
-		/// <param name="auth"></param>
-		public void EndEnroll(Authenticator auth)
-		{
-			// if we have an authenticator, set it
-			if (auth != null)
-			{
-				UpdateEnrollStatus("Saving authenticator...");
-
 				// save this new authenticator data
-				Config.CurrentAuthenticator = auth;
+				Config.CurrentAuthenticator = enrollForm.Authenticator;
 				Config.SaveAuthenticator();
 
-				ShowEnroll(false);
 				ShowCode();
 			}
-
-			// clear status
-			UpdateEnrollStatus(string.Empty);
-
-			// hide enrolling fields
-			enrollLabel.Text = string.Empty;
-			enrollLabel.Visible = false;
-			enrollProgressBar.Visible = false;
-			enrollProgressBar.Tag = null;
 		}
 
 		/// <summary>
@@ -336,10 +211,18 @@ namespace WindowsAuthenticator
 			ShowSerial = false;
 
 			// load authenticator else enroll a new one
-			if (Config.LoadAuthenticator() == false || Config.CurrentAuthenticator == null)
-			{
-				ShowEnroll(true);
-			}
+			Config.LoadAuthenticator();
+			//if (Config.LoadAuthenticator() == false || Config.CurrentAuthenticator == null)
+			//{
+			//  this.Update();
+			//  Application.DoEvents();
+
+			//  ShowEnroll();
+			//  if (Config.CurrentAuthenticator == null)
+			//  {
+			//    this.Close();
+			//  }
+			//}
 
 			// if one exist, show code
 			if (Config.CurrentAuthenticator != null)
@@ -390,37 +273,7 @@ namespace WindowsAuthenticator
 		private void setupMenuItem_Click(object sender, EventArgs e)
 		{
 			// show enroll choices
-			ShowEnroll(true);
-		}
-
-		/// <summary>
-		/// Click the Register option to start enrolling
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void registerMenuItem_Click(object sender, EventArgs e)
-		{
-			string region = (rbRegionUS.Checked == true ? REGION_US : REGION_EU);
-			UpdateEnrollStatus("Registering...");
-			BeginEnroll(region);
-		}
-
-		/// <summary>
-		/// Click the exit whilst enrolling
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void enrollExitMenuItem_Click(object sender, EventArgs e)
-		{
-			// if we already had one, we just return, else exit
-			if (Config.CurrentAuthenticator == null)
-			{
-				this.Close();
-			}
-			else
-			{
-				ShowEnroll(false);
-			}
+			ShowEnroll();
 		}
 
 		/// <summary>
@@ -430,6 +283,21 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void mainTimer_Tick(object sender, EventArgs e)
 		{
+			// if there is no authenticator, show the enroll form
+			if (Config.CurrentAuthenticator == null)
+			{
+				mainTimer.Enabled = false;
+				ShowEnroll();
+				if (Config.CurrentAuthenticator == null)
+				{
+					this.Close();
+				}
+				else
+				{
+					mainTimer.Enabled = true;
+				}
+			}
+
 			// update code and timeout
 			if (AutoRefresh == true)
 			{
@@ -450,12 +318,6 @@ namespace WindowsAuthenticator
 					codeField.Text = string.Empty;
 					CodeShownSince = DateTime.MinValue;
 				}
-			}
-
-			// if we are enrolling, show progress bar
-			if (enrollProgressBar.Tag != null)
-			{
-				UpdateEnrollProgressBar();
 			}
 		}
 

@@ -50,6 +50,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Program Files (x86)\Smart Device Framework\Bin\OpenNETCF.dll</HintPath>
     </Reference>
+    <Reference Include="OpenNETCF.Windows.Forms, Version=2.3.0.39, Culture=neutral, PublicKeyToken=e60dbea84bb431b7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Program Files (x86)\Smart Device Framework\Bin\OpenNETCF.Windows.Forms.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -59,6 +63,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enroller.cs" />
+    <Compile Include="EnrollForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EnrollForm.designer.cs">
+      <DependentUpon>EnrollForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -71,6 +81,9 @@
     <Compile Include="WinAuthConfig.cs" />
     <Compile Include="WMAuth.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="EnrollForm.resx">
+      <DependentUpon>EnrollForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
