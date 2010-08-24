@@ -44,7 +44,7 @@ namespace WindowsAuthenticator
 	/// Class holding the authentication data that can be loaded/saved to secure storage. This contains the Authenticator's
 	/// Secret Key and Serial number which are used to calculate the authentication code.
 	/// </summary>
-	public class AuthenticatorData
+	public class AuthenticatorData : ICloneable
 	{
 		/// <summary>
 		/// Number of bytes making up the salt
@@ -84,6 +84,16 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Type of file format for loading key
+		/// </summary>
+		public enum FileFormat
+		{
+			WinAuth, // WinAuthg xml
+			Android, // Android BMA
+			Midp,
+		}
+
+		/// <summary>
 		/// Region for authenticator
 		/// </summary>
 		public string Region { get; set; }
@@ -102,11 +112,6 @@ namespace WindowsAuthenticator
 		/// Time difference in milliseconds of our machine and server
 		/// </summary>
 		public long ServerTimeDiff { get; set; }
-
-		/// <summary>
-		/// Is the secret data encrpyted
-		/// </summary>
-		//public bool SecretDataEncrpyted { get; set; }
 
 		/// <summary>
 		/// Type of password used to encrypt secretdata
@@ -154,10 +159,106 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
-		/// Create a new AuthenticatorData object loaded from saved data
+		/// Load an authenticator from an XmlStream - depreciated: use (Stream, FileFormat, ...)
 		/// </summary>
-		/// <param name="data">previous saved data</param>
+		/// <param name="stream"></param>
+		/// <param name="format"></param>
+		/// <param name="password"></param>
+		[Obsolete("Using XmlReader is deprecated - use Stream instead")]
 		public AuthenticatorData(XmlReader xr, string password)
+		{
+			LoadXmlSettings(xr, password);
+		}
+
+		/// <summary>
+		/// Create or import a new AuthenticatorData object loaded from saved data
+		/// </summary>
+		/// <param name="stream">file stream</param>
+		/// <param name="format">file format</param>
+		/// <param name="password">optional encryption password</param>
+		public AuthenticatorData(Stream stream, FileFormat format, string password)
+		{
+			// is it the java midlet file?
+			if (format == FileFormat.Midp)
+			{
+				// 0x00-0x58 unknown
+				// 0x58-0x68 Serial (19)
+				// 0x88-0xAF ascii 20 byte array (40)
+				stream.Seek(0x58L, SeekOrigin.Begin);
+				byte[] serialBuffer = new byte[17];
+				stream.Read(serialBuffer, 0, serialBuffer.Length);
+				stream.Seek(0x88L, SeekOrigin.Begin);
+				byte[] keyBuffer = new byte[40];
+				stream.Read(keyBuffer, 0, keyBuffer.Length);
+
+				// extract the secret key and serial				
+				SecretKey = Authenticator.StringToByteArray(Encoding.ASCII.GetString(keyBuffer));
+				Serial = Encoding.ASCII.GetString(serialBuffer);
+				Region = Serial.Substring(0, 2);
+				ServerTimeDiff = 0L; // set as zero to force Sync
+
+				return;
+			}
+
+			// handle the Android xml file
+			if (format == FileFormat.Android)
+			{
+				using (XmlReader xr = XmlReader.Create(stream))
+				{
+					XmlDocument doc = new XmlDocument();
+					doc.Load(xr);
+
+					// is the Androind Mobile Authenticator file? <xml.../><map>...</map>
+					XmlNode node = doc.DocumentElement.SelectSingleNode("/map/string[@name='" + BMA_HASH_NAME + "']");
+					if (node != null)
+					{
+						string data = node.InnerText;
+
+						// extract the secret key and serial
+						byte[] bytes = Authenticator.StringToByteArray(data);
+						// decrpyt with the fixed key
+						for (int i = bytes.Length - 1; i >= 0; i--)
+						{
+							bytes[i] ^= MOBILE_AUTHENTICATOR_KEY[i];
+						}
+						// decode and set members
+						string full = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+						SecretKey = Authenticator.StringToByteArray(full.Substring(0, 40));
+						Serial = full.Substring(40);
+
+						// get offset value
+						long offset = 0;
+						node = doc.DocumentElement.SelectSingleNode("/map/long[@name='" + BMA_OFFSET_NAME + "']");
+						if (node != null && LongTryParse(node.Attributes["value"].InnerText, out offset) /* long.TryParse(node.Attributes["value"].InnerText, out offset) == true */)
+						{
+							ServerTimeDiff = offset;
+						}
+
+						return;
+					}
+				}
+			}
+
+			// use our own format
+			if (format == FileFormat.WinAuth)
+			{
+				using (XmlReader xr = XmlReader.Create(stream))
+				{
+					LoadXmlSettings(xr, password);
+					return;
+				}
+			}
+
+			// unexpected data
+			throw new InvalidConfigDataException();
+		}
+
+		/// <summary>
+		/// Handle reading an XML config file with optional password
+		/// </summary>
+		/// <param name="xr">XmlReader to read</param>
+		/// <param name="password">optional encryption password</param>
+		private void LoadXmlSettings(XmlReader xr, string password)
 		{
 			XmlDocument doc = new XmlDocument();
 			doc.Load(xr);
@@ -414,6 +515,20 @@ namespace WindowsAuthenticator
 			// return encoded string
 			return Authenticator.ByteArrayToString(outBytes);
 		}
+
+		#region ICloneable
+
+		/// <summary>
+		/// Clone the current object
+		/// </summary>
+		/// <returns>return clone</returns>
+		public object Clone()
+		{
+			// we only need to do shallow copy
+			return this.MemberwiseClone();
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Wrapped TryParse for compatability with NETCF35 to simulate long.TryParse

@@ -176,12 +176,19 @@ namespace WindowsAuthenticator
 				return null;
 			}
 
-			// read the xml config
 			using (FileStream fs = new FileStream(configFile, FileMode.Open))
 			{
-				using (XmlReader xr = XmlReader.Create(fs))
+				// read the file
+				string ext = Path.GetExtension(configFile).ToLower();
+				if (ext == ".rms" || ext == ".rs")
 				{
-					return new AuthenticatorData(xr, password);
+					// load the Java MIDP recordfile
+					return new AuthenticatorData(fs, AuthenticatorData.FileFormat.Midp, password);
+				}
+				else
+				{
+					// load ours of the Android XML file
+					return new AuthenticatorData(fs, AuthenticatorData.FileFormat.WinAuth, password);
 				}
 			}
 		}
