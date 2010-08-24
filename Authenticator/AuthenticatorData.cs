@@ -192,8 +192,8 @@ namespace WindowsAuthenticator
 				stream.Read(keyBuffer, 0, keyBuffer.Length);
 
 				// extract the secret key and serial				
-				SecretKey = Authenticator.StringToByteArray(Encoding.ASCII.GetString(keyBuffer));
-				Serial = Encoding.ASCII.GetString(serialBuffer);
+				SecretKey = Authenticator.StringToByteArray(Encoding.ASCII.GetString(keyBuffer, 0, keyBuffer.Length));
+				Serial = Encoding.ASCII.GetString(serialBuffer, 0, serialBuffer.Length);
 				Region = Serial.Substring(0, 2);
 				ServerTimeDiff = 0L; // set as zero to force Sync
 

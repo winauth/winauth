@@ -72,15 +72,12 @@ namespace WindowsAuthenticator
 			// read the authenticator file
 			using (FileStream fs = new FileStream(authfile, FileMode.Open))
 			{
-				using (XmlReader xr = XmlReader.Create(fs))
-				{
-					// create and set a loaded authenticator
-					AuthenticatorData data = new AuthenticatorData(xr, null);
-					Authenticator auth = new Authenticator(data);
-					CurrentAuthenticator = auth;
+				// create and set a loaded authenticator
+				AuthenticatorData data = new AuthenticatorData(fs, AuthenticatorData.FileFormat.WinAuth, null);
+				Authenticator auth = new Authenticator(data);
+				CurrentAuthenticator = auth;
 
-					return true;
-				}
+				return true;
 			}
 		}
 
