@@ -24,6 +24,7 @@ using System.Drawing;
 using System.IO;
 using System.Net.Mail;
 using System.Text;
+using System.Xml;
 using System.Windows.Forms;
 
 using ICSharpCode.SharpZipLib.Zip;
@@ -89,9 +90,14 @@ namespace WindowsAuthenticator
 		};
 
 		/// <summary>
-		/// The current WinAuth config
+		/// The current authenticator
 		/// </summary>
-		public WinAuthConfig CurrentConfig { get; set; }
+		public Authenticator CurrentAuthenticator { get; set; }
+
+		/// <summary>
+		/// The current authenticator
+		/// </summary>
+		public string CurrentAuthenticatorFile { get; set; }
 
 		/// <summary>
 		/// Create a new form obbject
@@ -107,14 +113,22 @@ namespace WindowsAuthenticator
 		/// <returns>DialogResult for Retry, Cancel or OK</returns>
 		private DialogResult SendBackup()
 		{
-			// get the authenticator file
-			string datafile = CurrentConfig.AuthenticatorFile;
+			// get the authenticator file. In case the authenticator is encrpyted, we save off a plain version.
+			StringBuilder dataxml = new StringBuilder();
+			XmlWriterSettings xmlsettings = new XmlWriterSettings();
+			xmlsettings.Encoding = System.Text.Encoding.Unicode;
+			using (XmlWriter xw = XmlWriter.Create(dataxml, xmlsettings))
+			{
+				AuthenticatorData data = (AuthenticatorData)CurrentAuthenticator.Data.Clone();
+				data.PasswordType = AuthenticatorData.PasswordTypes.None;
+				data.WriteXmlString(xw);
+			}
 
 			// any password?
 			string password = tbPassword.Text.Trim();
 
 			// create a temp file containing the zipped data file
-			string zipfile = Path.Combine(Path.GetTempPath(), Path.GetFileName(datafile) + ".zip");
+			string zipfile = Path.Combine(Path.GetTempPath(), Path.GetFileName(CurrentAuthenticatorFile) + ".zip");
 			try {
 				// send wait cursor
 				Cursor.Current = Cursors.WaitCursor;
@@ -132,11 +146,12 @@ namespace WindowsAuthenticator
 						}
 
 						// add the authenticator file
-						ZipEntry entry = new ZipEntry(Path.GetFileName(datafile));
+						ZipEntry entry = new ZipEntry(Path.GetFileName(CurrentAuthenticatorFile));
 						entry.IsCrypted = encrypt;
-						entry.DateTime = new FileInfo(datafile).LastWriteTime;
+						entry.DateTime = DateTime.Now;
 						zos.PutNextEntry(entry);
-						using (FileStream fs = File.OpenRead(datafile))
+						//using (FileStream fs = File.OpenRead(datafile))
+						using (MemoryStream fs = new MemoryStream(System.Text.Encoding.Unicode.GetBytes(dataxml.ToString())))
 						{
 							byte[] buffer = new byte[4096];
 							int count;
@@ -172,7 +187,7 @@ namespace WindowsAuthenticator
 				Cursor.Current = Cursors.Default;
 
 				// confirm dialog
-				MessageBox.Show(this, "Your email has been sent.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				 MessageBox.Show(this, "Your email has been sent.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 			catch (Exception ex)
 			{

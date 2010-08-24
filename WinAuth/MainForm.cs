@@ -273,7 +273,7 @@ namespace WindowsAuthenticator
 					ofd.InitialDirectory = configDirectory;
 					ofd.FileName = WinAuth.DEFAULT_AUTHENTICATOR_FILE_NAME;
 				}
-				ofd.Filter = "Authenticator Data (*.xml)|*.xml";
+				ofd.Filter = "Authenticator Data (*.xml)|*.xml|All Files (*.*)|*.*";
 				ofd.RestoreDirectory = true;
 				ofd.ShowReadOnly = false;
 				ofd.Title = "Load Authenticator";
@@ -292,6 +292,12 @@ namespace WindowsAuthenticator
 				try
 				{
 					data = WinAuthHelper.LoadAuthenticator(authFile);
+
+					// if this was an import, i.e. an .rms file, then clear authFile so we aare forcesto save a new name
+					if (Path.GetExtension(authFile).ToLower() != ".xml")
+					{
+						authFile = null;
+					}
 				}
 				catch (EncrpytedSecretDataException)
 				{
@@ -346,6 +352,12 @@ namespace WindowsAuthenticator
 			Authenticator = new Authenticator(data);
 			AuthenticatorFile = authFile;
 			ShowCode();
+
+			// if authfile is null (imported) we must save
+			if (authFile == null)
+			{
+				SaveAuthenticator(null);
+			}
 		}
 
 		/// <summary>
@@ -489,7 +501,8 @@ namespace WindowsAuthenticator
 		private void BackupData()
 		{
 			BackupForm backup = new BackupForm();
-			backup.CurrentConfig = this.Config;
+			backup.CurrentAuthenticator = this.Authenticator;
+			backup.CurrentAuthenticatorFile = Config.AuthenticatorFile;
 			backup.ShowDialog(this);
 		}
 
