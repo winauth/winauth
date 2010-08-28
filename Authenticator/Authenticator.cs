@@ -428,8 +428,14 @@ namespace WindowsAuthenticator
 			return bytes;
 		}
 
+		/// <summary>
+		/// Convert a byte array into a ascii hex string, e.g. byte[]{0x00,0x1f,0x40,ox6a} -> "001f406a"
+		/// </summary>
+		/// <param name="bytes">byte array to convert</param>
+		/// <returns>string version of byte array</returns>
 		public static string ByteArrayToString(byte[] bytes)
 		{
+			// Use BitConverter, but it sticks dashes in the string
 			return BitConverter.ToString(bytes).Replace("-", string.Empty);
 		}
 

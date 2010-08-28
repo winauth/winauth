@@ -77,6 +77,12 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="OpenFileDialogFTFY.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="OpenFileDialogFTFY.Designer.cs">
+      <DependentUpon>OpenFileDialogFTFY.cs</DependentUpon>
+    </Compile>
     <Compile Include="Transparent.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -89,6 +95,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OpenFileDialogFTFY.resx">
+      <DependentUpon>OpenFileDialogFTFY.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

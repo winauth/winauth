@@ -180,15 +180,15 @@ namespace WindowsAuthenticator
 			{
 				// read the file
 				string ext = Path.GetExtension(configFile).ToLower();
-				if (ext == ".rms" || ext == ".rs")
+				if (ext == ".xml")
 				{
-					// load the Java MIDP recordfile
-					return new AuthenticatorData(fs, AuthenticatorData.FileFormat.Midp, password);
+					// load ours or the Android XML file
+					return new AuthenticatorData(fs, AuthenticatorData.FileFormat.WinAuth, password);
 				}
 				else
 				{
-					// load ours of the Android XML file
-					return new AuthenticatorData(fs, AuthenticatorData.FileFormat.WinAuth, password);
+					// load the Java MIDP recordfile
+					return new AuthenticatorData(fs, AuthenticatorData.FileFormat.Midp, password);
 				}
 			}
 		}

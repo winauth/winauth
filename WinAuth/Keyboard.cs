@@ -29,7 +29,8 @@ using System.Windows.Forms;
 namespace WindowsAuthenticator
 {
 	/// <summary>
-	/// A generic keyboard hook to find keys and send to the application. Used in WinAuth to set up a global hotkey ... that's all, honest :)
+	/// A generic keyboard hook to find keys and send to the application. Used in WinAuth to set up a global hotkey
+	/// so we can press ctrl-alt-L and have it send the code ... that's all, honest :)
 	/// </summary>
 	public class KeyboardHook : IDisposable
 	{

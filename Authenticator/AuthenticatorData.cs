@@ -23,6 +23,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -130,6 +131,7 @@ namespace WindowsAuthenticator
 		{
 			get
 			{
+				// keep compatabillity with Android and xor with the private key
 				string code = Authenticator.ByteArrayToString(SecretKey) + Serial;
 				byte[] plain = Encoding.UTF8.GetBytes(code);
 				for (int i = plain.Length - 1; i >= 0; i--)
@@ -140,6 +142,7 @@ namespace WindowsAuthenticator
 			}
 			set
 			{
+				// keeping comatabiity with Androind and xor with a private key
 				byte[] bytes = Authenticator.StringToByteArray(value);
 				for (int i = bytes.Length - 1; i >= 0; i--)
 				{
@@ -181,21 +184,29 @@ namespace WindowsAuthenticator
 			// is it the java midlet file?
 			if (format == FileFormat.Midp)
 			{
-				// 0x00-0x58 unknown
-				// 0x58-0x68 Serial (19)
-				// 0x88-0xAF ascii 20 byte array (40)
-				stream.Seek(0x58L, SeekOrigin.Begin);
-				byte[] serialBuffer = new byte[17];
-				stream.Read(serialBuffer, 0, serialBuffer.Length);
-				stream.Seek(0x88L, SeekOrigin.Begin);
-				byte[] keyBuffer = new byte[40];
-				stream.Read(keyBuffer, 0, keyBuffer.Length);
+				// read the whole recordstore into an array
+				byte[] data = new byte[256];
+				int datapos = 0;
+				byte[] buffer = new byte[data.Length];
+				int read;
+				while ((read = stream.Read(buffer, 0, buffer.Length)) != 0)
+				{
+					Array.Copy(buffer, 0, data, datapos, read);
+					datapos += read;
+				}
 
-				// extract the secret key and serial				
-				SecretKey = Authenticator.StringToByteArray(Encoding.ASCII.GetString(keyBuffer, 0, keyBuffer.Length));
-				Serial = Encoding.ASCII.GetString(serialBuffer, 0, serialBuffer.Length);
-				Region = Serial.Substring(0, 2);
-				ServerTimeDiff = 0L; // set as zero to force Sync
+				// since file formats are vendor specific we just use regex because we know 
+				// we are looking for ASCII encoded strings of certain lengths
+				string encoded = Encoding.ASCII.GetString(data, 0, data.Length);
+				Match match = Regex.Match(encoded, @".*((?:EU|US)-\d{4}-\d{4}-\d{4}).*([A-Fa-f0-9]{40}).*", RegexOptions.Singleline);
+				if (match.Success == true)
+				{
+					// extract the secret key and serial				
+					SecretKey = Authenticator.StringToByteArray(match.Groups[2].Value);
+					Serial = match.Groups[1].Value;
+					Region = Serial.Substring(0, 2);
+					ServerTimeDiff = 0L; // set as zero to force Sync
+				}
 
 				return;
 			}
@@ -222,7 +233,7 @@ namespace WindowsAuthenticator
 							bytes[i] ^= MOBILE_AUTHENTICATOR_KEY[i];
 						}
 						// decode and set members
-						string full = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+						string full = Encoding.UTF8.GetString(bytes, 0, bytes.Length); // yes, two extra paramters, but needed for NETCF
 						SecretKey = Authenticator.StringToByteArray(full.Substring(0, 40));
 						Serial = full.Substring(40);
 
@@ -343,15 +354,25 @@ namespace WindowsAuthenticator
 				if (attr != null && attr.InnerText.Length != 0)
 				{
 					string encryptedType = attr.InnerText;
-					if (encryptedType == "u" || encryptedType == "m")
+					if (encryptedType == "u")
 					{
+						// we are going to decrypt with the Windows User account key
 						PasswordType = PasswordTypes.User;
 						byte[] cipher = Authenticator.StringToByteArray(data);
-						byte[] plain = ProtectedData.Unprotect(cipher, null, (encryptedType == "m" ? DataProtectionScope.LocalMachine : DataProtectionScope.CurrentUser));
+						byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.CurrentUser);
+						data = Authenticator.ByteArrayToString(plain);
+					}
+					else if (encryptedType == "m")
+					{
+						// we are going to decrypt with the Windows local machine key
+						PasswordType = PasswordTypes.Machine;
+						byte[] cipher = Authenticator.StringToByteArray(data);
+						byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
 						data = Authenticator.ByteArrayToString(plain);
 					}
 					else if (encryptedType == "y")
 					{
+						// we use an explicit password to encrypt data
 						if (string.IsNullOrEmpty(password) == true)
 						{
 							throw new EncrpytedSecretDataException();
@@ -408,13 +429,21 @@ namespace WindowsAuthenticator
 				data = Encrypt(data, Password);
 				writer.WriteAttributeString("encrypted", "y");
 			}
-			else if (PasswordType == AuthenticatorData.PasswordTypes.User || PasswordType == AuthenticatorData.PasswordTypes.Machine)
+			else if (PasswordType == AuthenticatorData.PasswordTypes.User)
 			{
-				// encrypt as bytes - put original size in first byte
+				// we encrpyt the data using the Windows User account key
 				byte[] plain = Authenticator.StringToByteArray(data);
-				byte[] cipher = ProtectedData.Protect(plain, null, (PasswordType == AuthenticatorData.PasswordTypes.Machine ? DataProtectionScope.LocalMachine : DataProtectionScope.CurrentUser));
+				byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.CurrentUser);
 				data = Authenticator.ByteArrayToString(cipher);
 				writer.WriteAttributeString("encrypted", "u");
+			}
+			else if (PasswordType == AuthenticatorData.PasswordTypes.Machine)
+			{
+				// we encrypt the data using the Local Machine account key
+				byte[] plain = Authenticator.StringToByteArray(data);
+				byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.LocalMachine);
+				data = Authenticator.ByteArrayToString(cipher);
+				writer.WriteAttributeString("encrypted", "m");
 			}
 			writer.WriteString(data);
 			writer.WriteEndElement();

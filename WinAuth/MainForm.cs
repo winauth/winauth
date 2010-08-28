@@ -507,6 +507,55 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Show the form to import a key
+		/// </summary>
+		private bool ImportKey()
+		{
+			// already have one?
+			if (Authenticator != null)
+			{
+				DialogResult warning = MessageBox.Show(this, "WARNING: You already have an authenticator registered.\n\n"
+					+ "You will NOT be able to access your Battle.net account if you continue and this authenticator is overwritten.\n\n"
+					+ "Do you still want to import an authenticator?", "Import Authenticator", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+				if (warning != System.Windows.Forms.DialogResult.Yes)
+				{
+					return false;
+				}
+			}
+
+			// get the import
+			ImportForm import = new ImportForm();
+			if (import.ShowDialog(this) != System.Windows.Forms.DialogResult.OK)
+			{
+				return false;
+			}
+
+			// remember old Auth
+			Authenticator oldAuth = this.Authenticator;
+			// set the new authenticator
+			Authenticator = import.Authenticator;
+
+			// save config data
+			if (SaveAuthenticator(null) == false)
+			{
+				// restore auth
+				this.Authenticator = oldAuth;
+				return false;
+			}
+
+			// update config file
+			WinAuthHelper.SaveConfig(this.Config);
+
+			InitializedForm initForm = new InitializedForm();
+			if (initForm.ShowDialog(this) == System.Windows.Forms.DialogResult.Yes)
+			{
+				BackupData();
+			}
+
+			return true;
+		}
+
+		/// <summary>
 		/// Show the current code for the Authenticator
 		/// </summary>
 		private void ShowCode()
@@ -746,6 +795,16 @@ namespace WindowsAuthenticator
 		private void createBackupMenuItem_Click(object sender, EventArgs e)
 		{
 			BackupData();
+		}
+
+		/// <summary>
+		/// Click the import menu item
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void importMenuItem_Click(object sender, EventArgs e)
+		{
+			ImportKey();
 		}
 
 		/// <summary>

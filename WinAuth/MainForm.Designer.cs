@@ -1,4 +1,21 @@
-﻿namespace WindowsAuthenticator
+﻿/*
+ * Copyright (C) 2010 Colin Mackie.
+ * This software is distributed under the terms of the GNU General Public License.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+namespace WindowsAuthenticator
 {
 	partial class MainForm
 	{
@@ -38,8 +55,8 @@
 			this.saveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-			this.syncServerTimeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+			this.importMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
 			this.createBackupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.autoLoginMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
@@ -49,6 +66,8 @@
 			this.copyOnCodeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.autoRefreshMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+			this.syncServerTimeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.aboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
 			this.exitMeuuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -83,6 +102,8 @@
             this.saveMenuItem,
             this.saveAsMenuItem,
             this.toolStripSeparator2,
+            this.importMenuItem,
+            this.toolStripSeparator7,
             this.createBackupMenuItem,
             this.autoLoginMenuItem,
             this.toolStripSeparator6,
@@ -100,7 +121,7 @@
 			this.contextMenuStrip.Name = "contextMenuStrip1";
 			this.contextMenuStrip.ShowCheckMargin = true;
 			this.contextMenuStrip.ShowImageMargin = false;
-			this.contextMenuStrip.Size = new System.Drawing.Size(229, 370);
+			this.contextMenuStrip.Size = new System.Drawing.Size(229, 376);
 			this.contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip_Opening);
 			// 
 			// registerMenuItem
@@ -143,17 +164,17 @@
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
 			this.toolStripSeparator2.Size = new System.Drawing.Size(225, 6);
 			// 
-			// syncServerTimeMenuItem
+			// importMenuItem
 			// 
-			this.syncServerTimeMenuItem.Name = "syncServerTimeMenuItem";
-			this.syncServerTimeMenuItem.Size = new System.Drawing.Size(228, 22);
-			this.syncServerTimeMenuItem.Text = "Sync Server Time";
-			this.syncServerTimeMenuItem.Click += new System.EventHandler(this.syncServerTimeMenuItem_Click);
+			this.importMenuItem.Name = "importMenuItem";
+			this.importMenuItem.Size = new System.Drawing.Size(228, 22);
+			this.importMenuItem.Text = "Import Key...";
+			this.importMenuItem.Click += new System.EventHandler(this.importMenuItem_Click);
 			// 
-			// toolStripSeparator3
+			// toolStripSeparator7
 			// 
-			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(225, 6);
+			this.toolStripSeparator7.Name = "toolStripSeparator7";
+			this.toolStripSeparator7.Size = new System.Drawing.Size(225, 6);
 			// 
 			// createBackupMenuItem
 			// 
@@ -213,6 +234,18 @@
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
 			this.toolStripSeparator1.Size = new System.Drawing.Size(225, 6);
+			// 
+			// syncServerTimeMenuItem
+			// 
+			this.syncServerTimeMenuItem.Name = "syncServerTimeMenuItem";
+			this.syncServerTimeMenuItem.Size = new System.Drawing.Size(228, 22);
+			this.syncServerTimeMenuItem.Text = "Sync Server Time";
+			this.syncServerTimeMenuItem.Click += new System.EventHandler(this.syncServerTimeMenuItem_Click);
+			// 
+			// toolStripSeparator3
+			// 
+			this.toolStripSeparator3.Name = "toolStripSeparator3";
+			this.toolStripSeparator3.Size = new System.Drawing.Size(225, 6);
 			// 
 			// aboutMenuItem
 			// 
@@ -330,6 +363,8 @@
 		private System.Windows.Forms.ToolStripMenuItem autoLoginMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
 		private System.Windows.Forms.ToolStripMenuItem createBackupMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem importMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
 
 	}
 }

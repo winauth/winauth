@@ -31,7 +31,7 @@ using NUnit.Framework;
 namespace WindowsAuthenticator
 {
 	/// <summary>
-	/// Class to send an email, directly to SMTP server of user's mailhost by getting the MX records for the domain.
+	/// Class to send an email, directly to SMTP server of user's mailhost if we can by getting the MX records for the domain.
 	/// </summary>
 	public class MailSender
 	{

@@ -147,6 +147,76 @@ namespace WindowsAuthenticator
 		#region Methods
 
 		/// <summary>
+		/// Let the user browse for the BMA datafile and we load the key from it
+		/// </summary>
+		private bool ImportBMA()
+		{
+			if (MessageBox.Show("You need to find the Battle.net Mobile Authenticator token file (e.g. \"\\\\JavaFX\\Java\\0000#Token#Record.db\")\n\nContinue?",
+						WMAuth.APPLICATION_NAME,
+						MessageBoxButtons.YesNo,
+						MessageBoxIcon.Question,
+						MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+			{
+				return false;
+			}
+
+			// browse for the Midlet file
+			OpenFileDialogFTFY ofd = new OpenFileDialogFTFY();
+			ofd.Filter = "*.*|All Files (*.*)";
+			DialogResult result = ofd.ShowDialog();
+			if (result != DialogResult.OK || string.IsNullOrEmpty(ofd.FileName) == true)
+			{
+				return false;
+			}
+
+			// read the file data for the key
+			Authenticator auth = null;
+			string filename = ofd.FileName;
+			using (FileStream fs = new FileStream(filename, FileMode.Open))
+			{
+				try
+				{
+					AuthenticatorData data = new AuthenticatorData(fs, AuthenticatorData.FileFormat.Midp, null);
+					auth = new Authenticator(data);
+				}
+				catch (InvalidConfigDataException )
+				{
+					MessageBox.Show("Unable to extract key information from this file.", WMAuth.APPLICATION_NAME);
+					return false;
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show("Error whilst reading this file: " + ex.Message, WMAuth.APPLICATION_NAME);
+					return false;
+				}
+			}
+
+			// confirm if we already have authenticator
+			if (Config.CurrentAuthenticator != null)
+			{
+				if (MessageBox.Show("You already have an Authenticator registered.\n\nMake sure it has been removed from your Battle.net account.\n\nContinue with Import?",
+							WMAuth.APPLICATION_NAME,
+							MessageBoxButtons.YesNo,
+							MessageBoxIcon.Question,
+							MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+				{
+					return false;
+				}
+			}
+
+			// save this new authenticator data
+			Config.CurrentAuthenticator = auth;
+			Config.SaveAuthenticator();
+
+			// show code
+			ShowCode();
+
+			MessageBox.Show("The Authenticator has been successfully imported.", WMAuth.APPLICATION_NAME);
+
+			return true;
+		}
+
+		/// <summary>
 		/// Show/hide the enroll choice
 		/// </summary>
 		/// <param name="show"></param>
@@ -165,21 +235,34 @@ namespace WindowsAuthenticator
 				}
 			}
 
-			EnrollForm enrollForm = new EnrollForm();
-			DialogResult result = enrollForm.ShowDialog();
-			if (result == DialogResult.OK && enrollForm.Authenticator != null)
+			// get the new authenticator or import BMA
+			EnrollForm enrollForm = null;
+			do
 			{
-				// save this new authenticator data
-				Config.CurrentAuthenticator = enrollForm.Authenticator;
-				Config.SaveAuthenticator();
+				enrollForm = new EnrollForm();
+				DialogResult result = enrollForm.ShowDialog();
+				if (result == DialogResult.Cancel)
+				{
+					break;
+				}
 
-				// first time we show the serial
-				ShowSerial = true;
-				// and the intro
-				introPanel.Visible = true;
+				if (enrollForm.ImportBMA == true)
+				{
+					ImportBMA();
+				}
+				else
+				{
+					// save this new authenticator data
+					Config.CurrentAuthenticator = enrollForm.Authenticator;
+					Config.SaveAuthenticator();
 
-				ShowCode();
-			}
+					// first time we show the serial
+					ShowSerial = true;
+					// and the intro
+					introPanel.Visible = true;
+					ShowCode();
+				}
+			} while (Config.CurrentAuthenticator == null);
 		}
 
 		/// <summary>
@@ -272,6 +355,16 @@ namespace WindowsAuthenticator
 		{
 			// show enroll choices
 			ShowEnroll();
+		}
+
+		/// <summary>
+		/// Click the load the Battle.net Mobile Authenticator key
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void loadBmaMenuItem_Click(object sender, EventArgs e)
+		{
+			ImportBMA();
 		}
 
 		/// <summary>

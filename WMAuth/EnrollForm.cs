@@ -46,6 +46,11 @@ namespace WindowsAuthenticator
 		private const string REGION_EU = "EU";
 
 		/// <summary>
+		/// Path to the BMA if we had one
+		/// </summary>
+		private const string BMA_PATH = "\\JavaFX\\blizzard_mobile_*.*";
+
+		/// <summary>
 		/// Newly enrolled authenticator
 		/// </summary>
 		public Authenticator Authenticator { get; set; }
@@ -65,6 +70,11 @@ namespace WindowsAuthenticator
 		#endregion
 
 		#region Properties
+
+		/// <summary>
+		/// Flag to set import state
+		/// </summary>
+		public bool ImportBMA { get; set; }
 
 		#endregion
 
@@ -200,28 +210,25 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void EnrollForm_Load(object sender, EventArgs e)
 		{
+			// check for BMA on device. If there we show an additonal option to import it.
+			bool haveBMA = false;
+			try
+			{
+				if (Directory.GetFiles(Path.GetDirectoryName(BMA_PATH), Path.GetFileName(BMA_PATH)).Length != 0)
+				{
+					haveBMA = true;
+				}
+			}
+			catch (Exception) { }
+			rbImportBMA.Visible = haveBMA;
+			// set the panel size to include the Import or not
+			enrollRegionPanel.Width = (haveBMA == true ? rbImportBMA.Width : rbRegionEU.Width);
+			enrollRegionPanel.Height = (haveBMA == true ? rbImportBMA.Top + rbImportBMA.Height : rbRegionEU.Top + rbRegionEU.Height);
+
 			// set status
+			ImportBMA = false;
 			UpdateEnrollStatus(string.Empty);
 			rbRegionUS.Focus();
-		}
-
-		/// <summary>
-		/// Ceck if we actually need to create the Authenticator
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void EnrollForm_Closing(object sender, CancelEventArgs e)
-		{
-			if (this.DialogResult == DialogResult.OK && this.Authenticator == null)
-			{
-				// cancel close
-				e.Cancel = true;
-
-				// start Enroll
-				string region = (rbRegionUS.Checked == true ? REGION_US : REGION_EU);
-				UpdateEnrollStatus("Registering...");
-				BeginEnroll(region);
-			}
 		}
 
 		/// <summary>
@@ -242,9 +249,18 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void registerMenuItem_Click(object sender, EventArgs e)
 		{
-			string region = (rbRegionUS.Checked == true ? REGION_US : REGION_EU);
-			UpdateEnrollStatus("Registering...");
-			BeginEnroll(region);
+			if (rbImportBMA.Checked == true)
+			{
+				ImportBMA = true;
+				DialogResult = DialogResult.OK;
+				this.Close();
+			}
+			else
+			{
+				string region = (rbRegionUS.Checked == true ? REGION_US : REGION_EU);
+				UpdateEnrollStatus("Registering...");
+				BeginEnroll(region);
+			}
 		}
 
 		/// <summary>

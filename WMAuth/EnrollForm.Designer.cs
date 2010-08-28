@@ -53,6 +53,7 @@ namespace WindowsAuthenticator
 			this.enrollIntroLabel = new WindowsAuthenticator.TransparentLabel();
 			this.rbRegionUS = new System.Windows.Forms.RadioButton();
 			this.enrollRegionPanel = new System.Windows.Forms.Panel();
+			this.rbImportBMA = new System.Windows.Forms.RadioButton();
 			this.rbRegionEU = new System.Windows.Forms.RadioButton();
 			this.enrollMenu = new System.Windows.Forms.MainMenu();
 			this.registerMenuItem = new System.Windows.Forms.MenuItem();
@@ -75,7 +76,7 @@ namespace WindowsAuthenticator
 			// 
 			this.enrollLabel.BackColor = System.Drawing.Color.Black;
 			this.enrollLabel.ForeColor = System.Drawing.Color.White;
-			this.enrollLabel.Location = new System.Drawing.Point(42, 305);
+			this.enrollLabel.Location = new System.Drawing.Point(40, 377);
 			this.enrollLabel.Name = "enrollLabel";
 			this.enrollLabel.Size = new System.Drawing.Size(403, 40);
 			this.enrollLabel.TabIndex = 7;
@@ -83,7 +84,7 @@ namespace WindowsAuthenticator
 			// 
 			// enrollProgressBar
 			// 
-			this.enrollProgressBar.Location = new System.Drawing.Point(42, 279);
+			this.enrollProgressBar.Location = new System.Drawing.Point(40, 351);
 			this.enrollProgressBar.Maximum = 20;
 			this.enrollProgressBar.Name = "enrollProgressBar";
 			this.enrollProgressBar.Size = new System.Drawing.Size(403, 20);
@@ -107,21 +108,33 @@ namespace WindowsAuthenticator
 			this.rbRegionUS.Name = "rbRegionUS";
 			this.rbRegionUS.Size = new System.Drawing.Size(88, 40);
 			this.rbRegionUS.TabIndex = 0;
+			this.rbRegionUS.TabStop = false;
 			this.rbRegionUS.Text = "US";
 			// 
 			// enrollRegionPanel
 			// 
 			this.enrollRegionPanel.BackColor = System.Drawing.Color.Black;
+			this.enrollRegionPanel.Controls.Add(this.rbImportBMA);
 			this.enrollRegionPanel.Controls.Add(this.rbRegionUS);
 			this.enrollRegionPanel.Controls.Add(this.rbRegionEU);
 			this.enrollRegionPanel.Location = new System.Drawing.Point(161, 205);
 			this.enrollRegionPanel.Name = "enrollRegionPanel";
-			this.enrollRegionPanel.Size = new System.Drawing.Size(176, 40);
+			this.enrollRegionPanel.Size = new System.Drawing.Size(215, 140);
+			// 
+			// rbImportBMA
+			// 
+			this.rbImportBMA.ForeColor = System.Drawing.Color.White;
+			this.rbImportBMA.Location = new System.Drawing.Point(0, 100);
+			this.rbImportBMA.Name = "rbImportBMA";
+			this.rbImportBMA.Size = new System.Drawing.Size(196, 40);
+			this.rbImportBMA.TabIndex = 2;
+			this.rbImportBMA.TabStop = false;
+			this.rbImportBMA.Text = "Import BMA";
 			// 
 			// rbRegionEU
 			// 
 			this.rbRegionEU.ForeColor = System.Drawing.Color.White;
-			this.rbRegionEU.Location = new System.Drawing.Point(88, 0);
+			this.rbRegionEU.Location = new System.Drawing.Point(0, 40);
 			this.rbRegionEU.Name = "rbRegionEU";
 			this.rbRegionEU.Size = new System.Drawing.Size(88, 40);
 			this.rbRegionEU.TabIndex = 1;
@@ -212,9 +225,8 @@ namespace WindowsAuthenticator
 			this.Location = new System.Drawing.Point(0, 52);
 			this.Menu = this.enrollMenu;
 			this.Name = "EnrollForm";
-			this.Text = "Setup";
+			this.Text = "s";
 			this.Load += new System.EventHandler(this.EnrollForm_Load);
-			this.Closing += new System.ComponentModel.CancelEventHandler(this.EnrollForm_Closing);
 			this.enrollRegionPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
 
@@ -237,6 +249,7 @@ namespace WindowsAuthenticator
 		private TransparentLabel label2;
 		private TransparentLabel label1;
 		private System.Windows.Forms.PictureBox codePictureBox;
+		private System.Windows.Forms.RadioButton rbImportBMA;
 	}
 }
 
