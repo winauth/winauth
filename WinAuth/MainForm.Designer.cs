@@ -75,6 +75,7 @@ namespace WindowsAuthenticator
 			this.refreshTimer = new System.Windows.Forms.Timer(this.components);
 			this.progressBar = new System.Windows.Forms.ProgressBar();
 			this.calcCodeButton = new WindowsAuthenticator.RoundButton();
+			this.exportKeyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.contextMenuStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -103,6 +104,7 @@ namespace WindowsAuthenticator
             this.saveAsMenuItem,
             this.toolStripSeparator2,
             this.importMenuItem,
+            this.exportKeyMenuItem,
             this.toolStripSeparator7,
             this.createBackupMenuItem,
             this.autoLoginMenuItem,
@@ -121,7 +123,7 @@ namespace WindowsAuthenticator
 			this.contextMenuStrip.Name = "contextMenuStrip1";
 			this.contextMenuStrip.ShowCheckMargin = true;
 			this.contextMenuStrip.ShowImageMargin = false;
-			this.contextMenuStrip.Size = new System.Drawing.Size(229, 376);
+			this.contextMenuStrip.Size = new System.Drawing.Size(229, 420);
 			this.contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip_Opening);
 			// 
 			// registerMenuItem
@@ -309,6 +311,13 @@ namespace WindowsAuthenticator
 			this.calcCodeButton.UseVisualStyleBackColor = false;
 			this.calcCodeButton.Click += new System.EventHandler(this.calcCodeButton_Click);
 			// 
+			// exportKeyMenuItem
+			// 
+			this.exportKeyMenuItem.Name = "exportKeyMenuItem";
+			this.exportKeyMenuItem.Size = new System.Drawing.Size(228, 22);
+			this.exportKeyMenuItem.Text = "Export Key...";
+			this.exportKeyMenuItem.Click += new System.EventHandler(this.exportKeyMenuItem_Click);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -365,6 +374,7 @@ namespace WindowsAuthenticator
 		private System.Windows.Forms.ToolStripMenuItem createBackupMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem importMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
+		private System.Windows.Forms.ToolStripMenuItem exportKeyMenuItem;
 
 	}
 }

@@ -125,6 +125,11 @@ namespace WindowsAuthenticator
 		public string Password { get; set; }
 
 		/// <summary>
+		/// Get/set the format of the last loaded key
+		/// </summary>
+		public FileFormat LoadedFormat { get; set; }
+
+		/// <summary>
 		/// Get/set the data saved for the secret data value
 		/// </summary>
 		protected string SecretData
@@ -159,6 +164,7 @@ namespace WindowsAuthenticator
 		/// </summary>
 		public AuthenticatorData()
 		{
+			LoadedFormat = FileFormat.WinAuth;
 		}
 
 		/// <summary>
@@ -206,6 +212,8 @@ namespace WindowsAuthenticator
 					Serial = match.Groups[1].Value;
 					Region = Serial.Substring(0, 2);
 					ServerTimeDiff = 0L; // set as zero to force Sync
+
+					LoadedFormat = FileFormat.Midp;
 				}
 
 				return;
@@ -244,6 +252,8 @@ namespace WindowsAuthenticator
 						{
 							ServerTimeDiff = offset;
 						}
+
+						LoadedFormat = FileFormat.Android;
 
 						return;
 					}
@@ -300,6 +310,8 @@ namespace WindowsAuthenticator
 					ServerTimeDiff = offset;
 				}
 
+				LoadedFormat = FileFormat.Android;
+
 				return;
 			}
 
@@ -320,6 +332,9 @@ namespace WindowsAuthenticator
 					Array.Reverse(serverTimeDiff);
 				}
 				ServerTimeDiff = BitConverter.ToInt64(serverTimeDiff, 0);
+
+				LoadedFormat = FileFormat.WinAuth;
+
 				return;
 			}
 
@@ -341,6 +356,8 @@ namespace WindowsAuthenticator
 				{
 					Region = node.InnerText;
 				}
+				//
+				LoadedFormat = FileFormat.WinAuth;
 				//
 				return;
 			}
@@ -396,6 +413,8 @@ namespace WindowsAuthenticator
 				{
 					Region = node.InnerText;
 				}
+
+				LoadedFormat = FileFormat.WinAuth;
 
 				return;
 			}

@@ -294,7 +294,7 @@ namespace WindowsAuthenticator
 					data = WinAuthHelper.LoadAuthenticator(authFile);
 
 					// if this was an import, i.e. an .rms file, then clear authFile so we aare forcesto save a new name
-					if (Path.GetExtension(authFile).ToLower() != ".xml")
+					if (data.LoadedFormat != AuthenticatorData.FileFormat.WinAuth)
 					{
 						authFile = null;
 					}
@@ -556,6 +556,30 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Show the form to export a key
+		/// </summary>
+		private void ExportKey()
+		{
+			if (MessageBox.Show(this, "This will display your unencrypted authenticator secret key." + Environment.NewLine + Environment.NewLine +
+						"Are you sure you want to continue?",
+						WinAuth.APPLICATION_NAME,
+						MessageBoxButtons.YesNo,
+						MessageBoxIcon.Warning,
+						MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes)
+			{
+				return;
+			}
+
+			// get the form
+			ExportForm export = new ExportForm();
+			export.AuthenticatorData = this.Authenticator.Data;
+			if (export.ShowDialog(this) != System.Windows.Forms.DialogResult.OK)
+			{
+				return;
+			}
+		}
+
+		/// <summary>
 		/// Show the current code for the Authenticator
 		/// </summary>
 		private void ShowCode()
@@ -808,6 +832,16 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Click the Export menu item
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void exportKeyMenuItem_Click(object sender, EventArgs e)
+		{
+			ExportKey();
+		}
+
+		/// <summary>
 		/// Click menu item to close
 		/// </summary>
 		/// <param name="sender"></param>
@@ -949,6 +983,7 @@ namespace WindowsAuthenticator
 		}
 
 		#endregion
+
 
 
 	}
