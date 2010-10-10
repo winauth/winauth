@@ -91,6 +91,11 @@ namespace WindowsAuthenticator
 		/// </summary>
 		private object m_sendingKeys = new object();
 
+		/// <summary>
+		/// Flag to use when we explicitly closing from menu rather than just close window
+		/// </summary>
+		private bool m_explictClose;
+
 		#endregion
 
 		#region Properties
@@ -168,17 +173,25 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
-		/// Get/set flag to hide on minimize
+		/// Get/set flag to use tray icon
 		/// </summary>
-		public bool HideOnMinimize
+		public bool UseTrayIcon
 		{
 			get
 			{
-				return Config.HideOnMinimize;
+				return Config.UseTrayIcon;
 			}
 			set
 			{
-				Config.HideOnMinimize = value;
+				Config.UseTrayIcon = value;
+				if (value == false && this.Visible == false)
+				{
+					BringToFront();
+					Show();
+					WindowState = FormWindowState.Normal;
+					Activate();
+				}
+				notifyIcon.Visible = value;
 			}
 		}
 
@@ -744,6 +757,16 @@ namespace WindowsAuthenticator
 			// save current config
 			WinAuthHelper.SaveConfig(this.Config);
 
+			// keep in the tray when closing Form 
+			if (UseTrayIcon == true && this.Visible == true && m_explictClose == false)
+			{
+				e.Cancel = true;
+				notifyIcon.Visible = true;
+				notifyIcon.Text = this.Text;
+				Hide();
+				return;
+			}
+
 			// remove the hotkey hook
 			if (m_hook != null)
 			{
@@ -762,23 +785,17 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void MainForm_Shown(object sender, EventArgs e)
 		{
-			// force an initial call to resize so we can minimize if requried
-			MainForm_Resize(sender, e);
-		}
-
-		/// <summary>
-		/// Resize the form and hide if minimized
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void MainForm_Resize(object sender, EventArgs e)
-		{
-			if (HideOnMinimize == true && WindowState == FormWindowState.Minimized)
+			// if we use tray icon make sure it is set
+			if (UseTrayIcon == true)
 			{
-				// show icon and hide main window
 				notifyIcon.Visible = true;
 				notifyIcon.Text = this.Text;
-				Hide();
+
+				// if initially minizied, we need to hide
+				if (WindowState == FormWindowState.Minimized)
+				{
+					Hide();
+				}
 			}
 		}
 
@@ -799,6 +816,9 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void contextMenuStrip_Opening(object sender, CancelEventArgs e)
 		{
+			openMenuItem.Visible = (UseTrayIcon == true && this.Visible == false);
+			openMenuItemSeparator.Visible = (UseTrayIcon == true && this.Visible == false);
+
 			syncServerTimeMenuItem.Enabled = (Authenticator != null);
 			copyOnCodeMenuItem.Enabled = (Authenticator != null);
 			allowCopyMenuItem.Enabled = (Authenticator != null);
@@ -812,8 +832,22 @@ namespace WindowsAuthenticator
 			allowCopyMenuItem.Checked = (allowCopyMenuItem.Enabled == true ? AllowCopy : false);
 			alwaysOnTopMenuItem.Checked = (alwaysOnTopMenuItem.Enabled == true ? AlwaysOnTop : false);
 			hideSerialMenuItem.Checked = (hideSerialMenuItem.Enabled == true ? HideSerial : false);
-			hideOnMinimizeMenuItem.Checked = (hideOnMinimizeMenuItem.Enabled == true ? HideOnMinimize : false);
+			useTrayIconMenuItem.Checked = (useTrayIconMenuItem.Enabled == true ? UseTrayIcon : false);
 			startWithWindowsMenuItem.Checked = (startWithWindowsMenuItem.Enabled == true ? StartWithWindows : false);
+		}
+
+		/// <summary>
+		/// Click the Open menu item when on icon tray
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void openMenuItem_Click(object sender, EventArgs e)
+		{
+			// show the main form
+			BringToFront();
+			Show();
+			WindowState = FormWindowState.Normal;
+			Activate();
 		}
 
 		/// <summary>
@@ -911,6 +945,8 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void exitMeuuItem_Click(object sender, EventArgs e)
 		{
+			// we nede to make sure we aren't just hidden to tray
+			m_explictClose = true;
 			this.Close();
 		}
 
@@ -985,13 +1021,13 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
-		/// Click menu item to toggle HideOnMinimize
+		/// Click menu item to toggle UseTrayIcon
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void hideOnMinimizeMenuItem_Click(object sender, EventArgs e)
+		private void useTrayIconMenuItem_Click(object sender, EventArgs e)
 		{
-			HideOnMinimize = !hideOnMinimizeMenuItem.Checked;
+			UseTrayIcon = !useTrayIconMenuItem.Checked;
 		}
 
 		/// <summary>
@@ -1078,12 +1114,10 @@ namespace WindowsAuthenticator
 			Activate();
 
 			// hide icon
-			notifyIcon.Visible = false;
+			//notifyIcon.Visible = false;
 		}
 
 		#endregion
-
-
 
 	}
 }

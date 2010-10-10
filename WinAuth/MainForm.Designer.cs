@@ -60,9 +60,9 @@ namespace WindowsAuthenticator
 			this.createBackupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.autoLoginMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
-			this.alwaysOnTopMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.startWithWindowsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.hideOnMinimizeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.useTrayIconMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.alwaysOnTopMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
 			this.allowCopyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.hideSerialMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,6 +78,8 @@ namespace WindowsAuthenticator
 			this.refreshTimer = new System.Windows.Forms.Timer(this.components);
 			this.progressBar = new System.Windows.Forms.ProgressBar();
 			this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
+			this.openMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.openMenuItemSeparator = new System.Windows.Forms.ToolStripSeparator();
 			this.calcCodeButton = new WindowsAuthenticator.RoundButton();
 			this.codeField = new WindowsAuthenticator.SecretTextBox();
 			this.contextMenuStrip.SuspendLayout();
@@ -86,6 +88,8 @@ namespace WindowsAuthenticator
 			// contextMenuStrip
 			// 
 			this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openMenuItem,
+            this.openMenuItemSeparator,
             this.registerMenuItem,
             this.toolStripSeparator4,
             this.loadMenuItem,
@@ -99,7 +103,7 @@ namespace WindowsAuthenticator
             this.autoLoginMenuItem,
             this.toolStripSeparator6,
             this.startWithWindowsMenuItem,
-            this.hideOnMinimizeMenuItem,
+            this.useTrayIconMenuItem,
             this.alwaysOnTopMenuItem,
             this.toolStripSeparator8,
             this.allowCopyMenuItem,
@@ -115,7 +119,7 @@ namespace WindowsAuthenticator
 			this.contextMenuStrip.Name = "contextMenuStrip1";
 			this.contextMenuStrip.ShowCheckMargin = true;
 			this.contextMenuStrip.ShowImageMargin = false;
-			this.contextMenuStrip.Size = new System.Drawing.Size(229, 470);
+			this.contextMenuStrip.Size = new System.Drawing.Size(229, 498);
 			this.contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip_Opening);
 			// 
 			// registerMenuItem
@@ -196,13 +200,6 @@ namespace WindowsAuthenticator
 			this.toolStripSeparator6.Name = "toolStripSeparator6";
 			this.toolStripSeparator6.Size = new System.Drawing.Size(225, 6);
 			// 
-			// alwaysOnTopMenuItem
-			// 
-			this.alwaysOnTopMenuItem.Name = "alwaysOnTopMenuItem";
-			this.alwaysOnTopMenuItem.Size = new System.Drawing.Size(228, 22);
-			this.alwaysOnTopMenuItem.Text = "Always on Top";
-			this.alwaysOnTopMenuItem.Click += new System.EventHandler(this.alwaysOnTopMenuItem_Click);
-			// 
 			// startWithWindowsMenuItem
 			// 
 			this.startWithWindowsMenuItem.Name = "startWithWindowsMenuItem";
@@ -210,12 +207,19 @@ namespace WindowsAuthenticator
 			this.startWithWindowsMenuItem.Text = "Start with Windows";
 			this.startWithWindowsMenuItem.Click += new System.EventHandler(this.startWithWindowsMenuItem_Click);
 			// 
-			// hideOnMinimizeMenuItem
+			// useTrayIconMenuItem
 			// 
-			this.hideOnMinimizeMenuItem.Name = "hideOnMinimizeMenuItem";
-			this.hideOnMinimizeMenuItem.Size = new System.Drawing.Size(228, 22);
-			this.hideOnMinimizeMenuItem.Text = "Hide on Minimize";
-			this.hideOnMinimizeMenuItem.Click += new System.EventHandler(this.hideOnMinimizeMenuItem_Click);
+			this.useTrayIconMenuItem.Name = "useTrayIconMenuItem";
+			this.useTrayIconMenuItem.Size = new System.Drawing.Size(228, 22);
+			this.useTrayIconMenuItem.Text = "Use System Tray Icon";
+			this.useTrayIconMenuItem.Click += new System.EventHandler(this.useTrayIconMenuItem_Click);
+			// 
+			// alwaysOnTopMenuItem
+			// 
+			this.alwaysOnTopMenuItem.Name = "alwaysOnTopMenuItem";
+			this.alwaysOnTopMenuItem.Size = new System.Drawing.Size(228, 22);
+			this.alwaysOnTopMenuItem.Text = "Always on Top";
+			this.alwaysOnTopMenuItem.Click += new System.EventHandler(this.alwaysOnTopMenuItem_Click);
 			// 
 			// toolStripSeparator8
 			// 
@@ -320,6 +324,20 @@ namespace WindowsAuthenticator
 			this.notifyIcon.Text = "WinAuth";
 			this.notifyIcon.DoubleClick += new System.EventHandler(this.notifyIcon_DoubleClick);
 			// 
+			// openMenuItem
+			// 
+			this.openMenuItem.Name = "openMenuItem";
+			this.openMenuItem.Size = new System.Drawing.Size(228, 22);
+			this.openMenuItem.Text = "Open";
+			this.openMenuItem.Visible = false;
+			this.openMenuItem.Click += new System.EventHandler(this.openMenuItem_Click);
+			// 
+			// openMenuItemSeparator
+			// 
+			this.openMenuItemSeparator.Name = "openMenuItemSeparator";
+			this.openMenuItemSeparator.Size = new System.Drawing.Size(225, 6);
+			this.openMenuItemSeparator.Visible = false;
+			// 
 			// calcCodeButton
 			// 
 			this.calcCodeButton.BackColor = System.Drawing.Color.Black;
@@ -372,7 +390,6 @@ namespace WindowsAuthenticator
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
 			this.Load += new System.EventHandler(this.MainForm_Load);
 			this.Shown += new System.EventHandler(this.MainForm_Shown);
-			this.Resize += new System.EventHandler(this.MainForm_Resize);
 			this.contextMenuStrip.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -411,9 +428,11 @@ namespace WindowsAuthenticator
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
 		private System.Windows.Forms.ToolStripMenuItem exportKeyMenuItem;
 		private System.Windows.Forms.NotifyIcon notifyIcon;
-		private System.Windows.Forms.ToolStripMenuItem hideOnMinimizeMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem useTrayIconMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
 		private System.Windows.Forms.ToolStripMenuItem startWithWindowsMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem openMenuItem;
+		private System.Windows.Forms.ToolStripSeparator openMenuItemSeparator;
 
 	}
 }

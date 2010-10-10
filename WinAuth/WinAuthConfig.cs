@@ -131,9 +131,9 @@ namespace WindowsAuthenticator
 		public bool AlwaysOnTop { get; set; }
 
 		/// <summary>
-		/// Get/set hide on minimize top flag
+		/// Get/set use tray icon top flag
 		/// </summary>
-		public bool HideOnMinimize { get; set; }
+		public bool UseTrayIcon { get; set; }
 
 		/// <summary>
 		/// Get/set start with windows flag

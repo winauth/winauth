@@ -57,10 +57,10 @@ namespace WindowsAuthenticator
 				{
 					data.AlwaysOnTop = boolVal;
 				}
-				node = doc.DocumentElement.SelectSingleNode("HideOnMinimize");
+				node = doc.DocumentElement.SelectSingleNode("UseTrayIcon");
 				if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
 				{
-					data.HideOnMinimize = boolVal;
+					data.UseTrayIcon = boolVal;
 				}
 				node = doc.DocumentElement.SelectSingleNode("StartWithWindows");
 				if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
@@ -150,8 +150,8 @@ namespace WindowsAuthenticator
 			XmlElement node = doc.CreateElement("AlwaysOnTop");
 			node.InnerText = data.AlwaysOnTop.ToString();
 			root.AppendChild(node);
-			node = doc.CreateElement("HideOnMinimize");
-			node.InnerText = data.HideOnMinimize.ToString();
+			node = doc.CreateElement("UseTrayIcon");
+			node.InnerText = data.UseTrayIcon.ToString();
 			root.AppendChild(node);
 			node = doc.CreateElement("StartWithWindows");
 			node.InnerText = data.StartWithWindows.ToString();
