@@ -37,9 +37,20 @@ namespace WindowsAuthenticator
 	public class Authenticator
 	{
 		/// <summary>
-		/// Default model name for authenticator when enrolling
+		/// Default model name for authenticator when enrolling 
+		/// Note: we now create a random model string to help armor the init data
 		/// </summary>
 		private const string DEFAULT_MODEL = "Motorola RAZR v3";
+
+		/// <summary>
+		/// Size of model string
+		/// </summary>
+		private const int MODEL_SIZE = 16;
+
+		/// <summary>
+		/// String of possible chars we use in our random model string
+		/// </summary>
+		private const string MODEL_CHARS = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567890";
 
 		/// <summary>
 		/// Buffer size used on Http responses
@@ -142,7 +153,7 @@ namespace WindowsAuthenticator
 			regionarray.CopyTo(bytes, index);
 			index += regionarray.Length;
 			// add model name
-			byte[] model = Encoding.UTF8.GetBytes(DEFAULT_MODEL);
+			byte[] model = Encoding.UTF8.GetBytes(GeneralRandomModel());
 			model.CopyTo(bytes, index);
 			index += model.Length;
 
@@ -394,13 +405,21 @@ namespace WindowsAuthenticator
 		/// <returns>random byte[37] array</returns>
 		protected static byte[] CreateInitializationRandom()
 		{
-			Random random = new Random((int)CurrentTime);
-
 			byte[] hashBlock = new byte[128];
-			for (int i = hashBlock.Length-1; i >= 0; i--)
-			{
-				hashBlock[i] = (byte)random.Next(256);
-			}
+
+			// There is a MITM vulnerability from using the standard Random call
+			// see https://docs.google.com/document/edit?id=1pf-YCgUnxR4duE8tr-xulE3rJ1Hw-Bm5aMk5tNOGU3E&hl=en
+			// in http://code.google.com/p/winauth/issues/detail?id=2
+			// so we switch out to use RNGCryptoServiceProvider
+
+			//Random random = new Random((int)CurrentTime);			
+			//for (int i = hashBlock.Length-1; i >= 0; i--)
+			//{
+			//  hashBlock[i] = (byte)random..Next(256);
+			//}
+
+			RNGCryptoServiceProvider random = new RNGCryptoServiceProvider();
+			random.GetBytes(hashBlock);
 
 			SHA1 sha1 = SHA1.Create();
 			byte[] key1 = sha1.ComputeHash(hashBlock, 0, 64);
@@ -410,6 +429,28 @@ namespace WindowsAuthenticator
 			Array.Copy(key2, 0, key, 20, 17);
 
 			return key;
+		}
+
+		/// <summary>
+		/// Create a random Model string for initialization to armor the init string sent over the wire
+		/// </summary>
+		/// <returns>Random model string</returns>
+		private static string GeneralRandomModel()
+		{
+			// seed a new RNG
+			RNGCryptoServiceProvider randomSeedGenerator = new RNGCryptoServiceProvider();
+			byte[] seedBuffer = new byte[4];
+			randomSeedGenerator.GetBytes(seedBuffer);
+			Random random = new Random(BitConverter.ToInt32(seedBuffer, 0));
+
+			// create a model string with available characters
+			StringBuilder model = new StringBuilder(MODEL_SIZE);
+			for (int i = MODEL_SIZE; i > 0; i--)
+			{
+				model.Append(MODEL_CHARS[random.Next(MODEL_CHARS.Length)]);
+			}
+
+			return model.ToString();
 		}
 
 		/// <summary>
@@ -460,7 +501,6 @@ namespace WindowsAuthenticator
 				return Convert.ToInt64((DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds);
 			}
 		}
-
 
 	}
 
