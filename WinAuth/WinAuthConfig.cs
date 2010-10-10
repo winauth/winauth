@@ -131,6 +131,16 @@ namespace WindowsAuthenticator
 		public bool AlwaysOnTop { get; set; }
 
 		/// <summary>
+		/// Get/set hide on minimize top flag
+		/// </summary>
+		public bool HideOnMinimize { get; set; }
+
+		/// <summary>
+		/// Get/set start with windows flag
+		/// </summary>
+		public bool StartWithWindows{ get; set; }
+
+		/// <summary>
 		/// Get/set allow copy flag
 		/// </summary>
 		public bool AllowCopy { get; set; }

@@ -47,7 +47,6 @@ namespace WindowsAuthenticator
 		{
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-			this.codeField = new WindowsAuthenticator.SecretTextBox();
 			this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.registerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
@@ -56,11 +55,15 @@ namespace WindowsAuthenticator
 			this.saveAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.importMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.exportKeyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
 			this.createBackupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.autoLoginMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
 			this.alwaysOnTopMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.startWithWindowsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.hideOnMinimizeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
 			this.allowCopyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.hideSerialMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.copyOnCodeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -74,25 +77,11 @@ namespace WindowsAuthenticator
 			this.serialLabel = new System.Windows.Forms.Label();
 			this.refreshTimer = new System.Windows.Forms.Timer(this.components);
 			this.progressBar = new System.Windows.Forms.ProgressBar();
+			this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
 			this.calcCodeButton = new WindowsAuthenticator.RoundButton();
-			this.exportKeyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.codeField = new WindowsAuthenticator.SecretTextBox();
 			this.contextMenuStrip.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// codeField
-			// 
-			this.codeField.BackColor = System.Drawing.SystemColors.Window;
-			this.codeField.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.codeField.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.codeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.codeField.Location = new System.Drawing.Point(103, 45);
-			this.codeField.Name = "codeField";
-			this.codeField.ReadOnly = true;
-			this.codeField.SecretMode = false;
-			this.codeField.Size = new System.Drawing.Size(100, 19);
-			this.codeField.TabIndex = 0;
-			this.codeField.TabStop = false;
-			this.codeField.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			// 
 			// contextMenuStrip
 			// 
@@ -109,7 +98,10 @@ namespace WindowsAuthenticator
             this.createBackupMenuItem,
             this.autoLoginMenuItem,
             this.toolStripSeparator6,
+            this.startWithWindowsMenuItem,
+            this.hideOnMinimizeMenuItem,
             this.alwaysOnTopMenuItem,
+            this.toolStripSeparator8,
             this.allowCopyMenuItem,
             this.hideSerialMenuItem,
             this.copyOnCodeMenuItem,
@@ -123,7 +115,7 @@ namespace WindowsAuthenticator
 			this.contextMenuStrip.Name = "contextMenuStrip1";
 			this.contextMenuStrip.ShowCheckMargin = true;
 			this.contextMenuStrip.ShowImageMargin = false;
-			this.contextMenuStrip.Size = new System.Drawing.Size(229, 420);
+			this.contextMenuStrip.Size = new System.Drawing.Size(229, 470);
 			this.contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip_Opening);
 			// 
 			// registerMenuItem
@@ -173,6 +165,13 @@ namespace WindowsAuthenticator
 			this.importMenuItem.Text = "Import Key...";
 			this.importMenuItem.Click += new System.EventHandler(this.importMenuItem_Click);
 			// 
+			// exportKeyMenuItem
+			// 
+			this.exportKeyMenuItem.Name = "exportKeyMenuItem";
+			this.exportKeyMenuItem.Size = new System.Drawing.Size(228, 22);
+			this.exportKeyMenuItem.Text = "Export Key...";
+			this.exportKeyMenuItem.Click += new System.EventHandler(this.exportKeyMenuItem_Click);
+			// 
 			// toolStripSeparator7
 			// 
 			this.toolStripSeparator7.Name = "toolStripSeparator7";
@@ -203,6 +202,25 @@ namespace WindowsAuthenticator
 			this.alwaysOnTopMenuItem.Size = new System.Drawing.Size(228, 22);
 			this.alwaysOnTopMenuItem.Text = "Always on Top";
 			this.alwaysOnTopMenuItem.Click += new System.EventHandler(this.alwaysOnTopMenuItem_Click);
+			// 
+			// startWithWindowsMenuItem
+			// 
+			this.startWithWindowsMenuItem.Name = "startWithWindowsMenuItem";
+			this.startWithWindowsMenuItem.Size = new System.Drawing.Size(228, 22);
+			this.startWithWindowsMenuItem.Text = "Start with Windows";
+			this.startWithWindowsMenuItem.Click += new System.EventHandler(this.startWithWindowsMenuItem_Click);
+			// 
+			// hideOnMinimizeMenuItem
+			// 
+			this.hideOnMinimizeMenuItem.Name = "hideOnMinimizeMenuItem";
+			this.hideOnMinimizeMenuItem.Size = new System.Drawing.Size(228, 22);
+			this.hideOnMinimizeMenuItem.Text = "Hide on Minimize";
+			this.hideOnMinimizeMenuItem.Click += new System.EventHandler(this.hideOnMinimizeMenuItem_Click);
+			// 
+			// toolStripSeparator8
+			// 
+			this.toolStripSeparator8.Name = "toolStripSeparator8";
+			this.toolStripSeparator8.Size = new System.Drawing.Size(225, 6);
 			// 
 			// allowCopyMenuItem
 			// 
@@ -295,6 +313,13 @@ namespace WindowsAuthenticator
 			this.progressBar.Step = 1;
 			this.progressBar.TabIndex = 4;
 			// 
+			// notifyIcon
+			// 
+			this.notifyIcon.ContextMenuStrip = this.contextMenuStrip;
+			this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
+			this.notifyIcon.Text = "WinAuth";
+			this.notifyIcon.DoubleClick += new System.EventHandler(this.notifyIcon_DoubleClick);
+			// 
 			// calcCodeButton
 			// 
 			this.calcCodeButton.BackColor = System.Drawing.Color.Black;
@@ -311,12 +336,20 @@ namespace WindowsAuthenticator
 			this.calcCodeButton.UseVisualStyleBackColor = false;
 			this.calcCodeButton.Click += new System.EventHandler(this.calcCodeButton_Click);
 			// 
-			// exportKeyMenuItem
+			// codeField
 			// 
-			this.exportKeyMenuItem.Name = "exportKeyMenuItem";
-			this.exportKeyMenuItem.Size = new System.Drawing.Size(228, 22);
-			this.exportKeyMenuItem.Text = "Export Key...";
-			this.exportKeyMenuItem.Click += new System.EventHandler(this.exportKeyMenuItem_Click);
+			this.codeField.BackColor = System.Drawing.SystemColors.Window;
+			this.codeField.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.codeField.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.codeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.codeField.Location = new System.Drawing.Point(103, 45);
+			this.codeField.Name = "codeField";
+			this.codeField.ReadOnly = true;
+			this.codeField.SecretMode = false;
+			this.codeField.Size = new System.Drawing.Size(100, 19);
+			this.codeField.TabIndex = 0;
+			this.codeField.TabStop = false;
+			this.codeField.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			// 
 			// MainForm
 			// 
@@ -338,6 +371,8 @@ namespace WindowsAuthenticator
 			this.TopMost = true;
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
 			this.Load += new System.EventHandler(this.MainForm_Load);
+			this.Shown += new System.EventHandler(this.MainForm_Shown);
+			this.Resize += new System.EventHandler(this.MainForm_Resize);
 			this.contextMenuStrip.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -375,6 +410,10 @@ namespace WindowsAuthenticator
 		private System.Windows.Forms.ToolStripMenuItem importMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
 		private System.Windows.Forms.ToolStripMenuItem exportKeyMenuItem;
+		private System.Windows.Forms.NotifyIcon notifyIcon;
+		private System.Windows.Forms.ToolStripMenuItem hideOnMinimizeMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
+		private System.Windows.Forms.ToolStripMenuItem startWithWindowsMenuItem;
 
 	}
 }

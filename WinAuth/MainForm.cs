@@ -168,6 +168,37 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Get/set flag to hide on minimize
+		/// </summary>
+		public bool HideOnMinimize
+		{
+			get
+			{
+				return Config.HideOnMinimize;
+			}
+			set
+			{
+				Config.HideOnMinimize = value;
+			}
+		}
+
+		/// <summary>
+		/// Get/set flag to set start with Windows
+		/// </summary>
+		public bool StartWithWindows
+		{
+			get
+			{
+				return Config.StartWithWindows;
+			}
+			set
+			{
+				Config.StartWithWindows = value;
+				WinAuthHelper.SetStartWithWindows(value);
+			}
+		}
+
+		/// <summary>
 		/// Get/set flag to be hide serial
 		/// </summary>
 		public bool HideSerial
@@ -635,7 +666,7 @@ namespace WindowsAuthenticator
 		private void MainForm_Load(object sender, EventArgs e)
 		{
 			// load config data
-			this.Config = WinAuthHelper.LoadConfig();
+			this.Config = WinAuthHelper.LoadConfig(this);
 
 			// check if current authenticator exists
 			string authFile = Config.AuthenticatorFile;
@@ -719,6 +750,36 @@ namespace WindowsAuthenticator
 				m_hook.UnHook();
 				m_hook = null;
 			}
+
+			// ensure the notify icon is closed
+			notifyIcon.Visible = false;
+		}
+
+		/// <summary>
+		/// Form event called on first show
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void MainForm_Shown(object sender, EventArgs e)
+		{
+			// force an initial call to resize so we can minimize if requried
+			MainForm_Resize(sender, e);
+		}
+
+		/// <summary>
+		/// Resize the form and hide if minimized
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void MainForm_Resize(object sender, EventArgs e)
+		{
+			if (HideOnMinimize == true && WindowState == FormWindowState.Minimized)
+			{
+				// show icon and hide main window
+				notifyIcon.Visible = true;
+				notifyIcon.Text = this.Text;
+				Hide();
+			}
 		}
 
 		/// <summary>
@@ -751,6 +812,8 @@ namespace WindowsAuthenticator
 			allowCopyMenuItem.Checked = (allowCopyMenuItem.Enabled == true ? AllowCopy : false);
 			alwaysOnTopMenuItem.Checked = (alwaysOnTopMenuItem.Enabled == true ? AlwaysOnTop : false);
 			hideSerialMenuItem.Checked = (hideSerialMenuItem.Enabled == true ? HideSerial : false);
+			hideOnMinimizeMenuItem.Checked = (hideOnMinimizeMenuItem.Enabled == true ? HideOnMinimize : false);
+			startWithWindowsMenuItem.Checked = (startWithWindowsMenuItem.Enabled == true ? StartWithWindows : false);
 		}
 
 		/// <summary>
@@ -922,6 +985,26 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Click menu item to toggle HideOnMinimize
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void hideOnMinimizeMenuItem_Click(object sender, EventArgs e)
+		{
+			HideOnMinimize = !hideOnMinimizeMenuItem.Checked;
+		}
+
+		/// <summary>
+		/// Click the item to toggle start with Windows
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void startWithWindowsMenuItem_Click(object sender, EventArgs e)
+		{
+			StartWithWindows = !startWithWindowsMenuItem.Checked;
+		}
+
+		/// <summary>
 		/// Click hide serial number menu item
 		/// </summary>
 		/// <param name="sender"></param>
@@ -980,6 +1063,22 @@ namespace WindowsAuthenticator
 				NextRefresh = now.AddSeconds(30);
 				ShowCode();
 			}
+		}
+
+		/// <summary>
+		/// Double click the notify icon to restore the app
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void notifyIcon_DoubleClick(object sender, EventArgs e)
+		{
+			BringToFront();
+			Show();
+			WindowState = FormWindowState.Normal;
+			Activate();
+
+			// hide icon
+			notifyIcon.Visible = false;
 		}
 
 		#endregion

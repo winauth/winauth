@@ -21,6 +21,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
+using System.Windows;
+using System.Windows.Forms;
+
+using Microsoft.Win32;
 
 namespace WindowsAuthenticator
 {
@@ -29,11 +33,13 @@ namespace WindowsAuthenticator
 	/// </summary>
 	class WinAuthHelper
 	{
+		private const string RUNKEY = @"Software\Microsoft\Windows\CurrentVersion\Run";
+
 		/// <summary>
 		/// Load the application configuration data
 		/// </summary>
 		/// <returns>new WinAuthConfig with configuration data</returns>
-		public static WinAuthConfig LoadConfig()
+		public static WinAuthConfig LoadConfig(MainForm form)
 		{
 			WinAuthConfig data = new WinAuthConfig();
 
@@ -50,6 +56,16 @@ namespace WindowsAuthenticator
 				if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
 				{
 					data.AlwaysOnTop = boolVal;
+				}
+				node = doc.DocumentElement.SelectSingleNode("HideOnMinimize");
+				if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
+				{
+					data.HideOnMinimize = boolVal;
+				}
+				node = doc.DocumentElement.SelectSingleNode("StartWithWindows");
+				if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
+				{
+					data.StartWithWindows = boolVal;
 				}
 				node = doc.DocumentElement.SelectSingleNode("AutoRefresh");
 				if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
@@ -87,7 +103,23 @@ namespace WindowsAuthenticator
 			string[] args = Environment.GetCommandLineArgs();
 			for (int i=1; i<args.Length; i++)
 			{
-				data.AuthenticatorFile = args[i];
+				string arg = args[i];
+				if (arg[0] == '-')
+				{
+					switch (arg)
+					{
+						case "-min":
+							// set initial state as minimized
+							form.WindowState = FormWindowState.Minimized;
+							break;
+						default:
+							break;
+					}
+				}
+				else
+				{
+					data.AuthenticatorFile = arg;
+				}
 			}
 
 			return data;
@@ -117,6 +149,12 @@ namespace WindowsAuthenticator
 
 			XmlElement node = doc.CreateElement("AlwaysOnTop");
 			node.InnerText = data.AlwaysOnTop.ToString();
+			root.AppendChild(node);
+			node = doc.CreateElement("HideOnMinimize");
+			node.InnerText = data.HideOnMinimize.ToString();
+			root.AppendChild(node);
+			node = doc.CreateElement("StartWithWindows");
+			node.InnerText = data.StartWithWindows.ToString();
 			root.AppendChild(node);
 			node = doc.CreateElement("AutoRefresh");
 			node.InnerText = data.AutoRefresh.ToString();
@@ -206,6 +244,26 @@ namespace WindowsAuthenticator
 			using (XmlWriter xw = XmlWriter.Create(configFile, settings))
 			{
 				authenticator.Data.WriteXmlString(xw);
+			}
+		}
+
+		/// <summary>
+		/// Set up winauth so it will start with Windows by adding entry into registry
+		/// </summary>
+		/// <param name="enabled">enable or disable start with windows</param>
+		public static void SetStartWithWindows(bool enabled)
+		{
+			using (RegistryKey key = Registry.CurrentUser.OpenSubKey(RUNKEY, true))
+			{
+				if (enabled == true)
+				{
+					// get path of exe and minimize flag
+					key.SetValue(WinAuth.APPLICATION_NAME, Application.ExecutablePath + " -min");
+				}
+				else if (key.GetValue(WinAuth.APPLICATION_NAME) != null)
+				{
+					key.DeleteValue(WinAuth.APPLICATION_NAME);
+				}
 			}
 		}
 	}
