@@ -65,6 +65,18 @@ namespace WindowsAuthenticator
 		public static extern UInt32 GetWindowLong(IntPtr hWnd, int nIndex);
 
 		/// <summary>
+		/// Get the unqiue device ID
+		/// </summary>
+		/// <param name="appdata"></param>
+		/// <param name="cbApplictionData"></param>
+		/// <param name="dwDeviceIDVersion"></param>
+		/// <param name="deviceIDOuput"></param>
+		/// <param name="pcbDeviceIDOutput"></param>
+		/// <returns></returns>
+		[DllImport("coredll.dll")]
+		private extern static int GetDeviceUniqueID([In, Out] byte[] appdata, int cbApplictionData, int dwDeviceIDVersion, [In, Out] byte[] deviceIDOuput, out uint pcbDeviceIDOutput);
+
+		/// <summary>
 		/// Hide the Done button for a window/form
 		/// </summary>
 		/// <param name="hWnd">window Handle</param>
@@ -85,5 +97,26 @@ namespace WindowsAuthenticator
 				SetWindowLong(hWnd, GWL_STYLE, dwStyle | WS_NONAVDONEBUTTON);
 			}
 		}
+
+		/// <summary>
+		/// Get the unique device ID hashed with an application Id
+		/// </summary>
+		/// <param name="appId">application Id</param>
+		/// <returns>unqiue device ID or null is an error</returns>
+		public static string GetDeviceID(string appId)
+		{
+			byte[] appIdData = System.Text.Encoding.Default.GetBytes(appId);
+			byte[] deviceId = new byte[20];
+			uint sizeOut = (uint)deviceId.Length;
+			if (GetDeviceUniqueID(appIdData, appIdData.Length, 1, deviceId, out sizeOut) != 0)
+			{
+				return null;
+			}
+			else
+			{
+				return BitConverter.ToString(deviceId, 0, (int)sizeOut).Replace("-", "");
+			}
+		}
+
 	}
 }

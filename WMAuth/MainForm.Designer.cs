@@ -238,7 +238,7 @@ namespace WindowsAuthenticator
 			this.introLabel.ForeColor = System.Drawing.Color.White;
 			this.introLabel.Location = new System.Drawing.Point(9, 10);
 			this.introLabel.Name = "introLabel";
-			this.introLabel.Size = new System.Drawing.Size(356, 456);
+			this.introLabel.Size = new System.Drawing.Size(356, 620);
 			this.introLabel.Text = resources.GetString("introLabel.Text");
 			// 
 			// MainForm

@@ -41,6 +41,11 @@ namespace WindowsAuthenticator
 		public const string CONFIG_FILENAME = "authenticator.xml";
 
 		/// <summary>
+		/// Application ID used to build the device ID - must not change
+		/// </summary>
+		public const string DEVICE_APPLICATION_ID = "WINDOWSAUTHENTICATOR";
+
+		/// <summary>
 		/// Get/set the current authenticator
 		/// </summary>
 		public Authenticator CurrentAuthenticator { get; set; }
@@ -69,16 +74,25 @@ namespace WindowsAuthenticator
 				return false;
 			}
 
+			// get the password as the device ID
+			string password = WinAPI.GetDeviceID(DEVICE_APPLICATION_ID);
+
 			// read the authenticator file
 			using (FileStream fs = new FileStream(authfile, FileMode.Open))
 			{
 				// create and set a loaded authenticator
-				AuthenticatorData data = new AuthenticatorData(fs, AuthenticatorData.FileFormat.WinAuth, null);
+				AuthenticatorData data = new AuthenticatorData(fs, AuthenticatorData.FileFormat.WinAuth, password);
 				Authenticator auth = new Authenticator(data);
 				CurrentAuthenticator = auth;
-
-				return true;
 			}
+
+			// resave so we change the "user" password to "explicit" using the generic key for the device
+			if (CurrentAuthenticator.Data.PasswordType == AuthenticatorData.PasswordTypes.User)
+			{
+				SaveAuthenticator();
+			}
+
+			return true;
 		}
 
 		/// <summary>
@@ -102,8 +116,18 @@ namespace WindowsAuthenticator
 			settings.Indent = true;
 			using (XmlWriter xw = XmlWriter.Create(new FileStream(authfile, FileMode.Create), settings))
 			{
-				// make sure we are encrpyted using the device's user key
-				CurrentAuthenticator.Data.PasswordType = AuthenticatorData.PasswordTypes.User;
+				// make sure we are encrpyted using the deviceID
+				string password = WinAPI.GetDeviceID(DEVICE_APPLICATION_ID);
+				if (password != null)
+				{
+					CurrentAuthenticator.Data.Password = password;
+					CurrentAuthenticator.Data.PasswordType = AuthenticatorData.PasswordTypes.Explicit;
+				}
+				else
+				{
+					// if we couldn't get a device key, use none so at least we can guarentee the key
+					CurrentAuthenticator.Data.PasswordType = AuthenticatorData.PasswordTypes.None;
+				}
 
 				// save the data
 				CurrentAuthenticator.Data.WriteXmlString(xw);
