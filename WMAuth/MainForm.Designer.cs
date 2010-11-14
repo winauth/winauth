@@ -55,6 +55,7 @@ namespace WindowsAuthenticator
 			this.autoRefreshMenuItem = new System.Windows.Forms.MenuItem();
 			this.menuItem6 = new System.Windows.Forms.MenuItem();
 			this.loadBmaMenuItem = new System.Windows.Forms.MenuItem();
+			this.exportBmaMenuItem = new System.Windows.Forms.MenuItem();
 			this.menuItem4 = new System.Windows.Forms.MenuItem();
 			this.setupMenuItem = new System.Windows.Forms.MenuItem();
 			this.menuItem1 = new System.Windows.Forms.MenuItem();
@@ -90,6 +91,7 @@ namespace WindowsAuthenticator
 			this.menuItem2.MenuItems.Add(this.autoRefreshMenuItem);
 			this.menuItem2.MenuItems.Add(this.menuItem6);
 			this.menuItem2.MenuItems.Add(this.loadBmaMenuItem);
+			this.menuItem2.MenuItems.Add(this.exportBmaMenuItem);
 			this.menuItem2.MenuItems.Add(this.menuItem4);
 			this.menuItem2.MenuItems.Add(this.setupMenuItem);
 			this.menuItem2.MenuItems.Add(this.menuItem1);
@@ -114,8 +116,13 @@ namespace WindowsAuthenticator
 			// 
 			// loadBmaMenuItem
 			// 
-			this.loadBmaMenuItem.Text = "Import BMA...";
+			this.loadBmaMenuItem.Text = "Import ...";
 			this.loadBmaMenuItem.Click += new System.EventHandler(this.loadBmaMenuItem_Click);
+			// 
+			// exportBmaMenuItem
+			// 
+			this.exportBmaMenuItem.Text = "Export ...";
+			this.exportBmaMenuItem.Click += new System.EventHandler(this.exportBmaMenuItem_Click);
 			// 
 			// menuItem4
 			// 
@@ -289,6 +296,7 @@ namespace WindowsAuthenticator
 		private System.Windows.Forms.Panel introPanel;
 		private System.Windows.Forms.Label introLabel;
 		private System.Windows.Forms.MenuItem loadBmaMenuItem;
+		private System.Windows.Forms.MenuItem exportBmaMenuItem;
 		private System.Windows.Forms.MenuItem menuItem4;
 	}
 }

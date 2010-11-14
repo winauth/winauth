@@ -217,6 +217,50 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Let the user export the current key in an unecnrypted state
+		/// </summary>
+		private bool ExportBMA()
+		{
+			if (MessageBox.Show("Select the location to save an unencrypted copy of your authenticator.\n\nContinue?",
+						WMAuth.APPLICATION_NAME,
+						MessageBoxButtons.YesNo,
+						MessageBoxIcon.Question,
+						MessageBoxDefaultButton.Button1) != DialogResult.Yes)
+			{
+				return false;
+			}
+
+			// browse for the Midlet file
+			SaveFileDialog sfd = new SaveFileDialog();
+			sfd.FileName = "authenticator.xml";
+			sfd.Filter = "WinAuth XML File|*.xml";
+			DialogResult result = sfd.ShowDialog();
+			if (result != DialogResult.OK || string.IsNullOrEmpty(sfd.FileName) == true)
+			{
+				return false;
+			}
+
+			// write the file data for the key
+			string filename = sfd.FileName;
+			Directory.CreateDirectory(Path.GetDirectoryName(filename));
+
+			// save a copy of the authenticator data
+			AuthenticatorData data = (AuthenticatorData)Config.CurrentAuthenticator.Data.Clone();
+			XmlWriterSettings settings = new XmlWriterSettings();
+			settings.CloseOutput = true;
+			settings.Indent = true;
+			using (XmlWriter xw = XmlWriter.Create(new FileStream(filename, FileMode.Create), settings))
+			{
+				data.PasswordType = AuthenticatorData.PasswordTypes.None;
+
+				// save the data
+				data.WriteXmlString(xw);
+			}
+
+			return true;
+		}
+
+		/// <summary>
 		/// Show/hide the enroll choice
 		/// </summary>
 		/// <param name="show"></param>
@@ -368,6 +412,16 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Click the export BMA menu item
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void exportBmaMenuItem_Click(object sender, EventArgs e)
+		{
+			ExportBMA();
+		}
+
+		/// <summary>
 		/// Click the Sync menu item
 		/// </summary>
 		/// <param name="sender"></param>
@@ -400,7 +454,7 @@ namespace WindowsAuthenticator
 		{
 			Assembly assembly = Assembly.GetExecutingAssembly();
 			MessageBox.Show(
-				((AssemblyTitleAttribute)assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false)[0]).Title + " " + assembly.GetName().Version.ToString(2) + Environment.NewLine +
+				((AssemblyTitleAttribute)assembly.GetCustomAttributes(typeof(AssemblyTitleAttribute), false)[0]).Title + " " + assembly.GetName().Version.ToString(3) + Environment.NewLine +
 				((AssemblyCopyrightAttribute)assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false)[0]).Copyright + Environment.NewLine + Environment.NewLine +
 				"Licensed under GNU General Public License v3 (http://www.gnu.org/licenses)" + Environment.NewLine + Environment.NewLine
 				+ "http://code.google.com/p/winauth",
