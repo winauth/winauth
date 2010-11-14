@@ -224,7 +224,7 @@ namespace WindowsAuthenticator
 		/// <param name="keys">stirng to send</param>
 		public void SendKeys(string keys)
 		{
-			if (m_hWnd != IntPtr.Zero)
+			if (m_hWnd != IntPtr.Zero && m_hWnd != WinAPI.GetForegroundWindow())
 			{
 				WinAPI.SetForegroundWindow(m_hWnd);
 				System.Threading.Thread.Sleep(200);
@@ -468,6 +468,10 @@ namespace WindowsAuthenticator
 						return process.MainWindowHandle;
 					}
 				}
+			}
+			else if (string.IsNullOrEmpty(processName) == true)
+			{
+				return WinAPI.GetForegroundWindow();
 			}
 			else if (processes.Length != 0)
 			{
@@ -817,6 +821,8 @@ namespace WindowsAuthenticator
 		internal static extern IntPtr LoadLibrary(string lpFileName);
 		[DllImport("user32.dll")]
 		internal static extern bool SetForegroundWindow(IntPtr hWnd);
+		[DllImport("user32.dll", SetLastError = true)]
+		internal static extern IntPtr GetForegroundWindow();
 		[DllImport("user32.dll", SetLastError = true)]
 		internal static extern UInt32 SendInput(UInt32 numberOfInputs, INPUT[] inputs, Int32 sizeOfInputStructure);
 		[DllImport("user32.dll", SetLastError = true)]

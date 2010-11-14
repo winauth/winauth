@@ -69,7 +69,7 @@ namespace WindowsAuthenticator
 			// btnOK
 			// 
 			this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnOK.Location = new System.Drawing.Point(372, 328);
+			this.btnOK.Location = new System.Drawing.Point(372, 339);
 			this.btnOK.Name = "btnOK";
 			this.btnOK.Size = new System.Drawing.Size(75, 23);
 			this.btnOK.TabIndex = 1;
@@ -81,7 +81,7 @@ namespace WindowsAuthenticator
 			// 
 			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btnCancel.Location = new System.Drawing.Point(453, 328);
+			this.btnCancel.Location = new System.Drawing.Point(453, 339);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(75, 23);
 			this.btnCancel.TabIndex = 2;
@@ -117,14 +117,14 @@ namespace WindowsAuthenticator
 			this.groupBox2.Controls.Add(this.label2);
 			this.groupBox2.Location = new System.Drawing.Point(12, 12);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(516, 310);
+			this.groupBox2.Size = new System.Drawing.Size(516, 318);
 			this.groupBox2.TabIndex = 0;
 			this.groupBox2.TabStop = false;
 			// 
 			// label3
 			// 
 			this.label3.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-			this.label3.Location = new System.Drawing.Point(127, 193);
+			this.label3.Location = new System.Drawing.Point(127, 209);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(371, 32);
 			this.label3.TabIndex = 7;
@@ -133,7 +133,7 @@ namespace WindowsAuthenticator
 			// tbAdvanced
 			// 
 			this.tbAdvanced.Enabled = false;
-			this.tbAdvanced.Location = new System.Drawing.Point(16, 228);
+			this.tbAdvanced.Location = new System.Drawing.Point(16, 244);
 			this.tbAdvanced.Name = "tbAdvanced";
 			this.tbAdvanced.Size = new System.Drawing.Size(482, 66);
 			this.tbAdvanced.TabIndex = 6;
@@ -221,9 +221,9 @@ namespace WindowsAuthenticator
 			// tbWindowTitle
 			// 
 			this.tbWindowTitle.Enabled = false;
-			this.tbWindowTitle.Location = new System.Drawing.Point(99, 155);
+			this.tbWindowTitle.Location = new System.Drawing.Point(16, 174);
 			this.tbWindowTitle.Name = "tbWindowTitle";
-			this.tbWindowTitle.Size = new System.Drawing.Size(399, 20);
+			this.tbWindowTitle.Size = new System.Drawing.Size(482, 20);
 			this.tbWindowTitle.TabIndex = 5;
 			// 
 			// cbHotKeyMod1
@@ -241,7 +241,7 @@ namespace WindowsAuthenticator
 			// 
 			this.ckAdvanced.AutoSize = true;
 			this.ckAdvanced.Enabled = false;
-			this.ckAdvanced.Location = new System.Drawing.Point(16, 193);
+			this.ckAdvanced.Location = new System.Drawing.Point(16, 209);
 			this.ckAdvanced.Name = "ckAdvanced";
 			this.ckAdvanced.Size = new System.Drawing.Size(105, 17);
 			this.ckAdvanced.TabIndex = 0;
@@ -275,9 +275,9 @@ namespace WindowsAuthenticator
 			this.label2.AutoSize = true;
 			this.label2.Location = new System.Drawing.Point(13, 158);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(69, 13);
+			this.label2.Size = new System.Drawing.Size(223, 13);
 			this.label2.TabIndex = 0;
-			this.label2.Text = "Window Title";
+			this.label2.Text = "Window Title (leave blank for current window)";
 			// 
 			// tooltip
 			// 
@@ -291,7 +291,7 @@ namespace WindowsAuthenticator
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.btnCancel;
-			this.ClientSize = new System.Drawing.Size(540, 363);
+			this.ClientSize = new System.Drawing.Size(540, 374);
 			this.Controls.Add(this.btnCancel);
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.btnOK);

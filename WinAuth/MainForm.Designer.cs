@@ -48,6 +48,8 @@ namespace WindowsAuthenticator
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
 			this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+			this.openMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.openMenuItemSeparator = new System.Windows.Forms.ToolStripSeparator();
 			this.registerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.loadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,8 +80,6 @@ namespace WindowsAuthenticator
 			this.refreshTimer = new System.Windows.Forms.Timer(this.components);
 			this.progressBar = new System.Windows.Forms.ProgressBar();
 			this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
-			this.openMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.openMenuItemSeparator = new System.Windows.Forms.ToolStripSeparator();
 			this.calcCodeButton = new WindowsAuthenticator.RoundButton();
 			this.codeField = new WindowsAuthenticator.SecretTextBox();
 			this.contextMenuStrip.SuspendLayout();
@@ -121,6 +121,20 @@ namespace WindowsAuthenticator
 			this.contextMenuStrip.ShowImageMargin = false;
 			this.contextMenuStrip.Size = new System.Drawing.Size(229, 498);
 			this.contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip_Opening);
+			// 
+			// openMenuItem
+			// 
+			this.openMenuItem.Name = "openMenuItem";
+			this.openMenuItem.Size = new System.Drawing.Size(228, 22);
+			this.openMenuItem.Text = "Open";
+			this.openMenuItem.Visible = false;
+			this.openMenuItem.Click += new System.EventHandler(this.openMenuItem_Click);
+			// 
+			// openMenuItemSeparator
+			// 
+			this.openMenuItemSeparator.Name = "openMenuItemSeparator";
+			this.openMenuItemSeparator.Size = new System.Drawing.Size(225, 6);
+			this.openMenuItemSeparator.Visible = false;
 			// 
 			// registerMenuItem
 			// 
@@ -323,20 +337,6 @@ namespace WindowsAuthenticator
 			this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
 			this.notifyIcon.Text = "WinAuth";
 			this.notifyIcon.DoubleClick += new System.EventHandler(this.notifyIcon_DoubleClick);
-			// 
-			// openMenuItem
-			// 
-			this.openMenuItem.Name = "openMenuItem";
-			this.openMenuItem.Size = new System.Drawing.Size(228, 22);
-			this.openMenuItem.Text = "Open";
-			this.openMenuItem.Visible = false;
-			this.openMenuItem.Click += new System.EventHandler(this.openMenuItem_Click);
-			// 
-			// openMenuItemSeparator
-			// 
-			this.openMenuItemSeparator.Name = "openMenuItemSeparator";
-			this.openMenuItemSeparator.Size = new System.Drawing.Size(225, 6);
-			this.openMenuItemSeparator.Visible = false;
 			// 
 			// calcCodeButton
 			// 

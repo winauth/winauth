@@ -163,12 +163,6 @@ namespace WindowsAuthenticator
 				this.cbHotKey.Focus();
 				return false;
 			}
-			if (this.tbWindowTitle.Text.Trim().Length == 0)
-			{
-				MessageBox.Show(this, "You must select enter a Windows Title", "Auto Login", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-				tbWindowTitle.Focus();
-				return false;
-			}
 			if (this.ckAdvanced.Checked == true && this.tbAdvanced.Text.Trim().Length == 0)
 			{
 				MessageBox.Show(this, "You must select enter some advanced key commands", "Auto Login", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
