@@ -359,7 +359,7 @@ namespace WindowsAuthenticator
 				SaveAuthenticator(Config.Filename);
 
 				// set title
-				this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
+				notifyIcon.Text = this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
 			}
 		}
 
@@ -526,7 +526,7 @@ namespace WindowsAuthenticator
 			{
 				WinAuthHelper.SaveAuthenticator(this, configFile, Config);
 				Config.Filename = configFile;
-				this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
+				notifyIcon.Text = this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
 				return true;
 			}
 			catch (Exception ex)
@@ -597,7 +597,7 @@ namespace WindowsAuthenticator
 			HookHotkey(this.Config);
 
 			// set filename and window title
-			this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
+			notifyIcon.Text = this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
 
 			// prompt to backup
 			InitializedForm initForm = new InitializedForm();
@@ -662,7 +662,7 @@ namespace WindowsAuthenticator
 			HookHotkey(this.Config);
 
 			// set filename and window title
-			this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
+			notifyIcon.Text = this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
 
 			// prompt to backup
 			InitializedForm initForm = new InitializedForm();
@@ -814,7 +814,7 @@ namespace WindowsAuthenticator
 			}
 
 			// set title
-			this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
+			notifyIcon.Text = this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
 
 			// check if current authenticator exists
 			//string authFile = Config.Filename;

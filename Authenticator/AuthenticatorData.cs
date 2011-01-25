@@ -496,7 +496,7 @@ namespace WindowsAuthenticator
 		/// <param name="plain">blace data to encrypt - hex representation of byte array</param>
 		/// <param name="key">key to use to encrpyt</param>
 		/// <returns>hex coded encrpyted string</returns>
-		private string Encrypt(string plain, string key)
+		public static string Encrypt(string plain, string key)
 		{
 			byte[] inBytes = Authenticator.StringToByteArray(plain);
 			byte[] keyBytes = Encoding.Default.GetBytes(key);
@@ -540,7 +540,7 @@ namespace WindowsAuthenticator
 		/// <param name="data">data string to be decrypted</param>
 		/// <param name="key">decryption key</param>
 		/// <returns>hex coded decrypted string</returns>
-		private string Decrypt(string data, string key)
+		public static string Decrypt(string data, string key)
 		{
 			// extract the salt from the data
 			byte[] salt = Authenticator.StringToByteArray(data.Substring(0, SALT_LENGTH*2));

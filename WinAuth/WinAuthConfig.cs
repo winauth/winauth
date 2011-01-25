@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -103,7 +104,7 @@ namespace WindowsAuthenticator
 		/// Create a new HotKeySequence from a loaded string
 		/// </summary>
 		/// <param name="data">XmlNode from config</param>
-		public HoyKeySequence(XmlNode autoLoginNode)
+		public HoyKeySequence(XmlNode autoLoginNode, string password)
 		{
 			bool boolVal = false;
 			XmlNode node = autoLoginNode.SelectSingleNode("modifiers");
@@ -139,7 +140,46 @@ namespace WindowsAuthenticator
 			node = autoLoginNode.SelectSingleNode("script");
 			if (node != null && node.InnerText.Length != 0)
 			{
-				AdvancedScript = node.InnerText;
+				string data = node.InnerText;
+
+				XmlAttribute attr = node.Attributes["encrypted"];
+				if (attr != null && attr.InnerText.Length != 0)
+				{
+					switch (attr.InnerText)
+					{
+						case "u":
+							{
+								// we are going to decrypt with the Windows User account key
+								byte[] cipher = Authenticator.StringToByteArray(data);
+								byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.CurrentUser);
+								data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+								break;
+							}
+						case "m":
+							{
+								// we are going to decrypt with the Windows local machine key
+								byte[] cipher = Authenticator.StringToByteArray(data);
+								byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
+								data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+								break;
+							}
+						case "y":
+							{
+								// we use an explicit password to encrypt data
+								if (string.IsNullOrEmpty(password) == true)
+								{
+									throw new EncrpytedSecretDataException();
+								}
+								data = AuthenticatorData.Decrypt(data, password);
+								byte[] plain = Authenticator.StringToByteArray(data);
+								data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+								break;
+							}
+						default:
+							break;
+					}
+				}
+				AdvancedScript = data;
 			}
 		}
 
@@ -147,7 +187,7 @@ namespace WindowsAuthenticator
 		/// Write data into the XmlWriter
 		/// </summary>
 		/// <param name="writer">XmlWriter to write to</param>
-		public void WriteXmlString(XmlWriter writer)
+		public void WriteXmlString(XmlWriter writer, AuthenticatorData.PasswordTypes passwordType, string password)
 		{
 			writer.WriteStartElement("autologin");
 
@@ -176,7 +216,39 @@ namespace WindowsAuthenticator
 			writer.WriteEndElement();
 			//
 			writer.WriteStartElement("script");
-			writer.WriteCData(AdvancedScript.Replace("\n", string.Empty));
+			string script = AdvancedScript.Replace("\n", string.Empty);
+			switch (passwordType)
+			{
+				case AuthenticatorData.PasswordTypes.Explicit:
+					{
+						byte[] plain = Encoding.UTF8.GetBytes(script);
+						script = Authenticator.ByteArrayToString(plain);
+						script = AuthenticatorData.Encrypt(script, password);
+						writer.WriteAttributeString("encrypted", "y");
+						break;
+					}
+				case AuthenticatorData.PasswordTypes.User:
+					{
+						byte[] plain = Encoding.UTF8.GetBytes(script);
+						byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.CurrentUser);
+						script = Authenticator.ByteArrayToString(cipher);
+						writer.WriteAttributeString("encrypted", "u");
+						break;
+					}
+				case AuthenticatorData.PasswordTypes.Machine:
+					{
+						// we encrypt the data using the Local Machine account key
+						byte[] plain = Encoding.UTF8.GetBytes(script);
+						byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.LocalMachine);
+						script = Authenticator.ByteArrayToString(cipher);
+						writer.WriteAttributeString("encrypted", "m");
+						break;
+					}
+				default:
+					break;
+			}
+			writer.WriteCData(script);
+			//writer.WriteCData(AdvancedScript.Replace("\n", string.Empty));
 			writer.WriteEndElement();
 
 			writer.WriteEndElement();
@@ -329,7 +401,7 @@ namespace WindowsAuthenticator
 			//
 			if (this.AutoLogin != null)
 			{
-				this.AutoLogin.WriteXmlString(writer);
+				this.AutoLogin.WriteXmlString(writer, this.Authenticator.Data.PasswordType, this.Authenticator.Data.Password);
 			}
 			//
 			//if (string.IsNullOrEmpty(config.AuthenticatorFile) == false)

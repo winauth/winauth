@@ -111,8 +111,10 @@ namespace WindowsAuthenticator
 				return config;
 			}
 
-			DialogResult configloaded = DialogResult.OK;
+			DialogResult configloaded;
 			do {
+				configloaded = DialogResult.OK;
+
 				try
 				{
 					XmlDocument doc = new XmlDocument();
@@ -189,11 +191,6 @@ namespace WindowsAuthenticator
 					{
 						config.HideSerial = boolVal;
 					}
-					node = doc.DocumentElement.SelectSingleNode("autologin");
-					if (node != null && node.InnerText.Length != 0)
-					{
-						config.AutoLogin = new HoyKeySequence(node);
-					}
 
 					// load the authenticator(s) - may have multiple authenticators in future version
 					XmlNodeList nodes = doc.DocumentElement.SelectNodes("authenticator");
@@ -254,6 +251,13 @@ namespace WindowsAuthenticator
 							//  MessageBox.Show(form, "The file does not contain valid authenticator data.", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
 							//}
 						}
+					}
+
+					// get the autologin node after we have gotten the pasword
+					node = doc.DocumentElement.SelectSingleNode("autologin");
+					if (node != null && node.InnerText.Length != 0)
+					{
+						config.AutoLogin = new HoyKeySequence(node, config.Authenticator.Data.Password);
 					}
 				}
 				catch (Exception ex)
