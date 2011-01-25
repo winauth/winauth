@@ -96,6 +96,11 @@ namespace WindowsAuthenticator
 		/// </summary>
 		private bool m_explictClose;
 
+		/// <summary>
+		/// Flag that the clipboard is erroring and we don't display any more error messages
+		/// </summary>
+		private bool m_ignoreClipboard;
+
 		#endregion
 
 		#region Properties
@@ -643,10 +648,30 @@ namespace WindowsAuthenticator
 			{
 				string code = Authenticator.CalculateCode();
 				codeField.Text = code;
-				if (CopyOnCode == true)
+				if (CopyOnCode == true && m_ignoreClipboard == false)
 				{
-					Clipboard.Clear();
-					Clipboard.SetDataObject(code, true);
+					bool clipRetry = false;
+					do
+					{
+						try
+						{
+							Clipboard.Clear();
+							Clipboard.SetDataObject(code, true);
+						}
+						catch (ExternalException )
+						{
+							// only show an error the first time
+							clipRetry = (MessageBox.Show(this, "Unable to copy your code to the clipboard. Another application is probably using it.\n\nTry again?",
+								WinAuth.APPLICATION_NAME,
+								MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
+							if (clipRetry == false)
+							{
+								// dont show error again...gets annoying
+								m_ignoreClipboard = true;
+							}
+						}
+					}
+					while (clipRetry == true);
 				}
 
 				serialLabel.Text = Authenticator.Data.Serial;
