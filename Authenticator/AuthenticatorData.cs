@@ -275,6 +275,16 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Create a new AuthenticatorData object from a root xml node
+		/// </summary>
+		/// <param name="rootnode">Root node holding authenticator data</param>
+		/// <param name="password"></param>
+		public AuthenticatorData(XmlNode rootnode, string password)
+		{
+			LoadXmlSettings(rootnode, password);
+		}
+
+		/// <summary>
 		/// Handle reading an XML config file with optional password
 		/// </summary>
 		/// <param name="xr">XmlReader to read</param>
@@ -283,9 +293,18 @@ namespace WindowsAuthenticator
 		{
 			XmlDocument doc = new XmlDocument();
 			doc.Load(xr);
+			LoadXmlSettings(doc.DocumentElement, password);
+		}
 
+		/// <summary>
+		/// Load xml authenticator data from a XmlNode
+		/// </summary>
+		/// <param name="rootnode">top XmlNode to load</param>
+		/// <param name="password">password for decryption</param>
+		private void LoadXmlSettings(XmlNode rootnode, string password)
+		{
 			// is the Mobile Authenticator file? <xml.../><map>...</map>
-			XmlNode node = doc.DocumentElement.SelectSingleNode("/map/string[@name='" + BMA_HASH_NAME + "']");
+			XmlNode node = rootnode.SelectSingleNode("/map/string[@name='" + BMA_HASH_NAME + "']");
 			if (node != null)
 			{
 				string data = node.InnerText;
@@ -304,7 +323,7 @@ namespace WindowsAuthenticator
 
 				// get offset value
 				long offset = 0;
-				node = doc.DocumentElement.SelectSingleNode("/map/long[@name='" + BMA_OFFSET_NAME + "']");
+				node = rootnode.SelectSingleNode("/map/long[@name='" + BMA_OFFSET_NAME + "']");
 				if (node != null && LongTryParse(node.Attributes["value"].InnerText, out offset) /* long.TryParse(node.Attributes["value"].InnerText, out offset) == true */)
 				{
 					ServerTimeDiff = offset;
@@ -316,7 +335,7 @@ namespace WindowsAuthenticator
 			}
 
 			// read version 0.3 config
-			node = doc.DocumentElement.SelectSingleNode("/AuthenticatorData[@version='0.3']/Data");
+			node = rootnode.SelectSingleNode("/AuthenticatorData[@version='0.3']/Data");
 			if (node != null)
 			{
 				string data = node.InnerText;
@@ -339,19 +358,19 @@ namespace WindowsAuthenticator
 			}
 
 			// read version 0.4 config
-			node = doc.DocumentElement.SelectSingleNode("/map[@version='0.4']/string[@name='data']");
+			node = rootnode.SelectSingleNode("/map[@version='0.4']/string[@name='data']");
 			if (node != null)
 			{
 				SecretData = node.InnerText;
 				//
 				long offset = 0;
-				node = doc.DocumentElement.SelectSingleNode("long[@name='servertimediff']");
+				node = rootnode.SelectSingleNode("long[@name='servertimediff']");
 				if (node != null && LongTryParse(node.InnerText, out offset) == true /* long.TryParse(node.InnerText, out offset) == true */)
 				{
 					ServerTimeDiff = offset;
 				}
 				//
-				node = doc.DocumentElement.SelectSingleNode("string[@name='region']");
+				node = rootnode.SelectSingleNode("string[@name='region']");
 				if (node != null)
 				{
 					Region = node.InnerText;
@@ -363,7 +382,7 @@ namespace WindowsAuthenticator
 			}
 
 			// read our curent config string
-			node = doc.DocumentElement.SelectSingleNode("secretdata");
+			node = rootnode.SelectSingleNode("secretdata");
 			if (node != null)
 			{
 				string data = node.InnerText;
@@ -402,13 +421,13 @@ namespace WindowsAuthenticator
 				SecretData = data;
 
 				long offset = 0;
-				node = doc.DocumentElement.SelectSingleNode("servertimediff");
+				node = rootnode.SelectSingleNode("servertimediff");
 				if (node != null && LongTryParse(node.InnerText, out offset) == true /* long.TryParse(node.InnerText, out offset) == true */)
 				{
 					ServerTimeDiff = offset;
 				}
 
-				node = doc.DocumentElement.SelectSingleNode("region");
+				node = rootnode.SelectSingleNode("region");
 				if (node != null)
 				{
 					Region = node.InnerText;
@@ -426,12 +445,12 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Write the data object to an XmlWriter 
 		/// </summary>
-		/// <param name="writer"></param>
+		/// <param name="writer">XmlWriter to save data</param>
 		public void WriteXmlString(XmlWriter writer)
 		{
-			writer.WriteStartDocument(true);
-			writer.WriteStartElement("winauth");
-			writer.WriteAttributeString("version", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(2));
+			//writer.WriteStartDocument(true);
+			writer.WriteStartElement("authenticator");
+			//writer.WriteAttributeString("version", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(2));
 			//
 			writer.WriteStartElement("servertimediff");
 			writer.WriteString(ServerTimeDiff.ToString());
@@ -468,7 +487,7 @@ namespace WindowsAuthenticator
 			writer.WriteEndElement();
 			//
 			writer.WriteEndElement();
-			writer.WriteEndDocument();
+			//writer.WriteEndDocument();
 		}
 
 		/// <summary>

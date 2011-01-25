@@ -42,11 +42,6 @@ namespace WindowsAuthenticator
 		/// </summary>
 		public const int CODE_DISPLAY_DURATION = 10;
 
-		/// <summary>
-		/// Number of password attempts
-		/// </summary>
-		private const int MAX_PASSWORD_RETRIES = 3;
-
 		#region Initialization
 
 		/// <summary>
@@ -62,14 +57,9 @@ namespace WindowsAuthenticator
 		#region Member Data
 
 		/// <summary>
-		/// Confiuration settings for the application
+		/// Configuration settings for the application (including the Authenticator data)
 		/// </summary>
 		private WinAuthConfig Config { get; set; }
-
-		/// <summary>
-		/// Current loaded Authenticator object
-		/// </summary>
-		private Authenticator m_authenticator;
 
 		/// <summary>
 		/// Time for next code refresh
@@ -108,17 +98,17 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Get/set the file name of the authenticator's data
 		/// </summary>
-		public string AuthenticatorFile
-		{
-			get
-			{
-				return Config.AuthenticatorFile;
-			}
-			set
-			{
-				Config.AuthenticatorFile = value;
-			}
-		}
+		//public string AuthenticatorFile
+		//{
+		//  get
+		//  {
+		//    return Config.Filename;
+		//  }
+		//  set
+		//  {
+		//    Config.Filename = value;
+		//  }
+		//}
 
 		/// <summary>
 		/// Get/set the current Authenticator
@@ -127,11 +117,11 @@ namespace WindowsAuthenticator
 		{
 			get
 			{
-				return m_authenticator;
+				return Config.Authenticator;
 			}
 			set
 			{
-				m_authenticator = value;
+				Config.Authenticator = value;
 			}
 		}
 
@@ -298,9 +288,82 @@ namespace WindowsAuthenticator
 		#region Private Functions
 
 		/// <summary>
-		/// Load authenticator data from a file, or prompt for a file
+		/// Load a new authenticator by prompting for a file
 		/// </summary>
-		/// <param name="authFile">data file name or null</param>
+		private void LoadAuthenticator()
+		{
+			// use default or the path of the current authenticator
+			string configDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuth.APPLICATION_NAME);
+			string configFile = WinAuthHelper.DEFAULT_AUTHENTICATOR_FILE_NAME;
+			if (string.IsNullOrEmpty(Config.Filename) == false)
+			{
+				configFile = Path.GetFileName(Config.Filename);
+				configDirectory = Path.GetDirectoryName(Config.Filename);
+			}
+
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.AddExtension = true;
+			ofd.CheckFileExists = true;
+			ofd.DefaultExt = "xml";
+			ofd.InitialDirectory = configDirectory;
+			ofd.FileName = configFile;
+			ofd.Filter = "Authenticator Data (*.xml)|*.xml|All Files (*.*)|*.*";
+			ofd.RestoreDirectory = true;
+			ofd.ShowReadOnly = false;
+			ofd.Title = "Load Authenticator";
+			DialogResult result = ofd.ShowDialog(this);
+			if (result != System.Windows.Forms.DialogResult.OK)
+			{
+				return;
+			}
+			configFile = ofd.FileName;
+			if (File.Exists(configFile) == false)
+			{
+				return;
+			}
+
+			// if the file is xml, could be our 1.4 config, 1.3 authenticator or android. Otherwise is an import
+			WinAuthConfig config = WinAuthHelper.LoadConfig(this, configFile, null);
+			AuthenticatorData data = (config != null && config.Authenticator != null ? config.Authenticator.Data : null);
+			if (config != null && data != null)
+			{
+				// if there is no filename, we imported a different authenticator, so clone some of the current config
+				if (string.IsNullOrEmpty(config.Filename) == true)
+				{
+					// set specific authenticator settings
+					config.AllowCopy = Config.AllowCopy;
+					config.AlwaysOnTop = Config.AlwaysOnTop;
+					config.AutoRefresh = Config.AutoRefresh;
+					config.CopyOnCode = Config.CopyOnCode;
+					config.HideSerial = Config.HideSerial;
+					config.UseTrayIcon = Config.UseTrayIcon;
+					
+					// set the filename
+					config.Filename = configFile;
+				}
+
+				// if this was an import, i.e. an .rms file, then clear authFile so we are forced to save a new name
+				if (data.LoadedFormat != AuthenticatorData.FileFormat.WinAuth)
+				{
+					config.Filename = null;
+				}
+
+				// set up the Authenticator
+				Config = config;
+				// unhook and rehook hotkey
+				HookHotkey(this.Config);
+				// show the new code
+				ShowCode();
+
+				// re-save
+				SaveAuthenticator(Config.Filename);
+
+				// set title
+				this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
+			}
+		}
+
+/*
 		private void LoadAuthenticator(string authFile)
 		{
 			// if no file, prompt
@@ -408,17 +471,25 @@ namespace WindowsAuthenticator
 				SaveAuthenticator(null);
 			}
 		}
+*/
 
 		/// <summary>
-		/// Save the current Authenticator's data into a file
+		/// Save the current authenticator into a file
 		/// </summary>
-		/// <param name="authFile">file name to save data or prompt if null</param>
-		private bool SaveAuthenticator(string authFile)
+		/// <param name="configFile">file to save or null to prompt</param>
+		/// <returns>true if saved</returns>
+		private bool SaveAuthenticator(string configFile)
 		{
-			if (authFile == null)
+			if (string.IsNullOrEmpty(configFile) == true)
 			{
 				// use the user's directory to save files
 				string configDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuth.APPLICATION_NAME);
+				configFile = WinAuthHelper.DEFAULT_AUTHENTICATOR_FILE_NAME;
+				if (string.IsNullOrEmpty(Config.Filename) == false)
+				{
+					configFile = Path.GetFileName(Config.Filename);
+					configDirectory = Path.GetDirectoryName(Config.Filename);
+				}
 				Directory.CreateDirectory(configDirectory);
 
 				// get the config file name
@@ -427,16 +498,8 @@ namespace WindowsAuthenticator
 				sfd.CheckPathExists = true;
 				sfd.DefaultExt = "xml";
 				sfd.Filter = "Authenticator Data (*.xml)|*.xml";
-				if (AuthenticatorFile != null)
-				{
-					sfd.InitialDirectory = Path.GetDirectoryName(AuthenticatorFile);
-					sfd.FileName = Path.GetFileName(AuthenticatorFile);
-				}
-				else
-				{
-					sfd.InitialDirectory = configDirectory;
-					sfd.FileName = WinAuth.DEFAULT_AUTHENTICATOR_FILE_NAME;
-				}
+				sfd.InitialDirectory = configDirectory;
+				sfd.FileName = configFile;
 				sfd.OverwritePrompt = true;
 				sfd.RestoreDirectory = true;
 				sfd.Title = "Save Authentication";
@@ -445,7 +508,7 @@ namespace WindowsAuthenticator
 				{
 					return false;
 				}
-				authFile = sfd.FileName;
+				configFile = sfd.FileName;
 
 				// request a password
 				RequestPasswordForm requestPasswordForm = new RequestPasswordForm();
@@ -454,27 +517,25 @@ namespace WindowsAuthenticator
 				{
 					return false;
 				}
-				Authenticator.Data.PasswordType = requestPasswordForm.PasswordType;
-				Authenticator.Data.Password = (requestPasswordForm.PasswordType == AuthenticatorData.PasswordTypes.Explicit ? requestPasswordForm.Password : null);
+				Config.Authenticator.Data.PasswordType = requestPasswordForm.PasswordType;
+				Config.Authenticator.Data.Password = (requestPasswordForm.PasswordType == AuthenticatorData.PasswordTypes.Explicit ? requestPasswordForm.Password : null);
 			}
 
 			// save data
 			try
 			{
-				WinAuthHelper.SaveAuthenticator(authFile, Authenticator);
-				AuthenticatorFile = authFile;
+				WinAuthHelper.SaveAuthenticator(this, configFile, Config);
+				Config.Filename = configFile;
+				this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
+				return true;
 			}
 			catch (Exception ex)
 			{
 				MessageBox.Show(this,
-					"There was an error writing to your authenticator file " + authFile + " (" + ex.Message + ").",
+					"There was an error writing to your authenticator file " + configFile + " (" + ex.Message + ").",
 					"New Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
-
-			// update config file
-			WinAuthHelper.SaveConfig(this.Config);
-			return true;
 		}
 
 		/// <summary>
@@ -519,22 +580,26 @@ namespace WindowsAuthenticator
 				return false;
 			}
 
-			// remember old Auth
-			Authenticator oldAuth = this.Authenticator;
+			// remember old config
+			WinAuthConfig oldconfig = Config;
 			// set the new authenticator
-			Authenticator = authenticator;
-
+			Config.Authenticator = authenticator;
+			Config.AutoLogin = null; // clear autologin
 			// save config data
 			if (SaveAuthenticator(null) == false)
 			{
-				// restore auth
-				this.Authenticator = oldAuth;
+				// restore authenticator
+				Config = oldconfig;
 				return false;
 			}
 
-			// update config file
-			WinAuthHelper.SaveConfig(this.Config);
+			// unhook and rehook hotkey
+			HookHotkey(this.Config);
 
+			// set filename and window title
+			this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
+
+			// prompt to backup
 			InitializedForm initForm = new InitializedForm();
 			if (initForm.ShowDialog(this) == System.Windows.Forms.DialogResult.Yes)
 			{
@@ -550,8 +615,9 @@ namespace WindowsAuthenticator
 		private void BackupData()
 		{
 			BackupForm backup = new BackupForm();
-			backup.CurrentAuthenticator = this.Authenticator;
-			backup.CurrentAuthenticatorFile = Config.AuthenticatorFile;
+			//backup.CurrentAuthenticator = this.Authenticator;
+			backup.CurrentAuthenticatorFile = Config.Filename;
+			backup.CurrentConfig = this.Config;
 			backup.ShowDialog(this);
 		}
 
@@ -579,22 +645,26 @@ namespace WindowsAuthenticator
 				return false;
 			}
 
-			// remember old Auth
-			Authenticator oldAuth = this.Authenticator;
+			// remember old
+			WinAuthConfig oldconfig = Config;
 			// set the new authenticator
-			Authenticator = import.Authenticator;
-
+			Config.Authenticator = import.Authenticator;
+			Config.AutoLogin = null;
 			// save config data
 			if (SaveAuthenticator(null) == false)
 			{
 				// restore auth
-				this.Authenticator = oldAuth;
+				Config = oldconfig;
 				return false;
 			}
 
-			// update config file
-			WinAuthHelper.SaveConfig(this.Config);
+			// unhook and rehook hotkey
+			HookHotkey(this.Config);
 
+			// set filename and window title
+			this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
+
+			// prompt to backup
 			InitializedForm initForm = new InitializedForm();
 			if (initForm.ShowDialog(this) == System.Windows.Forms.DialogResult.Yes)
 			{
@@ -703,21 +773,56 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void MainForm_Load(object sender, EventArgs e)
 		{
+			// get any command arguments
+			string configFile = null;
+			string password = null;
+			//
+			string[] args = Environment.GetCommandLineArgs();
+			for (int i = 1; i < args.Length; i++)
+			{
+				string arg = args[i];
+				if (arg[0] == '-')
+				{
+					switch (arg)
+					{
+						case "-min":
+						case "--minimize":
+							// set initial state as minimized
+							this.WindowState = FormWindowState.Minimized;
+							break;
+						case "-p":
+						case "--password":
+							// set explicit password to use
+							i++;
+							password = args[i];
+							break;
+						default:
+							break;
+					}
+				}
+				else
+				{
+					configFile = arg;
+				}
+			}
 			// load config data
-			this.Config = WinAuthHelper.LoadConfig(this);
+			this.Config = WinAuthHelper.LoadConfig(this, configFile, password);
 			if (this.Config == null)
 			{
 				System.Diagnostics.Process.GetCurrentProcess().Kill();
 				return;
 			}
 
+			// set title
+			this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
+
 			// check if current authenticator exists
-			string authFile = Config.AuthenticatorFile;
-			Config.AuthenticatorFile = null; // clear until we confirm we loaded
-			if (string.IsNullOrEmpty(authFile) == false && File.Exists(authFile) == true)
-			{
-				LoadAuthenticator(authFile);
-			}
+			//string authFile = Config.Filename;
+			//Config.Filename = null; // clear until we confirm we loaded
+			//if (string.IsNullOrEmpty(authFile) == false && File.Exists(authFile) == true)
+			//{
+			//  LoadAuthenticator(authFile);
+			//}
 
 			Authenticator authenticator = this.Authenticator;
 			serialLabel.Visible = !Config.HideSerial;
@@ -728,16 +833,43 @@ namespace WindowsAuthenticator
 			progressBar.Visible = (authenticator != null && AutoRefresh == true);
 
 			// hook our hotkey to send code to target window (e.g . Ctrl-Alt-C)
-			if (this.Config.AutoLogin != null)
-			{
-				Dictionary<Keys, WinAPI.KeyModifiers> keys = new Dictionary<Keys, WinAPI.KeyModifiers>();
-				keys.Add((Keys)this.Config.AutoLogin.HotKey, this.Config.AutoLogin.Modifiers);
-				m_hook = new KeyboardHook(keys);
-				m_hook.KeyDown += new KeyboardHook.KeyboardHookEventHandler(Hotkey_KeyDown);
-			}
+			 //TODO: we need to unhook and rehook when we load a new authenticator
+			HookHotkey(this.Config);
+			//if (this.Config.AutoLogin != null)
+			//{
+			//  Dictionary<Keys, WinAPI.KeyModifiers> keys = new Dictionary<Keys, WinAPI.KeyModifiers>();
+			//  keys.Add((Keys)this.Config.AutoLogin.HotKey, this.Config.AutoLogin.Modifiers);
+			//  m_hook = new KeyboardHook(keys);
+			//  m_hook.KeyDown += new KeyboardHook.KeyboardHookEventHandler(Hotkey_KeyDown);
+			//}
 
 			// finally enable the timer to show code changes
 			refreshTimer.Enabled = true;			
+		}
+
+		private void UnhookHotkey()
+		{
+			// remove the hotkey hook
+			if (m_hook != null)
+			{
+				m_hook.UnHook();
+				m_hook = null;
+			}
+		}
+
+		private void HookHotkey(WinAuthConfig config)
+		{
+			// unhook any old hotkey
+			UnhookHotkey();
+
+			// hook new hotkey
+			if (config != null && config.AutoLogin != null)
+			{
+				Dictionary<Keys, WinAPI.KeyModifiers> keys = new Dictionary<Keys, WinAPI.KeyModifiers>();
+				keys.Add((Keys)config.AutoLogin.HotKey, config.AutoLogin.Modifiers);
+				m_hook = new KeyboardHook(keys);
+				m_hook.KeyDown += new KeyboardHook.KeyboardHookEventHandler(Hotkey_KeyDown);
+			}
 		}
 
 		/// <summary>
@@ -785,7 +917,10 @@ namespace WindowsAuthenticator
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			// save current config
-			WinAuthHelper.SaveConfig(this.Config);
+			if (Config.Authenticator != null)
+			{
+				SaveAuthenticator(Config.Filename);
+			}
 
 			// keep in the tray when closing Form 
 			if (UseTrayIcon == true && this.Visible == true && m_explictClose == false)
@@ -798,11 +933,12 @@ namespace WindowsAuthenticator
 			}
 
 			// remove the hotkey hook
-			if (m_hook != null)
-			{
-				m_hook.UnHook();
-				m_hook = null;
-			}
+			UnhookHotkey();
+			//if (m_hook != null)
+			//{
+			//  m_hook.UnHook();
+			//  m_hook = null;
+			//}
 
 			// ensure the notify icon is closed
 			notifyIcon.Visible = false;
@@ -912,7 +1048,7 @@ namespace WindowsAuthenticator
 		private void loadMenuItem_Click(object sender, EventArgs e)
 		{
 			// load the data
-			LoadAuthenticator(null);
+			LoadAuthenticator();
 		}
 
 		/// <summary>
@@ -924,7 +1060,7 @@ namespace WindowsAuthenticator
 		{
 			if (Authenticator != null)
 			{
-				SaveAuthenticator(AuthenticatorFile);
+				SaveAuthenticator(Config.Filename);
 			}
 		}
 
@@ -994,19 +1130,22 @@ namespace WindowsAuthenticator
 				this.Config.AutoLogin = options.Sequence;
 
 				// remove the old hook
-				if (m_hook != null)
-				{
-					m_hook.UnHook();
-					m_hook = null;
-				}
+				UnhookHotkey();
+				//if (m_hook != null)
+				//{
+				//  m_hook.UnHook();
+				//  m_hook = null;
+				//}
+
 				// install the new hook
-				if (this.Config.AutoLogin != null)
-				{
-					Dictionary<Keys, WinAPI.KeyModifiers> keys = new Dictionary<Keys, WinAPI.KeyModifiers>();
-					keys.Add((Keys)this.Config.AutoLogin.HotKey, this.Config.AutoLogin.Modifiers);
-					m_hook = new KeyboardHook(keys);
-					m_hook.KeyDown += new KeyboardHook.KeyboardHookEventHandler(Hotkey_KeyDown);
-				}
+				HookHotkey(this.Config);
+				//if (this.Config.AutoLogin != null)
+				//{
+				//  Dictionary<Keys, WinAPI.KeyModifiers> keys = new Dictionary<Keys, WinAPI.KeyModifiers>();
+				//  keys.Add((Keys)this.Config.AutoLogin.HotKey, this.Config.AutoLogin.Modifiers);
+				//  m_hook = new KeyboardHook(keys);
+				//  m_hook.KeyDown += new KeyboardHook.KeyboardHookEventHandler(Hotkey_KeyDown);
+				//}
 			}
 		}
 

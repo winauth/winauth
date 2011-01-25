@@ -144,6 +144,45 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Write data into the XmlWriter
+		/// </summary>
+		/// <param name="writer">XmlWriter to write to</param>
+		public void WriteXmlString(XmlWriter writer)
+		{
+			writer.WriteStartElement("autologin");
+
+			writer.WriteStartElement("modifiers");
+			writer.WriteString(Authenticator.ByteArrayToString(BitConverter.GetBytes((int)Modifiers)));
+			writer.WriteEndElement();
+			//
+			writer.WriteStartElement("hotkey");
+			writer.WriteString(Authenticator.ByteArrayToString(BitConverter.GetBytes((ushort)HotKey)));
+			writer.WriteEndElement();
+			//
+			writer.WriteStartElement("windowtitle");
+			writer.WriteCData(WindowTitle ?? string.Empty);
+			writer.WriteEndElement();
+			//
+			writer.WriteStartElement("processname");
+			writer.WriteCData(ProcessName ?? string.Empty);
+			writer.WriteEndElement();
+			//
+			writer.WriteStartElement("windowtitleregex");
+			writer.WriteValue(WindowTitleRegex);
+			writer.WriteEndElement();
+			//
+			writer.WriteStartElement("advanced");
+			writer.WriteValue(Advanced);
+			writer.WriteEndElement();
+			//
+			writer.WriteStartElement("script");
+			writer.WriteCData(AdvancedScript.Replace("\n", string.Empty));
+			writer.WriteEndElement();
+
+			writer.WriteEndElement();
+		}
+	
+		/// <summary>
 		/// Get an xml string representation of the HotKeySequence
 		/// </summary>
 		/// <returns>string representation</returns>
@@ -167,15 +206,12 @@ namespace WindowsAuthenticator
 	/// </summary>
 	public class WinAuthConfig : ICloneable
 	{
-		/// <summary>
-		/// Get/set name of current authentication data file
-		/// </summary>
-		public string AuthenticatorFile { get; set; }
+		#region System Settings
 
 		/// <summary>
-		/// Get/set auto refresh flag
+		/// Get/set file name of config data
 		/// </summary>
-		public bool AutoRefresh { get; set; }
+		public string Filename { get; set; }
 
 		/// <summary>
 		/// Get/set on top flag
@@ -190,7 +226,21 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Get/set start with windows flag
 		/// </summary>
-		public bool StartWithWindows{ get; set; }
+		public bool StartWithWindows { get; set; }
+
+		#endregion
+
+		#region Authenticator Settings
+
+		/// <summary>
+		/// Current authenticator
+		/// </summary>
+		public Authenticator Authenticator { get; set; }
+
+		/// <summary>
+		/// Get/set auto refresh flag
+		/// </summary>
+		public bool AutoRefresh { get; set; }
 
 		/// <summary>
 		/// Get/set allow copy flag
@@ -212,12 +262,13 @@ namespace WindowsAuthenticator
 		/// </summary>
 		public HoyKeySequence AutoLogin { get; set; }
 
+		#endregion
+
 		/// <summary>
 		/// Create a default config object
 		/// </summary>
 		public WinAuthConfig()
 		{
-			AutoRefresh = true;
 			AlwaysOnTop = true;
 		}
 
@@ -229,7 +280,71 @@ namespace WindowsAuthenticator
 		/// <returns></returns>
 		public object Clone()
 		{
-			return this.MemberwiseClone();
+			WinAuthConfig clone = (WinAuthConfig)this.MemberwiseClone();
+			// close the internal authenticator so the data is kept separate
+			clone.Authenticator = (this.Authenticator == null ? null : new Authenticator((AuthenticatorData)this.Authenticator.Data.Clone()));
+			return clone;
+		}
+
+		/// <summary>
+		/// Write the data as xml into an XmlWriter
+		/// </summary>
+		/// <param name="writer">XmlWriter to write config</param>
+		public void WriteXmlString(XmlWriter writer)
+		{
+			// get the version of the application
+			Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+
+			writer.WriteStartDocument(true);
+			writer.WriteStartElement("WinAuth");
+			writer.WriteAttributeString("version", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(2));
+			//
+			writer.WriteStartElement("alwaysontop");
+			writer.WriteValue(this.AlwaysOnTop);
+			writer.WriteEndElement();
+			//
+			writer.WriteStartElement("usetrayicon");
+			writer.WriteValue(this.UseTrayIcon);
+			writer.WriteEndElement();
+			//
+			writer.WriteStartElement("startwithwindows");
+			writer.WriteValue(this.StartWithWindows);
+			writer.WriteEndElement();
+			//
+			writer.WriteStartElement("autorefresh");
+			writer.WriteValue(this.AutoRefresh);
+			writer.WriteEndElement();
+			//
+			writer.WriteStartElement("allowcopy");
+			writer.WriteValue(this.AllowCopy);
+			writer.WriteEndElement();
+			//
+			writer.WriteStartElement("copyoncode");
+			writer.WriteValue(this.CopyOnCode);
+			writer.WriteEndElement();
+			//
+			writer.WriteStartElement("hideserial");
+			writer.WriteValue(this.HideSerial);
+			writer.WriteEndElement();
+			//
+			if (this.AutoLogin != null)
+			{
+				this.AutoLogin.WriteXmlString(writer);
+			}
+			//
+			//if (string.IsNullOrEmpty(config.AuthenticatorFile) == false)
+			//{
+			//  node = doc.CreateElement("AuthenticatorFile");
+			//  node.InnerText = config.AuthenticatorFile.ToString();
+			//  root.AppendChild(node);
+			//}
+
+			// save the authenticator to the config file
+			this.Authenticator.Data.WriteXmlString(writer);
+
+			// close WinAuth
+			writer.WriteEndElement();
+			writer.WriteEndDocument();
 		}
 
 		#endregion

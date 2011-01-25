@@ -33,14 +33,9 @@ namespace WindowsAuthenticator
 		public const string APPLICATION_NAME = "Windows Authenticator";
 
 		/// <summary>
-		/// Name of application config file
+		/// Window title for this application
 		/// </summary>
-		public const string DEFAULT_CONFIG_FILE_NAME = "winauth.xml";
-
-		/// <summary>
-		/// Name of default authenticator file
-		/// </summary>
-		public const string DEFAULT_AUTHENTICATOR_FILE_NAME = "authenticator.xml";
+		public const string APPLICATION_TITLE = "WinAuth";
 
 		/// <summary>
 		/// Winuath email address used as sender to backup emails

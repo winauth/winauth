@@ -92,7 +92,7 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// The current authenticator
 		/// </summary>
-		public Authenticator CurrentAuthenticator { get; set; }
+		public WinAuthConfig CurrentConfig { get; set; }
 
 		/// <summary>
 		/// The current authenticator
@@ -113,15 +113,18 @@ namespace WindowsAuthenticator
 		/// <returns>DialogResult for Retry, Cancel or OK</returns>
 		private DialogResult SendBackup()
 		{
-			// get the authenticator file. In case the authenticator is encrpyted, we save off a plain version.
+			// get the config/authenticator data. In case the authenticator is encrpted, we clone a plain version.
 			StringBuilder dataxml = new StringBuilder();
 			XmlWriterSettings xmlsettings = new XmlWriterSettings();
 			xmlsettings.Encoding = System.Text.Encoding.Unicode;
 			using (XmlWriter xw = XmlWriter.Create(dataxml, xmlsettings))
 			{
-				AuthenticatorData data = (AuthenticatorData)CurrentAuthenticator.Data.Clone();
-				data.PasswordType = AuthenticatorData.PasswordTypes.None;
-				data.WriteXmlString(xw);
+				WinAuthConfig config = (WinAuthConfig)CurrentConfig.Clone();
+				if (config.Authenticator != null)
+				{
+					config.Authenticator.Data.PasswordType = AuthenticatorData.PasswordTypes.None;
+				}
+				config.WriteXmlString(xw);
 			}
 
 			// any password?
@@ -150,7 +153,6 @@ namespace WindowsAuthenticator
 						entry.IsCrypted = encrypt;
 						entry.DateTime = DateTime.Now;
 						zos.PutNextEntry(entry);
-						//using (FileStream fs = File.OpenRead(datafile))
 						using (MemoryStream fs = new MemoryStream(System.Text.Encoding.Unicode.GetBytes(dataxml.ToString())))
 						{
 							byte[] buffer = new byte[4096];
