@@ -236,64 +236,83 @@ namespace WindowsAuthenticator
 				System.Threading.Thread.Sleep(200);
 			}
 
-			// for now just split into parts and run each
-			foreach (Match match in Regex.Matches(keys, @"\{.*?\}|[^\{]*", RegexOptions.Singleline))
+			// clear events and stop input
+			Application.DoEvents();
+			bool blocked = WinAPI.BlockInput(true);
+			try
 			{
-				// split into either {CMD d w} or just plain text
-				if (match.Success == true)
+				// for now just split into parts and run each
+				foreach (Match match in Regex.Matches(keys, @"\{.*?\}|[^\{]*", RegexOptions.Singleline))
 				{
-					string single = match.Value;
-					if (single.Length == 0)
+					// split into either {CMD d w} or just plain text
+					if (match.Success == true)
 					{
-						continue;
-					}
-
-					if (single[0] == '{')
-					{
-						// send command {COMMAND delay repeat}
-						Match cmdMatch = Regex.Match(single.Trim(), @"\{([^\s]+)\s*(\d*)\s*(\d*)\}");
-						if (cmdMatch.Success == true)
+						string single = match.Value;
+						if (single.Length == 0)
 						{
-							// extract the command and any optional delay and repeat
-							string cmd = cmdMatch.Groups[1].Value.ToUpper();
-							int delay = 0;
-							if (cmdMatch.Groups[2].Success == true && cmdMatch.Groups[2].Value.Length != 0)
+							continue;
+						}
+
+						if (single[0] == '{')
+						{
+							// send command {COMMAND delay repeat}
+							Match cmdMatch = Regex.Match(single.Trim(), @"\{([^\s]+)\s*(\d*)\s*(\d*)\}");
+							if (cmdMatch.Success == true)
 							{
-								int.TryParse(cmdMatch.Groups[2].Value, out delay);
-							}
-							int repeat = 1;
-							if (cmdMatch.Groups[3].Success == true && cmdMatch.Groups[3].Value.Length != 0)
-							{
-								int.TryParse(cmdMatch.Groups[3].Value, out repeat);
-							}
-							// run the command
-							switch (cmd)
-							{
-								case "ENTER":
-									SendKey('\n', delay, repeat);
-									break;
-								case "WAIT":
-									for (; repeat > 0; repeat--)
-									{
-										System.Threading.Thread.Sleep(delay);
-									}
-									break;
-								default:
-									Enum.Parse(typeof(WinAPI.VirtualKeyCode), "VK_" + cmd, true);
-									SendKey('\t', delay, repeat);
-									break;
+								// extract the command and any optional delay and repeat
+								string cmd = cmdMatch.Groups[1].Value.ToUpper();
+								int delay = 0;
+								if (cmdMatch.Groups[2].Success == true && cmdMatch.Groups[2].Value.Length != 0)
+								{
+									int.TryParse(cmdMatch.Groups[2].Value, out delay);
+								}
+								int repeat = 1;
+								if (cmdMatch.Groups[3].Success == true && cmdMatch.Groups[3].Value.Length != 0)
+								{
+									int.TryParse(cmdMatch.Groups[3].Value, out repeat);
+								}
+								// run the command
+								switch (cmd)
+								{
+									case "TAB":
+										SendKey('\t', delay, repeat);
+										break;
+									case "ENTER":
+										SendKey('\n', delay, repeat);
+										break;
+									case "WAIT":
+										for (; repeat > 0; repeat--)
+										{
+											System.Threading.Thread.Sleep(delay);
+										}
+										break;
+									default:
+										//Enum.Parse(typeof(WinAPI.VirtualKeyCode), "VK_" + cmd, true);
+										//SendKey('\t', delay, repeat);
+										break;
+								}
 							}
 						}
-					}
-					else
-					{
-						// plain text - send verbatim
-						foreach (char key in single)
+						else
 						{
-							SendKey(key);
+							// plain text - send verbatim
+							//foreach (char key in single)
+							//{
+							//  SendKey(key);
+							//}
+							SendKey(single);
 						}
 					}
 				}
+			}
+			finally
+			{
+				// resume input
+				if (blocked == true)
+				{
+					WinAPI.BlockInput(false);
+				}
+				Application.DoEvents();
 			}
 		}
 
@@ -307,11 +326,44 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Send a key string to the current window
+		/// </summary>
+		/// <param name="key">key string to send</param>
+		private void SendKey(string key)
+		{
+			SendKey(key, 0, 1);
+		}
+
+		/// <summary>
+		/// Send a key string to the current window a number of times with a delay after each key
+		/// </summary>
+		/// <param name="key">key string to send</param>
+		/// <param name="delay">delay in millisecs after each keypress</param>
+		/// <param name="repeat">number of times</param>
+		private void SendKey(string key, int delay, int repeat)
+		{
+			// escape any special codes for SendKeys
+			key = Regex.Replace(key, @"([()+\^%~{}])", "{$1}", RegexOptions.Multiline);
+			for (; repeat > 0; repeat--)
+			{
+				System.Windows.Forms.SendKeys.SendWait(key);
+				System.Threading.Thread.Sleep(delay != 0 ? delay : 50);
+			}
+			System.Windows.Forms.SendKeys.Flush();
+		}
+
+		/// <summary>
 		/// Send a single key to the current window a number of times with a delay after each key
 		/// </summary>
 		/// <param name="key">key to send</param>
 		/// <param name="delay">delay in millisecs after each keypress</param>
 		/// <param name="repeat">number of times</param>
+		private void SendKey(char key, int delay, int repeat)
+		{
+			SendKey(key.ToString(), delay, repeat);
+		}
+
+/*
 		private void SendKey(char key, int delay, int repeat)
 		{
 			for (; repeat > 0; repeat--)
@@ -445,6 +497,7 @@ namespace WindowsAuthenticator
 
 			return inputs;
 		}
+*/
 
 		/// <summary>
 		/// Find a window for the give process and/or title
@@ -827,6 +880,9 @@ namespace WindowsAuthenticator
 		internal static extern UInt32 SendInput(UInt32 numberOfInputs, INPUT[] inputs, Int32 sizeOfInputStructure);
 		[DllImport("user32.dll", SetLastError = true)]
 		internal static extern Int16 GetKeyState(UInt16 virtualKeyCode);
+		[DllImport("User32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		internal static extern bool BlockInput([MarshalAs(UnmanagedType.Bool)] bool fBlockIt);
 	}
 
 }
