@@ -45,8 +45,8 @@
 			this.aboutLabel.Name = "aboutLabel";
 			this.aboutLabel.Size = new System.Drawing.Size(381, 85);
 			this.aboutLabel.TabIndex = 1;
-			this.aboutLabel.Text = "WinAuth {0}.\r\n\r\nCopyright (C) 2010. Colin Mackie. All rights reserved.\r\n\r\nLicense" +
-					":\r\n";
+			this.aboutLabel.Text = "WinAuth {0}\r\n\r\nCopyright (C) 2010. Colin Mackie. All rights reserved.\r\n\r\nLicense:" +
+					"\r\n";
 			// 
 			// groupBox1
 			// 
