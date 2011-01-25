@@ -213,9 +213,9 @@ namespace WindowsAuthenticator
 		/// </summary>
 		/// <param name="processName"></param>
 		/// <param name="windowTitle"></param>
-		public KeyboardSender(string processName, string windowTitle)
+		public KeyboardSender(string windowtitle, string processname, bool useregex)
 		{
-			m_hWnd = FindWindow(processName, windowTitle);
+			m_hWnd = FindWindow(windowtitle, processname, useregex);
 		}
 
 		/// <summary>
@@ -505,7 +505,7 @@ namespace WindowsAuthenticator
 		/// <param name="processName">name of process</param>
 		/// <param name="windowTitle">text of window title</param>
 		/// <returns>Window handle if we can match the process and/or title</returns>
-		private static IntPtr FindWindow(string processName, string windowTitle)
+		private static IntPtr FindWindow(string windowTitle, string processName, bool useregex)
 		{
 			// get specific processes or all
 			Process[] processes = (string.IsNullOrEmpty(processName) == false ? Process.GetProcessesByName(processName) : Process.GetProcesses());
@@ -513,10 +513,34 @@ namespace WindowsAuthenticator
 			// if we have a title match it in the window titles
 			if (string.IsNullOrEmpty(windowTitle) == false)
 			{
-				string lowerWindowTitle = (windowTitle != null ? windowTitle.ToLower() : null);
+				if (useregex == true)
+				{
+					Regex regex = new Regex(windowTitle, RegexOptions.Singleline);
+					foreach (Process process in processes)
+					{
+						if (regex.IsMatch(process.MainWindowTitle) == true)
+						{
+							return process.MainWindowHandle;
+						}
+					}
+				}
+				else
+				{
+					string lowerWindowTitle = (windowTitle != null ? windowTitle.ToLower() : null);
+					foreach (Process process in processes)
+					{
+						if (process.MainWindowTitle.ToLower().IndexOf(lowerWindowTitle) != -1)
+						{
+							return process.MainWindowHandle;
+						}
+					}
+				}
+			}
+			else if (string.IsNullOrEmpty(processName) == false)
+			{
 				foreach (Process process in processes)
 				{
-					if (process.MainWindowTitle.ToLower().IndexOf(lowerWindowTitle) != -1)
+					if (string.Compare(process.ProcessName, processName, true) == 0)
 					{
 						return process.MainWindowHandle;
 					}

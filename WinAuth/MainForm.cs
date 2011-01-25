@@ -705,6 +705,11 @@ namespace WindowsAuthenticator
 		{
 			// load config data
 			this.Config = WinAuthHelper.LoadConfig(this);
+			if (this.Config == null)
+			{
+				System.Diagnostics.Process.GetCurrentProcess().Kill();
+				return;
+			}
 
 			// check if current authenticator exists
 			string authFile = Config.AuthenticatorFile;
@@ -748,7 +753,7 @@ namespace WindowsAuthenticator
 				try
 				{
 					// get keyboard sender
-					KeyboardSender keysend = new KeyboardSender(null, this.Config.AutoLogin.WindowTitle);
+					KeyboardSender keysend = new KeyboardSender(this.Config.AutoLogin.WindowTitle, this.Config.AutoLogin.ProcessName, this.Config.AutoLogin.WindowTitleRegex);
 
 					// get the current code
 					string code = Authenticator.CalculateCode();

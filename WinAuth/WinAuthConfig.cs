@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
 
 #if NUNIT
 using NUnit.Framework;
@@ -59,6 +60,16 @@ namespace WindowsAuthenticator
 		public string WindowTitle;
 
 		/// <summary>
+		/// Use regular expression for window title
+		/// </summary>
+		public bool WindowTitleRegex;
+
+		/// <summary>
+		/// Process name for script
+		/// </summary>
+		public string ProcessName;
+
+		/// <summary>
 		/// Create a new blank HotKeySequcen
 		/// </summary>
 		public HoyKeySequence()
@@ -89,22 +100,63 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
-		/// Get a string representation of the HotKeySequence
+		/// Create a new HotKeySequence from a loaded string
+		/// </summary>
+		/// <param name="data">XmlNode from config</param>
+		public HoyKeySequence(XmlNode autoLoginNode)
+		{
+			bool boolVal = false;
+			XmlNode node = autoLoginNode.SelectSingleNode("modifiers");
+			if (node != null && node.InnerText.Length != 0)
+			{
+				Modifiers = (WinAPI.KeyModifiers)BitConverter.ToInt32(Authenticator.StringToByteArray(node.InnerText), 0);
+			}
+			node = autoLoginNode.SelectSingleNode("hotkey");
+			if (node != null && node.InnerText.Length != 0)
+			{
+				HotKey = (WinAPI.VirtualKeyCode)BitConverter.ToUInt16(Authenticator.StringToByteArray(node.InnerText), 0);
+			}
+			node = autoLoginNode.SelectSingleNode("windowtitle");
+			if (node != null && node.InnerText.Length != 0)
+			{
+				WindowTitle = node.InnerText;
+			}
+			node = autoLoginNode.SelectSingleNode("windowtitleregex");
+			if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
+			{
+				WindowTitleRegex = boolVal;
+			}
+			node = autoLoginNode.SelectSingleNode("processname");
+			if (node != null && node.InnerText.Length != 0)
+			{
+				ProcessName = node.InnerText;
+			}
+			node = autoLoginNode.SelectSingleNode("advanced");
+			if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
+			{
+				Advanced = boolVal;
+			}
+			node = autoLoginNode.SelectSingleNode("script");
+			if (node != null && node.InnerText.Length != 0)
+			{
+				AdvancedScript = node.InnerText;
+			}
+		}
+
+		/// <summary>
+		/// Get an xml string representation of the HotKeySequence
 		/// </summary>
 		/// <returns>string representation</returns>
 		public override string ToString()
 		{
 			StringBuilder sb = new StringBuilder();
-			sb.Append(Authenticator.ByteArrayToString(BitConverter.GetBytes((int)Modifiers)));
-			sb.Append(Authenticator.ByteArrayToString(BitConverter.GetBytes((ushort)HotKey)));
-			sb.Append("\t");
-			sb.Append(WindowTitle ?? string.Empty);
-			sb.Append("\t");
-			sb.Append(Advanced == true ? "Y" : "N");
-			if (Advanced == true)
-			{
-				sb.Append(AdvancedScript.Replace("\n", string.Empty));
-			}
+			sb.Append("<modifiers>").Append(Authenticator.ByteArrayToString(BitConverter.GetBytes((int)Modifiers))).Append("</modifiers>");
+			sb.Append("<hotkey>").Append(Authenticator.ByteArrayToString(BitConverter.GetBytes((ushort)HotKey))).Append("</hotkey>");
+			sb.Append("<windowtitle><![CDATA[").Append(WindowTitle ?? string.Empty).Append("]]></windowtitle>");
+			sb.Append("<processname><![CDATA[").Append(ProcessName ?? string.Empty).Append("]]></processname>");
+			sb.Append("<windowtitleregex>").Append(WindowTitleRegex.ToString()).Append("</windowtitleregex>");
+			sb.Append("<advanced>").Append(Advanced.ToString()).Append("</advanced>");
+			sb.Append("<script><![CDATA[").Append(AdvancedScript.Replace("\n", string.Empty)).Append("]]></script>");
 
 			return sb.ToString();
 		}

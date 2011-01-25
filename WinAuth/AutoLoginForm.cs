@@ -125,6 +125,8 @@ namespace WindowsAuthenticator
 
 				// set the title
 				tbWindowTitle.Text = this.Sequence.WindowTitle;
+				ckRegex.Checked = this.Sequence.WindowTitleRegex;
+				tbProcessName.Text = this.Sequence.ProcessName;
 
 				// set the advaned
 				ckAdvanced.Checked = this.Sequence.Advanced;
@@ -190,6 +192,8 @@ namespace WindowsAuthenticator
 
 			// get the title
 			sequence.WindowTitle = this.tbWindowTitle.Text;
+			sequence.WindowTitleRegex = this.ckRegex.Checked;
+			sequence.ProcessName = this.tbProcessName.Text;
 
 			// get the script
 			sequence.Advanced = ckAdvanced.Checked;

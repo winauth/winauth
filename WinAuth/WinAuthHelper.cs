@@ -48,55 +48,79 @@ namespace WindowsAuthenticator
 			string configFile = Path.Combine(configDirectory, WinAuth.DEFAULT_CONFIG_FILE_NAME);
 			if (File.Exists(configFile) == true)
 			{
-				XmlDocument doc = new XmlDocument();
-				doc.Load(configFile);
+				DialogResult configloaded = DialogResult.OK;
+				do {
+					try
+					{
+						XmlDocument doc = new XmlDocument();
+						doc.Load(configFile);
 
-				bool boolVal = false;
-				XmlNode node = doc.DocumentElement.SelectSingleNode("AlwaysOnTop");
-				if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
-				{
-					data.AlwaysOnTop = boolVal;
-				}
-				node = doc.DocumentElement.SelectSingleNode("UseTrayIcon");
-				if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
-				{
-					data.UseTrayIcon = boolVal;
-				}
-				node = doc.DocumentElement.SelectSingleNode("StartWithWindows");
-				if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
-				{
-					data.StartWithWindows = boolVal;
-				}
-				node = doc.DocumentElement.SelectSingleNode("AutoRefresh");
-				if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
-				{
-					data.AutoRefresh = boolVal;
-				}
-				node = doc.DocumentElement.SelectSingleNode("AllowCopy");
-				if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
-				{
-					data.AllowCopy = boolVal;
-				}
-				node = doc.DocumentElement.SelectSingleNode("CopyOnCode");
-				if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
-				{
-					data.CopyOnCode = boolVal;
-				}
-				node = doc.DocumentElement.SelectSingleNode("HideSerial");
-				if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
-				{
-					data.HideSerial = boolVal;
-				}
-				node = doc.DocumentElement.SelectSingleNode("AutoLogin");
-				if (node != null && node.InnerText.Length != 0)
-				{
-					data.AutoLogin = new HoyKeySequence(node.InnerText);
-				}
-				node = doc.DocumentElement.SelectSingleNode("AuthenticatorFile");
-				if (node != null && node.InnerText.Length != 0)
-				{
-					data.AuthenticatorFile = node.InnerText;
-				}
+						bool boolVal = false;
+						XmlNode node = doc.DocumentElement.SelectSingleNode("AlwaysOnTop");
+						if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
+						{
+							data.AlwaysOnTop = boolVal;
+						}
+						node = doc.DocumentElement.SelectSingleNode("UseTrayIcon");
+						if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
+						{
+							data.UseTrayIcon = boolVal;
+						}
+						node = doc.DocumentElement.SelectSingleNode("StartWithWindows");
+						if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
+						{
+							data.StartWithWindows = boolVal;
+						}
+						node = doc.DocumentElement.SelectSingleNode("AutoRefresh");
+						if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
+						{
+							data.AutoRefresh = boolVal;
+						}
+						node = doc.DocumentElement.SelectSingleNode("AllowCopy");
+						if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
+						{
+							data.AllowCopy = boolVal;
+						}
+						node = doc.DocumentElement.SelectSingleNode("CopyOnCode");
+						if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
+						{
+							data.CopyOnCode = boolVal;
+						}
+						node = doc.DocumentElement.SelectSingleNode("HideSerial");
+						if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
+						{
+							data.HideSerial = boolVal;
+						}
+						node = doc.DocumentElement.SelectSingleNode("AutoLogin");
+						if (node != null && node.InnerText.Length != 0)
+						{
+							// check for old style
+							if (node.InnerXml.IndexOf("<") != -1)
+							{
+								data.AutoLogin = new HoyKeySequence(node);
+							}
+							else
+							{
+								data.AutoLogin = new HoyKeySequence(node.InnerText);
+							}
+						}
+						node = doc.DocumentElement.SelectSingleNode("AuthenticatorFile");
+						if (node != null && node.InnerText.Length != 0)
+						{
+							data.AuthenticatorFile = node.InnerText;
+						}
+					}
+					catch (Exception ex)
+					{
+						configloaded = MessageBox.Show(form,
+							"An error occured while loading your configuration file \"" + configFile + "\": " + ex.Message + "\n\nIt may be corrupted or in use by another application.",
+							form.Text, MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
+						if (configloaded == DialogResult.Abort)
+						{
+							return null;
+						}
+					}
+				} while (configloaded == DialogResult.Retry);
 			}
 
 			// override with any commandline
@@ -171,7 +195,7 @@ namespace WindowsAuthenticator
 			if (data.AutoLogin != null)
 			{
 				node = doc.CreateElement("AutoLogin");
-				node.InnerText = data.AutoLogin.ToString();
+				node.InnerXml = data.AutoLogin.ToString();
 				root.AppendChild(node);
 			}
 			if (string.IsNullOrEmpty(data.AuthenticatorFile) == false)
