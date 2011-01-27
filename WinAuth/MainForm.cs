@@ -57,9 +57,9 @@ namespace WindowsAuthenticator
 		#region Member Data
 
 		/// <summary>
-		/// Configuration settings for the application (including the Authenticator data)
+		/// Configuration data for authenticator and app settings
 		/// </summary>
-		private WinAuthConfig Config { get; set; }
+		private WinAuthConfig m_config;
 
 		/// <summary>
 		/// Time for next code refresh
@@ -96,19 +96,26 @@ namespace WindowsAuthenticator
 		#region Properties
 
 		/// <summary>
-		/// Get/set the file name of the authenticator's data
+		/// Configuration settings for the application (including the Authenticator data)
 		/// </summary>
-		//public string AuthenticatorFile
-		//{
-		//  get
-		//  {
-		//    return Config.Filename;
-		//  }
-		//  set
-		//  {
-		//    Config.Filename = value;
-		//  }
-		//}
+		private WinAuthConfig Config
+		{
+			get
+			{
+				return m_config;
+			}
+			set
+			{
+				m_config = value;
+
+				// when we set a new config also force any necessary form changes
+				this.AlwaysOnTop = m_config.AlwaysOnTop;
+				this.AutoRefresh = m_config.AutoRefresh;
+				this.UseTrayIcon = m_config.UseTrayIcon;
+				this.HideSerial = m_config.HideSerial;
+				this.AllowCopy = m_config.AllowCopy;
+			}
+		}
 
 		/// <summary>
 		/// Get/set the current Authenticator
