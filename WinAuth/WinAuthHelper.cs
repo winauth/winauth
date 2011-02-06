@@ -136,11 +136,11 @@ namespace WindowsAuthenticator
 					}
 					if ((versionAttr = node.Attributes["version"]) != null && decimal.TryParse(versionAttr.InnerText, out version) && version < (decimal)1.4)
 					{
-						// BETA
-						if (new BetaForm().ShowDialog(form) != DialogResult.OK)
-						{
-							return null;
-						}
+						// Show if BETA
+						//if (new BetaForm().ShowDialog(form) != DialogResult.OK)
+						//{
+						//  return null;
+						//}
 
 						// old version 1.3 file
 						config = LoadConfig_1_3(form, configFile);
