@@ -252,10 +252,6 @@ namespace WindowsAuthenticator
 							{
 								MessageBox.Show(form, "Unable to load authenticator from " + configFile + ": " + ex.Message, "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
 							}
-							//if (data == null)
-							//{
-							//  MessageBox.Show(form, "The file does not contain valid authenticator data.", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
-							//}
 						}
 					}
 
@@ -362,83 +358,6 @@ namespace WindowsAuthenticator
 			return config;
 		}
 
-/*
-		/// <summary>
-		/// Save the current configuration data
-		/// </summary>
-		/// <param name="data">current config data</param>
-		public static void SaveConfig(WinAuthConfig data)
-		{
-			// save config data
-			string configDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuth.APPLICATION_NAME);
-			Directory.CreateDirectory(configDirectory);
-			string configFile = Path.Combine(configDirectory, WinAuth.DEFAULT_CONFIG_FILE_NAME);
-
-			// get the version of the application
-			Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-
-			// create the xml
-			XmlDocument doc = new XmlDocument();
-			XmlDeclaration dec = doc.CreateXmlDeclaration("1.0", null, "yes");
-			doc.AppendChild(dec);
-			XmlElement root = doc.CreateElement("WinAuth");
-			root.SetAttribute("version", version.ToString(2));
-			doc.AppendChild(root);
-
-			XmlElement node = doc.CreateElement("AlwaysOnTop");
-			node.InnerText = data.AlwaysOnTop.ToString();
-			root.AppendChild(node);
-			node = doc.CreateElement("UseTrayIcon");
-			node.InnerText = data.UseTrayIcon.ToString();
-			root.AppendChild(node);
-			node = doc.CreateElement("StartWithWindows");
-			node.InnerText = data.StartWithWindows.ToString();
-			root.AppendChild(node);
-			node = doc.CreateElement("AutoRefresh");
-			node.InnerText = data.AutoRefresh.ToString();
-			root.AppendChild(node);
-			node = doc.CreateElement("AllowCopy");
-			node.InnerText = data.AllowCopy.ToString();
-			root.AppendChild(node);
-			node = doc.CreateElement("CopyOnCode");
-			node.InnerText = data.CopyOnCode.ToString();
-			root.AppendChild(node);
-			node = doc.CreateElement("HideSerial");
-			node.InnerText = data.HideSerial.ToString();
-			root.AppendChild(node);
-			if (data.AutoLogin != null)
-			{
-				node = doc.CreateElement("AutoLogin");
-				node.InnerXml = data.AutoLogin.ToString();
-				root.AppendChild(node);
-			}
-			if (string.IsNullOrEmpty(data.AuthenticatorFile) == false)
-			{
-				node = doc.CreateElement("AuthenticatorFile");
-				node.InnerText = data.AuthenticatorFile.ToString();
-				root.AppendChild(node);
-			}
-
-			// save the xml to the config file
-			XmlWriterSettings settings = new XmlWriterSettings();
-			settings.Indent = true;
-			using (XmlWriter xw = XmlWriter.Create(configFile, settings))
-			{
-				doc.Save(xw);
-			}
-		}
-*/
-
-		/// <summary>
-		/// Load an authenticator's data file
-		/// </summary>
-		/// <param name="configFile">file name of data file</param>
-		/// <returns>new AuthenticatorData object</returns>
-		//public static AuthenticatorData LoadAuthenticator(string configFile)
-		//{
-		//  return LoadAuthenticator(configFile, null);
-		//}
-
 		/// <summary>
 		/// Load an old or 3rd party authenticator file
 		/// </summary>
@@ -447,36 +366,6 @@ namespace WindowsAuthenticator
 		/// <returns>new AuthenticatorData object</returns>
 		public static AuthenticatorData LoadAuthenticator(Form form, string configFile)
 		{
-/*
-			// if no file, prompt
-			if (string.IsNullOrEmpty(configFile))
-			{
-				string configDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuth.APPLICATION_NAME);
-
-				OpenFileDialog ofd = new OpenFileDialog();
-				ofd.AddExtension = true;
-				ofd.CheckFileExists = true;
-				ofd.DefaultExt = "xml";
-				ofd.InitialDirectory = configDirectory;
-				ofd.FileName = DEFAULT_AUTHENTICATOR_FILE_NAME;
-				ofd.Filter = "Authenticator Data (*.xml)|*.xml|All Files (*.*)|*.*";
-				ofd.RestoreDirectory = true;
-				ofd.ShowReadOnly = false;
-				ofd.Title = "Load Authenticator";
-				DialogResult result = ofd.ShowDialog(form);
-				if (result != System.Windows.Forms.DialogResult.OK)
-				{
-					return null;
-				}
-				configFile = ofd.FileName;
-			}
-			// no file?
-			if (File.Exists(configFile) == false)
-			{
-				return null;
-			}
-*/
-
 			// load the data
 			AuthenticatorData data = null;
 			try
@@ -574,67 +463,12 @@ namespace WindowsAuthenticator
 		/// <param name="config">current settings to save</param>
 		public static void SaveAuthenticator(Form form, string configFile, WinAuthConfig config)
 		{
-			// get the version of the application
-			//Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-
 			// create the xml
 			XmlWriterSettings settings = new XmlWriterSettings();
 			settings.Indent = true;
 			using (XmlWriter writer = XmlWriter.Create(configFile, settings))
 			{
 				config.WriteXmlString(writer);
-/*
-				writer.WriteStartDocument(true);
-				writer.WriteStartElement("WinAuth");
-				writer.WriteAttributeString("version", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(2));
-				//
-				writer.WriteStartElement("alwaysontop");
-				writer.WriteValue(config.AlwaysOnTop);
-				writer.WriteEndElement();
-				//
-				writer.WriteStartElement("usetrayicon");
-				writer.WriteValue(config.UseTrayIcon);
-				writer.WriteEndElement();
-				//
-				writer.WriteStartElement("startwithwindows");
-				writer.WriteValue(config.StartWithWindows);
-				writer.WriteEndElement();
-				//
-				writer.WriteStartElement("autorefresh");
-				writer.WriteValue(config.AutoRefresh);
-				writer.WriteEndElement();
-				//
-				writer.WriteStartElement("allowcopy");
-				writer.WriteValue(config.AllowCopy);
-				writer.WriteEndElement();
-				//
-				writer.WriteStartElement("copyoncode");
-				writer.WriteValue(config.CopyOnCode);
-				writer.WriteEndElement();
-				//
-				writer.WriteStartElement("hideserial");
-				writer.WriteValue(config.HideSerial);
-				writer.WriteEndElement();
-				//
-				if (config.AutoLogin != null)
-				{
-					config.AutoLogin.WriteXmlString(writer);
-				}
-				//
-				//if (string.IsNullOrEmpty(config.AuthenticatorFile) == false)
-				//{
-				//  node = doc.CreateElement("AuthenticatorFile");
-				//  node.InnerText = config.AuthenticatorFile.ToString();
-				//  root.AppendChild(node);
-				//}
-
-				// save the authenticator to the config file
-				config.Authenticator.Data.WriteXmlString(writer);
-
-				// close WinAuth
-				writer.WriteEndElement();
-				writer.WriteEndDocument();
-*/
 			}
 
 			SetLastFile(configFile); // set this as the new last opened file

@@ -370,116 +370,6 @@ namespace WindowsAuthenticator
 			}
 		}
 
-/*
-		private void LoadAuthenticator(string authFile)
-		{
-			// if no file, prompt
-			if (string.IsNullOrEmpty(authFile))
-			{
-				string configDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuth.APPLICATION_NAME);
-
-				OpenFileDialog ofd = new OpenFileDialog();
-				ofd.AddExtension = true;
-				ofd.CheckFileExists = true;
-				ofd.DefaultExt = "xml";
-				if (AuthenticatorFile != null)
-				{
-					ofd.InitialDirectory = Path.GetDirectoryName(AuthenticatorFile);
-					ofd.FileName = Path.GetFileName(AuthenticatorFile);
-				}
-				else
-				{
-					ofd.InitialDirectory = configDirectory;
-					ofd.FileName = WinAuth.DEFAULT_AUTHENTICATOR_FILE_NAME;
-				}
-				ofd.Filter = "Authenticator Data (*.xml)|*.xml|All Files (*.*)|*.*";
-				ofd.RestoreDirectory = true;
-				ofd.ShowReadOnly = false;
-				ofd.Title = "Load Authenticator";
-				DialogResult result = ofd.ShowDialog(this);
-				if (result != System.Windows.Forms.DialogResult.OK)
-				{
-					return;
-				}
-				authFile = ofd.FileName;
-			}
-
-			// load the data
-			AuthenticatorData data = null;
-			try
-			{
-				try
-				{
-					data = WinAuthHelper.LoadAuthenticator(authFile);
-
-					// if this was an import, i.e. an .rms file, then clear authFile so we aare forcesto save a new name
-					if (data.LoadedFormat != AuthenticatorData.FileFormat.WinAuth)
-					{
-						authFile = null;
-					}
-				}
-				catch (EncrpytedSecretDataException)
-				{
-					PasswordForm passwordForm = new PasswordForm();
-
-					int retries = 0;
-					do
-					{
-						passwordForm.Password = string.Empty;
-						DialogResult result = passwordForm.ShowDialog(this);
-						if (result != System.Windows.Forms.DialogResult.OK)
-						{
-							return;
-						}
-
-						try
-						{
-							data = WinAuthHelper.LoadAuthenticator(authFile, passwordForm.Password);
-							break;
-						}
-						catch (BadPasswordException)
-						{
-							MessageBox.Show(this, "Invalid password", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
-							if (retries++ >= MAX_PASSWORD_RETRIES-1)
-							{
-								return;
-							}
-						}
-					} while (true);
-				}
-
-				// loaded, set the title and subtitle
-				this.Text = WinAuth.APPLICATION_NAME + " - " + Path.GetFileNameWithoutExtension(authFile);
-			}
-			catch (InvalidConfigDataException)
-			{
-				MessageBox.Show(this, "The authenticator file " + authFile + " is not valid", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show(this, "Unable to load authenticator file " + authFile + ": " + ex.Message, "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-			if (data == null)
-			{
-				MessageBox.Show(this, "The file does not contain valid authenticator data.", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return;
-			}
-
-			// set up the Authenticator
-			Authenticator = new Authenticator(data);
-			AuthenticatorFile = authFile;
-			ShowCode();
-
-			// if authfile is null (imported) we must save
-			if (authFile == null)
-			{
-				SaveAuthenticator(null);
-			}
-		}
-*/
-
 		/// <summary>
 		/// Save the current authenticator into a file
 		/// </summary>
@@ -823,14 +713,6 @@ namespace WindowsAuthenticator
 			// set title
 			notifyIcon.Text = this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
 
-			// check if current authenticator exists
-			//string authFile = Config.Filename;
-			//Config.Filename = null; // clear until we confirm we loaded
-			//if (string.IsNullOrEmpty(authFile) == false && File.Exists(authFile) == true)
-			//{
-			//  LoadAuthenticator(authFile);
-			//}
-
 			Authenticator authenticator = this.Authenticator;
 			serialLabel.Visible = !Config.HideSerial;
 			serialLabel.Text = (authenticator != null ? authenticator.Data.Serial : string.Empty);
@@ -840,15 +722,7 @@ namespace WindowsAuthenticator
 			progressBar.Visible = (authenticator != null && AutoRefresh == true);
 
 			// hook our hotkey to send code to target window (e.g . Ctrl-Alt-C)
-			 //TODO: we need to unhook and rehook when we load a new authenticator
 			HookHotkey(this.Config);
-			//if (this.Config.AutoLogin != null)
-			//{
-			//  Dictionary<Keys, WinAPI.KeyModifiers> keys = new Dictionary<Keys, WinAPI.KeyModifiers>();
-			//  keys.Add((Keys)this.Config.AutoLogin.HotKey, this.Config.AutoLogin.Modifiers);
-			//  m_hook = new KeyboardHook(keys);
-			//  m_hook.KeyDown += new KeyboardHook.KeyboardHookEventHandler(Hotkey_KeyDown);
-			//}
 
 			// finally enable the timer to show code changes
 			refreshTimer.Enabled = true;			
@@ -864,6 +738,10 @@ namespace WindowsAuthenticator
 			}
 		}
 
+		/// <summary>
+		/// Hook the hot key for the authenticator
+		/// </summary>
+		/// <param name="config">current config settings</param>
 		private void HookHotkey(WinAuthConfig config)
 		{
 			// unhook any old hotkey
@@ -941,11 +819,6 @@ namespace WindowsAuthenticator
 
 			// remove the hotkey hook
 			UnhookHotkey();
-			//if (m_hook != null)
-			//{
-			//  m_hook.UnHook();
-			//  m_hook = null;
-			//}
 
 			// ensure the notify icon is closed
 			notifyIcon.Visible = false;
@@ -1138,21 +1011,9 @@ namespace WindowsAuthenticator
 
 				// remove the old hook
 				UnhookHotkey();
-				//if (m_hook != null)
-				//{
-				//  m_hook.UnHook();
-				//  m_hook = null;
-				//}
 
 				// install the new hook
 				HookHotkey(this.Config);
-				//if (this.Config.AutoLogin != null)
-				//{
-				//  Dictionary<Keys, WinAPI.KeyModifiers> keys = new Dictionary<Keys, WinAPI.KeyModifiers>();
-				//  keys.Add((Keys)this.Config.AutoLogin.HotKey, this.Config.AutoLogin.Modifiers);
-				//  m_hook = new KeyboardHook(keys);
-				//  m_hook.KeyDown += new KeyboardHook.KeyboardHookEventHandler(Hotkey_KeyDown);
-				//}
 			}
 		}
 

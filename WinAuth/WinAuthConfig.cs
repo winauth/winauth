@@ -160,13 +160,6 @@ namespace WindowsAuthenticator
 			{
 				this.AutoLogin.WriteXmlString(writer, this.Authenticator.Data.PasswordType, this.Authenticator.Data.Password);
 			}
-			//
-			//if (string.IsNullOrEmpty(config.AuthenticatorFile) == false)
-			//{
-			//  node = doc.CreateElement("AuthenticatorFile");
-			//  node.InnerText = config.AuthenticatorFile.ToString();
-			//  root.AppendChild(node);
-			//}
 
 			// save the authenticator to the config file
 			this.Authenticator.Data.WriteXmlString(writer);

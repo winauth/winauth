@@ -448,9 +448,7 @@ namespace WindowsAuthenticator
 		/// <param name="writer">XmlWriter to save data</param>
 		public void WriteXmlString(XmlWriter writer)
 		{
-			//writer.WriteStartDocument(true);
 			writer.WriteStartElement("authenticator");
-			//writer.WriteAttributeString("version", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(2));
 			//
 			writer.WriteStartElement("servertimediff");
 			writer.WriteString(ServerTimeDiff.ToString());
@@ -487,7 +485,6 @@ namespace WindowsAuthenticator
 			writer.WriteEndElement();
 			//
 			writer.WriteEndElement();
-			//writer.WriteEndDocument();
 		}
 
 		/// <summary>
