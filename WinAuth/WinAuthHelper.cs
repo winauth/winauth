@@ -117,13 +117,20 @@ namespace WindowsAuthenticator
 
 				try
 				{
-					XmlDocument doc = new XmlDocument();
-					doc.Load(configFile);
+					XmlDocument doc = null;
+					XmlNode node = null;
+					try
+					{
+						doc = new XmlDocument();
+						doc.Load(configFile);
 
-					// check and load older versions
-					XmlNode node = doc.SelectSingleNode("WinAuth");
-					XmlAttribute versionAttr;
-					decimal version;
+						// check and load older versions
+						node = doc.SelectSingleNode("WinAuth");
+					}
+					catch (XmlException ex)
+					{
+						// cause by invalid format, so we try and load other type of authenticator
+					}
 					if (node == null)
 					{
 						// foreign file so we import (authenticator.xml from winauth_1.3, android BMA xml or Java rs)
@@ -134,6 +141,9 @@ namespace WindowsAuthenticator
 						}
 						return config;
 					}
+
+					XmlAttribute versionAttr;
+					decimal version;
 					if ((versionAttr = node.Attributes["version"]) != null && decimal.TryParse(versionAttr.InnerText, out version) && version < (decimal)1.4)
 					{
 						// Show if BETA

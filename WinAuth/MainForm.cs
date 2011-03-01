@@ -314,7 +314,7 @@ namespace WindowsAuthenticator
 			ofd.DefaultExt = "xml";
 			ofd.InitialDirectory = configDirectory;
 			ofd.FileName = configFile;
-			ofd.Filter = "Authenticator Data (*.xml)|*.xml|All Files (*.*)|*.*";
+			ofd.Filter = "WinAuth Authenticator (*.xml)|*.xml|Java BMA File (*.rs;*.rms)|*.rs;*.rms|All Files (*.*)|*.*";
 			ofd.RestoreDirectory = true;
 			ofd.ShowReadOnly = false;
 			ofd.Title = "Load Authenticator";
