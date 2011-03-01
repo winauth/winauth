@@ -127,7 +127,7 @@ namespace WindowsAuthenticator
 						// check and load older versions
 						node = doc.SelectSingleNode("WinAuth");
 					}
-					catch (XmlException ex)
+					catch (XmlException )
 					{
 						// cause by invalid format, so we try and load other type of authenticator
 					}
