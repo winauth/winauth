@@ -135,6 +135,14 @@ namespace WindowsAuthenticator
 					this.tbAdvanced.Text = this.Sequence.AdvancedScript ?? string.Empty;
 				}
 			}
+			else
+			{
+				// set defaults that actually work (e.g. Ctrl-Alt-W)
+				cbHotKeyMod1.SelectedItem = WinAPI.KeyModifiers.Control.ToString();
+				cbHotKeyMod2.SelectedItem = WinAPI.KeyModifiers.Alt.ToString();
+				cbHotKeyMod3.SelectedItem = WinAPI.KeyModifiers.None.ToString();
+				cbHotKey.SelectedItem = WinAPI.VirtualKeyCode.VK_W.ToString().Substring(3);
+			}
 		}
 
 		/// <summary>

@@ -1014,6 +1014,9 @@ namespace WindowsAuthenticator
 
 				// install the new hook
 				HookHotkey(this.Config);
+
+				// save
+				SaveAuthenticator(Config.Filename);
 			}
 		}
 
