@@ -244,6 +244,7 @@ namespace WindowsAuthenticator
 						string full = Encoding.UTF8.GetString(bytes, 0, bytes.Length); // yes, two extra paramters, but needed for NETCF
 						SecretKey = Authenticator.StringToByteArray(full.Substring(0, 40));
 						Serial = full.Substring(40);
+						Region = full.Substring(0, 2);
 
 						// get offset value
 						long offset = 0;
@@ -320,6 +321,7 @@ namespace WindowsAuthenticator
 				string full = Encoding.UTF8.GetString(bytes, 0, bytes.Length);
 				SecretKey = Authenticator.StringToByteArray(full.Substring(0, 40));
 				Serial = full.Substring(40);
+				Region = Serial.Substring(0, 2);
 
 				// get offset value
 				long offset = 0;
@@ -371,10 +373,7 @@ namespace WindowsAuthenticator
 				}
 				//
 				node = rootnode.SelectSingleNode("string[@name='region']");
-				if (node != null)
-				{
-					Region = node.InnerText;
-				}
+				Region = (node != null ? node.InnerText : Serial.Substring(0, 2));
 				//
 				LoadedFormat = FileFormat.WinAuth;
 				//
@@ -428,10 +427,7 @@ namespace WindowsAuthenticator
 				}
 
 				node = rootnode.SelectSingleNode("region");
-				if (node != null)
-				{
-					Region = node.InnerText;
-				}
+				Region = (node != null ? node.InnerText : Serial.Substring(0,2));
 
 				LoadedFormat = FileFormat.WinAuth;
 
