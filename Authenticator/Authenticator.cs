@@ -35,8 +35,6 @@ using Org.BouncyCastle.Crypto.Paddings;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Generators;
 
-using NUnit.Framework;
-
 namespace WindowsAuthenticator
 {
 	/// <summary>
@@ -1338,101 +1336,6 @@ namespace WindowsAuthenticator
 		}
 
 		#endregion
-
-	}
-
-	[TestFixture]
-	class AuthenticatorTest
-	{
-		public class TestAuthenticator
-		{
-			public string Serial {get; set;}
-			public byte[] SecretKey { get; set; }
-			public string RestoreCode { get; set; }
-			public TestAuthenticator (string serial, byte[] key, string restorecode)
-			{
-				Serial = serial;
-				SecretKey = key;
-				RestoreCode = restorecode;
-			}
-		}
-
-		public TestAuthenticator[] authenticators = new TestAuthenticator[]
-		{
-			new TestAuthenticator("US-1006-0970-8791", new byte[] { 0x82, 0x0A, 0xB8, 0xF9, 0x66, 0x54, 0xF9, 0xBE, 0xAD, 0xB6, 0xD1, 0x27, 0x95, 0x81, 0x13, 0xD5, 0xC8, 0xAE, 0xBA, 0x36 }, "JDDU796WQ4"),
-			new TestAuthenticator("US-1108-0168-1578", new byte[] { 0xFA, 0xA4, 0x62, 0xE9, 0x20, 0x60, 0xAA, 0xAF, 0xD1, 0x2D, 0x50, 0xB5, 0x65, 0xB8, 0xCD, 0x50, 0xA8, 0xDF, 0xC5, 0xB9 }, "703PQU2BVE"),
-			new TestAuthenticator("US-1108-0268-3369", new byte[] { 0x6C, 0x35, 0x02, 0xA5, 0xD6, 0xA8, 0x84, 0xBB, 0xA6, 0x86, 0x73, 0xBF, 0x18, 0xB4, 0x7B, 0x90, 0xAD, 0x28, 0xB9, 0x11 }, "HZJRHZZ7UN"),
-			new TestAuthenticator("US-1108-0268-3382", new byte[] { 0x73, 0x4D, 0x9A, 0x61, 0xE5, 0x17, 0x0C, 0x36, 0xEE, 0x17, 0x44, 0xE5, 0x9F, 0x5F, 0xE3, 0xE4, 0x71, 0xBE, 0x1A, 0xA1 }, "N6D1A5MV75"),
-			new TestAuthenticator("EU-1108-0214-7179", new byte[] { 0x37, 0x8E, 0x81, 0x1B, 0x31, 0x1C, 0xF0, 0xF6, 0x03, 0xAF, 0x5E, 0x6A, 0xEB, 0x5B, 0x42, 0xBA, 0xB3, 0xB0, 0x78, 0x4C }, "F3R4VJ3D0R"),
-			new TestAuthenticator("EU-1108-0214-7255", new byte[] { 0xB5, 0xA2, 0xA2, 0xC3, 0xC4, 0xE0, 0xCE, 0x5B, 0x83, 0x78, 0x8E, 0xE0, 0x19, 0x56, 0x74, 0x1B, 0x8B, 0x4E, 0x41, 0xEC }, "N0RHN2GY47"),
-			new TestAuthenticator("EU-1108-0214-7281", new byte[] { 0xAB, 0x48, 0xA7, 0x7F, 0x4D, 0x37, 0x4D, 0xCC, 0xFB, 0x42, 0x08, 0xD4, 0xF9, 0xEC, 0xCF, 0x09, 0xEE, 0xA0, 0x58, 0x22 }, "M2TX3V3GBG")
-		};
-
-		//protected static string SERIAL = "US-1006-0970-8791";
-		//protected static byte[] SECRETYKEY = new byte[] { 0x82, 0x0A, 0xB8, 0xF9, 0x66, 0x54, 0xF9, 0xBE, 0xAD, 0xB6, 0xD1, 0x27, 0x95, 0x81, 0x13, 0xD5, 0xC8, 0xAE, 0xBA, 0x36 };
-		//protected static string RESTORECODE = "JDDU796WQ4";
-
-		//protected static string SERIAL = "US-1108-0168-1578";
-		//protected static byte[] SECRETYKEY = new byte[] { 0xFA, 0xA4, 0x62, 0xE9, 0x20, 0x60, 0xAA, 0xAF, 0xD1, 0x2D, 0x50, 0xB5, 0x65, 0xB8, 0xCD, 0x50, 0xA8, 0xDF, 0xC5, 0xB9 };
-		//protected static string RESTORECODE = "703PQU2BVE";
-
-		[Test]
-		public void Enroll()
-		{
-			Authenticator auth = new Authenticator();
-			auth.Enroll(null);
-			Assert.IsNotNullOrEmpty(auth.Serial);
-			Console.Out.WriteLine(auth.Serial + " " + Authenticator.ByteArrayToString(auth.SecretKey) + " " + auth.RestoreCode);
-		}
-
-		[Test]
-		public void EnrollUK()
-		{
-			Authenticator auth = new Authenticator();
-			auth.Enroll("GB");
-			Assert.IsNotNullOrEmpty(auth.Serial);
-			Console.Out.WriteLine(auth.Serial + " " + Authenticator.ByteArrayToString(auth.SecretKey) + " " + auth.RestoreCode);
-		}
-
-		[Test]
-		public void Restore()
-		{
-			Authenticator auth = new Authenticator();
-			auth.Restore(authenticators[5].Serial, authenticators[5].RestoreCode);
-			Console.Out.WriteLine(auth.Serial + " " + Authenticator.ByteArrayToString(auth.SecretKey) + " " + auth.RestoreCode);
-			//Assert.AreEqual(auth.SecretKey, authenticators[0].SecretKey);
-		}
-
-		[Test]
-		public void CalcRestoreCode()
-		{
-			Authenticator auth = new Authenticator();
-			auth.Serial = authenticators[4].Serial;
-			auth.SecretKey = authenticators[4].SecretKey;
-			string code = auth.RestoreCode;
-			Assert.AreEqual(code, authenticators[4].RestoreCode);
-		}
-
-		//[Test]
-		//public void RandomRestores()
-		//{
-		//  Random random = new Random((int)DateTime.Now.Ticks);
-		//  for (int i = 0; i < 2; i++)
-		//  {
-		//    Authenticator auth = new Authenticator();
-		//    byte[] secret = Authenticator.CreateOneTimePad(20);
-		//    auth.SecretKey = secret;
-		//    string serial = "US-" + random.Next(10000).ToString("0000") + "-" + random.Next(10000).ToString("0000") + "-" + random.Next(10000).ToString("0000");
-		//    auth.Serial = serial;
-		//    string restorecode = auth.RestoreCode;
-
-		//    Authenticator verifyauth = new Authenticator(serial, restorecode);
-
-		//    Assert.AreEqual(verifyauth.SecretKey, secret);
-
-		//    Console.Out.WriteLine(serial + " " + restorecode);
-		//  }
-		//}
 
 	}
 
