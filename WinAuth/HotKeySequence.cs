@@ -170,7 +170,7 @@ namespace WindowsAuthenticator
 								{
 									throw new EncrpytedSecretDataException();
 								}
-								data = AuthenticatorData.Decrypt(data, password);
+								data = Authenticator.Decrypt(data, password);
 								byte[] plain = Authenticator.StringToByteArray(data);
 								data = Encoding.UTF8.GetString(plain, 0, plain.Length);
 								break;
@@ -187,7 +187,7 @@ namespace WindowsAuthenticator
 		/// Write data into the XmlWriter
 		/// </summary>
 		/// <param name="writer">XmlWriter to write to</param>
-		public void WriteXmlString(XmlWriter writer, AuthenticatorData.PasswordTypes passwordType, string password)
+		public void WriteXmlString(XmlWriter writer, Authenticator.PasswordTypes passwordType, string password)
 		{
 			writer.WriteStartElement("autologin");
 
@@ -219,15 +219,15 @@ namespace WindowsAuthenticator
 			string script = AdvancedScript.Replace("\n", string.Empty);
 			switch (passwordType)
 			{
-				case AuthenticatorData.PasswordTypes.Explicit:
+				case Authenticator.PasswordTypes.Explicit:
 					{
 						byte[] plain = Encoding.UTF8.GetBytes(script);
 						script = Authenticator.ByteArrayToString(plain);
-						script = AuthenticatorData.Encrypt(script, password);
+						script = Authenticator.Encrypt(script, password);
 						writer.WriteAttributeString("encrypted", "y");
 						break;
 					}
-				case AuthenticatorData.PasswordTypes.User:
+				case Authenticator.PasswordTypes.User:
 					{
 						byte[] plain = Encoding.UTF8.GetBytes(script);
 						byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.CurrentUser);
@@ -235,7 +235,7 @@ namespace WindowsAuthenticator
 						writer.WriteAttributeString("encrypted", "u");
 						break;
 					}
-				case AuthenticatorData.PasswordTypes.Machine:
+				case Authenticator.PasswordTypes.Machine:
 					{
 						// we encrypt the data using the Local Machine account key
 						byte[] plain = Encoding.UTF8.GetBytes(script);

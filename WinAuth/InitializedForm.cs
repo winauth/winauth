@@ -32,6 +32,16 @@ namespace WindowsAuthenticator
 	public partial class InitializedForm : Form
 	{
 		/// <summary>
+		/// Current authenticator
+		/// </summary>
+		public Authenticator Authenticator { get; set; }
+
+		/// <summary>
+		/// Time for next code refresh
+		/// </summary>
+		private DateTime NextRefresh {get; set;}
+
+		/// <summary>
 		/// Create a new form
 		/// </summary>
 		public InitializedForm()
@@ -48,5 +58,43 @@ namespace WindowsAuthenticator
 		{
 			this.Close();
 		}
+
+		/// <summary>
+		/// Form loaded event
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void InitializedForm_Load(object sender, EventArgs e)
+		{
+			this.serialNumberField.SecretMode = true;
+			this.serialNumberField.Text = Authenticator.Serial;
+			this.codeField.SecretMode = true;
+			this.codeField.Text = Authenticator.CurrentCode;
+			this.restoreCodeField.SecretMode = true;
+			this.restoreCodeField.Text = Authenticator.RestoreCode;
+		}
+
+		/// <summary>
+		/// Tick event to update bar and code
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void refreshTimer_Tick(object sender, EventArgs e)
+		{
+			DateTime now = DateTime.Now;
+
+			int tillUpdate = (int)((Authenticator.ServerTime % 30000L) / 1000L);
+			progressBar.Value = tillUpdate;
+			if (tillUpdate == 0)
+			{
+				NextRefresh = now;
+			}
+			if (now >= NextRefresh)
+			{
+				NextRefresh = now.AddSeconds(30);
+				this.codeField.Text = Authenticator.CurrentCode;
+			}
+		}
+
 	}
 }

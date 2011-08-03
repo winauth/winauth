@@ -120,17 +120,14 @@
   <data name="betaLabel.Text" xml:space="preserve">
     <value>This is a BETA version of WinAuth {0}. PLEASE MAKE A BACKUP COPY OF YOUR CURRENT AUTHENTICATOR FILES.
 
-You will find two files, authenticator.xml and winauth.xml in your application folder:
+You will find the authenticator file in your application folder:
 
 Windows 7/Vista/2008 -  "c:\Users\&lt;username&gt;\AppData\Windows Authenticator\"
 XP/2003 - "c:\Documents and Settings\&lt;username&gt;\Application Data\Windows Authenticator\"
 
-If you have saved your authenticator under a different name, it may be winauth.xml and something-else.xml.
+Unless you have saved your authenticator under a different name, it may be called authenticator.xml.
 
 Once you have copied these files, you will be able to restore a previous version of WinAuth. If you are at all unsure, click Cancel or remove the authenticator from your Battle.net account before proceeding.
-
-If you continue, these files will be merged into a single authenticator.xml file that cannot be opened by previous version of WinAuth.
-
 </value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />

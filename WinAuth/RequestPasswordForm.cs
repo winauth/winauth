@@ -42,38 +42,38 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Get/set flag to use a password
 		/// </summary>
-		public AuthenticatorData.PasswordTypes PasswordType
+		public Authenticator.PasswordTypes PasswordType
 		{
 			get
 			{
 				if (rbAccountPassword.Checked == true)
 				{
-					return AuthenticatorData.PasswordTypes.User;
+					return Authenticator.PasswordTypes.User;
 				}
 				else if (rbMachinePassword.Checked == true)
 				{
-					return AuthenticatorData.PasswordTypes.Machine;
+					return Authenticator.PasswordTypes.Machine;
 				}
 				else if (rbPassword.Checked == true)
 				{
-					return AuthenticatorData.PasswordTypes.Explicit;
+					return Authenticator.PasswordTypes.Explicit;
 				}
 				else
 				{
-					return AuthenticatorData.PasswordTypes.None;
+					return Authenticator.PasswordTypes.None;
 				}
 			}
 			set
 			{
-				if (value == AuthenticatorData.PasswordTypes.User)
+				if (value == Authenticator.PasswordTypes.User)
 				{
 					rbAccountPassword.Checked = true;
 				}
-				else if (value == AuthenticatorData.PasswordTypes.Machine)
+				else if (value == Authenticator.PasswordTypes.Machine)
 				{
 					rbMachinePassword.Checked = true;
 				}
-				else if (value == AuthenticatorData.PasswordTypes.Explicit)
+				else if (value == Authenticator.PasswordTypes.Explicit)
 				{
 					rbPassword.Checked = true;
 				}
@@ -82,8 +82,8 @@ namespace WindowsAuthenticator
 					rbNoPassword.Checked = true;
 				}
 
-				tbPassword.Enabled = (value == AuthenticatorData.PasswordTypes.Explicit);
-				tbVerify.Enabled = (value == AuthenticatorData.PasswordTypes.Explicit);
+				tbPassword.Enabled = (value == Authenticator.PasswordTypes.Explicit);
+				tbVerify.Enabled = (value == Authenticator.PasswordTypes.Explicit);
 			}
 		}
 
@@ -110,10 +110,10 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void RequestPasswordForm_Load(object sender, EventArgs e)
 		{
-			rbNoPassword.Tag = AuthenticatorData.PasswordTypes.None;
-			rbAccountPassword.Tag = AuthenticatorData.PasswordTypes.User;
-			rbMachinePassword.Tag = AuthenticatorData.PasswordTypes.Machine;
-			rbPassword.Tag = AuthenticatorData.PasswordTypes.Explicit;
+			rbNoPassword.Tag = Authenticator.PasswordTypes.None;
+			rbAccountPassword.Tag = Authenticator.PasswordTypes.User;
+			rbMachinePassword.Tag = Authenticator.PasswordTypes.Machine;
+			rbPassword.Tag = Authenticator.PasswordTypes.Explicit;
 
 			rbAccountPassword.Text += " (" + System.Environment.UserName + ")";
 			rbMachinePassword.Text += " (" + System.Environment.MachineName + ")";
@@ -133,7 +133,7 @@ namespace WindowsAuthenticator
 				MessageBox.Show(this, "Please choose a password method.", WinAuth.APPLICATION_NAME, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				return;
 			}
-			if (PasswordType == AuthenticatorData.PasswordTypes.Explicit && this.tbPassword.Text.Length == 0)
+			if (PasswordType == Authenticator.PasswordTypes.Explicit && this.tbPassword.Text.Length == 0)
 			{
 				MessageBox.Show(this, "Please enter a password.", WinAuth.APPLICATION_NAME, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				tbPassword.Focus();
@@ -159,8 +159,8 @@ namespace WindowsAuthenticator
 		{
 			if (sender is RadioButton && ((RadioButton)sender).Checked == true)
 			{
-				this.PasswordType = (AuthenticatorData.PasswordTypes)((RadioButton)sender).Tag;
-				if (this.PasswordType == AuthenticatorData.PasswordTypes.Explicit)
+				this.PasswordType = (Authenticator.PasswordTypes)((RadioButton)sender).Tag;
+				if (this.PasswordType == Authenticator.PasswordTypes.Explicit)
 				{
 					tbPassword.Focus();
 				}

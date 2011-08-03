@@ -63,7 +63,7 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Get a new Authenticator based of the field entries
 		/// </summary>
-		public AuthenticatorData AuthenticatorData {get; set;}
+		public Authenticator Authenticator {get; set;}
 
 		/// <summary>
 		/// Build the xml for the offical Android BMA file
@@ -72,7 +72,7 @@ namespace WindowsAuthenticator
 		private string BuildAndroidBMAXml()
 		{
 			// convert key and serial into combined string (BMA uses lowercase)
-			string code = Authenticator.ByteArrayToString(AuthenticatorData.SecretKey).ToLower() + AuthenticatorData.Serial;
+			string code = Authenticator.ByteArrayToString(Authenticator.SecretKey).ToLower() + Authenticator.Serial;
 			// encrypt with BMA key
 			byte[] plain = Encoding.UTF8.GetBytes(code);
 			for (int i = plain.Length - 1; i >= 0; i--)
@@ -81,7 +81,7 @@ namespace WindowsAuthenticator
 			}
 			// convert to string and format from the template
 			code = Authenticator.ByteArrayToString(plain).ToLower();
-			return string.Format(ANDROID_BMA, AuthenticatorData.ServerTimeDiff, code);
+			return string.Format(ANDROID_BMA, Authenticator.ServerTimeDiff, code);
 		}
 
 		/// <summary>
@@ -91,15 +91,15 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void ExportForm_Load(object sender, EventArgs e)
 		{
-			if (AuthenticatorData == null)
+			if (Authenticator == null)
 			{
-				throw new ApplicationException("Export should have an AuthenticatorData set");
+				throw new ApplicationException("Export should have an Authenticator set");
 			}
 
 			// populate the key fields
-			this.serialField.Text = AuthenticatorData.Serial;
-			this.keyField.Text = Authenticator.ByteArrayToString(AuthenticatorData.SecretKey);
-			this.timeField.Text = AuthenticatorData.ServerTimeDiff.ToString();
+			this.serialField.Text = Authenticator.Serial;
+			this.keyField.Text = Authenticator.ByteArrayToString(Authenticator.SecretKey);
+			this.timeField.Text = Authenticator.ServerTimeDiff.ToString();
 			this.xmlField.Text = BuildAndroidBMAXml();
 		}
 

@@ -33,6 +33,7 @@ namespace WindowsAuthenticator
 	/// <summary>
 	/// Class holding configuration data for application
 	/// </summary>
+	[Serializable()]
 	public class WinAuthConfig : ICloneable
 	{
 		#region System Settings
@@ -111,7 +112,7 @@ namespace WindowsAuthenticator
 		{
 			WinAuthConfig clone = (WinAuthConfig)this.MemberwiseClone();
 			// close the internal authenticator so the data is kept separate
-			clone.Authenticator = (this.Authenticator == null ? null : new Authenticator((AuthenticatorData)this.Authenticator.Data.Clone()));
+			clone.Authenticator = (this.Authenticator == null ? null : this.Authenticator.Clone() as Authenticator);
 			return clone;
 		}
 
@@ -158,11 +159,11 @@ namespace WindowsAuthenticator
 			//
 			if (this.AutoLogin != null)
 			{
-				this.AutoLogin.WriteXmlString(writer, this.Authenticator.Data.PasswordType, this.Authenticator.Data.Password);
+				this.AutoLogin.WriteXmlString(writer, this.Authenticator.PasswordType, this.Authenticator.Password);
 			}
 
 			// save the authenticator to the config file
-			this.Authenticator.Data.WriteXmlString(writer);
+			this.Authenticator.WriteXmlString(writer);
 
 			// close WinAuth
 			writer.WriteEndElement();

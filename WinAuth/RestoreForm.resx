@@ -118,13 +118,8 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="label4.Text" xml:space="preserve">
-    <value>1. Go to www.battle.net and log into your account.
-2. Click Security Options from the top menu.
-3. Click the "Attach Authenticator" button in the "Battle.net Mobile Authenticator" section.
-4. Follow the instructions to verify your email address.
-5. Enter the following serial number and login code:</value>
+    <value>When your Authenticator was created, it was registered on the Battle.net servers and can be retrieved using the Serial Number and Restore Code.
+
+Be aware that some authenticators were created before the restore capability existed and so cannot ever be restored. Even though we can calculate an appropriate Restore Code, it just won't work.  In this case you will get an "invalid serial of restore code" message.</value>
   </data>
-  <metadata name="refreshTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
 </root>

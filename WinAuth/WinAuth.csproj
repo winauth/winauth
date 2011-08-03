@@ -73,6 +73,24 @@
     <Compile Include="BetaForm.designer.cs">
       <DependentUpon>BetaForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ShowRestoreCodeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ShowRestoreCodeForm.Designer.cs">
+      <DependentUpon>ShowRestoreCodeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="RestoreForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RestoreForm.Designer.cs">
+      <DependentUpon>RestoreForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EnrolledForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EnrolledForm.Designer.cs">
+      <DependentUpon>EnrolledForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ExportForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -117,12 +135,6 @@
     </Compile>
     <Compile Include="WinAuthConfig.cs" />
     <Compile Include="WinAuthHelper.cs" />
-    <Compile Include="EnrollForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EnrollForm.Designer.cs">
-      <DependentUpon>EnrollForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -146,6 +158,15 @@
     <EmbeddedResource Include="BetaForm.resx">
       <DependentUpon>BetaForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ShowRestoreCodeForm.resx">
+      <DependentUpon>ShowRestoreCodeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="RestoreForm.resx">
+      <DependentUpon>RestoreForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EnrolledForm.resx">
+      <DependentUpon>EnrolledForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ExportForm.resx">
       <DependentUpon>ExportForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -154,9 +175,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="PasswordForm.resx">
       <DependentUpon>PasswordForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EnrollForm.resx">
-      <DependentUpon>EnrollForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="InitializedForm.resx">
       <DependentUpon>InitializedForm.cs</DependentUpon>

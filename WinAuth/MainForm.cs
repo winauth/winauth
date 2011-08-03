@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -40,7 +41,7 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Number of seconds for code to display when not on autorefresh
 		/// </summary>
-		public const int CODE_DISPLAY_DURATION = 10;
+		//public const int CODE_DISPLAY_DURATION = 10;
 
 		#region Initialization
 
@@ -110,7 +111,7 @@ namespace WindowsAuthenticator
 
 				// when we set a new config also force any necessary form changes
 				this.AlwaysOnTop = m_config.AlwaysOnTop;
-				this.AutoRefresh = m_config.AutoRefresh;
+				//this.AutoRefresh = m_config.AutoRefresh;
 				this.UseTrayIcon = m_config.UseTrayIcon;
 				this.HideSerial = m_config.HideSerial;
 				this.AllowCopy = m_config.AllowCopy;
@@ -132,6 +133,7 @@ namespace WindowsAuthenticator
 			}
 		}
 
+/*
 		/// <summary>
 		/// Get/set the flag to show how much time till next code and auto-generate it
 		/// </summary>
@@ -157,6 +159,7 @@ namespace WindowsAuthenticator
 				progressBar.Visible = (Authenticator != null && value == true);
 			}
 		}
+*/
 
 		/// <summary>
 		/// Get/set flag to be topmost window
@@ -297,33 +300,36 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Load a new authenticator by prompting for a file
 		/// </summary>
-		private void LoadAuthenticator()
+		private void LoadAuthenticator(string configFile)
 		{
-			// use default or the path of the current authenticator
-			string configDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuth.APPLICATION_NAME);
-			string configFile = WinAuthHelper.DEFAULT_AUTHENTICATOR_FILE_NAME;
-			if (string.IsNullOrEmpty(Config.Filename) == false)
+			if (string.IsNullOrEmpty(configFile) == true)
 			{
-				configFile = Path.GetFileName(Config.Filename);
-				configDirectory = Path.GetDirectoryName(Config.Filename);
-			}
+				// use default or the path of the current authenticator
+				string configDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuth.APPLICATION_NAME);
+				configFile = WinAuthHelper.DEFAULT_AUTHENTICATOR_FILE_NAME;
+				if (string.IsNullOrEmpty(Config.Filename) == false)
+				{
+					configFile = Path.GetFileName(Config.Filename);
+					configDirectory = Path.GetDirectoryName(Config.Filename);
+				}
 
-			OpenFileDialog ofd = new OpenFileDialog();
-			ofd.AddExtension = true;
-			ofd.CheckFileExists = true;
-			ofd.DefaultExt = "xml";
-			ofd.InitialDirectory = configDirectory;
-			ofd.FileName = configFile;
-			ofd.Filter = "WinAuth Authenticator (*.xml)|*.xml|Java BMA File (*.rs;*.rms)|*.rs;*.rms|All Files (*.*)|*.*";
-			ofd.RestoreDirectory = true;
-			ofd.ShowReadOnly = false;
-			ofd.Title = "Load Authenticator";
-			DialogResult result = ofd.ShowDialog(this);
-			if (result != System.Windows.Forms.DialogResult.OK)
-			{
-				return;
+				OpenFileDialog ofd = new OpenFileDialog();
+				ofd.AddExtension = true;
+				ofd.CheckFileExists = true;
+				ofd.DefaultExt = "xml";
+				ofd.InitialDirectory = configDirectory;
+				ofd.FileName = configFile;
+				ofd.Filter = "WinAuth Authenticator (*.xml)|*.xml|Java BMA File (*.rs;*.rms)|*.rs;*.rms|All Files (*.*)|*.*";
+				ofd.RestoreDirectory = true;
+				ofd.ShowReadOnly = false;
+				ofd.Title = "Load Authenticator";
+				DialogResult result = ofd.ShowDialog(this);
+				if (result != System.Windows.Forms.DialogResult.OK)
+				{
+					return;
+				}
+				configFile = ofd.FileName;
 			}
-			configFile = ofd.FileName;
 			if (File.Exists(configFile) == false)
 			{
 				return;
@@ -331,8 +337,8 @@ namespace WindowsAuthenticator
 
 			// if the file is xml, could be our 1.4 config, 1.3 authenticator or android. Otherwise is an import
 			WinAuthConfig config = WinAuthHelper.LoadConfig(this, configFile, null);
-			AuthenticatorData data = (config != null && config.Authenticator != null ? config.Authenticator.Data : null);
-			if (config != null && data != null)
+			Authenticator auth = (config != null && config.Authenticator != null ? config.Authenticator : null);
+			if (config != null && auth != null)
 			{
 				// if there is no filename, we imported a different authenticator, so clone some of the current config
 				if (string.IsNullOrEmpty(config.Filename) == true)
@@ -340,7 +346,7 @@ namespace WindowsAuthenticator
 					// set specific authenticator settings
 					config.AllowCopy = Config.AllowCopy;
 					config.AlwaysOnTop = Config.AlwaysOnTop;
-					config.AutoRefresh = Config.AutoRefresh;
+					//config.AutoRefresh = Config.AutoRefresh;
 					config.CopyOnCode = Config.CopyOnCode;
 					config.HideSerial = Config.HideSerial;
 					config.UseTrayIcon = Config.UseTrayIcon;
@@ -350,7 +356,7 @@ namespace WindowsAuthenticator
 				}
 
 				// if this was an import, i.e. an .rms file, then clear authFile so we are forced to save a new name
-				if (data.LoadedFormat != AuthenticatorData.FileFormat.WinAuth)
+				if (auth.LoadedFormat != Authenticator.FileFormat.WinAuth)
 				{
 					config.Filename = null;
 				}
@@ -414,8 +420,8 @@ namespace WindowsAuthenticator
 				{
 					return false;
 				}
-				Config.Authenticator.Data.PasswordType = requestPasswordForm.PasswordType;
-				Config.Authenticator.Data.Password = (requestPasswordForm.PasswordType == AuthenticatorData.PasswordTypes.Explicit ? requestPasswordForm.Password : null);
+				Config.Authenticator.PasswordType = requestPasswordForm.PasswordType;
+				Config.Authenticator.Password = (requestPasswordForm.PasswordType == Authenticator.PasswordTypes.Explicit ? requestPasswordForm.Password : null);
 			}
 
 			// save data
@@ -453,33 +459,33 @@ namespace WindowsAuthenticator
 				}
 			}
 
-			// get the region
-			EnrollForm form = new EnrollForm();
-			DialogResult result = form.ShowDialog(this);
-			if (result != DialogResult.OK)
-			{
-				return false;
-			}
-			string region = form.SelectedRegion;
-
 			// initialise the new authenticator
 			Authenticator authenticator = null;
 			try
 			{
-				authenticator = new Authenticator(region);
-				authenticator.Enroll();
+				// get the current country code
+				string countrycode = (RegionInfo.CurrentRegion != null ? RegionInfo.CurrentRegion.TwoLetterISORegionName : null);
+	
+				// create and enroll a new authenticator
+				authenticator = new Authenticator();
+				authenticator.Enroll(countrycode);
 			}
 			catch (Exception ex)
 			{
 				MessageBox.Show(this,
-					"There was an error registering your authenticator:\n\n" + ex.Message + "\n\nThis may be because the Battle.net servers are busy. Please try again later.",
+					"There was an error registering your authenticator:\n\n" + ex.Message + "\n\nThis may be because the Battle.net servers are unavailable. Please try again later.",
 					"New Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 
+			// prompt now done
+			EnrolledForm enrolledForm = new EnrolledForm();
+			enrolledForm.ShowDialog(this);
+
 			// remember old config
 			WinAuthConfig oldconfig = Config;
 			// set the new authenticator
+			Config = Config.Clone() as WinAuthConfig;
 			Config.Authenticator = authenticator;
 			Config.AutoLogin = null; // clear autologin
 			// save config data
@@ -498,10 +504,14 @@ namespace WindowsAuthenticator
 
 			// prompt to backup
 			InitializedForm initForm = new InitializedForm();
+			initForm.Authenticator = Config.Authenticator;
 			if (initForm.ShowDialog(this) == System.Windows.Forms.DialogResult.Yes)
 			{
 				BackupData();
 			}
+
+			// show the new code
+			ShowCode();
 
 			return true;
 		}
@@ -545,6 +555,7 @@ namespace WindowsAuthenticator
 			// remember old
 			WinAuthConfig oldconfig = Config;
 			// set the new authenticator
+			Config = Config.Clone() as WinAuthConfig;
 			Config.Authenticator = import.Authenticator;
 			Config.AutoLogin = null;
 			// save config data
@@ -568,6 +579,9 @@ namespace WindowsAuthenticator
 				BackupData();
 			}
 
+			// show new code and serial
+			ShowCode();
+
 			return true;
 		}
 
@@ -588,11 +602,106 @@ namespace WindowsAuthenticator
 
 			// get the form
 			ExportForm export = new ExportForm();
-			export.AuthenticatorData = this.Authenticator.Data;
+			export.Authenticator = this.Authenticator;
 			if (export.ShowDialog(this) != System.Windows.Forms.DialogResult.OK)
 			{
 				return;
 			}
+		}
+
+		/// <summary>
+		/// Validate that the restore code can be shown and then display it
+		/// </summary>
+		private void ShowRestoreCode()
+		{
+			// already have one?
+			if (Authenticator == null)
+			{
+				return;
+			}
+
+			// check if this authenticator is too old to be restored
+			try
+			{
+				Authenticator testrestore = new Authenticator();
+				testrestore.Restore(this.Authenticator.Serial, this.Authenticator.RestoreCode);
+			}
+			catch (InvalidRestoreCodeException )
+			{
+				MessageBox.Show(this, "This authenticator was created before the restore capability existed and so the restore code will not work.\n\n"
+						+ "You will need to remove this authenticator from your Battle.net account and create a new one.",
+						WinAuth.APPLICATION_NAME,
+						MessageBoxButtons.OK,
+						MessageBoxIcon.Exclamation);
+				return;
+			}
+			catch (InvalidRestoreResponseException)
+			{
+				// ignore the validation is battle net is down
+			}
+			catch (Exception ex2)
+			{
+				MessageBox.Show(this, "Oops. An error (" + ex2.Message + ") occured whilst validating your restore code."
+						+ "Please log a ticket at http://code.google.com/p/winauth so we can fix this.",
+						WinAuth.APPLICATION_NAME,
+						MessageBoxButtons.OK,
+						MessageBoxIcon.Exclamation);
+				return;
+			}
+
+			ShowRestoreCodeForm restorecodeform = new ShowRestoreCodeForm();
+			restorecodeform.Authenticator = this.Authenticator;
+			restorecodeform.ShowDialog(this);
+		}
+
+		/// <summary>
+		/// Show the form to restore the authenticator
+		/// </summary>
+		private bool RestoreAuthenticator()
+		{
+			// already have one?
+			if (Authenticator != null)
+			{
+				DialogResult warning = MessageBox.Show(this, "WARNING: You already have an authenticator registered.\n\n"
+					+ "You will NOT be able to access your Battle.net account if you continue and this authenticator is overwritten.\n\n"
+					+ "Do you still want to restore an authenticator?", "Restore Authenticator", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+				if (warning != System.Windows.Forms.DialogResult.Yes)
+				{
+					return false;
+				}
+			}
+
+			// get the restore form
+			RestoreForm restore = new RestoreForm();
+			if (restore.ShowDialog(this) != System.Windows.Forms.DialogResult.OK)
+			{
+				return false;
+			}
+
+			// remember old
+			WinAuthConfig oldconfig = Config;
+			// set the new authenticator
+			Config = Config.Clone() as WinAuthConfig;
+			Config.Authenticator = restore.Authenticator;
+			Config.AutoLogin = null;
+			// save config data
+			if (SaveAuthenticator(null) == false)
+			{
+				// restore auth
+				Config = oldconfig;
+				return false;
+			}
+
+			// unhook and rehook hotkey
+			HookHotkey(this.Config);
+
+			// set filename and window title
+			notifyIcon.Text = this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
+
+			// show new code and serial
+			ShowCode();
+
+			return true;
 		}
 
 		/// <summary>
@@ -603,6 +712,12 @@ namespace WindowsAuthenticator
 			// if none, we get one?
 			if (Authenticator == null)
 			{
+				if (MessageBox.Show(this,
+					"Since this seems to be your first time we will connect to Battle.net and register a new authenticator.\n\nIf you already have an authenticator, you can cancel this and right-click to either \"Load...\", \"Import...\" or \"Restore...\" your existing one.\n\nRegister a new authenticator now?",
+					"Register New Authenticator", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+				{
+					return;
+				}
 				// enroll it
 				if (Enroll() == false)
 				{
@@ -613,7 +728,7 @@ namespace WindowsAuthenticator
 			// if we have authenticaor then get code
 			if (Authenticator != null)
 			{
-				string code = Authenticator.CalculateCode();
+				string code = Authenticator.CurrentCode;
 				codeField.Text = code;
 				if (CopyOnCode == true && m_ignoreClipboard == false)
 				{
@@ -641,7 +756,7 @@ namespace WindowsAuthenticator
 					while (clipRetry == true);
 				}
 
-				serialLabel.Text = Authenticator.Data.Serial;
+				serialLabel.Text = Authenticator.Serial;
 				if (HideSerial == false)
 				{
 					serialLabel.Visible = true;
@@ -656,7 +771,7 @@ namespace WindowsAuthenticator
 
 			// show progess bar's time till next refresh
 			refreshTimer.Enabled = true;
-			progressBar.Visible = (Authenticator != null && AutoRefresh == true);
+			progressBar.Visible = (Authenticator != null /* && AutoRefresh == true */);
 		}
 
 		#endregion
@@ -715,11 +830,11 @@ namespace WindowsAuthenticator
 
 			Authenticator authenticator = this.Authenticator;
 			serialLabel.Visible = !Config.HideSerial;
-			serialLabel.Text = (authenticator != null ? authenticator.Data.Serial : string.Empty);
-			codeField.Text = (authenticator != null && Config.AutoRefresh == true ? authenticator.CalculateCode() : string.Empty);
+			serialLabel.Text = (authenticator != null ? authenticator.Serial : string.Empty);
+			codeField.Text = (authenticator != null /* && Config.AutoRefresh == true */ ? authenticator.CurrentCode : string.Empty);
 			codeField.SecretMode = !AllowCopy;
 			progressBar.Value = 0;
-			progressBar.Visible = (authenticator != null && AutoRefresh == true);
+			progressBar.Visible = (authenticator != null /* && AutoRefresh == true */);
 
 			// hook our hotkey to send code to target window (e.g . Ctrl-Alt-C)
 			HookHotkey(this.Config);
@@ -773,7 +888,7 @@ namespace WindowsAuthenticator
 					KeyboardSender keysend = new KeyboardSender(this.Config.AutoLogin.WindowTitle, this.Config.AutoLogin.ProcessName, this.Config.AutoLogin.WindowTitleRegex);
 
 					// get the current code
-					string code = Authenticator.CalculateCode();
+					string code = Authenticator.CurrentCode;
 
 					// get the script and execute it
 					string script = (string.IsNullOrEmpty(this.Config.AutoLogin.AdvancedScript) == false ? this.Config.AutoLogin.AdvancedScript : "{CODE}{ENTER 4000}");
@@ -846,6 +961,20 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Form resize event to save authenticator when we mininize
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void MainForm_Resize(object sender, EventArgs e)
+		{
+			// save current config
+			if (this.WindowState == FormWindowState.Minimized && Config.Authenticator != null)
+			{
+				SaveAuthenticator(Config.Filename);
+			}
+		}
+
+		/// <summary>
 		/// Click the calc button
 		/// </summary>
 		/// <param name="sender"></param>
@@ -868,18 +997,57 @@ namespace WindowsAuthenticator
 			syncServerTimeMenuItem.Enabled = (Authenticator != null);
 			copyOnCodeMenuItem.Enabled = (Authenticator != null);
 			allowCopyMenuItem.Enabled = (Authenticator != null);
-			autoRefreshMenuItem.Enabled = (Authenticator != null);
+			//autoRefreshMenuItem.Enabled = (Authenticator != null);
 
 			saveAsMenuItem.Enabled = (Authenticator != null);
 			saveMenuItem.Enabled = (Authenticator != null);
 
-			autoRefreshMenuItem.Checked = (autoRefreshMenuItem.Enabled == true ? AutoRefresh : false);
+			//autoRefreshMenuItem.Checked = (autoRefreshMenuItem.Enabled == true ? AutoRefresh : false);
 			copyOnCodeMenuItem.Checked = (copyOnCodeMenuItem.Enabled == true ? CopyOnCode : false);
 			allowCopyMenuItem.Checked = (allowCopyMenuItem.Enabled == true ? AllowCopy : false);
 			alwaysOnTopMenuItem.Checked = (alwaysOnTopMenuItem.Enabled == true ? AlwaysOnTop : false);
 			hideSerialMenuItem.Checked = (hideSerialMenuItem.Enabled == true ? HideSerial : false);
 			useTrayIconMenuItem.Checked = (useTrayIconMenuItem.Enabled == true ? UseTrayIcon : false);
 			startWithWindowsMenuItem.Checked = (startWithWindowsMenuItem.Enabled == true ? StartWithWindows : false);
+
+			// check we have the separator
+			if (contextMenuStrip.Items.ContainsKey("lastLoadedMenuItemSep") == false)
+			{
+				int exitIndex = contextMenuStrip.Items.IndexOfKey("exitMenuItem");
+				ToolStripSeparator sep = new ToolStripSeparator();
+				sep.Name = "lastLoadedMenuItemSep";
+				contextMenuStrip.Items.Insert(exitIndex, sep);
+			}
+			// remove old last loaded items
+			int nextindex;
+			int index = 1;
+			while ((nextindex = contextMenuStrip.Items.IndexOfKey("lastLoadedMenuItem" + index)) >= 0)
+			{
+				contextMenuStrip.Items.RemoveAt(nextindex);
+				index++;
+			}
+			// add the last loaded after the separator
+			index = 1;
+			nextindex = contextMenuStrip.Items.IndexOfKey("lastLoadedMenuItemSep");
+			do
+			{
+				string lastloaded = WinAuthHelper.GetLastFile(index);
+				if (string.IsNullOrEmpty(lastloaded) == true)
+				{
+					break;
+				}
+
+				ToolStripMenuItem item = new ToolStripMenuItem();
+				item.Name = "lastLoadedMenuItem" + index;
+				item.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D1 + (index-1))));
+				item.Text = index + " " + lastloaded;
+				item.Tag = lastloaded;
+				item.Click += new System.EventHandler(this.lastloadedMenuItem_Click);
+				contextMenuStrip.Items.Insert(nextindex, item);
+
+				index++;
+				nextindex++;
+			} while (true);
 		}
 
 		/// <summary>
@@ -928,7 +1096,7 @@ namespace WindowsAuthenticator
 		private void loadMenuItem_Click(object sender, EventArgs e)
 		{
 			// load the data
-			LoadAuthenticator();
+			LoadAuthenticator(null);
 		}
 
 		/// <summary>
@@ -938,10 +1106,10 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void saveMenuItem_Click(object sender, EventArgs e)
 		{
-			if (Authenticator != null)
-			{
-				SaveAuthenticator(Config.Filename);
-			}
+			//if (Authenticator != null)
+			//{
+			//  SaveAuthenticator(Config.Filename);
+			//}
 		}
 
 		/// <summary>
@@ -985,15 +1153,50 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Click menu item to show the restore code
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void showRestoreCodeMenuItem_Click(object sender, EventArgs e)
+		{
+			ShowRestoreCode();
+		}
+
+		/// <summary>
+		/// Click the Restore menu item
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void restoreMenuItem_Click(object sender, EventArgs e)
+		{
+			RestoreAuthenticator();
+		}
+
+		/// <summary>
 		/// Click menu item to close
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void exitMeuuItem_Click(object sender, EventArgs e)
+		private void exitMenuItem_Click(object sender, EventArgs e)
 		{
 			// we nede to make sure we aren't just hidden to tray
 			m_explictClose = true;
 			this.Close();
+		}
+
+		/// <summary>
+		/// Click menu item to load a lastloaded authenticator file
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void lastloadedMenuItem_Click(object sender, EventArgs e)
+		{
+			// get the filename of the previous authenticator and load it
+			string filename = ((ToolStripMenuItem)sender).Tag as string;
+			if (string.IsNullOrEmpty(filename) == false)
+			{
+				LoadAuthenticator(filename);
+			}
 		}
 
 		/// <summary>
@@ -1027,7 +1230,7 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void autoRefreshMenuItem_Click(object sender, EventArgs e)
 		{
-			AutoRefresh = !autoRefreshMenuItem.Checked;
+		  //AutoRefresh = !autoRefreshMenuItem.Checked;
 		}
 
 		/// <summary>
@@ -1118,12 +1321,12 @@ namespace WindowsAuthenticator
 			}
 
 			// hide the code if it has been visible for more than 10 seconds
-			if (AutoRefresh == false && CodeDisplayed != DateTime.MinValue && CodeDisplayed.AddSeconds(CODE_DISPLAY_DURATION) < now)
-			{
-				CodeDisplayed = DateTime.MinValue;
-				codeField.Text = string.Empty;
-				serialLabel.Visible = false;
-			}
+			//if (AutoRefresh == false && CodeDisplayed != DateTime.MinValue && CodeDisplayed.AddSeconds(CODE_DISPLAY_DURATION) < now)
+			//{
+			//  CodeDisplayed = DateTime.MinValue;
+			//  codeField.Text = string.Empty;
+			//  serialLabel.Visible = false;
+			//}
 
 			if (progressBar.Visible == true)
 			{
@@ -1134,7 +1337,7 @@ namespace WindowsAuthenticator
 					NextRefresh = now;
 				}
 			}
-			if (AutoRefresh == true && Authenticator != null && now >= NextRefresh)
+			if (/* AutoRefresh == true && */ Authenticator != null && now >= NextRefresh)
 			{
 				NextRefresh = now.AddSeconds(30);
 				ShowCode();

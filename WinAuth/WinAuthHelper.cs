@@ -41,7 +41,7 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Registry data name for last loaded file
 		/// </summary>
-		private const string WINAUTHREGKEY_LASTFILE = @"File1";
+		private const string WINAUTHREGKEY_LASTFILE = @"File{0}";
 
 		/// <summary>
 		/// Registry key for starting with windows
@@ -64,6 +64,11 @@ namespace WindowsAuthenticator
 		private const int MAX_PASSWORD_RETRIES = 3;
 
 		/// <summary>
+		/// Number of saved authenticators
+		/// </summary>
+		private const int MAX_SAVED_FILES = 4;
+
+		/// <summary>
 		/// Load the authenticator and configuration settings
 		/// </summary>
 		/// <param name="form">parent winform</param>
@@ -76,7 +81,7 @@ namespace WindowsAuthenticator
 
 			if (string.IsNullOrEmpty(configFile) == true)
 			{
-				configFile = GetLastFile();
+				configFile = GetLastFile(1);
 				if (string.IsNullOrEmpty(configFile) == false && File.Exists(configFile) == false)
 				{
 					// ignore it if file does't exist
@@ -134,11 +139,12 @@ namespace WindowsAuthenticator
 					if (node == null)
 					{
 						// foreign file so we import (authenticator.xml from winauth_1.3, android BMA xml or Java rs)
-						AuthenticatorData data = LoadAuthenticator(form, configFile);
-						if (data != null)
+						Authenticator auth = LoadAuthenticator(form, configFile);
+						if (auth != null)
 						{
-							config.Authenticator = new Authenticator(data);
+							config.Authenticator = auth;
 						}
+						SetLastFile(configFile); // set this as the new last opened file
 						return config;
 					}
 
@@ -165,6 +171,7 @@ namespace WindowsAuthenticator
 							configFile = config.Filename;
 						}
 						SaveAuthenticator(form, configFile, config);
+						SetLastFile(configFile); // set this as the new last opened file
 						return config;
 					}
 
@@ -215,13 +222,14 @@ namespace WindowsAuthenticator
 						foreach (XmlNode authenticatorNode in nodes)
 						{
 							// load the data
-							AuthenticatorData data = null;
+							Authenticator auth = null;
 							try
 							{
 								try
 								{
-									data = new AuthenticatorData(authenticatorNode, password);
-									config.Authenticator = new Authenticator(data);
+									auth = new Authenticator();
+									auth.Load(authenticatorNode, password);
+									config.Authenticator = auth;
 								}
 								catch (EncrpytedSecretDataException)
 								{
@@ -239,8 +247,9 @@ namespace WindowsAuthenticator
 
 										try
 										{
-											data = new AuthenticatorData(authenticatorNode, passwordForm.Password);
-											config.Authenticator = new Authenticator(data);
+											auth = new Authenticator();
+											auth.Load(authenticatorNode, passwordForm.Password);
+											config.Authenticator = auth;
 											break;
 										}
 										catch (BadPasswordException)
@@ -269,7 +278,7 @@ namespace WindowsAuthenticator
 					node = doc.DocumentElement.SelectSingleNode("autologin");
 					if (node != null && node.InnerText.Length != 0)
 					{
-						config.AutoLogin = new HoyKeySequence(node, config.Authenticator.Data.Password);
+						config.AutoLogin = new HoyKeySequence(node, config.Authenticator.Password);
 					}
 				}
 				catch (Exception ex)
@@ -283,6 +292,8 @@ namespace WindowsAuthenticator
 					}
 				}
 			} while (configloaded == DialogResult.Retry);
+
+			SetLastFile(configFile); // set this as the new last opened file
 
 			return config;
 		}
@@ -356,10 +367,10 @@ namespace WindowsAuthenticator
 				string filename = node.InnerText;
 				if (File.Exists(filename) == true)
 				{
-					AuthenticatorData data = LoadAuthenticator(form, filename);
-					if (data != null)
+					Authenticator auth = LoadAuthenticator(form, filename);
+					if (auth != null)
 					{
-						config.Authenticator = new Authenticator(data);
+						config.Authenticator = auth;
 					}
 				}
 				config.Filename = filename;
@@ -373,11 +384,11 @@ namespace WindowsAuthenticator
 		/// </summary>
 		/// <param name="form">parent winform</param>
 		/// <param name="configFile">filename to load</param>
-		/// <returns>new AuthenticatorData object</returns>
-		public static AuthenticatorData LoadAuthenticator(Form form, string configFile)
+		/// <returns>new Authenticator object</returns>
+		public static Authenticator LoadAuthenticator(Form form, string configFile)
 		{
 			// load the data
-			AuthenticatorData data = null;
+			Authenticator data = null;
 			try
 			{
 				try
@@ -386,7 +397,7 @@ namespace WindowsAuthenticator
 					data = ImportAuthenticator(configFile, null);
 
 					// if this was an import, i.e. an .rms file, then clear authFile so we aare forcesto save a new name
-					if (data != null && data.LoadedFormat != AuthenticatorData.FileFormat.WinAuth)
+					if (data != null && data.LoadedFormat != Authenticator.FileFormat.WinAuth)
 					{
 						configFile = null;
 					}
@@ -445,23 +456,26 @@ namespace WindowsAuthenticator
 		/// </summary>
 		/// <param name="configFile">filename to load</param>
 		/// <param name="password">optional password</param>
-		/// <returns>new AuthenticatorData</returns>
-		public static AuthenticatorData ImportAuthenticator(string configFile, string password)
+		/// <returns>new Authenticator</returns>
+		public static Authenticator ImportAuthenticator(string configFile, string password)
 		{
 			using (FileStream fs = new FileStream(configFile, FileMode.Open))
 			{
+				Authenticator auth = new Authenticator();
+
 				// read the file
 				string ext = Path.GetExtension(configFile).ToLower();
 				if (ext == ".xml")
 				{
 					// load ours or the Android XML file
-					return new AuthenticatorData(fs, AuthenticatorData.FileFormat.WinAuth, password);
+					auth.Load(fs, Authenticator.FileFormat.WinAuth, password);
 				}
 				else
 				{
 					// load the Java MIDP recordfile
-					return new AuthenticatorData(fs, AuthenticatorData.FileFormat.Midp, password);
+					auth.Load(fs, Authenticator.FileFormat.Midp, password);
 				}
+				return auth;
 			}
 		}
 
@@ -481,18 +495,20 @@ namespace WindowsAuthenticator
 				config.WriteXmlString(writer);
 			}
 
-			SetLastFile(configFile); // set this as the new last opened file
+			// use this as the last fle
+			SetLastFile(configFile);
 		}
 
 		/// <summary>
 		/// Get the last authenticator file name from the registry
 		/// </summary>
+		/// <param name="index">index of last entry to load</param>
 		/// <returns>name of last file or null</returns>
-		public static string GetLastFile()
+		public static string GetLastFile(int index)
 		{
 			using (RegistryKey key = Registry.CurrentUser.OpenSubKey(WINAUTHREGKEY, false))
 			{
-				return (key == null ? null : key.GetValue(WINAUTHREGKEY_LASTFILE, null) as string);
+				return (key == null ? null : key.GetValue(string.Format(WINAUTHREGKEY_LASTFILE, index), null) as string);
 			}
 		}
 
@@ -504,7 +520,32 @@ namespace WindowsAuthenticator
 		{
 			using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WINAUTHREGKEY))
 			{
-				key.SetValue(WINAUTHREGKEY_LASTFILE, filename);
+				// read all the last files
+				List<string> lastfiles = new List<string>();
+				for (int index=1; index<=MAX_SAVED_FILES; index++)
+				{
+					string lastfile = GetLastFile(index);
+					lastfiles.Add(lastfile);
+				}
+				// make sure current one is at the start
+				if (string.IsNullOrEmpty(filename) == false)
+				{
+					lastfiles.Remove(filename);
+					lastfiles.Insert(0, filename);
+				}
+				// write all the entries back to registry
+				for (int index=1; index<=MAX_SAVED_FILES; index++)
+				{
+					string lastfile = lastfiles[index-1];
+					if (string.IsNullOrEmpty(lastfile) == true)
+					{
+						key.DeleteValue(string.Format(WINAUTHREGKEY_LASTFILE, index), false);
+					}
+					else
+					{
+						key.SetValue(string.Format(WINAUTHREGKEY_LASTFILE, index), lastfile);
+					}
+				}
 			}
 		}
 

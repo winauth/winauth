@@ -122,7 +122,7 @@ namespace WindowsAuthenticator
 				WinAuthConfig config = (WinAuthConfig)CurrentConfig.Clone();
 				if (config.Authenticator != null)
 				{
-					config.Authenticator.Data.PasswordType = AuthenticatorData.PasswordTypes.None;
+					config.Authenticator.PasswordType = Authenticator.PasswordTypes.None;
 				}
 				config.WriteXmlString(xw);
 			}

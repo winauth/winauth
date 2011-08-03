@@ -118,13 +118,14 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="label4.Text" xml:space="preserve">
-    <value>1. Go to www.battle.net and log into your account.
-2. Click Security Options from the top menu.
-3. Click the "Attach Authenticator" button in the "Battle.net Mobile Authenticator" section.
-4. Follow the instructions to verify your email address.
-5. Enter the following serial number and login code:</value>
+    <value>Now that your authenticator has been registered, you need to save it on your computer before adding it to your account.
+
+1. Choose a file to save your new Authenticator.
+
+2. Select an encryption option.
+
+3. Add your Authenticator to your Battle.net account.
+
+Click "Continue"...</value>
   </data>
-  <metadata name="refreshTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
 </root>

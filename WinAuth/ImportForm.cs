@@ -53,19 +53,17 @@ namespace WindowsAuthenticator
 				}
 
 				// create the data and authenticator
-				AuthenticatorData data = new AuthenticatorData();
-				data.Region = serial1Field.Text;
-				data.Serial = serial1Field.Text + "-" + serial2Field.Text + "-" + serial3Field.Text + "-" + serial4Field.Text;
+				Authenticator auth = new Authenticator();
+				auth.Serial = serial1Field.Text + "-" + serial2Field.Text + "-" + serial3Field.Text + "-" + serial4Field.Text;
 				//
 				// this is an ascii encoded representation, e.g. a3 -> 0x61,0x33,
 				string key = keyField.Text.Replace(" ", string.Empty).ToUpper();
 				byte[] keyBytes = Authenticator.StringToByteArray(key);
 				//
-				data.SecretKey = keyBytes;
+				auth.SecretKey = keyBytes;
 				//
-				data.ServerTimeDiff = (timeField.Text.Length != 0 ? int.Parse(timeField.Text) : 0);
+				auth.ServerTimeDiff = (timeField.Text.Length != 0 ? int.Parse(timeField.Text) : 0);
 				//
-				Authenticator auth = new Authenticator(data);
 				return auth;
 			}
 		}

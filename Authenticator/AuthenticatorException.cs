@@ -88,4 +88,14 @@ namespace WindowsAuthenticator
 	{
 		public BadPasswordException() : base() { }
 	}
+
+	public class InvalidRestoreResponseException : AuthenticatorException
+	{
+		public InvalidRestoreResponseException(string msg) : base(msg) { }
+	}
+
+	public class InvalidRestoreCodeException : InvalidRestoreResponseException
+	{
+		public InvalidRestoreCodeException(string msg) : base(msg) { }
+	}
 }
