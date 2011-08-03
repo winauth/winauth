@@ -711,7 +711,9 @@ namespace WindowsAuthenticator
 			{
 				string code = Authenticator.CurrentCode;
 				codeField.Text = code;
-				if (CopyOnCode == true && m_ignoreClipboard == false)
+
+				// optionally copy the code to the clipboard, only when not minimized
+				if (CopyOnCode == true && m_ignoreClipboard == false && WindowState != FormWindowState.Minimized)
 				{
 					bool clipRetry = false;
 					do
@@ -949,7 +951,7 @@ namespace WindowsAuthenticator
 		private void MainForm_Resize(object sender, EventArgs e)
 		{
 			// save current config
-			if (this.WindowState == FormWindowState.Minimized && Config.Authenticator != null)
+			if (this.WindowState == FormWindowState.Minimized && Config != null && Config.Authenticator != null)
 			{
 				SaveAuthenticator(Config.Filename);
 			}
