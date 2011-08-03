@@ -85,12 +85,6 @@
     <Compile Include="RestoreForm.Designer.cs">
       <DependentUpon>RestoreForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="EnrolledForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="EnrolledForm.Designer.cs">
-      <DependentUpon>EnrolledForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="ExportForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -163,9 +157,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="RestoreForm.resx">
       <DependentUpon>RestoreForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="EnrolledForm.resx">
-      <DependentUpon>EnrolledForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ExportForm.resx">
       <DependentUpon>ExportForm.cs</DependentUpon>

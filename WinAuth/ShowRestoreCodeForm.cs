@@ -22,6 +22,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace WindowsAuthenticator
@@ -65,6 +66,58 @@ namespace WindowsAuthenticator
 			this.serialNumberField.Text = Authenticator.Serial;
 			this.restoreCodeField.SecretMode = true;
 			this.restoreCodeField.Text = Authenticator.RestoreCode;
+
+			// start a background thread to verify the restore code
+			BackgroundWorker verify = new BackgroundWorker();
+			verify.DoWork += new DoWorkEventHandler(VerifyRestoreCode);
+			verify.RunWorkerCompleted += new RunWorkerCompletedEventHandler(VerifyRestoreCodeCompleted);
+			verify.RunWorkerAsync(this.Authenticator);
+		}
+
+		/// <summary>
+		/// Event when verification is completed
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		void VerifyRestoreCodeCompleted(object sender, RunWorkerCompletedEventArgs e)
+		{
+			string message = e.Result as string;
+			if (string.IsNullOrEmpty(message) == false)
+			{
+				MessageBox.Show(this, message, WinAuth.APPLICATION_NAME, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+			}
+		}
+
+		/// <summary>
+		/// Perform a verification of the restore code in the background by checking it with the servers
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		void VerifyRestoreCode(object sender, DoWorkEventArgs e)
+		{
+			Authenticator auth = e.Argument as Authenticator;
+
+			// check if this authenticator is too old to be restored
+			try
+			{
+				Authenticator testrestore = new Authenticator();
+				testrestore.Restore(auth.Serial, auth.RestoreCode);
+				e.Result = null;
+			}
+			catch (InvalidRestoreCodeException)
+			{
+				e.Result = "This authenticator was created before the restore capability existed and so the restore code will not work.\n\n"
+						+ "You will need to remove this authenticator from your Battle.net account and create a new one.";
+			}
+			catch (InvalidRestoreResponseException)
+			{
+				// ignore the validation if servers are down
+			}
+			catch (Exception ex2)
+			{
+				e.Result = "Oops. An error (" + ex2.Message + ") occured whilst validating your restore code."
+						+ "Please log a ticket at http://code.google.com/p/winauth so we can fix this.";
+			}
 		}
 
 	}

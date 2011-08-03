@@ -291,17 +291,16 @@ namespace WindowsAuthenticator
 
 		/// <summary>
 		/// Enroll the authenticator with the server. We can pass an optional country code from http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
-		/// but is seems the server uses GEOIP to determine the region anyway
+		/// but the server uses GEOIP to determine the region anyway
 		/// </summary>
 		/// <param name="countryCode">optional 2 letter country code</param>
 		public void Enroll(string countryCode)
 		{
 			// generate byte array of data:
 			//  00 byte[20] one-time key used to decrypt data when returned;
-			//  20 byte[2] region: actually a country code, e.g. US< UK, FR, KR, etc
+			//  20 byte[2] country code, e.g. US, GB, FR, KR, etc
 			//  22 byte[16] model string for this device;
 			//	38 END
-
 			byte[] data = new byte[38];
 			byte[] oneTimePad = CreateOneTimePad(20);
 			Array.Copy(oneTimePad, data, oneTimePad.Length);
@@ -362,7 +361,7 @@ namespace WindowsAuthenticator
 
 			// return data:
 			// 00-07 server time (Big Endian)
-			// 08-24 is serial (17)
+			// 08-24 serial number (17)
 			// 25-44 secret key encrpyted with our pad
 			// 45 END
 
@@ -455,9 +454,9 @@ namespace WindowsAuthenticator
 		public void Restore(string serial, string restoreCode)
 		{
 			// get the serial data
-			byte[] serialBytes = Encoding.UTF8.GetBytes(serial.Replace("-", string.Empty));
+			byte[] serialBytes = Encoding.UTF8.GetBytes(serial.ToUpper().Replace("-", string.Empty));
 
-			// sewnd the request to the server to get our challenge
+			// send the request to the server to get our challenge
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(MOBILE_URL + RESTORE_PATH);
 			request.Method = "POST";
 			request.ContentType = "application/octet-stream";
@@ -511,7 +510,7 @@ namespace WindowsAuthenticator
 				}
 			}
 
-			// only take the first 10 bytes of the restore code
+			// only take the first 10 bytes of the restore code and encode to byte taking count of the missing chars
 			byte[] restoreCodeBytes = new byte[10];
 			char[] arrayOfChar = restoreCode.ToUpper().ToCharArray();
 			for (int i = 0; i < 10; i++)
@@ -620,7 +619,7 @@ namespace WindowsAuthenticator
 			{
 				Serial = serial.ToUpper();
 			}
-
+			// sync the time
 			ServerTimeDiff = 0L;
 			Sync();
 		}
@@ -995,7 +994,7 @@ namespace WindowsAuthenticator
 			byte[] digestdata = new byte[digest.GetDigestSize()];
 			digest.DoFinal(digestdata, 0);
 
-			// take last 10 chars of hash and convert each byte to our encoded string
+			// take last 10 chars of hash and convert each byte to our encoded string that doesn't use I,L,O,S
 			StringBuilder code = new StringBuilder();
 			int startpos = digestdata.Length - 10;
 			for (int i = 0; i < 10; i++)
@@ -1205,9 +1204,9 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
-		/// Encrpyt the data stored in config file
+		/// Encrpyt a string with a given key
 		/// </summary>
-		/// <param name="plain">blace data to encrypt - hex representation of byte array</param>
+		/// <param name="plain">data to encrypt - hex representation of byte array</param>
 		/// <param name="key">key to use to encrpyt</param>
 		/// <returns>hex coded encrpyted string</returns>
 		public static string Encrypt(string plain, string key)
@@ -1249,7 +1248,7 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
-		/// Decrypt a config string from one hex-coded stirng into another
+		/// Decrypt a hex-coded string
 		/// </summary>
 		/// <param name="data">data string to be decrypted</param>
 		/// <param name="key">decryption key</param>

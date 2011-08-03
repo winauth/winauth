@@ -81,18 +81,21 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void refreshTimer_Tick(object sender, EventArgs e)
 		{
-			DateTime now = DateTime.Now;
+			if (Authenticator != null)
+			{
+				DateTime now = DateTime.Now;
 
-			int tillUpdate = (int)((Authenticator.ServerTime % 30000L) / 1000L);
-			progressBar.Value = tillUpdate;
-			if (tillUpdate == 0)
-			{
-				NextRefresh = now;
-			}
-			if (now >= NextRefresh)
-			{
-				NextRefresh = now.AddSeconds(30);
-				this.codeField.Text = Authenticator.CurrentCode;
+				int tillUpdate = (int)((Authenticator.ServerTime % 30000L) / 1000L);
+				progressBar.Value = tillUpdate;
+				if (tillUpdate == 0)
+				{
+					NextRefresh = now;
+				}
+				if (now >= NextRefresh)
+				{
+					NextRefresh = now.AddSeconds(30);
+					this.codeField.Text = Authenticator.CurrentCode;
+				}
 			}
 		}
 

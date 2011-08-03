@@ -49,6 +49,9 @@ namespace WindowsAuthenticator
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InitializedForm));
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.progressBar = new System.Windows.Forms.ProgressBar();
+			this.restoreCodeField = new WindowsAuthenticator.SecretTextBox();
+			this.codeField = new WindowsAuthenticator.SecretTextBox();
+			this.serialNumberField = new WindowsAuthenticator.SecretTextBox();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
@@ -59,9 +62,6 @@ namespace WindowsAuthenticator
 			this.btnNo = new System.Windows.Forms.Button();
 			this.btnYes = new System.Windows.Forms.Button();
 			this.refreshTimer = new System.Windows.Forms.Timer(this.components);
-			this.restoreCodeField = new WindowsAuthenticator.SecretTextBox();
-			this.codeField = new WindowsAuthenticator.SecretTextBox();
-			this.serialNumberField = new WindowsAuthenticator.SecretTextBox();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -96,6 +96,36 @@ namespace WindowsAuthenticator
 			this.progressBar.Step = 1;
 			this.progressBar.TabIndex = 5;
 			// 
+			// restoreCodeField
+			// 
+			this.restoreCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.restoreCodeField.Location = new System.Drawing.Point(131, 302);
+			this.restoreCodeField.Multiline = true;
+			this.restoreCodeField.Name = "restoreCodeField";
+			this.restoreCodeField.SecretMode = false;
+			this.restoreCodeField.Size = new System.Drawing.Size(224, 30);
+			this.restoreCodeField.TabIndex = 2;
+			// 
+			// codeField
+			// 
+			this.codeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.codeField.Location = new System.Drawing.Point(131, 186);
+			this.codeField.Multiline = true;
+			this.codeField.Name = "codeField";
+			this.codeField.SecretMode = false;
+			this.codeField.Size = new System.Drawing.Size(224, 30);
+			this.codeField.TabIndex = 2;
+			// 
+			// serialNumberField
+			// 
+			this.serialNumberField.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.serialNumberField.Location = new System.Drawing.Point(131, 152);
+			this.serialNumberField.Multiline = true;
+			this.serialNumberField.Name = "serialNumberField";
+			this.serialNumberField.SecretMode = false;
+			this.serialNumberField.Size = new System.Drawing.Size(224, 30);
+			this.serialNumberField.TabIndex = 2;
+			// 
 			// label2
 			// 
 			this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -115,7 +145,7 @@ namespace WindowsAuthenticator
 			this.label3.Size = new System.Drawing.Size(348, 73);
 			this.label3.TabIndex = 1;
 			this.label3.Text = "We strongly RECOMMEND that you send a backup copy of your authenticator to your e" +
-    "mail account.\r\n\r\nDo you wan to do this now?";
+    "mail account.\r\n\r\nDo you want to send this email now?";
 			// 
 			// label6
 			// 
@@ -167,7 +197,7 @@ namespace WindowsAuthenticator
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(361, 28);
 			this.label1.TabIndex = 1;
-			this.label1.Text = "Attach your Authenticator to your account:";
+			this.label1.Text = "To add your Authenticator to your account:";
 			// 
 			// btnNo
 			// 
@@ -198,36 +228,6 @@ namespace WindowsAuthenticator
 			this.refreshTimer.Interval = 500;
 			this.refreshTimer.Tick += new System.EventHandler(this.refreshTimer_Tick);
 			// 
-			// restoreCodeField
-			// 
-			this.restoreCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.restoreCodeField.Location = new System.Drawing.Point(131, 302);
-			this.restoreCodeField.Multiline = true;
-			this.restoreCodeField.Name = "restoreCodeField";
-			this.restoreCodeField.SecretMode = false;
-			this.restoreCodeField.Size = new System.Drawing.Size(224, 30);
-			this.restoreCodeField.TabIndex = 2;
-			// 
-			// codeField
-			// 
-			this.codeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.codeField.Location = new System.Drawing.Point(131, 186);
-			this.codeField.Multiline = true;
-			this.codeField.Name = "codeField";
-			this.codeField.SecretMode = false;
-			this.codeField.Size = new System.Drawing.Size(224, 30);
-			this.codeField.TabIndex = 2;
-			// 
-			// serialNumberField
-			// 
-			this.serialNumberField.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.serialNumberField.Location = new System.Drawing.Point(131, 152);
-			this.serialNumberField.Multiline = true;
-			this.serialNumberField.Name = "serialNumberField";
-			this.serialNumberField.SecretMode = false;
-			this.serialNumberField.Size = new System.Drawing.Size(224, 30);
-			this.serialNumberField.TabIndex = 2;
-			// 
 			// InitializedForm
 			// 
 			this.AcceptButton = this.btnYes;
@@ -240,7 +240,7 @@ namespace WindowsAuthenticator
 			this.Controls.Add(this.groupBox1);
 			this.Name = "InitializedForm";
 			this.ShowIcon = false;
-			this.Text = "New Authenticator";
+			this.Text = "Authenticator";
 			this.Load += new System.EventHandler(this.InitializedForm_Load);
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();

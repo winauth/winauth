@@ -479,8 +479,17 @@ namespace WindowsAuthenticator
 			}
 
 			// prompt now done
-			EnrolledForm enrolledForm = new EnrolledForm();
-			enrolledForm.ShowDialog(this);
+			if (MessageBox.Show(this,
+				"Your authenticator has been created and registered.\n\n"
+				+ "You will now be prompted to save it to a file on your computer before you can add it to your account.\n\n"
+				+ "1. Choose a file to save your new authenticator.\n"
+				+ "2. Select the encrpytion option.\n"
+				+ "3. Add your authenticator to your Battle.net account.\n\n"
+				+ "Click \"OK\" to save your authenticator.",
+				"New Registred Authenticator", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK)
+			{
+				return false;
+			}
 
 			// remember old config
 			WinAuthConfig oldconfig = Config;
@@ -574,6 +583,7 @@ namespace WindowsAuthenticator
 
 			// prompt to backup
 			InitializedForm initForm = new InitializedForm();
+			initForm.Authenticator = Config.Authenticator;
 			if (initForm.ShowDialog(this) == System.Windows.Forms.DialogResult.Yes)
 			{
 				BackupData();
@@ -610,42 +620,13 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
-		/// Validate that the restore code can be shown and then display it
+		/// Show the restore code. The form also verifiies it with the servers in case it is an old authenticator.
 		/// </summary>
 		private void ShowRestoreCode()
 		{
 			// already have one?
 			if (Authenticator == null)
 			{
-				return;
-			}
-
-			// check if this authenticator is too old to be restored
-			try
-			{
-				Authenticator testrestore = new Authenticator();
-				testrestore.Restore(this.Authenticator.Serial, this.Authenticator.RestoreCode);
-			}
-			catch (InvalidRestoreCodeException )
-			{
-				MessageBox.Show(this, "This authenticator was created before the restore capability existed and so the restore code will not work.\n\n"
-						+ "You will need to remove this authenticator from your Battle.net account and create a new one.",
-						WinAuth.APPLICATION_NAME,
-						MessageBoxButtons.OK,
-						MessageBoxIcon.Exclamation);
-				return;
-			}
-			catch (InvalidRestoreResponseException)
-			{
-				// ignore the validation is battle net is down
-			}
-			catch (Exception ex2)
-			{
-				MessageBox.Show(this, "Oops. An error (" + ex2.Message + ") occured whilst validating your restore code."
-						+ "Please log a ticket at http://code.google.com/p/winauth so we can fix this.",
-						WinAuth.APPLICATION_NAME,
-						MessageBoxButtons.OK,
-						MessageBoxIcon.Exclamation);
 				return;
 			}
 
