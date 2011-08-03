@@ -47,12 +47,12 @@ namespace WindowsAuthenticator
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShowRestoreCodeForm));
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.restoreCodeField = new WindowsAuthenticator.SecretTextBox();
+			this.label1 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label4 = new System.Windows.Forms.Label();
 			this.btnClose = new System.Windows.Forms.Button();
-			this.label1 = new System.Windows.Forms.Label();
 			this.serialNumberField = new WindowsAuthenticator.SecretTextBox();
+			this.restoreCodeField = new WindowsAuthenticator.SecretTextBox();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -72,15 +72,14 @@ namespace WindowsAuthenticator
 			this.groupBox1.TabIndex = 0;
 			this.groupBox1.TabStop = false;
 			// 
-			// restoreCodeField
+			// label1
 			// 
-			this.restoreCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.restoreCodeField.Location = new System.Drawing.Point(131, 257);
-			this.restoreCodeField.Multiline = true;
-			this.restoreCodeField.Name = "restoreCodeField";
-			this.restoreCodeField.SecretMode = false;
-			this.restoreCodeField.Size = new System.Drawing.Size(224, 30);
-			this.restoreCodeField.TabIndex = 2;
+			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label1.Location = new System.Drawing.Point(7, 226);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(118, 19);
+			this.label1.TabIndex = 1;
+			this.label1.Text = "Serial Number";
 			// 
 			// label2
 			// 
@@ -113,15 +112,6 @@ namespace WindowsAuthenticator
 			this.btnClose.Text = "Close";
 			this.btnClose.UseVisualStyleBackColor = true;
 			// 
-			// label1
-			// 
-			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label1.Location = new System.Drawing.Point(7, 226);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(118, 19);
-			this.label1.TabIndex = 1;
-			this.label1.Text = "Serial Number";
-			// 
 			// serialNumberField
 			// 
 			this.serialNumberField.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -130,7 +120,19 @@ namespace WindowsAuthenticator
 			this.serialNumberField.Name = "serialNumberField";
 			this.serialNumberField.SecretMode = false;
 			this.serialNumberField.Size = new System.Drawing.Size(224, 30);
+			this.serialNumberField.SpaceOut = 0;
 			this.serialNumberField.TabIndex = 2;
+			// 
+			// restoreCodeField
+			// 
+			this.restoreCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.restoreCodeField.Location = new System.Drawing.Point(131, 257);
+			this.restoreCodeField.Multiline = true;
+			this.restoreCodeField.Name = "restoreCodeField";
+			this.restoreCodeField.SecretMode = false;
+			this.restoreCodeField.Size = new System.Drawing.Size(224, 30);
+			this.restoreCodeField.SpaceOut = 0;
+			this.restoreCodeField.TabIndex = 2;
 			// 
 			// ShowRestoreCodeForm
 			// 

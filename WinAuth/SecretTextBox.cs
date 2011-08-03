@@ -37,6 +37,11 @@ namespace WindowsAuthenticator
 		private string m_text;
 
 		/// <summary>
+		/// Number of chars to space out when in secret mode
+		/// </summary>
+		private int m_spaceOut;
+
+		/// <summary>
 		/// Flag to draw ourselves
 		/// </summary>
 		private bool m_secretMode;
@@ -68,6 +73,17 @@ namespace WindowsAuthenticator
 			}
 		}
 
+		public int SpaceOut
+		{
+			get
+			{
+				return m_spaceOut;
+			}
+			set
+			{
+				m_spaceOut = value;
+			}
+		}
 
 		/// <summary>
 		/// Value of the textbox, but if in secret mode then will return ***** as value
@@ -96,10 +112,25 @@ namespace WindowsAuthenticator
 			using (Brush brush = new SolidBrush(base.ForeColor))
 			{
 				StringFormat sf = StringFormat.GenericTypographic;
-				sf.LineAlignment = StringAlignment.Center;
 				sf.Alignment = StringAlignment.Center;
+				sf.LineAlignment = StringAlignment.Center;
 				g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-				g.DrawString(m_text, base.Font, brush, new RectangleF(0, 0, base.Width, base.Height), sf);
+
+				string text = m_text;
+
+				// if we have spacing, we add a space in between each set of chars
+				if (m_spaceOut != 0)
+				{
+					StringBuilder sb = new StringBuilder();
+					for (int i = 0; i < m_text.Length; i += m_spaceOut)
+					{
+						sb.Append(m_text.Substring(i, m_spaceOut)).Append(" ");
+					}
+					text = sb.ToString().Trim();
+				}
+
+				// draw the whole string
+				g.DrawString(text, base.Font, brush, new RectangleF(0, 0, base.Width, base.Height), sf);
 			}
 		}
 

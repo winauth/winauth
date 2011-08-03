@@ -392,6 +392,7 @@ namespace WindowsAuthenticator
 			this.codeField.ReadOnly = true;
 			this.codeField.SecretMode = false;
 			this.codeField.Size = new System.Drawing.Size(100, 19);
+			this.codeField.SpaceOut = 4;
 			this.codeField.TabIndex = 0;
 			this.codeField.TabStop = false;
 			this.codeField.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
