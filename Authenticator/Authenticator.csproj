@@ -60,7 +60,6 @@
   <ItemGroup>
     <Compile Include="AuthenticatorException.cs" />
     <Compile Include="Authenticator.cs" />
-    <Compile Include="AuthenticatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
