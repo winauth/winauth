@@ -1005,41 +1005,6 @@ namespace WindowsAuthenticator
 			return code.ToString();
     }
 
-/*
-		/// <summary>
-		/// Create an initial random block of 37 bytes for a secret key. Seed Random with the current time
-		/// and perform SHA1 on random bytes taking first 37 bytes of resultant 40 byte block.
-		/// </summary>
-		/// <returns>random byte[37] array</returns>
-		protected static byte[] CreateInitializationRandom()
-		{
-			byte[] hashBlock = new byte[128];
-
-			// There is a MITM vulnerability from using the standard Random call
-			// see https://docs.google.com/document/edit?id=1pf-YCgUnxR4duE8tr-xulE3rJ1Hw-Bm5aMk5tNOGU3E&hl=en
-			// in http://code.google.com/p/winauth/issues/detail?id=2
-			// so we switch out to use RNGCryptoServiceProvider
-
-			//Random random = new Random((int)CurrentTime);			
-			//for (int i = hashBlock.Length-1; i >= 0; i--)
-			//{
-			//  hashBlock[i] = (byte)random..Next(256);
-			//}
-
-			RNGCryptoServiceProvider random = new RNGCryptoServiceProvider();
-			random.GetBytes(hashBlock);
-
-			SHA1 sha1 = SHA1.Create();
-			byte[] key1 = sha1.ComputeHash(hashBlock, 0, 64);
-			byte[] key2 = sha1.ComputeHash(hashBlock, 64, 64);
-			byte[] key = new byte[37];
-			Array.Copy(key1, key, 20);
-			Array.Copy(key2, 0, key, 20, 17);
-
-			return key;
-		}
-*/
-
 		/// <summary>
 		/// Create a random Model string for initialization to armor the init string sent over the wire
 		/// </summary>
@@ -1071,6 +1036,11 @@ namespace WindowsAuthenticator
 		/// <returns>array of bytes conatining random data</returns>
 		protected internal static byte[] CreateOneTimePad(int length)
 		{
+			// There is a MITM vulnerability from using the standard Random call
+			// see https://docs.google.com/document/edit?id=1pf-YCgUnxR4duE8tr-xulE3rJ1Hw-Bm5aMk5tNOGU3E&hl=en
+			// in http://code.google.com/p/winauth/issues/detail?id=2
+			// so we switch out to use RNGCryptoServiceProvider instead of Random
+
 			RNGCryptoServiceProvider random = new RNGCryptoServiceProvider();
 
 			byte[] randomblock = new byte[length];
