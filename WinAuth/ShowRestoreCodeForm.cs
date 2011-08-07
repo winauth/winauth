@@ -67,11 +67,14 @@ namespace WindowsAuthenticator
 			this.restoreCodeField.SecretMode = true;
 			this.restoreCodeField.Text = Authenticator.RestoreCode;
 
-			// start a background thread to verify the restore code
-			BackgroundWorker verify = new BackgroundWorker();
-			verify.DoWork += new DoWorkEventHandler(VerifyRestoreCode);
-			verify.RunWorkerCompleted += new RunWorkerCompletedEventHandler(VerifyRestoreCodeCompleted);
-			verify.RunWorkerAsync(this.Authenticator);
+			// if needed start a background thread to verify the restore code
+			if (this.Authenticator.RestoreCodeVerified == false)
+			{
+				BackgroundWorker verify = new BackgroundWorker();
+				verify.DoWork += new DoWorkEventHandler(VerifyRestoreCode);
+				verify.RunWorkerCompleted += new RunWorkerCompletedEventHandler(VerifyRestoreCodeCompleted);
+				verify.RunWorkerAsync(this.Authenticator);
+			}
 		}
 
 		/// <summary>
@@ -102,6 +105,7 @@ namespace WindowsAuthenticator
 			{
 				Authenticator testrestore = new Authenticator();
 				testrestore.Restore(auth.Serial, auth.RestoreCode);
+				auth.RestoreCodeVerified = true;
 				e.Result = null;
 			}
 			catch (InvalidRestoreCodeException)

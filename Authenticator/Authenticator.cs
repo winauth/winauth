@@ -175,6 +175,11 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// We can check if the restore code is valid and rememeber so don't have to do it again
+		/// </summary>
+		public bool RestoreCodeVerified { get; set; }
+
+		/// <summary>
 		/// Time difference in milliseconds of our machine and server
 		/// </summary>
 		public long ServerTimeDiff { get; set; }
@@ -619,6 +624,8 @@ namespace WindowsAuthenticator
 			{
 				Serial = serial.ToUpper();
 			}
+			// restore code is ok
+			RestoreCodeVerified = true;
 			// sync the time
 			ServerTimeDiff = 0L;
 			Sync();
@@ -870,6 +877,12 @@ namespace WindowsAuthenticator
 					ServerTimeDiff = offset;
 				}
 
+				node = rootnode.SelectSingleNode("restorecodeverified");
+				if (node != null && string.Compare(node.InnerText, bool.TrueString.ToLower(), true) == 0)
+				{
+					RestoreCodeVerified = true;
+				}
+
 				LoadedFormat = FileFormat.WinAuth;
 
 				return;
@@ -916,6 +929,13 @@ namespace WindowsAuthenticator
 			}
 			writer.WriteString(data);
 			writer.WriteEndElement();
+			//
+			if (RestoreCodeVerified == true)
+			{
+				writer.WriteStartElement("restorecodeverified");
+				writer.WriteString(bool.TrueString.ToLower());
+				writer.WriteEndElement();
+			}
 			//
 			writer.WriteEndElement();
 		}
