@@ -1212,11 +1212,24 @@ namespace WindowsAuthenticator
 							pi.SetValue(control, image, null);
 						}
 					}
+					else if (pi.PropertyType == typeof(Cursor))
+					{
+						string v = childnode.InnerText;
+						if (v.IndexOf(".") != -1)
+						{
+							v = Regex.Replace(childnode.InnerText, @".*\.(.*)", "$1", RegexOptions.Multiline);
+						}
+						PropertyInfo cursorpi = typeof(Cursors).GetProperty(v, BindingFlags.IgnoreCase | BindingFlags.Static | BindingFlags.Public);
+						if (cursorpi != null)
+						{
+							pi.SetValue(control, cursorpi.GetValue(typeof(Cursors), null), null);
+						}
+					}
 					else if (hasChildren == true)
 					{
 						SetSkinControl(pi.GetValue(control, null), childnode);
 					}
-					else if (pi.PropertyType.IsEnum)
+					else if (pi.PropertyType.IsEnum == true)
 					{
 						string v = Regex.Replace(childnode.InnerText, @".*\.(.*)", "$1", RegexOptions.Multiline);
 						pi.SetValue(control, Enum.Parse(pi.PropertyType, v, true), null);

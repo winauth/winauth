@@ -12,12 +12,24 @@
 		<top>45</top>
 		<width>100</width>
 		<height>19</height>
+		<forecolor>#000000</forecolor>
+		<backcolor>#ffffff</backcolor>
+		<font>
+			<name>Arial</name>
+			<size>12</size>
+		</font>
 	</codefield>
 	<serialfield>
-		<left>79</left>
-		<top>86</top>
+		<left>85</left>
+		<top>80</top>
 		<width>138</width>
 		<height>17</height>
+		<backcolor>transparent</backcolor>
+		<forecolor>#ffffff</forecolor>
+		<font>
+			<name>Arial</name>
+			<size>10</size>
+		</font>
 	</serialfield>
 	<progressbar>
 		<left>101</left>
@@ -25,4 +37,15 @@
 		<width>104</width>
 		<height>10</height>
 	</progressbar>
+	<codebutton type="WindowsAuthenticator.RoundButton">
+		<left>36</left>
+		<top>34</top>
+		<width>49</width>
+		<height>46</height>
+		<backcolor>#000000</backcolor>
+		<hovercolor>#000000</hovercolor>
+		<colorgradient>2</colorgradient>
+		<colorstepgradient>2</colorstepgradient>
+		<cursor>hand</cursor>
+	</codebutton>
 </skin>

@@ -12,12 +12,20 @@
 		<height>20</height>
 		<backcolor>#0F1C46</backcolor>
 		<forecolor>#ffffff</forecolor>
+		<font>
+			<name>Arial</name>
+			<size>10</size>
+		</font>
 	</codefield>
 	<serialfield>
 		<left>48</left>
 		<top>180</top>
 		<width>138</width>
 		<height>17</height>
+		<font>
+			<name>Arial</name>
+			<size>10</size>
+		</font>
 	</serialfield>
 	<progressbar>
 		<left>50</left>
