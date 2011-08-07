@@ -127,6 +127,9 @@
     <Compile Include="RequestPasswordForm.Designer.cs">
       <DependentUpon>RequestPasswordForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="TransparentControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="WinAuthConfig.cs" />
     <Compile Include="WinAuthHelper.cs" />
     <Compile Include="MainForm.cs">

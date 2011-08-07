@@ -23,6 +23,8 @@ using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Net;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -41,7 +43,7 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Number of seconds for code to display when not on autorefresh
 		/// </summary>
-		//public const int CODE_DISPLAY_DURATION = 10;
+		public const int CODE_DISPLAY_DURATION = 10;
 
 		#region Initialization
 
@@ -92,6 +94,14 @@ namespace WindowsAuthenticator
 		/// </summary>
 		private bool m_ignoreClipboard;
 
+		/// <summary>
+		/// We hold onto some control so they can be skinned
+		/// </summary>
+		protected Button m_calcCodeButton;
+		protected Control m_codeField;
+		protected Control m_copyClipboardButton;
+		protected Control m_syncButton;
+
 		#endregion
 
 		#region Properties
@@ -111,7 +121,7 @@ namespace WindowsAuthenticator
 
 				// when we set a new config also force any necessary form changes
 				this.AlwaysOnTop = m_config.AlwaysOnTop;
-				//this.AutoRefresh = m_config.AutoRefresh;
+				this.AutoRefresh = m_config.AutoRefresh;
 				this.UseTrayIcon = m_config.UseTrayIcon;
 				this.HideSerial = m_config.HideSerial;
 				this.AllowCopy = m_config.AllowCopy;
@@ -133,7 +143,6 @@ namespace WindowsAuthenticator
 			}
 		}
 
-/*
 		/// <summary>
 		/// Get/set the flag to show how much time till next code and auto-generate it
 		/// </summary>
@@ -156,10 +165,10 @@ namespace WindowsAuthenticator
 					// hide code after 10 seconds
 					CodeDisplayed = DateTime.Now;
 				}
+				CalcCodeButton.Visible = !value;
 				progressBar.Visible = (Authenticator != null && value == true);
 			}
 		}
-*/
 
 		/// <summary>
 		/// Get/set flag to be topmost window
@@ -244,7 +253,10 @@ namespace WindowsAuthenticator
 			set
 			{
 				Config.AllowCopy = value;
-				codeField.SecretMode = !value;
+				if (CodeField is SecretTextBox)
+				{
+					((SecretTextBox)CodeField).SecretMode = !value;
+				}
 			}
 		}
 
@@ -290,6 +302,82 @@ namespace WindowsAuthenticator
 			set
 			{
 				m_codeDisplayed = value;
+			}
+		}
+
+		/// <summary>
+		/// Property holding original calc button control which we override so we can skin it
+		/// </summary>
+		public Button CalcCodeButton
+		{
+			get
+			{
+				if (m_calcCodeButton == null)
+				{
+					m_calcCodeButton = calcCodeButton;
+				}
+				return m_calcCodeButton;
+			}
+			set
+			{
+				m_calcCodeButton = value;
+			}
+		}
+
+		/// <summary>
+		/// Property holding original code field control which we override so we can skin it
+		/// </summary>
+		public Control CodeField
+		{
+			get
+			{
+				if (m_codeField == null)
+				{
+					m_codeField = codeField;
+				}
+				return m_codeField;
+			}
+			set
+			{
+				m_codeField = value;
+			}
+		}
+
+		/// <summary>
+		/// Property holding original code field control which we override so we can skin it
+		/// </summary>
+		public Control CopyClipboardButton
+		{
+			get
+			{
+				if (m_copyClipboardButton == null)
+				{
+					m_copyClipboardButton = copyClipboardButton;
+				}
+				return m_copyClipboardButton;
+			}
+			set
+			{
+				m_copyClipboardButton = value;
+			}
+		}
+
+		/// <summary>
+		/// Property holding original code field control which we override so we can skin it
+		/// </summary>
+		public Control SyncButton
+		{
+			get
+			{
+				if (m_syncButton == null)
+				{
+					m_syncButton = syncButton;
+				}
+				return m_syncButton;
+			}
+			set
+			{
+				m_syncButton = value;
 			}
 		}
 
@@ -346,7 +434,7 @@ namespace WindowsAuthenticator
 					// set specific authenticator settings
 					config.AllowCopy = Config.AllowCopy;
 					config.AlwaysOnTop = Config.AlwaysOnTop;
-					//config.AutoRefresh = Config.AutoRefresh;
+					config.AutoRefresh = Config.AutoRefresh;
 					config.CopyOnCode = Config.CopyOnCode;
 					config.HideSerial = Config.HideSerial;
 					config.UseTrayIcon = Config.UseTrayIcon;
@@ -710,33 +798,12 @@ namespace WindowsAuthenticator
 			if (Authenticator != null)
 			{
 				string code = Authenticator.CurrentCode;
-				codeField.Text = code;
+				CodeField.Text = code;
 
 				// optionally copy the code to the clipboard, only when not minimized
-				if (CopyOnCode == true && m_ignoreClipboard == false && WindowState != FormWindowState.Minimized)
+				if (CopyOnCode == true && WindowState != FormWindowState.Minimized)
 				{
-					bool clipRetry = false;
-					do
-					{
-						try
-						{
-							Clipboard.Clear();
-							Clipboard.SetDataObject(code, true);
-						}
-						catch (ExternalException )
-						{
-							// only show an error the first time
-							clipRetry = (MessageBox.Show(this, "Unable to copy your code to the clipboard. Another application is probably using it.\n\nTry again?",
-								WinAuth.APPLICATION_NAME,
-								MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
-							if (clipRetry == false)
-							{
-								// dont show error again...gets annoying
-								m_ignoreClipboard = true;
-							}
-						}
-					}
-					while (clipRetry == true);
+					CopyCodeToClipboard();
 				}
 
 				serialLabel.Text = Authenticator.Serial;
@@ -748,13 +815,57 @@ namespace WindowsAuthenticator
 			}
 			else
 			{
-				codeField.Text = string.Empty;
+				CodeField.Text = string.Empty;
 				serialLabel.Text = string.Empty;
 			}
 
 			// show progess bar's time till next refresh
 			refreshTimer.Enabled = true;
-			progressBar.Visible = (Authenticator != null /* && AutoRefresh == true */);
+			progressBar.Visible = (Authenticator != null && AutoRefresh == true);
+		}
+
+		/// <summary>
+		/// Sync the authenticator with the time server
+		/// </summary>
+		public void Sync()
+		{
+			Authenticator.Sync();
+			ShowCode();
+			MessageBox.Show(this, "Time synced successfully.", "Sync Time", MessageBoxButtons.OK);
+		}
+
+		/// <summary>
+		/// Copy the current code to the clipboard
+		/// </summary>
+		private void CopyCodeToClipboard()
+		{
+			if (m_ignoreClipboard == true)
+			{
+				return;
+			}
+
+			bool clipRetry = false;
+			do
+			{
+				try
+				{
+					Clipboard.Clear();
+					Clipboard.SetDataObject(Authenticator.CurrentCode, true, 4, 250);
+				}
+				catch (ExternalException)
+				{
+					// only show an error the first time
+					clipRetry = (MessageBox.Show(this, "Unable to copy your code to the clipboard. Another application is probably using it.\n\nTry again?",
+						WinAuth.APPLICATION_NAME,
+						MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
+					if (clipRetry == false)
+					{
+						// dont show error again...gets annoying
+						m_ignoreClipboard = true;
+					}
+				}
+			}
+			while (clipRetry == true);
 		}
 
 		#endregion
@@ -771,6 +882,7 @@ namespace WindowsAuthenticator
 			// get any command arguments
 			string configFile = null;
 			string password = null;
+			string skin = null;
 			//
 			string[] args = Environment.GetCommandLineArgs();
 			for (int i = 1; i < args.Length; i++)
@@ -791,6 +903,12 @@ namespace WindowsAuthenticator
 							i++;
 							password = args[i];
 							break;
+						case "-s":
+						case "--skin":
+							// set skin name
+							i++;
+							skin = args[i];
+							break;
 						default:
 							break;
 					}
@@ -808,22 +926,308 @@ namespace WindowsAuthenticator
 				return;
 			}
 
+			// load the skin
+			if (string.IsNullOrEmpty(skin) == false)
+			{
+				LoadSkin(skin);
+			}
+
 			// set title
 			notifyIcon.Text = this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
 
 			Authenticator authenticator = this.Authenticator;
 			serialLabel.Visible = !Config.HideSerial;
 			serialLabel.Text = (authenticator != null ? authenticator.Serial : string.Empty);
-			codeField.Text = (authenticator != null /* && Config.AutoRefresh == true */ ? authenticator.CurrentCode : string.Empty);
-			codeField.SecretMode = !AllowCopy;
+			CodeField.Text = (authenticator != null && Config.AutoRefresh == true ? authenticator.CurrentCode : string.Empty);
+			if (CodeField is SecretTextBox)
+			{
+				((SecretTextBox)CodeField).SecretMode = !AllowCopy;
+			}
 			progressBar.Value = 0;
-			progressBar.Visible = (authenticator != null /* && AutoRefresh == true */);
+			progressBar.Visible = (authenticator != null && AutoRefresh == true);
 
 			// hook our hotkey to send code to target window (e.g . Ctrl-Alt-C)
 			HookHotkey(this.Config);
 
 			// finally enable the timer to show code changes
 			refreshTimer.Enabled = true;			
+		}
+
+		/// <summary>
+		/// Load the selected or default skin
+		/// </summary>
+		private void LoadSkin(string skin)
+		{
+			// is it an ans file, rel file or just a name
+			string skinfile;
+			if (string.IsNullOrEmpty(skin) == true)
+			{
+				OpenFileDialog ofd = new OpenFileDialog();
+				ofd.AddExtension = true;
+				ofd.CheckFileExists = true;
+				ofd.DefaultExt = "xml";
+				ofd.InitialDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+				ofd.FileName = string.Empty;
+				ofd.Filter = "WinAuth Skin Files (*.xml)|*.xml";
+				ofd.RestoreDirectory = true;
+				ofd.ShowReadOnly = false;
+				ofd.Title = "Load Skin";
+				DialogResult result = ofd.ShowDialog(this);
+				if (result != System.Windows.Forms.DialogResult.OK)
+				{
+					return;
+				}
+				skin = ofd.FileName;
+			}
+			if (skin.IndexOf(Path.DirectorySeparatorChar) != -1 || skin.IndexOf(".") != -1)
+			{
+				skinfile = skin;
+			}
+			else
+			{
+				skinfile = System.Reflection.Assembly.GetExecutingAssembly().Location.Replace(".exe", "") + "." + skin + ".xml";
+			}
+			if (File.Exists(skinfile) == false)
+			{
+				return;
+			}
+
+			do
+			{
+				try
+				{
+					XmlDocument skindoc = new XmlDocument();
+					skindoc.Load(skinfile);
+					XmlNode rootnode = skindoc.DocumentElement;
+					XmlNode node = rootnode.SelectSingleNode("/skin");
+					if (node == null)
+					{
+						MessageBox.Show(this, "This is not a valid skin file.", WinAuth.APPLICATION_NAME, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+						return;
+					}
+
+					this.SuspendLayout();
+
+					node = rootnode.SelectSingleNode("/skin/form");
+					if (node != null)
+					{
+						SetSkinControl(this, node);
+					}
+
+					node = rootnode.SelectSingleNode("/skin/codefield");
+					if (node != null)
+					{
+						Control control = (Control)SetSkinControl(CodeField, node);
+						if (control != null)
+						{
+							// reemove old and add new one
+							this.Controls.Remove(CodeField);
+							this.Controls.Add(control);
+							//
+							CodeField = control;
+						}
+					}
+
+					node = rootnode.SelectSingleNode("/skin/serialfield");
+					if (node != null)
+					{
+						SetSkinControl(serialLabel, node);
+					}
+
+					node = rootnode.SelectSingleNode("/skin/progressbar");
+					if (node != null)
+					{
+						SetSkinControl(progressBar, node);
+					}
+
+					node = rootnode.SelectSingleNode("/skin/copyclipboardbutton");
+					if (node != null)
+					{
+						Control control = SetSkinControl(CopyClipboardButton, node) as Control;
+						if (control != null)
+						{
+							// reemove old button and add new one
+							this.Controls.Remove(CopyClipboardButton);
+							this.Controls.Add(control);
+							//
+							control.Visible = true;
+							control.Click += new System.EventHandler(copyClipboardButton_Click);
+							CopyClipboardButton = control;
+						}
+					}
+
+					node = rootnode.SelectSingleNode("/skin/syncbutton");
+					if (node != null)
+					{
+						Control control = SetSkinControl(SyncButton, node) as Control;
+						if (control != null)
+						{
+							// reemove old button and add new one
+							this.Controls.Remove(SyncButton);
+							this.Controls.Add(control);
+							//
+							control.Visible = true;
+							control.Click += new System.EventHandler(syncButton_Click);
+							SyncButton = control;
+						}
+					}
+
+					node = rootnode.SelectSingleNode("/skin/codebutton");
+					if (node != null)
+					{
+						Control newcontrol = SetSkinControl(CalcCodeButton, node) as Control;
+						if (newcontrol != null)
+						{
+							// reemove old button and add new one
+							this.Controls.Remove(CalcCodeButton);
+							this.Controls.Add(newcontrol);
+							//
+							newcontrol.Visible = CalcCodeButton.Visible;
+							newcontrol.Click += new System.EventHandler(calcCodeButton_Click);
+							newcontrol.GotFocus += new EventHandler(control_Focus);
+							CalcCodeButton = (Button)newcontrol;
+						}
+					}
+
+					break;
+				}
+				catch (Exception xe)
+				{
+					DialogResult result = MessageBox.Show(this, "Cannot set skin from " + skinfile + ": " + xe.Message,
+																									WinAuth.APPLICATION_NAME, MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
+					if (result == System.Windows.Forms.DialogResult.Ignore)
+					{
+						return;
+					}
+					if (result == System.Windows.Forms.DialogResult.Abort)
+					{
+						Application.Exit();
+						return;
+					}
+				}
+				finally
+				{
+					this.ResumeLayout(false);
+					this.PerformLayout();
+				}
+			} while (true);
+		}
+
+		/// <summary>
+		/// Set properties of objects recursively using reflection. The node is name the of a property of the control
+		/// to be set, which is the value if a text node. For an element node, we assume the propery is an object
+		/// and set the property within it.
+		/// </summary>
+		/// <param name="control">control with property to set</param>
+		/// <param name="node">xml node with property definition</param>
+		/// <returns>return new object/control if created becase "type" was set </returns>
+		private object SetSkinControl(object control, XmlNode node)
+		{
+			// new control to return if we created one
+			Control newcontrol = null;
+
+			// if the node has a "type" attribute we create a new object of that type and use and return it
+			XmlAttribute attr = node.Attributes["type"];
+			if (attr != null && string.IsNullOrEmpty(attr.Value) == false)
+			{
+				Type type = Type.GetType(attr.Value, false, true);
+				if (type != null && type.FullName != control.GetType().FullName)
+				{
+					control = newcontrol = (Control)Activator.CreateInstance(type);
+				}
+			}
+
+			// go through each element setting properties
+			foreach (XmlNode childnode in node.ChildNodes)
+			{
+				string prop = childnode.Name;
+				PropertyInfo pi = control.GetType().GetProperty(childnode.Name, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public);
+				if (pi != null)
+				{
+					// check if has child element nodes
+					bool hasChildren = false;
+					foreach (XmlNode cnode in childnode.ChildNodes)
+					{
+						if (cnode.NodeType == XmlNodeType.Element)
+						{
+							hasChildren = true;
+							break;
+						}
+					}
+
+					if (pi.PropertyType == typeof(Font))
+					{
+						string fontname = (childnode.SelectSingleNode("name") != null ? childnode.SelectSingleNode("name").InnerText : ((Control)control).Font.Name);
+						float fontsize = (childnode.SelectSingleNode("size") != null ? float.Parse(childnode.SelectSingleNode("size").InnerText) : ((Control)control).Font.Size);
+						FontStyle fontstyle = (childnode.SelectSingleNode("style") != null ? (FontStyle)Enum.Parse(typeof(FontStyle), childnode.SelectSingleNode("styke").InnerText) : ((Control)control).Font.Style);
+						Font font = new System.Drawing.Font(fontname, fontsize, fontstyle);
+
+						pi.SetValue(control, font, null);
+					}
+					else if (pi.PropertyType == typeof(Color))
+					{
+						pi.SetValue(control, ColorTranslator.FromHtml(childnode.InnerText), null);
+					}
+					else if (pi.PropertyType == typeof(Image))
+					{
+						Image image = null;
+
+						XmlNode imagenode;
+						if ((imagenode = childnode.SelectSingleNode("file")) != null)
+						{
+							image = Image.FromFile(imagenode.InnerText);
+						}
+						else if ((imagenode = childnode.SelectSingleNode("url")) != null)
+						{
+							HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(imagenode.InnerText);
+							using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+							{
+								image = Image.FromStream(response.GetResponseStream());
+								response.Close();
+							}
+						}
+						else if ((imagenode = childnode.SelectSingleNode("base64")) != null)
+						{
+							byte[] imageBytes = Convert.FromBase64String(imagenode.InnerText);
+							MemoryStream ms = new MemoryStream(imageBytes, 0, imageBytes.Length);
+							ms.Write(imageBytes, 0, imageBytes.Length);
+							image = Image.FromStream(ms, true);
+						}
+						if (image != null)
+						{
+							if (pi.Name == "BackgroundImage")
+							{
+								// set the size based on the image
+								((Control)control).Width = image.Width;
+								((Control)control).Height = image.Height;
+							}
+
+							pi.SetValue(control, image, null);
+
+							//using (MemoryStream ms = new MemoryStream())
+							//{
+							//  image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+							//  string imageBase64 = Convert.ToBase64String(ms.ToArray());
+							//}
+						}
+					}
+					else if (hasChildren == true)
+					{
+						SetSkinControl(pi.GetValue(control, null), childnode);
+					}
+					else if (pi.PropertyType.IsEnum)
+					{
+						string v = Regex.Replace(childnode.InnerText, @".*\.(.*)", "$1", RegexOptions.Multiline);
+						pi.SetValue(control, Enum.Parse(pi.PropertyType, v, true), null);
+					}
+					else
+					{
+						pi.SetValue(control, Convert.ChangeType(childnode.InnerText, pi.PropertyType), null);
+					}
+				}
+			}
+
+			return control;
 		}
 
 		private void UnhookHotkey()
@@ -968,6 +1372,18 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// When the calc button gets focus, we remove it to stop the grey border appearing
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void control_Focus(object sender, EventArgs e)
+		{
+			// disable and reenable to drop focus off...grey border looks fugly
+			((Control)sender).Enabled = false;
+			((Control)sender).Enabled = true;
+		}
+
+		/// <summary>
 		/// Initialize the members when showing the menu
 		/// </summary>
 		/// <param name="sender"></param>
@@ -980,12 +1396,12 @@ namespace WindowsAuthenticator
 			syncServerTimeMenuItem.Enabled = (Authenticator != null);
 			copyOnCodeMenuItem.Enabled = (Authenticator != null);
 			allowCopyMenuItem.Enabled = (Authenticator != null);
-			//autoRefreshMenuItem.Enabled = (Authenticator != null);
+			autoRefreshMenuItem.Enabled = (Authenticator != null);
 
 			saveAsMenuItem.Enabled = (Authenticator != null);
 			saveMenuItem.Enabled = (Authenticator != null);
 
-			//autoRefreshMenuItem.Checked = (autoRefreshMenuItem.Enabled == true ? AutoRefresh : false);
+			autoRefreshMenuItem.Checked = (autoRefreshMenuItem.Enabled == true ? AutoRefresh : false);
 			copyOnCodeMenuItem.Checked = (copyOnCodeMenuItem.Enabled == true ? CopyOnCode : false);
 			allowCopyMenuItem.Checked = (allowCopyMenuItem.Enabled == true ? AllowCopy : false);
 			alwaysOnTopMenuItem.Checked = (alwaysOnTopMenuItem.Enabled == true ? AlwaysOnTop : false);
@@ -1054,8 +1470,7 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void syncServerTimeMenuItem_Click(object sender, EventArgs e)
 		{
-			Authenticator.Sync();
-			MessageBox.Show(this, "Time synced successfully.", "Sync Time", MessageBoxButtons.OK);
+			Sync();
 		}
 
 		/// <summary>
@@ -1213,7 +1628,7 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void autoRefreshMenuItem_Click(object sender, EventArgs e)
 		{
-		  //AutoRefresh = !autoRefreshMenuItem.Checked;
+			AutoRefresh = !autoRefreshMenuItem.Checked;
 		}
 
 		/// <summary>
@@ -1288,6 +1703,36 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Choose a new skin file
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void menuItemSkin_Click(object sender, EventArgs e)
+		{
+			LoadSkin(null);
+		}
+
+		/// <summary>
+		/// When the copy to clipboard button is pressed
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void copyClipboardButton_Click(object sender, EventArgs e)
+		{
+			CopyCodeToClipboard();
+		}
+
+		/// <summary>
+		/// When the sync button is pressed
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void syncButton_Click(object sender, EventArgs e)
+		{
+			Sync();
+		}
+
+		/// <summary>
 		/// Timer tick to update auto refresh and get next code
 		/// </summary>
 		/// <param name="sender"></param>
@@ -1304,12 +1749,12 @@ namespace WindowsAuthenticator
 			}
 
 			// hide the code if it has been visible for more than 10 seconds
-			//if (AutoRefresh == false && CodeDisplayed != DateTime.MinValue && CodeDisplayed.AddSeconds(CODE_DISPLAY_DURATION) < now)
-			//{
-			//  CodeDisplayed = DateTime.MinValue;
-			//  codeField.Text = string.Empty;
-			//  serialLabel.Visible = false;
-			//}
+			if (AutoRefresh == false && CodeDisplayed != DateTime.MinValue && CodeDisplayed.AddSeconds(CODE_DISPLAY_DURATION) < now)
+			{
+			  CodeDisplayed = DateTime.MinValue;
+			  CodeField.Text = string.Empty;
+			  serialLabel.Visible = false;
+			}
 
 			if (progressBar.Visible == true)
 			{
@@ -1320,7 +1765,7 @@ namespace WindowsAuthenticator
 					NextRefresh = now;
 				}
 			}
-			if (/* AutoRefresh == true && */ Authenticator != null && now >= NextRefresh)
+			if (AutoRefresh == true && Authenticator != null && now >= NextRefresh)
 			{
 				NextRefresh = now.AddSeconds(30);
 				ShowCode();
