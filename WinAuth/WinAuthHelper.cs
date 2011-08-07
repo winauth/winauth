@@ -44,6 +44,11 @@ namespace WindowsAuthenticator
 		private const string WINAUTHREGKEY_LASTFILE = @"File{0}";
 
 		/// <summary>
+		/// Registry data name for saved skin
+		/// </summary>
+		private const string WINAUTHREGKEY_SKIN = @"Skin";
+
+		/// <summary>
 		/// Registry key for starting with windows
 		/// </summary>
 		private const string RUNKEY = @"Software\Microsoft\Windows\CurrentVersion\Run";
@@ -565,6 +570,37 @@ namespace WindowsAuthenticator
 				else if (key.GetValue(WinAuth.APPLICATION_NAME) != null)
 				{
 					key.DeleteValue(WinAuth.APPLICATION_NAME);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Get the saved skin file name from the registry
+		/// </summary>
+		/// <returns>name of skin file or null if none</returns>
+		public static string GetSavedSkin()
+		{
+			using (RegistryKey key = Registry.CurrentUser.OpenSubKey(WINAUTHREGKEY, false))
+			{
+				return (key == null ? null : key.GetValue(WINAUTHREGKEY_SKIN, null) as string);
+			}
+		}
+
+		/// <summary>
+		/// Set or remove the saved skin in the registry
+		/// </summary>
+		/// <param name="skin">name of skin file or null to remove</param>
+		public static void SetSavedSkin(string skin)
+		{
+			using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WINAUTHREGKEY))
+			{
+				if (string.IsNullOrEmpty(skin) == false)
+				{
+					key.SetValue(WINAUTHREGKEY_SKIN, skin);
+				}
+				else
+				{
+					key.DeleteValue(WINAUTHREGKEY_SKIN, false);
 				}
 			}
 		}

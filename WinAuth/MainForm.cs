@@ -927,6 +927,11 @@ namespace WindowsAuthenticator
 			}
 
 			// load the skin
+			if (string.IsNullOrEmpty(skin) == true)
+			{
+				// load the current skin if we haven't specified one
+				skin = this.Config.CurrentSkin;
+			}
 			if (string.IsNullOrEmpty(skin) == false)
 			{
 				LoadSkin(skin);
@@ -1089,6 +1094,8 @@ namespace WindowsAuthenticator
 						}
 					}
 
+					this.Config.CurrentSkin = skinfile;
+
 					break;
 				}
 				catch (Exception xe)
@@ -1203,12 +1210,6 @@ namespace WindowsAuthenticator
 							}
 
 							pi.SetValue(control, image, null);
-
-							//using (MemoryStream ms = new MemoryStream())
-							//{
-							//  image.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-							//  string imageBase64 = Convert.ToBase64String(ms.ToArray());
-							//}
 						}
 					}
 					else if (hasChildren == true)
@@ -1408,6 +1409,9 @@ namespace WindowsAuthenticator
 			hideSerialMenuItem.Checked = (hideSerialMenuItem.Enabled == true ? HideSerial : false);
 			useTrayIconMenuItem.Checked = (useTrayIconMenuItem.Enabled == true ? UseTrayIcon : false);
 			startWithWindowsMenuItem.Checked = (startWithWindowsMenuItem.Enabled == true ? StartWithWindows : false);
+
+			defaultSkinMenuItem.Enabled = !string.IsNullOrEmpty(Config.CurrentSkin);
+			defaultSkinMenuItem.Checked = Config.RememberSkin && (Config.CurrentSkin == WinAuthHelper.GetSavedSkin());
 
 			// check we have the separator
 			if (contextMenuStrip.Items.ContainsKey("lastLoadedMenuItemSep") == false)
@@ -1710,6 +1714,16 @@ namespace WindowsAuthenticator
 		private void menuItemSkin_Click(object sender, EventArgs e)
 		{
 			LoadSkin(null);
+		}
+
+		/// <summary>
+		/// Set the current as the default skin
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void defaultSkinMenuItem_Click(object sender, EventArgs e)
+		{
+			this.Config.RememberSkin = !defaultSkinMenuItem.Checked;
 		}
 
 		/// <summary>

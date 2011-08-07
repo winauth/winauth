@@ -56,6 +56,8 @@ namespace WindowsAuthenticator
 			this.saveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.syncServerTimeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.showRestoreCodeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.restoreMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
@@ -65,6 +67,9 @@ namespace WindowsAuthenticator
 			this.createBackupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.autoLoginMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+			this.menuItemSkin = new System.Windows.Forms.ToolStripMenuItem();
+			this.defaultSkinMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
 			this.startWithWindowsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.useTrayIconMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.alwaysOnTopMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -73,8 +78,6 @@ namespace WindowsAuthenticator
 			this.hideSerialMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.copyOnCodeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.autoRefreshMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-			this.syncServerTimeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
 			this.aboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
@@ -85,11 +88,8 @@ namespace WindowsAuthenticator
 			this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
 			this.copyClipboardButton = new System.Windows.Forms.Button();
 			this.syncButton = new System.Windows.Forms.Button();
-			this.menuItemSkin = new System.Windows.Forms.ToolStripMenuItem();
-			this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
 			this.calcCodeButton = new WindowsAuthenticator.RoundButton();
 			this.codeField = new WindowsAuthenticator.SecretTextBox();
-			this.defaultSkinMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.contextMenuStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -191,6 +191,18 @@ namespace WindowsAuthenticator
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
 			this.toolStripSeparator2.Size = new System.Drawing.Size(217, 6);
 			// 
+			// syncServerTimeMenuItem
+			// 
+			this.syncServerTimeMenuItem.Name = "syncServerTimeMenuItem";
+			this.syncServerTimeMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.syncServerTimeMenuItem.Text = "Sync Server Time";
+			this.syncServerTimeMenuItem.Click += new System.EventHandler(this.syncServerTimeMenuItem_Click);
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size(217, 6);
+			// 
 			// showRestoreCodeMenuItem
 			// 
 			this.showRestoreCodeMenuItem.Name = "showRestoreCodeMenuItem";
@@ -248,6 +260,26 @@ namespace WindowsAuthenticator
 			this.toolStripSeparator6.Name = "toolStripSeparator6";
 			this.toolStripSeparator6.Size = new System.Drawing.Size(217, 6);
 			// 
+			// menuItemSkin
+			// 
+			this.menuItemSkin.Name = "menuItemSkin";
+			this.menuItemSkin.Size = new System.Drawing.Size(220, 22);
+			this.menuItemSkin.Text = "Choose Skin...";
+			this.menuItemSkin.Click += new System.EventHandler(this.menuItemSkin_Click);
+			// 
+			// defaultSkinMenuItem
+			// 
+			this.defaultSkinMenuItem.Name = "defaultSkinMenuItem";
+			this.defaultSkinMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.defaultSkinMenuItem.Tag = "";
+			this.defaultSkinMenuItem.Text = "Always use this skin";
+			this.defaultSkinMenuItem.Click += new System.EventHandler(this.defaultSkinMenuItem_Click);
+			// 
+			// toolStripSeparator10
+			// 
+			this.toolStripSeparator10.Name = "toolStripSeparator10";
+			this.toolStripSeparator10.Size = new System.Drawing.Size(217, 6);
+			// 
 			// startWithWindowsMenuItem
 			// 
 			this.startWithWindowsMenuItem.Name = "startWithWindowsMenuItem";
@@ -301,18 +333,6 @@ namespace WindowsAuthenticator
 			this.autoRefreshMenuItem.Size = new System.Drawing.Size(220, 22);
 			this.autoRefreshMenuItem.Text = "Auto Refresh";
 			this.autoRefreshMenuItem.Click += new System.EventHandler(this.autoRefreshMenuItem_Click);
-			// 
-			// toolStripSeparator1
-			// 
-			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(217, 6);
-			// 
-			// syncServerTimeMenuItem
-			// 
-			this.syncServerTimeMenuItem.Name = "syncServerTimeMenuItem";
-			this.syncServerTimeMenuItem.Size = new System.Drawing.Size(220, 22);
-			this.syncServerTimeMenuItem.Text = "Sync Server Time";
-			this.syncServerTimeMenuItem.Click += new System.EventHandler(this.syncServerTimeMenuItem_Click);
 			// 
 			// toolStripSeparator3
 			// 
@@ -396,18 +416,6 @@ namespace WindowsAuthenticator
 			this.syncButton.Visible = false;
 			this.syncButton.Click += new System.EventHandler(this.syncButton_Click);
 			// 
-			// menuItemSkin
-			// 
-			this.menuItemSkin.Name = "menuItemSkin";
-			this.menuItemSkin.Size = new System.Drawing.Size(220, 22);
-			this.menuItemSkin.Text = "Choose Skin...";
-			this.menuItemSkin.Click += new System.EventHandler(this.menuItemSkin_Click);
-			// 
-			// toolStripSeparator10
-			// 
-			this.toolStripSeparator10.Name = "toolStripSeparator10";
-			this.toolStripSeparator10.Size = new System.Drawing.Size(217, 6);
-			// 
 			// calcCodeButton
 			// 
 			this.calcCodeButton.BackColor = System.Drawing.Color.Black;
@@ -439,12 +447,6 @@ namespace WindowsAuthenticator
 			this.codeField.TabIndex = 0;
 			this.codeField.TabStop = false;
 			this.codeField.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			// 
-			// defaultSkinMenuItem
-			// 
-			this.defaultSkinMenuItem.Name = "defaultSkinMenuItem";
-			this.defaultSkinMenuItem.Size = new System.Drawing.Size(220, 22);
-			this.defaultSkinMenuItem.Text = "Set as Default Skin";
 			// 
 			// MainForm
 			// 

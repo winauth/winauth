@@ -39,6 +39,11 @@ namespace WindowsAuthenticator
 		#region System Settings
 
 		/// <summary>
+		/// The current skin
+		/// </summary>
+		private string m_currentSkin;
+
+		/// <summary>
 		/// Get/set file name of config data
 		/// </summary>
 		public string Filename { get; set; }
@@ -57,6 +62,47 @@ namespace WindowsAuthenticator
 		/// Get/set start with windows flag
 		/// </summary>
 		public bool StartWithWindows { get; set; }
+
+		/// <summary>
+		/// Get/set the currnet skin
+		/// </summary>
+		public string CurrentSkin
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(m_currentSkin) == true && RememberSkin == true)
+				{
+					m_currentSkin = WinAuthHelper.GetSavedSkin();
+				}
+				return m_currentSkin;
+			}
+			set
+			{
+				m_currentSkin = value;
+			}
+		}
+
+		/// <summary>
+		/// Flag to remember skin and put in registry
+		/// </summary>
+		public bool RememberSkin
+		{
+			get
+			{
+				return (string.IsNullOrEmpty(WinAuthHelper.GetSavedSkin()) == false);
+			}
+			set
+			{
+				if (value == true)
+				{
+					WinAuthHelper.SetSavedSkin(CurrentSkin);
+				}
+				else
+				{
+					WinAuthHelper.SetSavedSkin(null);
+				}
+			}
+		}
 
 		#endregion
 
