@@ -60,7 +60,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Authenticator.cs" />
-    <Compile Include="AuthenticatorData.cs" />
     <Compile Include="AuthenticatorException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

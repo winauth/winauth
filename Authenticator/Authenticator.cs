@@ -35,6 +35,10 @@ using Org.BouncyCastle.Crypto.Paddings;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Generators;
 
+#if NETCF
+using OpenNETCF.Security.Cryptography;
+#endif
+
 namespace WindowsAuthenticator
 {
 	/// <summary>

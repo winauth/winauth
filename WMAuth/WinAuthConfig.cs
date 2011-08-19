@@ -81,13 +81,13 @@ namespace WindowsAuthenticator
 			using (FileStream fs = new FileStream(authfile, FileMode.Open))
 			{
 				// create and set a loaded authenticator
-				AuthenticatorData data = new AuthenticatorData(fs, AuthenticatorData.FileFormat.WinAuth, password);
-				Authenticator auth = new Authenticator(data);
+				Authenticator auth = new Authenticator();
+				auth.Load(fs, Authenticator.FileFormat.WinAuth, password);
 				CurrentAuthenticator = auth;
 			}
 
 			// resave so we change the "user" password to "explicit" using the generic key for the device
-			if (CurrentAuthenticator.Data.PasswordType == AuthenticatorData.PasswordTypes.User)
+			if (CurrentAuthenticator.PasswordType == Authenticator.PasswordTypes.User)
 			{
 				SaveAuthenticator();
 			}
@@ -120,17 +120,17 @@ namespace WindowsAuthenticator
 				string password = WinAPI.GetDeviceID(DEVICE_APPLICATION_ID);
 				if (password != null)
 				{
-					CurrentAuthenticator.Data.Password = password;
-					CurrentAuthenticator.Data.PasswordType = AuthenticatorData.PasswordTypes.Explicit;
+					CurrentAuthenticator.Password = password;
+					CurrentAuthenticator.PasswordType = Authenticator.PasswordTypes.Explicit;
 				}
 				else
 				{
 					// if we couldn't get a device key, use none so at least we can guarentee the key
-					CurrentAuthenticator.Data.PasswordType = AuthenticatorData.PasswordTypes.None;
+					CurrentAuthenticator.PasswordType = Authenticator.PasswordTypes.None;
 				}
 
 				// save the data
-				CurrentAuthenticator.Data.WriteXmlString(xw);
+				CurrentAuthenticator.WriteXmlString(xw);
 			}
 		}
 

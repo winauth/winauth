@@ -91,8 +91,7 @@ namespace WindowsAuthenticator
 		public void EnrollerStart()
 		{
 			// build a default authenticator
-			Authenticator auth = new Authenticator(Region);
-			AuthenticatorData data = null;
+			Authenticator auth = null;
 
 			// try and register a new authenticator
 			bool retry;
@@ -113,27 +112,28 @@ namespace WindowsAuthenticator
 								MessageBoxIcon.Question,
 								MessageBoxDefaultButton.Button1) == DialogResult.Yes)
 					{
-						StringReader sr = new StringReader(@"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?><winauth version=""0.7""><servertimediff>-100619</servertimediff><region>US</region><secretdata>00C814C868632E212324F2A366C2F72F418226441B2DB943D9E7D8EBC70F1CE78A3D6985B059447AF0C8894D27FA54494936652976BFB85DA9</secretdata></winauth>");
-						using (XmlReader xr = XmlReader.Create(sr))
-						{
-							data = new AuthenticatorData(xr, null);
-							auth = new Authenticator(data);
-							System.Threading.Thread.Sleep(3000);
-							UpdateStatus("Reading from Battle.net...");
-							System.Threading.Thread.Sleep(2000);
-						}
+						XmlDocument testxml = new XmlDocument();
+						testxml.LoadXml(@"<?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?><winauth version=""0.7""><servertimediff>-100619</servertimediff><region>US</region><secretdata>00C814C868632E212324F2A366C2F72F418226441B2DB943D9E7D8EBC70F1CE78A3D6985B059447AF0C8894D27FA54494936652976BFB85DA9</secretdata></winauth>");
+						auth = new Authenticator();
+						auth.Load(testxml.DocumentElement, null);
+						System.Threading.Thread.Sleep(3000);
+						UpdateStatus("Reading from Battle.net...");
+						System.Threading.Thread.Sleep(2000);
 					}
 					else
 					{
-						data = auth.Enroll();
+						auth = new Authenticator();
+						auth.Enroll();
 					}
 #else
 					// enroll the authenticator
-					data = auth.Enroll();
+					auth = new Authenticator();
+					auth.Enroll();
 #endif
 				}
 				catch (InvalidEnrollResponseException ex)
 				{
+					auth = null;
 					UpdateStatus("Failed to connect to Battle.net...");
 					if (MessageBox.Show("Cannot connect to Battle.net servers: " + ex.Message,
 								WMAuth.APPLICATION_NAME,
@@ -147,6 +147,7 @@ namespace WindowsAuthenticator
 				}
 				catch (Exception ex)
 				{
+					auth = null;
 					UpdateStatus("Failed to connect to Battle.net...");
 					if (MessageBox.Show("Cannot enroll with Battle.net servers: " + ex.Message,
 								WMAuth.APPLICATION_NAME,
@@ -159,11 +160,6 @@ namespace WindowsAuthenticator
 					retry = true;
 				}
 			} while (retry == true);
-			// if we have no data - failed - clear the authenticator
-			if (data == null)
-			{
-				auth = null;
-			}
 
 			// fire the Completed event
 			Completed(this, new CompletedEventArgs(auth));

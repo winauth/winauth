@@ -116,7 +116,7 @@ namespace WindowsAuthenticator
 				// show serial fields and labels
 				Config.ShowSerial = value;
 				showSerialMenuItem.Checked = value;
-				serialField.Text = (value == true && Config.CurrentAuthenticator != null ? Config.CurrentAuthenticator.Data.Serial : string.Empty);
+				serialField.Text = (value == true && Config.CurrentAuthenticator != null ? Config.CurrentAuthenticator.Serial : string.Empty);
 				serialField.Visible = value;
 			}
 		}
@@ -176,8 +176,8 @@ namespace WindowsAuthenticator
 			{
 				try
 				{
-					AuthenticatorData data = new AuthenticatorData(fs, AuthenticatorData.FileFormat.Midp, null);
-					auth = new Authenticator(data);
+					auth = new Authenticator();
+					auth.Load(fs, Authenticator.FileFormat.Midp, null);
 				}
 				catch (InvalidConfigDataException )
 				{
@@ -245,16 +245,16 @@ namespace WindowsAuthenticator
 			Directory.CreateDirectory(Path.GetDirectoryName(filename));
 
 			// save a copy of the authenticator data
-			AuthenticatorData data = (AuthenticatorData)Config.CurrentAuthenticator.Data.Clone();
+			Authenticator clone = (Authenticator)Config.CurrentAuthenticator.Clone();
 			XmlWriterSettings settings = new XmlWriterSettings();
 			settings.CloseOutput = true;
 			settings.Indent = true;
 			using (XmlWriter xw = XmlWriter.Create(new FileStream(filename, FileMode.Create), settings))
 			{
-				data.PasswordType = AuthenticatorData.PasswordTypes.None;
+				clone.PasswordType = Authenticator.PasswordTypes.None;
 
 				// save the data
-				data.WriteXmlString(xw);
+				clone.WriteXmlString(xw);
 			}
 
 			return true;
@@ -322,7 +322,7 @@ namespace WindowsAuthenticator
 			}
 
 			// show the code
-			codeField.Text = Config.CurrentAuthenticator.CalculateCode();
+			codeField.Text = Config.CurrentAuthenticator.CurrentCode;
 			LastCodeInterval = Config.CurrentAuthenticator.CodeInterval;
 			// update last updatted date
 			CodeShownSince = DateTime.Now;
