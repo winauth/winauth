@@ -281,7 +281,7 @@ namespace WindowsAuthenticator
 
 					// get the autologin node after we have gotten the pasword
 					node = doc.DocumentElement.SelectSingleNode("autologin");
-					if (node != null && node.InnerText.Length != 0)
+					if (node != null && node.InnerText.Length != 0 && config.Authenticator != null)
 					{
 						config.AutoLogin = new HoyKeySequence(node, config.Authenticator.Password);
 					}
