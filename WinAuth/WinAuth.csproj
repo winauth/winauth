@@ -73,6 +73,12 @@
     <Compile Include="BetaForm.designer.cs">
       <DependentUpon>BetaForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="EnrollForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EnrollForm.designer.cs">
+      <DependentUpon>EnrollForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ShowRestoreCodeForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -154,6 +160,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="BetaForm.resx">
       <DependentUpon>BetaForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EnrollForm.resx">
+      <DependentUpon>EnrollForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ShowRestoreCodeForm.resx">
       <DependentUpon>ShowRestoreCodeForm.cs</DependentUpon>

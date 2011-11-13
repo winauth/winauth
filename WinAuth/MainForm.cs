@@ -121,10 +121,13 @@ namespace WindowsAuthenticator
 
 				// when we set a new config also force any necessary form changes
 				this.AlwaysOnTop = m_config.AlwaysOnTop;
-				this.AutoRefresh = m_config.AutoRefresh;
 				this.UseTrayIcon = m_config.UseTrayIcon;
-				this.HideSerial = m_config.HideSerial;
-				this.AllowCopy = m_config.AllowCopy;
+				if (m_config.Authenticator != null)
+				{
+					this.AutoRefresh = m_config.AutoRefresh;
+					this.HideSerial = m_config.HideSerial;
+					this.AllowCopy = m_config.AllowCopy;
+				}
 			}
 		}
 
@@ -552,11 +555,18 @@ namespace WindowsAuthenticator
 			try
 			{
 				// get the current country code
-				string countrycode = (RegionInfo.CurrentRegion != null ? RegionInfo.CurrentRegion.TwoLetterISORegionName : null);
+				string region = (RegionInfo.CurrentRegion != null ? RegionInfo.CurrentRegion.TwoLetterISORegionName : null);
+				EnrollForm enrollform = new EnrollForm();
+				enrollform.CurrentRegion = region;
+				if (enrollform.ShowDialog(this) != System.Windows.Forms.DialogResult.OK)
+				{
+					return false;
+				}
+				region = enrollform.CurrentRegion;
 	
 				// create and enroll a new authenticator
 				authenticator = new Authenticator();
-				authenticator.Enroll(countrycode);
+				authenticator.Enroll(region);
 			}
 			catch (Exception ex)
 			{
@@ -574,7 +584,7 @@ namespace WindowsAuthenticator
 				+ "2. Select the encrpytion option.\n"
 				+ "3. Add your authenticator to your Battle.net account.\n\n"
 				+ "Click \"OK\" to save your authenticator.",
-				"New Registred Authenticator", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK)
+				"New Registered Authenticator", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK)
 			{
 				return false;
 			}

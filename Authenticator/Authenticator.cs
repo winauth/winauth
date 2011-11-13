@@ -137,7 +137,13 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// URLs for all mobile services
 		/// </summary>
-		private static string MOBILE_URL = "http://mobile-service.blizzard.com";
+		private static string REGION_US = "US";
+		public static Dictionary<string, string> MOBILE_URLS = new Dictionary<string,string>
+		{
+			{REGION_US, "http://mobile-service.blizzard.com"},
+			{"EU", "http://mobile-service.blizzard.com"},
+			{"CN", "http://mobile-service.battlenet.com.cn"}
+		};
 		private static string ENROLL_PATH = "/enrollment/enroll2.htm";
 		private static string SYNC_PATH = "/enrollment/time.htm";
 		private static string RESTORE_PATH = "/enrollment/initiatePaperRestore.htm";
@@ -329,7 +335,7 @@ namespace WindowsAuthenticator
 			byte[] encrypted = rsa.ProcessBlock(data, 0, data.Length);
 
 			// call the enroll server
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(MOBILE_URL + ENROLL_PATH);
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(GetMobileUrl(countryCode) + ENROLL_PATH);
 			request.Method = "POST";
 			request.ContentType = "application/octet-stream";
 			request.ContentLength = encrypted.Length;
@@ -404,7 +410,7 @@ namespace WindowsAuthenticator
 		public void Sync()
 		{
 			// create a connection to time sync server
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(MOBILE_URL + SYNC_PATH);
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(GetMobileUrl(this.Region) + SYNC_PATH);
 			request.Method = "GET";
 
 			// get response
@@ -466,7 +472,7 @@ namespace WindowsAuthenticator
 			byte[] serialBytes = Encoding.UTF8.GetBytes(serial.ToUpper().Replace("-", string.Empty));
 
 			// send the request to the server to get our challenge
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(MOBILE_URL + RESTORE_PATH);
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(GetMobileUrl(serial) + RESTORE_PATH);
 			request.Method = "POST";
 			request.ContentType = "application/octet-stream";
 			request.ContentLength = serialBytes.Length;
@@ -556,7 +562,7 @@ namespace WindowsAuthenticator
 			Array.Copy(encrypted, 0, postbytes, serialBytes.Length, encrypted.Length);
 
 			// send the challenge response back to the server
-			request = (HttpWebRequest)WebRequest.Create(MOBILE_URL + RESTOREVALIDATE_PATH);
+			request = (HttpWebRequest)WebRequest.Create(GetMobileUrl(serial) + RESTOREVALIDATE_PATH);
 			request.Method = "POST";
 			request.ContentType = "application/octet-stream";
 			request.ContentLength = postbytes.Length;
@@ -945,6 +951,28 @@ namespace WindowsAuthenticator
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Get the base mobil url based on the region
+		/// </summary>
+		/// <param name="region">two letter region code, i.e US or CN</param>
+		/// <returns>string of Url for region</returns>
+		private static string GetMobileUrl(string region)
+		{
+			string upperregion = region.ToUpper();
+			if (upperregion.Length > 2)
+			{
+				upperregion = upperregion.Substring(0,2);
+			}
+			if (MOBILE_URLS.ContainsKey(upperregion) == true)
+			{
+				return MOBILE_URLS[upperregion];
+			}
+			else
+			{
+				return MOBILE_URLS[REGION_US];
+			}
+		}
 
 		/// <summary>
 		/// Calculate the current code for the authenticator.
