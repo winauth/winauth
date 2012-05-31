@@ -154,7 +154,7 @@ namespace WindowsAuthenticator
 					}
 
 					XmlAttribute versionAttr;
-					decimal version;
+					decimal version = Authenticator.DEAFULT_CONFIG_VERSION;
 					if ((versionAttr = node.Attributes["version"]) != null && decimal.TryParse(versionAttr.InnerText, out version) && version < (decimal)1.4)
 					{
 						// Show if BETA
@@ -233,7 +233,7 @@ namespace WindowsAuthenticator
 								try
 								{
 									auth = new Authenticator();
-									auth.Load(authenticatorNode, password);
+									auth.Load(authenticatorNode, password, version);
 									config.Authenticator = auth;
 								}
 								catch (EncrpytedSecretDataException)
@@ -253,7 +253,7 @@ namespace WindowsAuthenticator
 										try
 										{
 											auth = new Authenticator();
-											auth.Load(authenticatorNode, passwordForm.Password);
+											auth.Load(authenticatorNode, passwordForm.Password, version);
 											config.Authenticator = auth;
 											break;
 										}
@@ -283,7 +283,7 @@ namespace WindowsAuthenticator
 					node = doc.DocumentElement.SelectSingleNode("autologin");
 					if (node != null && node.InnerText.Length != 0 && config.Authenticator != null)
 					{
-						config.AutoLogin = new HoyKeySequence(node, config.Authenticator.Password);
+						config.AutoLogin = new HoyKeySequence(node, config.Authenticator.Password, version);
 					}
 				}
 				catch (Exception ex)
@@ -495,9 +495,22 @@ namespace WindowsAuthenticator
 			// create the xml
 			XmlWriterSettings settings = new XmlWriterSettings();
 			settings.Indent = true;
-			using (XmlWriter writer = XmlWriter.Create(configFile, settings))
+
+			// Issue 41 (http://code.google.com/p/winauth/issues/detail?id=41): saving may crash leaving file corrupt, so write into memory stream first before an atomic file write
+			using (MemoryStream ms = new MemoryStream())
 			{
-				config.WriteXmlString(writer);
+				// save config into memory
+				using (XmlWriter writer = XmlWriter.Create(ms, settings))
+				{
+					config.WriteXmlString(writer);
+				}
+
+				// write memory stream to file
+				byte[] data = ms.ToArray();
+				using (FileStream fs = new FileStream(configFile, FileMode.Create, FileAccess.Write, FileShare.None))
+				{
+					fs.Write(data, 0, data.Length);
+				}
 			}
 
 			// use this as the last fle

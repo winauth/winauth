@@ -73,12 +73,14 @@
     <Compile Include="BetaForm.designer.cs">
       <DependentUpon>BetaForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="WinAPI.cs" />
     <Compile Include="EnrollForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="EnrollForm.designer.cs">
       <DependentUpon>EnrollForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ISecretTextBox.cs" />
     <Compile Include="ShowRestoreCodeForm.cs">
       <SubType>Form</SubType>
     </Compile>

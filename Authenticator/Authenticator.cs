@@ -35,6 +35,10 @@ using Org.BouncyCastle.Crypto.Paddings;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Generators;
 
+#if NUNIT
+using NUnit.Framework;
+#endif
+
 #if NETCF
 using OpenNETCF.Security.Cryptography;
 #endif
@@ -102,6 +106,16 @@ namespace WindowsAuthenticator
 		private const int SALT_LENGTH = 8;
 
 		/// <summary>
+		/// Number of iterations in PBKDF2 key generation
+		/// </summary>
+		private const int PBKDF2_ITERATIONS = 2000;
+
+		/// <summary>
+		/// Size of derived PBKDF2 key
+		/// </summary>
+		private const int PBKDF2_KEYSIZE = 256;
+
+		/// <summary>
 		/// Name attribute of the "string" hash element in the Mobile Authenticator file
 		/// </summary>
 		private const string BMA_HASH_NAME = "com.blizzard.bma.AUTH_STORE.HASH";
@@ -111,16 +125,20 @@ namespace WindowsAuthenticator
 		/// </summary>
 		private const string BMA_OFFSET_NAME = "com.blizzard.bma.AUTH_STORE.CLOCK_OFFSET";
 
+		/// <summary>
+		/// Default config version for loading an unknown file
+		/// </summary>
+		public const decimal DEAFULT_CONFIG_VERSION = (decimal)1.6;
 
 		/// <summary>
-		/// Type of password to use to encrpyt secret data
+		/// Type of password to use to encrypt secret data
 		/// </summary>
 		public enum PasswordTypes
 		{
 			None = 0,
-			Explicit,
-			User,
-			Machine
+			Explicit = 1,
+			User = 2,
+			Machine = 4
 		}
 
 		/// <summary>
@@ -729,7 +747,7 @@ namespace WindowsAuthenticator
 			{
 				using (XmlReader xr = XmlReader.Create(stream))
 				{
-					LoadXmlSettings(xr, password);
+					LoadXmlSettings(xr, password, DEAFULT_CONFIG_VERSION);
 					return;
 				}
 			}
@@ -743,9 +761,9 @@ namespace WindowsAuthenticator
 		/// </summary>
 		/// <param name="rootnode">Root node holding authenticator data</param>
 		/// <param name="password"></param>
-		public void Load (XmlNode rootnode, string password)
+		public void Load (XmlNode rootnode, string password, decimal version)
 		{
-			LoadXmlSettings(rootnode, password);
+			LoadXmlSettings(rootnode, password, version);
 		}
 
 		/// <summary>
@@ -753,11 +771,11 @@ namespace WindowsAuthenticator
 		/// </summary>
 		/// <param name="xr">XmlReader to read</param>
 		/// <param name="password">optional encryption password</param>
-		private void LoadXmlSettings(XmlReader xr, string password)
+		private void LoadXmlSettings(XmlReader xr, string password, decimal version)
 		{
 			XmlDocument doc = new XmlDocument();
 			doc.Load(xr);
-			LoadXmlSettings(doc.DocumentElement, password);
+			LoadXmlSettings(doc.DocumentElement, password, version);
 		}
 
 		/// <summary>
@@ -765,7 +783,17 @@ namespace WindowsAuthenticator
 		/// </summary>
 		/// <param name="rootnode">top XmlNode to load</param>
 		/// <param name="password">password for decryption</param>
-		private void LoadXmlSettings(XmlNode rootnode, string password)
+		//private void LoadXmlSettings(XmlNode rootnode, string password)
+		//{
+		//  return LoadXmlSettings(rootnode, password, DEFAULT_VERSION);
+		//}
+
+		/// <summary>
+		/// Load xml authenticator data from a XmlNode
+		/// </summary>
+		/// <param name="rootnode">top XmlNode to load</param>
+		/// <param name="password">password for decryption</param>
+		private void LoadXmlSettings(XmlNode rootnode, string password, decimal version)
 		{
 			// is the Mobile Authenticator file? <xml.../><map>...</map>
 			XmlNode node = rootnode.SelectSingleNode("/map/string[@name='" + BMA_HASH_NAME + "']");
@@ -841,42 +869,117 @@ namespace WindowsAuthenticator
 				return;
 			}
 
-			// read our curent config string
+			// read a <= 1.6 config
+			if (version <= (decimal)1.6)
+			{
+				node = rootnode.SelectSingleNode("secretdata");
+				if (node != null)
+				{
+					string data = node.InnerText;
+					XmlAttribute attr = node.Attributes["encrypted"];
+					if (attr != null && attr.InnerText.Length != 0)
+					{
+						string encryptedType = attr.InnerText;
+						if (encryptedType == "u")
+						{
+							// we are going to decrypt with the Windows User account key
+							PasswordType = PasswordTypes.User;
+							byte[] cipher = Authenticator.StringToByteArray(data);
+							byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.CurrentUser);
+							data = Authenticator.ByteArrayToString(plain);
+						}
+						else if (encryptedType == "m")
+						{
+							// we are going to decrypt with the Windows local machine key
+							PasswordType = PasswordTypes.Machine;
+							byte[] cipher = Authenticator.StringToByteArray(data);
+							byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
+							data = Authenticator.ByteArrayToString(plain);
+						}
+						else if (encryptedType == "y")
+						{
+							// we use an explicit password to encrypt data
+							if (string.IsNullOrEmpty(password) == true)
+							{
+								throw new EncrpytedSecretDataException();
+							}
+							PasswordType = PasswordTypes.Explicit;
+							Password = password;
+							data = Decrypt(data, password, false);
+						}
+					}
+					SecretData = data;
+
+					long offset = 0;
+					node = rootnode.SelectSingleNode("servertimediff");
+					if (node != null && LongTryParse(node.InnerText, out offset) == true /* long.TryParse(node.InnerText, out offset) == true */)
+					{
+						ServerTimeDiff = offset;
+					}
+
+					node = rootnode.SelectSingleNode("restorecodeverified");
+					if (node != null && string.Compare(node.InnerText, bool.TrueString.ToLower(), true) == 0)
+					{
+						RestoreCodeVerified = true;
+					}
+
+					LoadedFormat = FileFormat.WinAuth;
+
+					return;
+				}
+			}
+
+			// read our current config string
 			node = rootnode.SelectSingleNode("secretdata");
 			if (node != null)
 			{
+				PasswordTypes passwordType = PasswordTypes.None;
 				string data = node.InnerText;
 				XmlAttribute attr = node.Attributes["encrypted"];
 				if (attr != null && attr.InnerText.Length != 0)
 				{
-					string encryptedType = attr.InnerText;
-					if (encryptedType == "u")
+					char[] encTypes = attr.InnerText.ToCharArray();
+					// we read the string in reverse order (the order they were encrypted)
+					for (int i = encTypes.Length - 1; i >= 0; i--)
 					{
-						// we are going to decrypt with the Windows User account key
-						PasswordType = PasswordTypes.User;
-						byte[] cipher = Authenticator.StringToByteArray(data);
-						byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.CurrentUser);
-						data = Authenticator.ByteArrayToString(plain);
-					}
-					else if (encryptedType == "m")
-					{
-						// we are going to decrypt with the Windows local machine key
-						PasswordType = PasswordTypes.Machine;
-						byte[] cipher = Authenticator.StringToByteArray(data);
-						byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
-						data = Authenticator.ByteArrayToString(plain);
-					}
-					else if (encryptedType == "y")
-					{
-						// we use an explicit password to encrypt data
-						if (string.IsNullOrEmpty(password) == true)
+						char encryptedType = encTypes[i];
+						switch (encryptedType)
 						{
-							throw new EncrpytedSecretDataException();
+							case 'u':
+								{
+									// we are going to decrypt with the Windows User account key
+									passwordType |= PasswordTypes.User;
+									byte[] cipher = Authenticator.StringToByteArray(data);
+									byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.CurrentUser);
+									data = Authenticator.ByteArrayToString(plain);
+									break;
+								}
+							case 'm':
+								{
+									// we are going to decrypt with the Windows local machine key
+									passwordType |= PasswordTypes.Machine;
+									byte[] cipher = Authenticator.StringToByteArray(data);
+									byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
+									data = Authenticator.ByteArrayToString(plain);
+									break;
+								}
+							case 'y':
+								{
+									// we use an explicit password to encrypt data
+									if (string.IsNullOrEmpty(password) == true)
+									{
+										throw new EncrpytedSecretDataException();
+									}
+									passwordType |= PasswordTypes.Explicit;
+									Password = password;
+									data = Decrypt(data, password, true);
+									break;
+								}
+							default:
+								break;
 						}
-						PasswordType = PasswordTypes.Explicit;
-						Password = password;
-						data = Decrypt(data, password);
 					}
+					PasswordType = passwordType;
 				}
 				SecretData = data;
 
@@ -916,27 +1019,30 @@ namespace WindowsAuthenticator
 			//
 			writer.WriteStartElement("secretdata");
 			string data = SecretData;
-			if (PasswordType == PasswordTypes.Explicit)
+
+			StringBuilder encryptionTypes = new StringBuilder();
+			if ((PasswordType & PasswordTypes.Explicit) != 0)
 			{
 				data = Encrypt(data, Password);
-				writer.WriteAttributeString("encrypted", "y");
+				encryptionTypes.Append("y");
 			}
-			else if (PasswordType == PasswordTypes.User)
+			if ((PasswordType & PasswordTypes.User) != 0)
 			{
 				// we encrpyt the data using the Windows User account key
 				byte[] plain = Authenticator.StringToByteArray(data);
 				byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.CurrentUser);
 				data = Authenticator.ByteArrayToString(cipher);
-				writer.WriteAttributeString("encrypted", "u");
+				encryptionTypes.Append("u");
 			}
-			else if (PasswordType == PasswordTypes.Machine)
+			if ((PasswordType & PasswordTypes.Machine) != 0)
 			{
 				// we encrypt the data using the Local Machine account key
 				byte[] plain = Authenticator.StringToByteArray(data);
 				byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.LocalMachine);
 				data = Authenticator.ByteArrayToString(cipher);
-				writer.WriteAttributeString("encrypted", "m");
+				encryptionTypes.Append("m");
 			}
+			writer.WriteAttributeString("encrypted", encryptionTypes.ToString());
 			writer.WriteString(data);
 			writer.WriteEndElement();
 			//
@@ -1226,32 +1332,33 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
-		/// Encrpyt a string with a given key
+		/// Encrypt a string with a given key
 		/// </summary>
 		/// <param name="plain">data to encrypt - hex representation of byte array</param>
-		/// <param name="key">key to use to encrpyt</param>
-		/// <returns>hex coded encrpyted string</returns>
-		public static string Encrypt(string plain, string key)
+		/// <param name="key">key to use to encrypt</param>
+		/// <returns>hex coded encrypted string</returns>
+		public static string Encrypt(string plain, string password)
 		{
 			byte[] inBytes = Authenticator.StringToByteArray(plain);
-			byte[] keyBytes = Encoding.Default.GetBytes(key);
+			byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
 
 			// build a new salt
-			Random random = new Random((int)DateTime.Now.Ticks);
-			byte[] saltedKey = new byte[SALT_LENGTH + keyBytes.Length];
-			for (int i = 0; i < SALT_LENGTH; i++)
-			{
-				saltedKey[i] = (byte)random.Next(256);
-			}
-			Array.Copy(keyBytes, 0, saltedKey, SALT_LENGTH, keyBytes.Length);
-			string salt = BitConverter.ToString(saltedKey, 0, SALT_LENGTH).Replace("-", string.Empty);
-			// create a key from the salt and original key
-			MD5 md5 = MD5.Create();
-			saltedKey = md5.ComputeHash(saltedKey);
+			RNGCryptoServiceProvider rg = new RNGCryptoServiceProvider();
+			byte[] saltbytes = new byte[SALT_LENGTH];
+			rg.GetBytes(saltbytes);
+			string salt = Authenticator.ByteArrayToString(saltbytes);
 
-			// get our cihper
+			// build our PBKDF2 key
+#if NETCF
+			PBKDF2 kg = new PBKDF2(passwordBytes, saltbytes, PBKDF2_ITERATIONS);
+#else
+			Rfc2898DeriveBytes kg = new Rfc2898DeriveBytes(passwordBytes, saltbytes, PBKDF2_ITERATIONS);
+#endif
+			byte[] key = kg.GetBytes(PBKDF2_KEYSIZE);
+
+			// get our cipher
 			BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new BlowfishEngine(), new ISO10126d2Padding());
-			cipher.Init(true, new KeyParameter(saltedKey));
+			cipher.Init(true, new KeyParameter(key));
 
 			// encrypt data
 			int osize = cipher.GetOutputSize(inBytes.Length);
@@ -1270,29 +1377,48 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
-		/// Decrypt a hex-coded string
+		/// Decrypt a hex-coded string using our MD5 or PBKDF2 generated key
 		/// </summary>
 		/// <param name="data">data string to be decrypted</param>
 		/// <param name="key">decryption key</param>
+		/// <param name="PBKDF2">flag to indicate we are using PBKDF2 to generate derived key</param>
 		/// <returns>hex coded decrypted string</returns>
-		public static string Decrypt(string data, string key)
+		public static string Decrypt(string data, string password, bool PBKDF2)
 		{
-			// extract the salt from the data
-			byte[] salt = Authenticator.StringToByteArray(data.Substring(0, SALT_LENGTH * 2));
-			byte[] keyBytes = Encoding.Default.GetBytes(key);
-			byte[] saltedKey = new byte[salt.Length + keyBytes.Length];
-			Array.Copy(salt, saltedKey, salt.Length);
-			Array.Copy(keyBytes, 0, saltedKey, salt.Length, keyBytes.Length);
-			// build out combined key
-			MD5 md5 = MD5.Create();
-			saltedKey = md5.ComputeHash(saltedKey);
+			byte[] key;
+			byte[] saltBytes = Authenticator.StringToByteArray(data.Substring(0, SALT_LENGTH * 2));
+
+			if (PBKDF2 == true)
+			{
+				// extract the salt from the data
+				byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+
+				// build our PBKDF2 key
+#if NETCF
+			PBKDF2 kg = new PBKDF2(passwordBytes, saltbytes, 2000);
+#else
+				Rfc2898DeriveBytes kg = new Rfc2898DeriveBytes(passwordBytes, saltBytes, PBKDF2_ITERATIONS);
+#endif
+				key = kg.GetBytes(PBKDF2_KEYSIZE);
+			}
+			else
+			{
+				// extract the salt from the data
+				byte[] passwordBytes = Encoding.Default.GetBytes(password);
+				key = new byte[saltBytes.Length + passwordBytes.Length];
+				Array.Copy(saltBytes, key, saltBytes.Length);
+				Array.Copy(passwordBytes, 0, key, saltBytes.Length, passwordBytes.Length);
+				// build out combined key
+				MD5 md5 = MD5.Create();
+				key = md5.ComputeHash(key);
+			}
 
 			// extract the actual data to be decrypted
 			byte[] inBytes = Authenticator.StringToByteArray(data.Substring(SALT_LENGTH * 2));
 
 			// get cipher
 			BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new BlowfishEngine(), new ISO10126d2Padding());
-			cipher.Init(false, new KeyParameter(saltedKey));
+			cipher.Init(false, new KeyParameter(key));
 
 			// decrypt the data
 			int osize = cipher.GetOutputSize(inBytes.Length);
@@ -1358,6 +1484,151 @@ namespace WindowsAuthenticator
 
 		#endregion
 
-	}
+#if NETCF
+		/// <summary>
+		/// Private class that implements PBKDF2 needed for older NETCF. Implemented from http://en.wikipedia.org/wiki/PBKDF2.
+		/// </summary>
+		private class PBKDF2
+		{
+			/// <summary>
+			/// Our digest
+			/// </summary>
+			private HMac m_mac;
 
+			/// <summary>
+			/// Digest length
+			/// </summary>
+			private int m_hlen;
+
+			/// <summary>
+			/// Base password
+			/// </summary>
+			private byte[] m_password;
+
+			/// <summary>
+			/// Salt
+			/// </summary>
+			private byte[] m_salt;
+
+			/// <summary>
+			/// Number of iterations
+			/// </summary>
+			private int m_iterations;
+
+			/// <summary>
+			/// Create a new PBKDF2 object
+			/// </summary>
+			public PBKDF2(byte[] password, byte[] salt, int iterations)
+			{
+				m_password = password;
+				m_salt = salt;
+				m_iterations = iterations;
+
+				m_mac = new HMac(new Sha1Digest());
+				m_hlen = m_mac.GetMacSize();
+			}
+
+			/// <summary>
+			/// Calculate F.
+			/// F(P,S,c,i) = U1 ^ U2 ^ ... ^ Uc
+			/// Where F is an xor of c iterations of chained PRF. First iteration of PRF uses master password P as PRF key and salt concatenated to i. Second and greater PRF uses P and output of previous PRF computation:
+			/// </summary>
+			/// <param name="P"></param>
+			/// <param name="S"></param>
+			/// <param name="c"></param>
+			/// <param name="i"></param>
+			/// <param name="DK"></param>
+			/// <param name="DKoffset"></param>
+			private void F(byte[] P, byte[] S, int c, byte[] i, byte[] DK, int DKoffset)
+			{
+				// first iteration (ses master password P as PRF key and salt concatenated to i)
+				byte[] buf = new byte[m_hlen];
+				ICipherParameters param = new KeyParameter(P);
+				m_mac.Init(param);
+				m_mac.BlockUpdate(S, 0, S.Length);
+				m_mac.BlockUpdate(i, 0, i.Length);
+				m_mac.DoFinal(buf, 0);
+				Array.Copy(buf, 0, DK, DKoffset, buf.Length);
+
+				// remaining iterations (uses P and output of previous PRF computation)
+				for (int iter = 1; iter < c; iter++)
+				{
+					m_mac.Init(param);
+					m_mac.BlockUpdate(buf, 0, buf.Length);
+					m_mac.DoFinal(buf, 0);
+
+					for (int j=buf.Length-1; j >= 0; j--)
+					{
+						DK[DKoffset + j] ^= buf[j];
+					}
+				}
+			}
+
+			/// <summary>
+			/// Calculate a derived key of dkLen bytes long from our initial password and salt
+			/// </summary>
+			/// <param name="dkLen">Length of desired key to be returned</param>
+			/// <returns>derived key of dkLen bytes</returns>
+			public byte[] GetBytes(int dkLen)
+			{
+				// For each hLen-bit block Ti of derived key DK, computing is as follows:
+				//  DK = T1 || T2 || ... || Tdklen/hlen
+				//  Ti = F(P,S,c,i)
+				int chunks = (dkLen + m_hlen - 1) / m_hlen;
+				byte[] DK = new byte[chunks * m_hlen];
+				byte[] idata = new byte[4];
+				for (int i = 1; i <= chunks; i++)
+				{
+					idata[0] = (byte)((uint)i >> 24);
+					idata[1] = (byte)((uint)i >> 16);
+					idata[2] = (byte)((uint)i >> 8);
+					idata[3] = (byte)i; 
+
+					F(m_password, m_salt, m_iterations, idata, DK, (i-1) * m_hlen);
+				}
+				if (DK.Length > dkLen)
+				{
+					byte[] reduced = new byte[dkLen];
+					Array.Copy(DK, 0, reduced, 0, dkLen);
+					DK = reduced;
+				}
+
+				return DK;
+			}
+		}
+
+#if NUNIT
+		/// Test against standard test vectors and one of our own of the correct iterations.
+		/// http://tools.ietf.org/html/draft-josefsson-pbkdf2-test-vectors-00
+		[Test]
+		public static void TestPBKDF2()
+		{
+			PBKDF2 kg;
+			byte[] DK;
+
+			byte[] tv1 = new byte[] { 0x0c, 0x60, 0xc8, 0x0f, 0x96, 0x1f, 0x0e, 0x71, 0xf3, 0xa9, 0xb5, 0x24, 0xaf, 0x60, 0x12, 0x06, 0x2f, 0xe0, 0x37, 0xa6 };
+			kg = new PBKDF2(Encoding.Default.GetBytes("password"), Encoding.Default.GetBytes("salt"), 1);
+			DK = kg.GetBytes(20);
+			Assert.AreEqual(DK, tv1);
+
+			byte[] tv2 = new byte[] { 0xea, 0x6c, 0x01, 0x4d, 0xc7, 0x2d, 0x6f, 0x8c, 0xcd, 0x1e, 0xd9, 0x2a, 0xce, 0x1d, 0x41, 0xf0, 0xd8, 0xde, 0x89, 0x57 };
+			kg = new PBKDF2(Encoding.Default.GetBytes("password"), Encoding.Default.GetBytes("salt"), 2);
+			DK = kg.GetBytes(20);
+			Assert.AreEqual(DK, tv2);
+
+			byte[] tv3 = new byte[] { 0x4b, 0x00, 0x79, 0x01, 0xb7, 0x65, 0x48, 0x9a, 0xbe, 0xad, 0x49, 0xd9, 0x26, 0xf7, 0x21, 0xd0, 0x65, 0xa4, 0x29, 0xc1 };
+			kg = new PBKDF2(Encoding.Default.GetBytes("password"), Encoding.Default.GetBytes("salt"), 4096);
+			DK = kg.GetBytes(20);
+			Assert.AreEqual(DK, tv3);
+
+			byte[] tv4 = new byte[] { 0x2f, 0x25, 0x5b, 0x3a, 0x95, 0x46, 0x3c, 0x76, 0x62, 0x1f, 0x06, 0x80, 0xa2, 0xb3, 0x35, 0xad, 0x90, 0x3b, 0x85, 0xde };
+			kg = new PBKDF2(Encoding.Default.GetBytes("VXFr[24c=6(D8He"), Encoding.Default.GetBytes("salt"), 1000);
+			DK = kg.GetBytes(20);
+			Assert.AreEqual(DK, tv4);
+		}
+#endif
+
+#endif
+
+	}
 }

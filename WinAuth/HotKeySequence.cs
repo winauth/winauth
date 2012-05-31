@@ -104,7 +104,7 @@ namespace WindowsAuthenticator
 		/// Create a new HotKeySequence from a loaded string
 		/// </summary>
 		/// <param name="data">XmlNode from config</param>
-		public HoyKeySequence(XmlNode autoLoginNode, string password)
+		public HoyKeySequence(XmlNode autoLoginNode, string password, decimal version)
 		{
 			bool boolVal = false;
 			XmlNode node = autoLoginNode.SelectSingleNode("modifiers");
@@ -145,38 +145,44 @@ namespace WindowsAuthenticator
 				XmlAttribute attr = node.Attributes["encrypted"];
 				if (attr != null && attr.InnerText.Length != 0)
 				{
-					switch (attr.InnerText)
+					char[] encTypes = attr.InnerText.ToCharArray();
+					// we read the string in reverse order (the order they were encrypted)
+					for (int i = encTypes.Length - 1; i >= 0; i--)
 					{
-						case "u":
-							{
-								// we are going to decrypt with the Windows User account key
-								byte[] cipher = Authenticator.StringToByteArray(data);
-								byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.CurrentUser);
-								data = Encoding.UTF8.GetString(plain, 0, plain.Length);
-								break;
-							}
-						case "m":
-							{
-								// we are going to decrypt with the Windows local machine key
-								byte[] cipher = Authenticator.StringToByteArray(data);
-								byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
-								data = Encoding.UTF8.GetString(plain, 0, plain.Length);
-								break;
-							}
-						case "y":
-							{
-								// we use an explicit password to encrypt data
-								if (string.IsNullOrEmpty(password) == true)
+						char encryptedType = encTypes[i];
+						switch (encryptedType)
+						{
+							case 'u':
 								{
-									throw new EncrpytedSecretDataException();
+									// we are going to decrypt with the Windows User account key
+									byte[] cipher = Authenticator.StringToByteArray(data);
+									byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.CurrentUser);
+									data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+									break;
 								}
-								data = Authenticator.Decrypt(data, password);
-								byte[] plain = Authenticator.StringToByteArray(data);
-								data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+							case 'm':
+								{
+									// we are going to decrypt with the Windows local machine key
+									byte[] cipher = Authenticator.StringToByteArray(data);
+									byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
+									data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+									break;
+								}
+							case 'y':
+								{
+									// we use an explicit password to encrypt data
+									if (string.IsNullOrEmpty(password) == true)
+									{
+										throw new EncrpytedSecretDataException();
+									}
+									data = Authenticator.Decrypt(data, password, (version >= (decimal)1.7)); // changed encrypted in 1.7
+									byte[] plain = Authenticator.StringToByteArray(data);
+									data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+									break;
+								}
+							default:
 								break;
-							}
-						default:
-							break;
+						}
 					}
 				}
 				AdvancedScript = data;
@@ -217,38 +223,32 @@ namespace WindowsAuthenticator
 			//
 			writer.WriteStartElement("script");
 			string script = AdvancedScript.Replace("\n", string.Empty);
-			switch (passwordType)
+
+			StringBuilder passwordTypeAttribue = new StringBuilder();
+			if ((passwordType & Authenticator.PasswordTypes.Explicit) != 0)
 			{
-				case Authenticator.PasswordTypes.Explicit:
-					{
-						byte[] plain = Encoding.UTF8.GetBytes(script);
-						script = Authenticator.ByteArrayToString(plain);
-						script = Authenticator.Encrypt(script, password);
-						writer.WriteAttributeString("encrypted", "y");
-						break;
-					}
-				case Authenticator.PasswordTypes.User:
-					{
-						byte[] plain = Encoding.UTF8.GetBytes(script);
-						byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.CurrentUser);
-						script = Authenticator.ByteArrayToString(cipher);
-						writer.WriteAttributeString("encrypted", "u");
-						break;
-					}
-				case Authenticator.PasswordTypes.Machine:
-					{
-						// we encrypt the data using the Local Machine account key
-						byte[] plain = Encoding.UTF8.GetBytes(script);
-						byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.LocalMachine);
-						script = Authenticator.ByteArrayToString(cipher);
-						writer.WriteAttributeString("encrypted", "m");
-						break;
-					}
-				default:
-					break;
+				byte[] plain = Encoding.UTF8.GetBytes(script);
+				script = Authenticator.ByteArrayToString(plain);
+				script = Authenticator.Encrypt(script, password);
+				passwordTypeAttribue.Append("y");
 			}
+			if ((passwordType & Authenticator.PasswordTypes.User) != 0)
+			{
+				byte[] plain = Encoding.UTF8.GetBytes(script);
+				byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.CurrentUser);
+				script = Authenticator.ByteArrayToString(cipher);
+				passwordTypeAttribue.Append("u");
+			}
+			if ((passwordType & Authenticator.PasswordTypes.Machine) != 0)
+			{
+				// we encrypt the data using the Local Machine account key
+				byte[] plain = Encoding.UTF8.GetBytes(script);
+				byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.LocalMachine);
+				script = Authenticator.ByteArrayToString(cipher);
+				passwordTypeAttribue.Append("m");
+			}
+			writer.WriteAttributeString("encrypted", passwordTypeAttribue.ToString());
 			writer.WriteCData(script);
-			//writer.WriteCData(AdvancedScript.Replace("\n", string.Empty));
 			writer.WriteEndElement();
 
 			writer.WriteEndElement();
