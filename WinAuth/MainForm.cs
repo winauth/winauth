@@ -256,9 +256,9 @@ namespace WindowsAuthenticator
 			set
 			{
 				Config.AllowCopy = value;
-				if (CodeField is SecretTextBox)
+				if (CodeField is ISecretTextBox)
 				{
-					((SecretTextBox)CodeField).SecretMode = !value;
+					((ISecretTextBox)CodeField).SecretMode = !value;
 				}
 			}
 		}
@@ -506,13 +506,24 @@ namespace WindowsAuthenticator
 
 				// request a password
 				RequestPasswordForm requestPasswordForm = new RequestPasswordForm();
+				Authenticator.PasswordTypes passwordTypes = (Config.Authenticator != null ? Config.Authenticator.PasswordType : Authenticator.PasswordTypes.None);
+				if (passwordTypes == WindowsAuthenticator.Authenticator.PasswordTypes.None)
+				{
+					passwordTypes = Authenticator.PasswordTypes.User | WindowsAuthenticator.Authenticator.PasswordTypes.Explicit;
+				}				
+				requestPasswordForm.PasswordType = passwordTypes;
+				//requestPasswordForm.Password = (Config.Authenticator != null
+				//  && ((passwordTypes & WindowsAuthenticator.Authenticator.PasswordTypes.Explicit) != 0)
+				//  && Config.Authenticator.Password != null
+				//    ? Config.Authenticator.Password
+				//    : string.Empty);
 				result = requestPasswordForm.ShowDialog(this);
 				if (result != System.Windows.Forms.DialogResult.OK)
 				{
 					return false;
 				}
 				Config.Authenticator.PasswordType = requestPasswordForm.PasswordType;
-				Config.Authenticator.Password = (requestPasswordForm.PasswordType == Authenticator.PasswordTypes.Explicit ? requestPasswordForm.Password : null);
+				Config.Authenticator.Password = ((requestPasswordForm.PasswordType & Authenticator.PasswordTypes.Explicit) != 0 ? requestPasswordForm.Password : null);
 			}
 
 			// save data
@@ -1038,6 +1049,12 @@ namespace WindowsAuthenticator
 							// reemove old and add new one
 							this.Controls.Remove(CodeField);
 							this.Controls.Add(control);
+							if (control is ISecretTextBox)
+							{
+								((ISecretTextBox)control).TextAlign = ((ISecretTextBox)CodeField).TextAlign;
+								((ISecretTextBox)control).SpaceOut = ((ISecretTextBox)CodeField).SpaceOut;
+								((ISecretTextBox)control).SecretMode = ((ISecretTextBox)CodeField).SecretMode;
+							}
 							//
 							CodeField = control;
 						}
@@ -1298,17 +1315,11 @@ namespace WindowsAuthenticator
 					// get keyboard sender
 					KeyboardSender keysend = new KeyboardSender(this.Config.AutoLogin.WindowTitle, this.Config.AutoLogin.ProcessName, this.Config.AutoLogin.WindowTitleRegex);
 
-					// get the current code
-					string code = Authenticator.CurrentCode;
-
 					// get the script and execute it
 					string script = (string.IsNullOrEmpty(this.Config.AutoLogin.AdvancedScript) == false ? this.Config.AutoLogin.AdvancedScript : "{CODE}{ENTER 4000}");
 
-					// replace any {CODE} items
-					script = script.Replace("{CODE}", code);
-
 					// send the whole script
-					keysend.SendKeys(script);
+					keysend.SendKeys(this, script, Authenticator.CurrentCode);
 
 					// mark event as handled
 					e.Handled = true;
@@ -1318,6 +1329,53 @@ namespace WindowsAuthenticator
 					Monitor.Exit(m_sendingKeys);
 				}
 			}
+		}
+
+		public delegate void SetClipboardDataDelegate(object data);
+		public delegate object GetClipboardDataDelegate(Type format);
+
+		public void SetClipboardData(object data)
+		{
+			bool clipRetry = false;
+			do
+			{
+				try
+				{
+					Clipboard.Clear();
+					Clipboard.SetDataObject(data, true, 4, 250);
+				}
+				catch (ExternalException)
+				{
+					// only show an error the first time
+					clipRetry = (MessageBox.Show(this, "Unable to copy to the clipboard. Another application is probably using it.\n\nTry again?",
+						WinAuth.APPLICATION_NAME,
+						MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
+				}
+			}
+			while (clipRetry == true);
+		}
+
+		public object GetClipboardData(Type format)
+		{
+			bool clipRetry = false;
+			do
+			{
+				try
+				{
+					IDataObject clipdata = Clipboard.GetDataObject();
+					return (clipdata != null ? clipdata.GetData(format) : null);
+				}
+				catch (ExternalException)
+				{
+					// only show an error the first time
+					clipRetry = (MessageBox.Show(this, "Unable to copy to the clipboard. Another application is probably using it.\n\nTry again?",
+						WinAuth.APPLICATION_NAME,
+						MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
+				}
+			}
+			while (clipRetry == true);
+
+			return null;
 		}
 
 		/// <summary>

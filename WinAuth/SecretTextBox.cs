@@ -29,7 +29,7 @@ namespace WindowsAuthenticator
 	/// Subclass of TextBox that does not set the Text value based on the ShowBitmap flag and we
 	/// draw it ourselves, so that window spys cannot get the contents
 	/// </summary>
-	public class SecretTextBox : TextBox
+	public class SecretTextBox : TextBox, ISecretTextBox
 	{
 		/// <summary>
 		/// Our hidden txet value

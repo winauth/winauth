@@ -17,8 +17,10 @@
 	*/
 
 using System;
-using System.Drawing;
+using System.ComponentModel;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Text;
 using System.Windows.Forms;
 
@@ -198,6 +200,187 @@ namespace WindowsAuthenticator
 		}
 	}
 
+	/// <summary>
+	/// A transparent label control
+	/// </summary>
+	public class TransparentTextBox : RichTextBox, ISecretTextBox
+	{
+		/// <summary>
+		/// Flag to draw ourselves
+		/// </summary>
+		private bool m_secretMode;
+
+		/// <summary>
+		/// Our hidden text value
+		/// </summary>
+		private string m_text;
+
+		/// <summary>
+		/// Number of chars to space out when in secret mode
+		/// </summary>
+		private int m_spaceOut;
+
+		public TransparentTextBox() : base()
+		{
+			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OnMouseDown);
+			this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OnMouseUp);
+
+			this.SetStyle(ControlStyles.Opaque, true);
+			this.SetStyle(ControlStyles.OptimizedDoubleBuffer, false);
+
+			this.ReadOnlyChanged += new EventHandler(OnReadOnlyChanged);
+			if (this.ReadOnly == true)
+			{
+				this.TabStop = false;
+				WinAPI.HideCaret(this.Handle);
+			}
+		}
+
+		protected override CreateParams CreateParams
+		{
+			get
+			{
+				CreateParams parms = base.CreateParams;
+				parms.ExStyle |= 0x20;  // Turn on WS_EX_TRANSPARENT
+				return parms;
+			}
+		}
+
+		public HorizontalAlignment TextAlign
+		{
+			get
+			{
+				return base.SelectionAlignment;
+			}
+			set
+			{
+				base.SelectionAlignment = value;
+			}
+		}
+
+		public bool SecretMode
+		{
+			get
+			{
+				return m_secretMode;
+			}
+			set
+			{
+				m_secretMode = value;
+				this.Enabled = !value; // we disable so cannot select/copy 
+				this.SetStyle(ControlStyles.UserPaint, value);
+				Text = m_text;
+				this.Invalidate(); // force it to redraw
+			}
+		}
+
+		public int SpaceOut
+		{
+			get
+			{
+				return m_spaceOut;
+			}
+			set
+			{
+				m_spaceOut = value;
+			}
+		}
+
+		/// <summary>
+		/// Value of the textbox, but if in secret mode then will return ***** as value
+		/// </summary>
+		public override string Text
+		{
+			get
+			{
+				return (SecretMode == true ? m_text : base.Text);
+			}
+			set
+			{
+				m_text = value;
+				base.Text = (SecretMode == true ? (string.IsNullOrEmpty(value) == false ? new string('*', value.Length) : value) : value);
+				this.Invalidate();
+			}
+		}
+
+		/// <summary>
+		/// Overriden Paint method to draw the text based on our secret value rather than Text, which might be ****'s
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnPaint(PaintEventArgs e)
+		{
+			Graphics g = e.Graphics;
+			using (Brush brush = new SolidBrush(base.ForeColor))
+			{
+				StringFormat sf = StringFormat.GenericTypographic;
+				sf.Alignment = StringAlignment.Center;
+				sf.LineAlignment = StringAlignment.Center;
+				g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+
+				string text = m_text;
+
+				// if we have spacing, we add a space in between each set of chars
+				if (m_spaceOut != 0)
+				{
+					StringBuilder sb = new StringBuilder();
+					for (int i = 0; i < m_text.Length; i += m_spaceOut)
+					{
+						sb.Append(m_text.Substring(i, m_spaceOut)).Append(" ");
+					}
+					text = sb.ToString().Trim();
+				}
+
+				// draw the whole string
+				g.DrawString(text, base.Font, brush, new RectangleF(0, 0, base.Width, base.Height), sf);
+			}
+		}
+
+		protected override void OnGotFocus(EventArgs e)
+		{
+			if (this.ReadOnly == true)
+			{
+				WinAPI.HideCaret(this.Handle);
+			}
+		}
+
+		protected override void OnEnter(EventArgs e)
+		{
+			if (this.ReadOnly == true)
+			{
+				WinAPI.HideCaret(this.Handle);
+			}
+		}
+
+		private void OnMouseDown(object sender, System.EventArgs e)
+		{
+			if (this.ReadOnly == true)
+			{
+				WinAPI.HideCaret(this.Handle);
+			}
+		}
+
+		private void OnMouseUp(object sender, System.EventArgs e)
+		{
+			if (this.ReadOnly == true)
+			{
+				WinAPI.HideCaret(this.Handle);
+			}
+		}
+
+		private void OnReadOnlyChanged(object sender, EventArgs e)
+		{
+			if (this.ReadOnly == true)
+			{
+				this.TabStop = false;
+				WinAPI.HideCaret(this.Handle);
+			}
+			else
+			{
+				this.TabStop = true;
+			}
+		}
+	}
+
 	public class TransparentPanel : TransparentControl
 	{
 		/// <summary>
@@ -258,7 +441,7 @@ namespace WindowsAuthenticator
 	}
 
 	/// <summary>
-	/// Implementation of a transaprent button based ona control that paints the background behind it.
+	/// Implementation of a transparent button based on a control that paints the background behind it.
 	/// </summary>
 	public class TransparentButton : ButtonBase, IButtonControl
 	{
