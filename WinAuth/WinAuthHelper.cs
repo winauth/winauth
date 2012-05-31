@@ -153,16 +153,16 @@ namespace WindowsAuthenticator
 						return config;
 					}
 
+					// Show if BETA
+					if (new BetaForm().ShowDialog(form) != DialogResult.OK)
+					{
+						return null;
+					}
+
 					XmlAttribute versionAttr;
 					decimal version = Authenticator.DEAFULT_CONFIG_VERSION;
 					if ((versionAttr = node.Attributes["version"]) != null && decimal.TryParse(versionAttr.InnerText, out version) && version < (decimal)1.4)
 					{
-						// Show if BETA
-						//if (new BetaForm().ShowDialog(form) != DialogResult.OK)
-						//{
-						//  return null;
-						//}
-
 						// old version 1.3 file
 						config = LoadConfig_1_3(form, configFile);
 						if (string.IsNullOrEmpty(config.Filename) == true)

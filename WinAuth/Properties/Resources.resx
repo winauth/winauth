@@ -131,6 +131,9 @@ Commands are:
 {CODE} to insert the current code
 {ENTER} to send the ENTER key
 {TAB} to send the TAB key
+{COPY} to copy the code into the clipboard
+{PASTE} to paste the clipboard contents into the active window
+{EXIT} to exit WinAuth.
 
 To login an account, you might use:
 
