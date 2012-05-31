@@ -100,7 +100,7 @@ namespace WindowsAuthenticator
 		public string CurrentAuthenticatorFile { get; set; }
 
 		/// <summary>
-		/// Create a new form obbject
+		/// Create a new form object
 		/// </summary>
 		public BackupForm()
 		{
@@ -113,7 +113,10 @@ namespace WindowsAuthenticator
 		/// <returns>DialogResult for Retry, Cancel or OK</returns>
 		private DialogResult SendBackup()
 		{
-			// get the config/authenticator data. In case the authenticator is encrpted, we clone a plain version.
+			// any password?
+			string password = tbPassword.Text.Trim();
+
+			// get the config/authenticator data. Remove any machine/user encryption
 			StringBuilder dataxml = new StringBuilder();
 			XmlWriterSettings xmlsettings = new XmlWriterSettings();
 			xmlsettings.Encoding = System.Text.Encoding.Unicode;
@@ -122,13 +125,11 @@ namespace WindowsAuthenticator
 				WinAuthConfig config = (WinAuthConfig)CurrentConfig.Clone();
 				if (config.Authenticator != null)
 				{
-					config.Authenticator.PasswordType = Authenticator.PasswordTypes.None;
+					config.Authenticator.PasswordType = Authenticator.PasswordTypes.Explicit;
+					config.Authenticator.Password = password;
 				}
 				config.WriteXmlString(xw);
 			}
-
-			// any password?
-			string password = tbPassword.Text.Trim();
 
 			// create a temp file containing the zipped data file
 			string zipfile = Path.Combine(Path.GetTempPath(), Path.GetFileName(CurrentAuthenticatorFile) + ".zip");
@@ -140,17 +141,8 @@ namespace WindowsAuthenticator
 				{
 					using (ZipOutputStream zos = new ZipOutputStream(zipfs))
 					{
-						// encrypt if we have a password
-						bool encrypt = false;
-						if (password.Length != 0)
-						{
-							zos.Password = password;
-							encrypt = true;
-						}
-
 						// add the authenticator file
 						ZipEntry entry = new ZipEntry(Path.GetFileName(CurrentAuthenticatorFile));
-						entry.IsCrypted = encrypt;
 						entry.DateTime = DateTime.Now;
 						zos.PutNextEntry(entry);
 						using (MemoryStream fs = new MemoryStream(System.Text.Encoding.Unicode.GetBytes(dataxml.ToString())))
@@ -189,7 +181,7 @@ namespace WindowsAuthenticator
 				Cursor.Current = Cursors.Default;
 
 				// confirm dialog
-				 MessageBox.Show(this, "Your email has been sent.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				MessageBox.Show(this, "Your email has been sent.", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 			catch (Exception ex)
 			{
@@ -234,8 +226,15 @@ namespace WindowsAuthenticator
 		private void btnBackupSave_Click(object sender, EventArgs e)
 		{
 			// validate
+			if (this.tbPassword.Text.Length == 0)
+			{
+				this.tbPassword.Focus();
+				MessageBox.Show(this, "You must provide a password for your authenticator file", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				return;
+			}
 			if (this.tbPassword.Text.Length != 0 && this.tbPassword.Text != this.tbPasswordVerify.Text)
 			{
+				this.tbPassword.Focus();
 				MessageBox.Show(this, "Passwords do not match", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				return;
 			}

@@ -78,8 +78,8 @@ namespace WindowsAuthenticator
 			// 
 			// groupBox1
 			// 
-			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-									| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox1.Controls.Add(this.label7);
 			this.groupBox1.Controls.Add(this.label3);
 			this.groupBox1.Controls.Add(this.label4);
@@ -103,7 +103,7 @@ namespace WindowsAuthenticator
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(399, 18);
 			this.label7.TabIndex = 2;
-			this.label7.Text = "Enter a password if you would like to encrypt the file";
+			this.label7.Text = "Enter a password to encrypt your authenticator";
 			// 
 			// label3
 			// 
@@ -262,8 +262,8 @@ namespace WindowsAuthenticator
 			// 
 			// grpSmtpServer
 			// 
-			this.grpSmtpServer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-									| System.Windows.Forms.AnchorStyles.Right)));
+			this.grpSmtpServer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.grpSmtpServer.Controls.Add(this.ckSmtpSSL);
 			this.grpSmtpServer.Controls.Add(this.cbSmtpServer);
 			this.grpSmtpServer.Controls.Add(this.cbSmtpPorts);

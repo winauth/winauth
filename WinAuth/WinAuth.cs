@@ -40,7 +40,7 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Winuath email address used as sender to backup emails
 		/// </summary>
-		public const string WINAUTHBACKUP_EMAIL = "winauth-backup@gmail.com";
+		public const string WINAUTHBACKUP_EMAIL = "winauth@gmail.com";
 
 		/// <summary>
 		/// The main entry point for the application.
