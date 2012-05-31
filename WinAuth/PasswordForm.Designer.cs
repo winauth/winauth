@@ -61,22 +61,23 @@ namespace WindowsAuthenticator
 			this.groupBox1.Controls.Add(this.label1);
 			this.groupBox1.Location = new System.Drawing.Point(12, 12);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(342, 129);
+			this.groupBox1.Size = new System.Drawing.Size(319, 99);
 			this.groupBox1.TabIndex = 0;
 			this.groupBox1.TabStop = false;
 			// 
 			// label2
 			// 
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(6, 89);
+			this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label2.Location = new System.Drawing.Point(9, 56);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(53, 13);
+			this.label2.Size = new System.Drawing.Size(71, 16);
 			this.label2.TabIndex = 2;
-			this.label2.Text = "Password";
+			this.label2.Text = "Password:";
 			// 
 			// tbPassword
 			// 
-			this.tbPassword.Location = new System.Drawing.Point(86, 86);
+			this.tbPassword.Location = new System.Drawing.Point(106, 55);
 			this.tbPassword.Name = "tbPassword";
 			this.tbPassword.Size = new System.Drawing.Size(188, 20);
 			this.tbPassword.TabIndex = 0;
@@ -84,17 +85,17 @@ namespace WindowsAuthenticator
 			// 
 			// label1
 			// 
-			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label1.Location = new System.Drawing.Point(6, 16);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(317, 56);
+			this.label1.Size = new System.Drawing.Size(306, 56);
 			this.label1.TabIndex = 2;
-			this.label1.Text = "This Authenticator has been password protected.\r\n\r\nPlease enter your password:\r\n";
+			this.label1.Text = "This Authenticator has been password protected.\r\n\r\n";
 			// 
 			// btnOk
 			// 
 			this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnOk.Location = new System.Drawing.Point(198, 147);
+			this.btnOk.Location = new System.Drawing.Point(176, 125);
 			this.btnOk.Name = "btnOk";
 			this.btnOk.Size = new System.Drawing.Size(75, 23);
 			this.btnOk.TabIndex = 0;
@@ -106,7 +107,7 @@ namespace WindowsAuthenticator
 			// 
 			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btnCancel.Location = new System.Drawing.Point(279, 147);
+			this.btnCancel.Location = new System.Drawing.Point(257, 125);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(75, 23);
 			this.btnCancel.TabIndex = 1;
@@ -119,7 +120,7 @@ namespace WindowsAuthenticator
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.btnCancel;
-			this.ClientSize = new System.Drawing.Size(372, 182);
+			this.ClientSize = new System.Drawing.Size(350, 160);
 			this.Controls.Add(this.btnCancel);
 			this.Controls.Add(this.btnOk);
 			this.Controls.Add(this.groupBox1);
