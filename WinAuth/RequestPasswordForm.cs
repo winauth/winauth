@@ -46,44 +46,42 @@ namespace WindowsAuthenticator
 		{
 			get
 			{
-				if (rbAccountPassword.Checked == true)
+				Authenticator.PasswordTypes passwordType = Authenticator.PasswordTypes.None;
+				if (ckUserPassword.Checked == true)
 				{
-					return Authenticator.PasswordTypes.User;
+					passwordType |= Authenticator.PasswordTypes.User;
 				}
-				else if (rbMachinePassword.Checked == true)
+				if (ckAccountPassword.Checked == true)
 				{
-					return Authenticator.PasswordTypes.Machine;
+					passwordType |= Authenticator.PasswordTypes.Machine;
 				}
-				else if (rbPassword.Checked == true)
+				if (ckMyPassword.Checked == true)
 				{
-					return Authenticator.PasswordTypes.Explicit;
+					passwordType |= Authenticator.PasswordTypes.Explicit;
 				}
-				else
-				{
-					return Authenticator.PasswordTypes.None;
-				}
+				return passwordType;
 			}
 			set
 			{
-				if (value == Authenticator.PasswordTypes.User)
+				if ((value & Authenticator.PasswordTypes.User) != 0)
 				{
-					rbAccountPassword.Checked = true;
+					ckUserPassword.Checked = true;
 				}
-				else if (value == Authenticator.PasswordTypes.Machine)
+				if ((value & Authenticator.PasswordTypes.Machine) != 0)
 				{
-					rbMachinePassword.Checked = true;
+					ckAccountPassword.Checked = true;
 				}
-				else if (value == Authenticator.PasswordTypes.Explicit)
+				if ((value & Authenticator.PasswordTypes.Explicit) != 0)
 				{
-					rbPassword.Checked = true;
+					ckMyPassword.Checked = true;
 				}
-				else
+				if (value == Authenticator.PasswordTypes.None)
 				{
-					rbNoPassword.Checked = true;
+					ckNoPassword.Checked = true;
 				}
 
-				tbPassword.Enabled = (value == Authenticator.PasswordTypes.Explicit);
-				tbVerify.Enabled = (value == Authenticator.PasswordTypes.Explicit);
+				tbPassword.Enabled = ((value & Authenticator.PasswordTypes.Explicit) != 0);
+				tbVerify.Enabled = ((value & Authenticator.PasswordTypes.Explicit) != 0);
 			}
 		}
 
@@ -98,7 +96,7 @@ namespace WindowsAuthenticator
 			}
 			set
 			{
-				tbVerify.Text = value;
+				tbPassword.Text = value;
 				tbVerify.Text = value;
 			}
 		}
@@ -110,15 +108,13 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void RequestPasswordForm_Load(object sender, EventArgs e)
 		{
-			rbNoPassword.Tag = Authenticator.PasswordTypes.None;
-			rbAccountPassword.Tag = Authenticator.PasswordTypes.User;
-			rbMachinePassword.Tag = Authenticator.PasswordTypes.Machine;
-			rbPassword.Tag = Authenticator.PasswordTypes.Explicit;
+			ckUserPassword.Text = ckUserPassword.Text.Replace("current Windows User account", "user '" + System.Environment.UserName + "'");
+			ckAccountPassword.Text = ckAccountPassword.Text.Replace("computer", "computer (" + System.Environment.MachineName + ")");
+			//rbAccountPassword.Text += " (" + System.Environment.UserName + ")";
+			//rbMachinePassword.Text += " (" + System.Environment.MachineName + ")";
 
-			rbAccountPassword.Text += " (" + System.Environment.UserName + ")";
-			rbMachinePassword.Text += " (" + System.Environment.MachineName + ")";
-
-			//this.ActiveControl = rbNoPassword;
+			//ckUserPassword.Checked = true;
+			//ckMyPassword.Checked = true;
 		}
 
 		/// <summary>
@@ -128,12 +124,12 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void btnOk_Click(object sender, EventArgs e)
 		{
-			if (rbAccountPassword.Checked == false && rbMachinePassword.Checked == false && rbNoPassword.Checked == false && rbPassword.Checked == false)
+			if (ckNoPassword.Checked == false && ckUserPassword.Checked == false && ckAccountPassword.Checked == false && ckMyPassword.Checked == false)
 			{
-				MessageBox.Show(this, "Please choose a password method.", WinAuth.APPLICATION_NAME, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				MessageBox.Show(this, "Please choose a password method or select no password.", WinAuth.APPLICATION_NAME, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				return;
 			}
-			if (PasswordType == Authenticator.PasswordTypes.Explicit && this.tbPassword.Text.Length == 0)
+			if (ckMyPassword.Checked == true && this.tbPassword.Text.Length == 0)
 			{
 				MessageBox.Show(this, "Please enter a password.", WinAuth.APPLICATION_NAME, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				tbPassword.Focus();
@@ -155,15 +151,89 @@ namespace WindowsAuthenticator
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void PasswordType_CheckedChanged(object sender, EventArgs e)
+		//private void PasswordType_CheckedChanged(object sender, EventArgs e)
+		//{
+		//  if (sender is RadioButton && ((RadioButton)sender).Checked == true)
+		//  {
+		//    this.PasswordType = (Authenticator.PasswordTypes)((RadioButton)sender).Tag;
+		//    if (this.PasswordType == Authenticator.PasswordTypes.Explicit)
+		//    {
+		//      tbPassword.Focus();
+		//    }
+		//  }
+		//}
+
+		/// <summary>
+		/// Check the no password box, disable other choices
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void ckNoPassword_CheckedChanged(object sender, EventArgs e)
 		{
-			if (sender is RadioButton && ((RadioButton)sender).Checked == true)
+			if (ckNoPassword.Checked == true)
 			{
-				this.PasswordType = (Authenticator.PasswordTypes)((RadioButton)sender).Tag;
-				if (this.PasswordType == Authenticator.PasswordTypes.Explicit)
-				{
-					tbPassword.Focus();
-				}
+				ckAccountPassword.Enabled = false;
+				ckAccountPassword.Checked = false;
+				ckUserPassword.Enabled = false;
+				ckUserPassword.Checked = false;
+				ckMyPassword.Enabled = false;
+				ckMyPassword.Checked = false;
+				tbPassword.Text = "";
+				tbVerify.Text = "";
+			}
+			else
+			{
+				ckAccountPassword.Enabled = true;
+				ckUserPassword.Enabled = true;
+				ckMyPassword.Enabled = true;
+			}
+		}
+
+		/// <summary>
+		/// Check the my password
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void ckMyPassword_CheckedChanged(object sender, EventArgs e)
+		{
+			if (ckMyPassword.Checked == true)
+			{
+				tbPassword.Enabled = true;
+				tbVerify.Enabled = true;
+				tbPassword.Focus();
+			}
+			else
+			{
+				tbPassword.Text = "";
+				tbPassword.Enabled = false;
+				tbVerify.Text = "";
+				tbVerify.Enabled = false;
+			}
+		}
+
+		/// <summary>
+		/// Check the user encryption choice
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void ckUserPassword_CheckedChanged(object sender, EventArgs e)
+		{
+			if (ckUserPassword.Checked == true)
+			{
+				ckAccountPassword.Checked = false;
+			}
+		}
+
+		/// <summary>
+		/// Check the account encryption choice
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void ckAccountPassword_CheckedChanged(object sender, EventArgs e)
+		{
+			if (ckAccountPassword.Checked == true)
+			{
+				ckUserPassword.Checked = false;
 			}
 		}
 
