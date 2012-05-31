@@ -119,10 +119,11 @@
   </resheader>
   <data name="label4.Text" xml:space="preserve">
     <value>1. Go to www.battle.net and log into your account.
-2. Click Security Options from the top menu.
+2. Click Security Options from the top menu and choose Authenticator.
 3. Click the "Attach Authenticator" button in the "Battle.net Mobile Authenticator" section.
-4. Follow the instructions to verify your email address.
-5. Enter the following serial number and login code:</value>
+4. Make sure you picked the BATTLE.NET MOBILE AUTHENTICATOR, not the keychain one.
+5. Follow the instructions to verify your email address.
+6. Enter the following serial number and login code:</value>
   </data>
   <metadata name="refreshTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>

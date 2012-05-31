@@ -53,14 +53,12 @@ namespace WindowsAuthenticator
 			this.codeField = new WindowsAuthenticator.SecretTextBox();
 			this.serialNumberField = new WindowsAuthenticator.SecretTextBox();
 			this.label2 = new System.Windows.Forms.Label();
-			this.label3 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
 			this.label5 = new System.Windows.Forms.Label();
 			this.label7 = new System.Windows.Forms.Label();
 			this.label4 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
-			this.btnNo = new System.Windows.Forms.Button();
-			this.btnYes = new System.Windows.Forms.Button();
+			this.btnOk = new System.Windows.Forms.Button();
 			this.refreshTimer = new System.Windows.Forms.Timer(this.components);
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
@@ -75,7 +73,6 @@ namespace WindowsAuthenticator
 			this.groupBox1.Controls.Add(this.codeField);
 			this.groupBox1.Controls.Add(this.serialNumberField);
 			this.groupBox1.Controls.Add(this.label2);
-			this.groupBox1.Controls.Add(this.label3);
 			this.groupBox1.Controls.Add(this.label6);
 			this.groupBox1.Controls.Add(this.label5);
 			this.groupBox1.Controls.Add(this.label7);
@@ -83,13 +80,13 @@ namespace WindowsAuthenticator
 			this.groupBox1.Controls.Add(this.label1);
 			this.groupBox1.Location = new System.Drawing.Point(12, 12);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(373, 429);
+			this.groupBox1.Size = new System.Drawing.Size(373, 406);
 			this.groupBox1.TabIndex = 0;
 			this.groupBox1.TabStop = false;
 			// 
 			// progressBar
 			// 
-			this.progressBar.Location = new System.Drawing.Point(131, 218);
+			this.progressBar.Location = new System.Drawing.Point(131, 278);
 			this.progressBar.Maximum = 29;
 			this.progressBar.Name = "progressBar";
 			this.progressBar.Size = new System.Drawing.Size(224, 9);
@@ -99,58 +96,49 @@ namespace WindowsAuthenticator
 			// restoreCodeField
 			// 
 			this.restoreCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.restoreCodeField.Location = new System.Drawing.Point(131, 302);
+			this.restoreCodeField.Location = new System.Drawing.Point(131, 362);
 			this.restoreCodeField.Multiline = true;
 			this.restoreCodeField.Name = "restoreCodeField";
 			this.restoreCodeField.SecretMode = false;
 			this.restoreCodeField.Size = new System.Drawing.Size(224, 30);
+			this.restoreCodeField.SpaceOut = 0;
 			this.restoreCodeField.TabIndex = 2;
 			// 
 			// codeField
 			// 
 			this.codeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.codeField.Location = new System.Drawing.Point(131, 186);
+			this.codeField.Location = new System.Drawing.Point(131, 246);
 			this.codeField.Multiline = true;
 			this.codeField.Name = "codeField";
 			this.codeField.SecretMode = false;
 			this.codeField.Size = new System.Drawing.Size(224, 30);
+			this.codeField.SpaceOut = 0;
 			this.codeField.TabIndex = 2;
 			// 
 			// serialNumberField
 			// 
 			this.serialNumberField.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.serialNumberField.Location = new System.Drawing.Point(131, 152);
+			this.serialNumberField.Location = new System.Drawing.Point(131, 212);
 			this.serialNumberField.Multiline = true;
 			this.serialNumberField.Name = "serialNumberField";
 			this.serialNumberField.SecretMode = false;
 			this.serialNumberField.Size = new System.Drawing.Size(224, 30);
+			this.serialNumberField.SpaceOut = 0;
 			this.serialNumberField.TabIndex = 2;
 			// 
 			// label2
 			// 
 			this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label2.Location = new System.Drawing.Point(7, 307);
+			this.label2.Location = new System.Drawing.Point(7, 367);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(118, 19);
 			this.label2.TabIndex = 1;
 			this.label2.Text = "Restore Code";
 			// 
-			// label3
-			// 
-			this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label3.Location = new System.Drawing.Point(7, 353);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(348, 73);
-			this.label3.TabIndex = 1;
-			this.label3.Text = "We strongly RECOMMEND that you send a backup copy of your authenticator to your e" +
-    "mail account.\r\n\r\nDo you want to send this email now?";
-			// 
 			// label6
 			// 
 			this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label6.Location = new System.Drawing.Point(7, 191);
+			this.label6.Location = new System.Drawing.Point(7, 251);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(118, 19);
 			this.label6.TabIndex = 1;
@@ -159,7 +147,7 @@ namespace WindowsAuthenticator
 			// label5
 			// 
 			this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label5.Location = new System.Drawing.Point(7, 157);
+			this.label5.Location = new System.Drawing.Point(7, 217);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(118, 19);
 			this.label5.TabIndex = 1;
@@ -170,7 +158,7 @@ namespace WindowsAuthenticator
 			this.label7.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label7.Location = new System.Drawing.Point(6, 241);
+			this.label7.Location = new System.Drawing.Point(6, 301);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(361, 58);
 			this.label7.TabIndex = 1;
@@ -184,7 +172,7 @@ namespace WindowsAuthenticator
 			this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.label4.Location = new System.Drawing.Point(6, 44);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(361, 115);
+			this.label4.Size = new System.Drawing.Size(361, 158);
 			this.label4.TabIndex = 1;
 			this.label4.Text = resources.GetString("label4.Text");
 			// 
@@ -199,28 +187,17 @@ namespace WindowsAuthenticator
 			this.label1.TabIndex = 1;
 			this.label1.Text = "To add your Authenticator to your account:";
 			// 
-			// btnNo
+			// btnOk
 			// 
-			this.btnNo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnNo.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btnNo.Location = new System.Drawing.Point(309, 460);
-			this.btnNo.Name = "btnNo";
-			this.btnNo.Size = new System.Drawing.Size(75, 23);
-			this.btnNo.TabIndex = 3;
-			this.btnNo.Text = "No";
-			this.btnNo.UseVisualStyleBackColor = true;
-			this.btnNo.Click += new System.EventHandler(this.btnOK_Click);
-			// 
-			// btnYes
-			// 
-			this.btnYes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnYes.DialogResult = System.Windows.Forms.DialogResult.Yes;
-			this.btnYes.Location = new System.Drawing.Point(228, 460);
-			this.btnYes.Name = "btnYes";
-			this.btnYes.Size = new System.Drawing.Size(75, 23);
-			this.btnYes.TabIndex = 4;
-			this.btnYes.Text = "Yes";
-			this.btnYes.UseVisualStyleBackColor = true;
+			this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnOk.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.btnOk.Location = new System.Drawing.Point(304, 433);
+			this.btnOk.Name = "btnOk";
+			this.btnOk.Size = new System.Drawing.Size(75, 23);
+			this.btnOk.TabIndex = 3;
+			this.btnOk.Text = "OK";
+			this.btnOk.UseVisualStyleBackColor = true;
+			this.btnOk.Click += new System.EventHandler(this.btnOK_Click);
 			// 
 			// refreshTimer
 			// 
@@ -230,13 +207,12 @@ namespace WindowsAuthenticator
 			// 
 			// InitializedForm
 			// 
-			this.AcceptButton = this.btnYes;
+			this.AcceptButton = this.btnOk;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.CancelButton = this.btnNo;
-			this.ClientSize = new System.Drawing.Size(398, 492);
-			this.Controls.Add(this.btnYes);
-			this.Controls.Add(this.btnNo);
+			this.CancelButton = this.btnOk;
+			this.ClientSize = new System.Drawing.Size(398, 468);
+			this.Controls.Add(this.btnOk);
 			this.Controls.Add(this.groupBox1);
 			this.Name = "InitializedForm";
 			this.ShowIcon = false;
@@ -252,9 +228,7 @@ namespace WindowsAuthenticator
 
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Button btnNo;
-		private System.Windows.Forms.Button btnYes;
-		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Button btnOk;
 		private SecretTextBox codeField;
 		private SecretTextBox serialNumberField;
 		private System.Windows.Forms.Label label6;
