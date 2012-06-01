@@ -88,8 +88,11 @@ namespace WindowsAuthenticator
 			this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
 			this.copyClipboardButton = new System.Windows.Forms.Button();
 			this.syncButton = new System.Windows.Forms.Button();
+			this.syncTooltip = new System.Windows.Forms.ToolTip(this.components);
+			this.clipboardTooltip = new System.Windows.Forms.ToolTip(this.components);
 			this.calcCodeButton = new WindowsAuthenticator.RoundButton();
 			this.codeField = new WindowsAuthenticator.SecretTextBox();
+			this.codeTooltip = new System.Windows.Forms.ToolTip(this.components);
 			this.contextMenuStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -133,7 +136,7 @@ namespace WindowsAuthenticator
 			this.contextMenuStrip.Name = "contextMenuStrip1";
 			this.contextMenuStrip.ShowCheckMargin = true;
 			this.contextMenuStrip.ShowImageMargin = false;
-			this.contextMenuStrip.Size = new System.Drawing.Size(221, 598);
+			this.contextMenuStrip.Size = new System.Drawing.Size(221, 576);
 			this.contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip_Opening);
 			// 
 			// openMenuItem
@@ -416,6 +419,10 @@ namespace WindowsAuthenticator
 			this.syncButton.Visible = false;
 			this.syncButton.Click += new System.EventHandler(this.syncButton_Click);
 			// 
+			// syncTooltip
+			// 
+			this.syncTooltip.ToolTipTitle = "Synchronize Time";
+			// 
 			// calcCodeButton
 			// 
 			this.calcCodeButton.BackColor = System.Drawing.Color.Black;
@@ -447,6 +454,10 @@ namespace WindowsAuthenticator
 			this.codeField.TabIndex = 0;
 			this.codeField.TabStop = false;
 			this.codeField.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+			// 
+			// codeTooltip
+			// 
+			this.codeTooltip.ToolTipTitle = "Refresh Code";
 			// 
 			// MainForm
 			// 
@@ -524,6 +535,9 @@ namespace WindowsAuthenticator
 		private System.Windows.Forms.ToolStripMenuItem menuItemSkin;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
 		private System.Windows.Forms.ToolStripMenuItem defaultSkinMenuItem;
+		private System.Windows.Forms.ToolTip syncTooltip;
+		private System.Windows.Forms.ToolTip clipboardTooltip;
+		private System.Windows.Forms.ToolTip codeTooltip;
 
 	}
 }

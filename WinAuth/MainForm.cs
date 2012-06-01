@@ -25,6 +25,7 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Resources;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -324,6 +325,12 @@ namespace WindowsAuthenticator
 			set
 			{
 				m_calcCodeButton = value;
+				if (value != null)
+				{
+					ResourceManager rm = new ResourceManager("WindowsAuthenticator.Properties.Resources", typeof(MainForm).Assembly);
+					codeTooltip.ToolTipTitle = rm.GetString("REFRESHCODE_TOOLTIP_TITLE");
+					codeTooltip.SetToolTip(value, rm.GetString("REFRESHCODE_TOOLTIP"));
+				}
 			}
 		}
 
@@ -362,6 +369,12 @@ namespace WindowsAuthenticator
 			set
 			{
 				m_copyClipboardButton = value;
+				if (value != null)
+				{
+					ResourceManager rm = new ResourceManager("WindowsAuthenticator.Properties.Resources", typeof(MainForm).Assembly);
+					clipboardTooltip.ToolTipTitle = rm.GetString("COPYCLIPBOARD_TOOLTIP_TITLE");
+					clipboardTooltip.SetToolTip(value, rm.GetString("COPYCLIPBOARD_TOOLTIP"));
+				}
 			}
 		}
 
@@ -381,6 +394,12 @@ namespace WindowsAuthenticator
 			set
 			{
 				m_syncButton = value;
+				if (value != null)
+				{
+					ResourceManager rm = new ResourceManager("WindowsAuthenticator.Properties.Resources", typeof(MainForm).Assembly);
+					syncTooltip.ToolTipTitle = rm.GetString("SYNCBUTTON_TOOLTIP_TITLE");
+					syncTooltip.SetToolTip(value, rm.GetString("SYNCBUTTON_TOOLTIP"));
+				}
 			}
 		}
 
@@ -971,6 +990,11 @@ namespace WindowsAuthenticator
 			}
 			progressBar.Value = 0;
 			progressBar.Visible = (authenticator != null && AutoRefresh == true);
+
+			// set the buttons to force tooltips to update
+			this.CalcCodeButton = this.CalcCodeButton;
+			this.CopyClipboardButton = this.CopyClipboardButton;
+			this.SyncButton = this.SyncButton;
 
 			// hook our hotkey to send code to target window (e.g . Ctrl-Alt-C)
 			HookHotkey(this.Config);

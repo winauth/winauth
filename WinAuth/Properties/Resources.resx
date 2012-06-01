@@ -139,4 +139,22 @@ To login an account, you might use:
 
 my@email.com{TAB}password{ENTER 2000}{CODE}{ENTER}</value>
   </data>
+	<data name="SYNCBUTTON_TOOLTIP_TITLE" xml:space="preserve">
+    <value>Synchronize Time</value>
+  </data>
+	<data name="SYNCBUTTON_TOOLTIP" xml:space="preserve">
+    <value>Synchronize the time in your authenticator with Battle.net. Use this if your code is not working.</value>
+  </data>
+	<data name="COPYCLIPBOARD_TOOLTIP_TITLE" xml:space="preserve">
+    <value>Copy To Clipboard</value>
+  </data>
+	<data name="COPYCLIPBOARD_TOOLTIP" xml:space="preserve">
+    <value>Copy the current code to your clipboard</value>
+  </data>
+	<data name="REFRESHCODE_TOOLTIP_TITLE" xml:space="preserve">
+    <value>Refresh Code</value>
+  </data>
+	<data name="REFRESHCODE_TOOLTIP" xml:space="preserve">
+    <value>Refresh and displayed the current code</value>
+  </data>
 </root>

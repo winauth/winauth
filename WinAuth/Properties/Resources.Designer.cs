@@ -87,5 +87,59 @@ namespace WindowsAuthenticator.Properties {
                 return ResourceManager.GetString("AUTOLOGIN_TBADVANCED_TOOLTIP", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy the current code to your clipboard.
+        /// </summary>
+        internal static string COPYCLIPBOARD_TOOLTIP {
+            get {
+                return ResourceManager.GetString("COPYCLIPBOARD_TOOLTIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy To Clipboard.
+        /// </summary>
+        internal static string COPYCLIPBOARD_TOOLTIP_TITLE {
+            get {
+                return ResourceManager.GetString("COPYCLIPBOARD_TOOLTIP_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Refresh and displayed the current code.
+        /// </summary>
+        internal static string REFRESHCODE_TOOLTIP {
+            get {
+                return ResourceManager.GetString("REFRESHCODE_TOOLTIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Refresh Code.
+        /// </summary>
+        internal static string REFRESHCODE_TOOLTIP_TITLE {
+            get {
+                return ResourceManager.GetString("REFRESHCODE_TOOLTIP_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Synchronize the time in your authenticator with Battle.net. Use this if your code is not working..
+        /// </summary>
+        internal static string SYNCBUTTON_TOOLTIP {
+            get {
+                return ResourceManager.GetString("SYNCBUTTON_TOOLTIP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Synchronize Time.
+        /// </summary>
+        internal static string SYNCBUTTON_TOOLTIP_TITLE {
+            get {
+                return ResourceManager.GetString("SYNCBUTTON_TOOLTIP_TITLE", resourceCulture);
+            }
+        }
     }
 }
