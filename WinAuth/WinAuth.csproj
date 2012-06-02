@@ -44,7 +44,7 @@
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.84.0.0, Culture=neutral, PublicKeyToken=1b03e6acf1164f73">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Third Party\SharpZipLib\net-20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>..\Third Party\SharpZipLib\net-20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -223,8 +223,16 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>if $(ConfigurationName) == Release (
+"$(SolutionDir)Third Party\microsoft\ilmerge.exe" /out:"$(TargetDir)WinAuth-Combined.exe" /internalize "$(TargetPath)" "$(TargetDir)Authenticator.DLL" "$(TargetDir)BouncyCastle.Crypto.DLL" "$(TargetDir)ICSharpCode.SharpZipLib.dll"
+del "$(TargetDir)Authenticator.*"
+del "$(TargetDir)BouncyCastle.Crypto.DLL"
+del "$(TargetDir)ICSharpCode.SharpZipLib.dll"
+del "$(TargetDir)WinAuth.exe"
+mv "$(TargetDir)WinAuth-Combined.exe" "$(TargetDir)WinAuth.exe"
+
+)
+</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
