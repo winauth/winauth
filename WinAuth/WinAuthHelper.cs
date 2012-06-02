@@ -51,7 +51,7 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Registry data name for machine time difference
 		/// </summary>
-		private const string WINAUTHREGKEY_TIMEDIFF = @"TiemDiff";
+		private const string WINAUTHREGKEY_TIMEDIFF = @"TimeDiff";
 
 		/// <summary>
 		/// Registry key for starting with windows
