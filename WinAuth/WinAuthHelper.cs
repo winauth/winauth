@@ -49,6 +49,11 @@ namespace WindowsAuthenticator
 		private const string WINAUTHREGKEY_SKIN = @"Skin";
 
 		/// <summary>
+		/// Registry data name for machine time difference
+		/// </summary>
+		private const string WINAUTHREGKEY_TIMEDIFF = @"TiemDiff";
+
+		/// <summary>
 		/// Registry key for starting with windows
 		/// </summary>
 		private const string RUNKEY = @"Software\Microsoft\Windows\CurrentVersion\Run";
@@ -224,6 +229,9 @@ namespace WindowsAuthenticator
 					XmlNodeList nodes = doc.DocumentElement.SelectNodes("authenticator");
 					if (nodes != null)
 					{
+						// get the local machine time diff
+						long machineTimeDiff = GetMachineTimeDiff();
+
 						foreach (XmlNode authenticatorNode in nodes)
 						{
 							// load the data
@@ -266,6 +274,12 @@ namespace WindowsAuthenticator
 											}
 										}
 									} while (true);
+								}
+
+								// adjust the time diff from the local machine
+								if (auth != null && machineTimeDiff != 0)
+								{
+									auth.ServerTimeDiff = machineTimeDiff;
 								}
 							}
 							catch (InvalidConfigDataException)
@@ -615,6 +629,30 @@ namespace WindowsAuthenticator
 				{
 					key.DeleteValue(WINAUTHREGKEY_SKIN, false);
 				}
+			}
+		}
+
+		/// <summary>
+		/// Get the difference for the time of the local machine from the servers
+		/// </summary>
+		/// <returns>name of skin file or null if none</returns>
+		public static long GetMachineTimeDiff()
+		{
+			using (RegistryKey key = Registry.CurrentUser.OpenSubKey(WINAUTHREGKEY, false))
+			{
+				return (key == null ? 0L : (long)key.GetValue(WINAUTHREGKEY_TIMEDIFF, null));
+			}
+		}
+
+		/// <summary>
+		/// Set the time difference in the registry
+		/// </summary>
+		/// <param name="skin">name of skin file or null to remove</param>
+		public static void SetMachineTimeDiff(long diff)
+		{
+			using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WINAUTHREGKEY))
+			{
+				key.SetValue(WINAUTHREGKEY_TIMEDIFF, diff, RegistryValueKind.QWord);
 			}
 		}
 	}

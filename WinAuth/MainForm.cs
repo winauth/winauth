@@ -633,6 +633,9 @@ namespace WindowsAuthenticator
 				return false;
 			}
 
+			// refresh this machine time diff based on this new authenticator
+			WinAuthHelper.SetMachineTimeDiff(authenticator.ServerTimeDiff);
+
 			// unhook and rehook hotkey
 			HookHotkey(this.Config);
 
@@ -870,6 +873,10 @@ namespace WindowsAuthenticator
 		public void Sync()
 		{
 			Authenticator.Sync();
+
+			// refresh this machine time diff based on this new diff
+			WinAuthHelper.SetMachineTimeDiff(Authenticator.ServerTimeDiff);
+			
 			ShowCode();
 			MessageBox.Show(this, "Time synced successfully.", "Sync Time", MessageBoxButtons.OK);
 		}
