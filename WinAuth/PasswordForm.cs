@@ -71,6 +71,12 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void btnOk_Click(object sender, EventArgs e)
 		{
+			if (this.tbPassword.Text.Length == 0)
+			{
+				MessageBox.Show(this, "Please enter a password", "Password", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return;
+			}
+
 			this.DialogResult = System.Windows.Forms.DialogResult.OK;
 		}
 	}
