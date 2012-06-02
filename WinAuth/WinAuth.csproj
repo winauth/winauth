@@ -229,8 +229,7 @@ del "$(TargetDir)Authenticator.*"
 del "$(TargetDir)BouncyCastle.Crypto.DLL"
 del "$(TargetDir)ICSharpCode.SharpZipLib.dll"
 del "$(TargetDir)WinAuth.exe"
-mv "$(TargetDir)WinAuth-Combined.exe" "$(TargetDir)WinAuth.exe"
-
+ren "$(TargetDir)WinAuth-Combined.exe" "WinAuth.exe"
 )
 </PostBuildEvent>
   </PropertyGroup>
