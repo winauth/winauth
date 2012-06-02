@@ -640,7 +640,7 @@ namespace WindowsAuthenticator
 		{
 			using (RegistryKey key = Registry.CurrentUser.OpenSubKey(WINAUTHREGKEY, false))
 			{
-				return (key == null ? 0L : (long)key.GetValue(WINAUTHREGKEY_TIMEDIFF, null));
+				return (key == null ? 0L : (long)key.GetValue(WINAUTHREGKEY_TIMEDIFF, 0L));
 			}
 		}
 
