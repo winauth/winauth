@@ -146,6 +146,7 @@ namespace WindowsAuthenticator
 		public WinAuthConfig()
 		{
 			AlwaysOnTop = true;
+			AutoRefresh = true;
 		}
 
 		#region ICloneable
