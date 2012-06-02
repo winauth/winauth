@@ -161,7 +161,7 @@ namespace WindowsAuthenticator
 
 					XmlAttribute versionAttr;
 					decimal version = Authenticator.DEAFULT_CONFIG_VERSION;
-					if ((versionAttr = node.Attributes["version"]) != null && decimal.TryParse(versionAttr.InnerText, out version) && version < (decimal)1.4)
+					if ((versionAttr = node.Attributes["version"]) != null && (version = decimal.Parse(versionAttr.InnerText, System.Globalization.CultureInfo.InvariantCulture)) < (decimal)1.4)
 					{
 						// old version 1.3 file
 						config = LoadConfig_1_3(form, configFile);
