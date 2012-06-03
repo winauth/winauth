@@ -528,7 +528,7 @@ namespace WindowsAuthenticator
 				Authenticator.PasswordTypes passwordTypes = (Config.Authenticator != null ? Config.Authenticator.PasswordType : Authenticator.PasswordTypes.None);
 				if (passwordTypes == WindowsAuthenticator.Authenticator.PasswordTypes.None)
 				{
-					passwordTypes = Authenticator.PasswordTypes.User | WindowsAuthenticator.Authenticator.PasswordTypes.Explicit;
+					passwordTypes = WindowsAuthenticator.Authenticator.PasswordTypes.Explicit;
 				}				
 				requestPasswordForm.PasswordType = passwordTypes;
 				//requestPasswordForm.Password = (Config.Authenticator != null
@@ -1130,6 +1130,9 @@ namespace WindowsAuthenticator
 							this.Controls.Add(control);
 							//
 							control.Visible = true;
+							// remove and add click event handle (in case we had a skin with no button)
+							RemoveEventHandler(control, "Click");
+							// add event handler
 							control.Click += new System.EventHandler(syncButton_Click);
 							SyncButton = control;
 						}
@@ -1141,12 +1144,17 @@ namespace WindowsAuthenticator
 						Control newcontrol = SetSkinControl(CalcCodeButton, node) as Control;
 						if (newcontrol != null)
 						{
-							// reemove old button and add new one
+							// remove old button and add new one
 							this.Controls.Remove(CalcCodeButton);
 							this.Controls.Add(newcontrol);
 							//
 							newcontrol.Visible = CalcCodeButton.Visible;
+
+							// remove and add click event handle (in case we had a skin with no button)
+							RemoveEventHandler(newcontrol, "Click");
+							// add new click Handler
 							newcontrol.Click += new System.EventHandler(calcCodeButton_Click);
+
 							newcontrol.GotFocus += new EventHandler(control_Focus);
 							CalcCodeButton = (Button)newcontrol;
 						}
@@ -1176,6 +1184,21 @@ namespace WindowsAuthenticator
 					this.PerformLayout();
 				}
 			} while (true);
+		}
+
+		/// <summary>
+		/// Remove an event from a control
+		/// </summary>
+		/// <param name="c">Control to have event removed</param>
+		/// <param name="eventName">Name of event to remove, e.g. "Click", "DoubleClick"</param>
+		private void RemoveEventHandler(Control c, string eventName)
+		{
+			// remove exist event handle
+			FieldInfo fi = typeof(Control).GetField("Event" + eventName, BindingFlags.Static | BindingFlags.NonPublic);
+			object obj = fi.GetValue(c);
+			PropertyInfo pi = c.GetType().GetProperty("Events", BindingFlags.NonPublic | BindingFlags.Instance);
+			EventHandlerList list = (EventHandlerList)pi.GetValue(c, null);
+			list.RemoveHandler(obj, list[obj]);
 		}
 
 		/// <summary>

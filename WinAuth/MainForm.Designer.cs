@@ -86,13 +86,13 @@ namespace WindowsAuthenticator
 			this.refreshTimer = new System.Windows.Forms.Timer(this.components);
 			this.progressBar = new System.Windows.Forms.ProgressBar();
 			this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
-			this.copyClipboardButton = new System.Windows.Forms.Button();
-			this.syncButton = new System.Windows.Forms.Button();
 			this.syncTooltip = new System.Windows.Forms.ToolTip(this.components);
 			this.clipboardTooltip = new System.Windows.Forms.ToolTip(this.components);
-			this.calcCodeButton = new WindowsAuthenticator.RoundButton();
-			this.codeField = new WindowsAuthenticator.SecretTextBox();
+			this.calcCodeButton = new System.Windows.Forms.Button();
 			this.codeTooltip = new System.Windows.Forms.ToolTip(this.components);
+			this.copyClipboardButton = new WindowsAuthenticator.TransparentButton();
+			this.syncButton = new WindowsAuthenticator.TransparentButton();
+			this.codeField = new WindowsAuthenticator.SecretTextBox();
 			this.contextMenuStrip.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -368,7 +368,7 @@ namespace WindowsAuthenticator
 			this.serialLabel.BackColor = System.Drawing.Color.Transparent;
 			this.serialLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.serialLabel.ForeColor = System.Drawing.SystemColors.Control;
-			this.serialLabel.Location = new System.Drawing.Point(86, 79);
+			this.serialLabel.Location = new System.Drawing.Point(92, 160);
 			this.serialLabel.Name = "serialLabel";
 			this.serialLabel.Size = new System.Drawing.Size(138, 17);
 			this.serialLabel.TabIndex = 3;
@@ -381,10 +381,10 @@ namespace WindowsAuthenticator
 			// 
 			// progressBar
 			// 
-			this.progressBar.Location = new System.Drawing.Point(101, 21);
+			this.progressBar.Location = new System.Drawing.Point(25, 180);
 			this.progressBar.Maximum = 29;
 			this.progressBar.Name = "progressBar";
-			this.progressBar.Size = new System.Drawing.Size(104, 10);
+			this.progressBar.Size = new System.Drawing.Size(270, 6);
 			this.progressBar.Step = 1;
 			this.progressBar.TabIndex = 4;
 			// 
@@ -395,69 +395,78 @@ namespace WindowsAuthenticator
 			this.notifyIcon.Text = "WinAuth";
 			this.notifyIcon.DoubleClick += new System.EventHandler(this.notifyIcon_DoubleClick);
 			// 
-			// copyClipboardButton
-			// 
-			this.copyClipboardButton.Location = new System.Drawing.Point(0, 3);
-			this.copyClipboardButton.Name = "copyClipboardButton";
-			this.copyClipboardButton.Size = new System.Drawing.Size(36, 23);
-			this.copyClipboardButton.TabIndex = 5;
-			this.copyClipboardButton.TabStop = false;
-			this.copyClipboardButton.Text = "Copy";
-			this.copyClipboardButton.UseVisualStyleBackColor = true;
-			this.copyClipboardButton.Visible = false;
-			this.copyClipboardButton.Click += new System.EventHandler(this.copyClipboardButton_Click);
-			// 
-			// syncButton
-			// 
-			this.syncButton.Location = new System.Drawing.Point(0, 32);
-			this.syncButton.Name = "syncButton";
-			this.syncButton.Size = new System.Drawing.Size(36, 23);
-			this.syncButton.TabIndex = 5;
-			this.syncButton.TabStop = false;
-			this.syncButton.Text = "Sync";
-			this.syncButton.UseVisualStyleBackColor = true;
-			this.syncButton.Visible = false;
-			this.syncButton.Click += new System.EventHandler(this.syncButton_Click);
-			// 
 			// syncTooltip
 			// 
 			this.syncTooltip.ToolTipTitle = "Synchronize Time";
 			// 
 			// calcCodeButton
 			// 
-			this.calcCodeButton.BackColor = System.Drawing.Color.Black;
-			this.calcCodeButton.ColorGradient = ((byte)(2));
-			this.calcCodeButton.ColorStepGradient = ((byte)(2));
+			this.calcCodeButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
 			this.calcCodeButton.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.calcCodeButton.FadeOut = false;
-			this.calcCodeButton.HoverColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(15)))), ((int)(((byte)(15)))));
-			this.calcCodeButton.Location = new System.Drawing.Point(33, 32);
+			this.calcCodeButton.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+			this.calcCodeButton.FlatAppearance.BorderSize = 0;
+			this.calcCodeButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
+			this.calcCodeButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
+			this.calcCodeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.calcCodeButton.Font = new System.Drawing.Font("Arial Narrow", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.calcCodeButton.ForeColor = System.Drawing.Color.White;
+			this.calcCodeButton.Location = new System.Drawing.Point(70, 210);
 			this.calcCodeButton.Name = "calcCodeButton";
-			this.calcCodeButton.Size = new System.Drawing.Size(49, 46);
+			this.calcCodeButton.Size = new System.Drawing.Size(180, 37);
 			this.calcCodeButton.TabIndex = 1;
-			this.calcCodeButton.TextStartPoint = new System.Drawing.Point(0, 0);
+			this.calcCodeButton.TabStop = false;
+			this.calcCodeButton.Text = "View Code";
 			this.calcCodeButton.UseVisualStyleBackColor = false;
 			this.calcCodeButton.Click += new System.EventHandler(this.calcCodeButton_Click);
-			// 
-			// codeField
-			// 
-			this.codeField.BackColor = System.Drawing.SystemColors.Window;
-			this.codeField.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.codeField.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.codeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.codeField.Location = new System.Drawing.Point(103, 45);
-			this.codeField.Name = "codeField";
-			this.codeField.ReadOnly = true;
-			this.codeField.SecretMode = false;
-			this.codeField.Size = new System.Drawing.Size(100, 19);
-			this.codeField.SpaceOut = 4;
-			this.codeField.TabIndex = 0;
-			this.codeField.TabStop = false;
-			this.codeField.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			// 
 			// codeTooltip
 			// 
 			this.codeTooltip.ToolTipTitle = "Refresh Code";
+			// 
+			// copyClipboardButton
+			// 
+			this.copyClipboardButton.BackColor = System.Drawing.Color.Transparent;
+			this.copyClipboardButton.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.copyClipboardButton.DialogResult = System.Windows.Forms.DialogResult.None;
+			this.copyClipboardButton.Location = new System.Drawing.Point(260, 360);
+			this.copyClipboardButton.Name = "copyClipboardButton";
+			this.copyClipboardButton.Size = new System.Drawing.Size(45, 45);
+			this.copyClipboardButton.TabIndex = 5;
+			this.copyClipboardButton.TabStop = false;
+			this.copyClipboardButton.Text = "Copy";
+			this.copyClipboardButton.UseVisualStyleBackColor = true;
+			this.copyClipboardButton.Click += new System.EventHandler(this.copyClipboardButton_Click);
+			// 
+			// syncButton
+			// 
+			this.syncButton.BackColor = System.Drawing.Color.Transparent;
+			this.syncButton.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.syncButton.DialogResult = System.Windows.Forms.DialogResult.None;
+			this.syncButton.Location = new System.Drawing.Point(15, 360);
+			this.syncButton.Name = "syncButton";
+			this.syncButton.Size = new System.Drawing.Size(45, 45);
+			this.syncButton.TabIndex = 5;
+			this.syncButton.TabStop = false;
+			this.syncButton.Text = "Sync";
+			this.syncButton.UseVisualStyleBackColor = true;
+			this.syncButton.Click += new System.EventHandler(this.syncButton_Click);
+			// 
+			// codeField
+			// 
+			this.codeField.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
+			this.codeField.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.codeField.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.codeField.Font = new System.Drawing.Font("Arial", 22F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.codeField.ForeColor = System.Drawing.Color.White;
+			this.codeField.Location = new System.Drawing.Point(26, 120);
+			this.codeField.Name = "codeField";
+			this.codeField.ReadOnly = true;
+			this.codeField.SecretMode = false;
+			this.codeField.Size = new System.Drawing.Size(269, 34);
+			this.codeField.SpaceOut = 4;
+			this.codeField.TabIndex = 0;
+			this.codeField.TabStop = false;
+			this.codeField.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 			// 
 			// MainForm
 			// 
@@ -465,14 +474,14 @@ namespace WindowsAuthenticator
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
 			this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-			this.ClientSize = new System.Drawing.Size(259, 115);
+			this.ClientSize = new System.Drawing.Size(320, 419);
 			this.ContextMenuStrip = this.contextMenuStrip;
+			this.Controls.Add(this.progressBar);
 			this.Controls.Add(this.copyClipboardButton);
 			this.Controls.Add(this.syncButton);
 			this.Controls.Add(this.calcCodeButton);
-			this.Controls.Add(this.codeField);
-			this.Controls.Add(this.progressBar);
 			this.Controls.Add(this.serialLabel);
+			this.Controls.Add(this.codeField);
 			this.DoubleBuffered = true;
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -493,7 +502,7 @@ namespace WindowsAuthenticator
 		#endregion
 
 		private SecretTextBox codeField;
-		private RoundButton calcCodeButton;
+		private System.Windows.Forms.Button calcCodeButton;
 		private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
 		private System.Windows.Forms.ToolStripMenuItem autoRefreshMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exitMenuItem;
@@ -530,8 +539,8 @@ namespace WindowsAuthenticator
 		private System.Windows.Forms.ToolStripMenuItem restoreMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator9;
 		private System.Windows.Forms.ToolStripMenuItem showRestoreCodeMenuItem;
-		private System.Windows.Forms.Button copyClipboardButton;
-		private System.Windows.Forms.Button syncButton;
+		private WindowsAuthenticator.TransparentButton copyClipboardButton;
+		private WindowsAuthenticator.TransparentButton syncButton;
 		private System.Windows.Forms.ToolStripMenuItem menuItemSkin;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
 		private System.Windows.Forms.ToolStripMenuItem defaultSkinMenuItem;

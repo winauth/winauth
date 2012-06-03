@@ -224,12 +224,8 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(ConfigurationName) == Release (
-"$(SolutionDir)Third Party\microsoft\ilmerge.exe" /out:"$(TargetDir)WinAuth-Combined.exe" /internalize "$(TargetPath)" "$(TargetDir)Authenticator.DLL" "$(TargetDir)BouncyCastle.Crypto.DLL" "$(TargetDir)ICSharpCode.SharpZipLib.dll"
-del "$(TargetDir)Authenticator.*"
-del "$(TargetDir)BouncyCastle.Crypto.DLL"
-del "$(TargetDir)ICSharpCode.SharpZipLib.dll"
-del "$(TargetDir)WinAuth.exe"
-ren "$(TargetDir)WinAuth-Combined.exe" "WinAuth.exe"
+IF NOT EXIST "$(TargetDir)combined" MD "$(TargetDir)combined"
+"$(SolutionDir)Third Party\microsoft\ilmerge.exe" /out:"$(TargetDir)combined/WinAuth.exe" /internalize "$(TargetPath)" "$(TargetDir)Authenticator.DLL" "$(TargetDir)BouncyCastle.Crypto.DLL" "$(TargetDir)ICSharpCode.SharpZipLib.dll"
 )
 </PostBuildEvent>
   </PropertyGroup>
