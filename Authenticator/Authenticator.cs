@@ -948,19 +948,33 @@ namespace WindowsAuthenticator
 							case 'u':
 								{
 									// we are going to decrypt with the Windows User account key
-									passwordType |= PasswordTypes.User;
-									byte[] cipher = Authenticator.StringToByteArray(data);
-									byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.CurrentUser);
-									data = Authenticator.ByteArrayToString(plain);
+									try
+									{
+										passwordType |= PasswordTypes.User;
+										byte[] cipher = Authenticator.StringToByteArray(data);
+										byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.CurrentUser);
+										data = Authenticator.ByteArrayToString(plain);
+									}
+									catch (System.Security.Cryptography.CryptographicException)
+									{
+										throw new InvalidUserDecryptionException();
+									}
 									break;
 								}
 							case 'm':
 								{
 									// we are going to decrypt with the Windows local machine key
-									passwordType |= PasswordTypes.Machine;
-									byte[] cipher = Authenticator.StringToByteArray(data);
-									byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
-									data = Authenticator.ByteArrayToString(plain);
+									try
+									{
+										passwordType |= PasswordTypes.Machine;
+										byte[] cipher = Authenticator.StringToByteArray(data);
+										byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
+										data = Authenticator.ByteArrayToString(plain);
+									}
+									catch (System.Security.Cryptography.CryptographicException)
+									{
+										throw new InvalidMachineDecryptionException();
+									}
 									break;
 								}
 							case 'y':

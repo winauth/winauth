@@ -58,6 +58,22 @@ namespace WindowsAuthenticator
 	}
 
 	/// <summary>
+	/// Exception for invalid user decryption
+	/// </summary>
+	public class InvalidUserDecryptionException : AuthenticatorException
+	{
+		public InvalidUserDecryptionException() : base() { }
+	}
+
+	/// <summary>
+	/// Exception for invalid machine decryption
+	/// </summary>
+	public class InvalidMachineDecryptionException : AuthenticatorException
+	{
+		public InvalidMachineDecryptionException() : base() { }
+	}
+
+	/// <summary>
 	/// Exception for error or unexpected return from server for enroll
 	/// </summary>
 	public class InvalidEnrollResponseException : AuthenticatorException

@@ -282,6 +282,14 @@ namespace WindowsAuthenticator
 									auth.ServerTimeDiff = machineTimeDiff;
 								}
 							}
+							catch (InvalidUserDecryptionException)
+							{
+								MessageBox.Show(form, "The authenticator was encrypted using a different Windows User account.", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
+							}
+							catch (InvalidMachineDecryptionException)
+							{
+								MessageBox.Show(form, "The authenticator was encrypted using a different Windows computer.", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
+							}
 							catch (InvalidConfigDataException)
 							{
 								MessageBox.Show(form, "The authenticator data in " + configFile + " is not valid", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
