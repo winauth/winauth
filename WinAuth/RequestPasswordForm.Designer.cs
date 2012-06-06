@@ -223,8 +223,8 @@ namespace WindowsAuthenticator
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(619, 23);
 			this.label4.TabIndex = 2;
-			this.label4.Text = "The authenticator will not be encypted. Someone else could copy this file and clo" +
-    "ne your authenticator.";
+			this.label4.Text = "The authenticator will not be encrypted. Someone else could copy this file and cl" +
+    "one your authenticator.";
 			// 
 			// label2
 			// 
