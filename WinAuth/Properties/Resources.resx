@@ -151,7 +151,7 @@ my@email.com{TAB}password{ENTER 2000}{CODE}{ENTER}</value>
 	<data name="COPYCLIPBOARD_TOOLTIP" xml:space="preserve">
     <value>Copy the current code to your clipboard</value>
   </data>
-	<data name="REFRESHCODE_TOOLTIP_TITLE" xml:space="preserve">
+  <data name="REFRESHCODE_TOOLTIP_TITLE" xml:space="preserve">
     <value>Refresh Code</value>
   </data>
 	<data name="REFRESHCODE_TOOLTIP" xml:space="preserve">
