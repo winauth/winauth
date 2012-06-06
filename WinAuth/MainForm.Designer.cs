@@ -417,6 +417,7 @@ namespace WindowsAuthenticator
 			this.calcCodeButton.TabStop = false;
 			this.calcCodeButton.Text = "View Code";
 			this.calcCodeButton.UseVisualStyleBackColor = false;
+			this.calcCodeButton.Visible = false;
 			this.calcCodeButton.Click += new System.EventHandler(this.calcCodeButton_Click);
 			// 
 			// codeTooltip
