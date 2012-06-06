@@ -159,10 +159,10 @@ namespace WindowsAuthenticator
 					}
 
 					// Show if BETA
-					if (new BetaForm().ShowDialog(form) != DialogResult.OK)
-					{
-						return null;
-					}
+					//if (new BetaForm().ShowDialog(form) != DialogResult.OK)
+					//{
+					//  return null;
+					//}
 
 					XmlAttribute versionAttr;
 					decimal version = Authenticator.DEAFULT_CONFIG_VERSION;
