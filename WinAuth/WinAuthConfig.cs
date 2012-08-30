@@ -31,37 +31,151 @@ using NUnit.Framework;
 namespace WindowsAuthenticator
 {
 	/// <summary>
+	/// Delegate for ConfigChange event
+	/// </summary>
+	/// <param name="source"></param>
+	/// <param name="args"></param>
+	public delegate void ConfigChangedHandler(object source, ConfigChangedEventArgs args);
+
+	/// <summary>
 	/// Class holding configuration data for application
 	/// </summary>
 	[Serializable()]
 	public class WinAuthConfig : ICloneable
 	{
-		#region System Settings
+		/// <summary>
+		/// Event handler fired when a config property is changed
+		/// </summary>
+		public event ConfigChangedHandler OnConfigChanged;
 
 		/// <summary>
-		/// The current skin
+		/// Current file name
 		/// </summary>
-		private string m_currentSkin;
+		private string _filename;
+
+		/// <summary>
+		/// Current authenticator
+		/// </summary>
+		private Authenticator _authenticator;
+
+		/// <summary>
+		/// Current skin
+		/// </summary>
+		private string _currentSkin;
+
+		/// <summary>
+		/// Flag for always on top
+		/// </summary>
+		private bool _alwaysOnTop;
+
+		/// <summary>
+		/// Flag to use tray icon
+		/// </summary>
+		private bool _useTrayIcon;
+
+		/// <summary>
+		/// Flag to set start with Windows
+		/// </summary>
+		private bool _startWithWindows;
+
+		/// <summary>
+		/// Flag for auto refresh of code
+		/// </summary>
+		private bool _autoRefresh;
+
+		/// <summary>
+		/// Flag to allow copy of code
+		/// </summary>
+		private bool _allowCopy;
+
+		/// <summary>
+		/// Flag to copy new code automatically
+		/// </summary>
+		private bool _copyOnCode;
+
+		/// <summary>
+		/// Flag to hide serial number
+		/// </summary>
+		private bool _hideSerial;
+
+		/// <summary>
+		/// Auto login sequence
+		/// </summary>
+		private HoyKeySequence _autoLogin;
+
+		#region System Settings
 
 		/// <summary>
 		/// Get/set file name of config data
 		/// </summary>
-		public string Filename { get; set; }
+		public string Filename
+		{
+			get
+			{
+				return _filename;
+			}
+			set
+			{
+				_filename = value;
+			}
+		}
 
 		/// <summary>
 		/// Get/set on top flag
 		/// </summary>
-		public bool AlwaysOnTop { get; set; }
+		public bool AlwaysOnTop
+		{
+			get
+			{
+				return _alwaysOnTop;
+			}
+			set
+			{
+				_alwaysOnTop = value;
+				if (OnConfigChanged != null)
+				{
+					OnConfigChanged(this, new ConfigChangedEventArgs());
+				}
+			}
+		}
 
 		/// <summary>
 		/// Get/set use tray icon top flag
 		/// </summary>
-		public bool UseTrayIcon { get; set; }
+		public bool UseTrayIcon
+		{
+			get
+			{
+				return _useTrayIcon;
+			}
+			set
+			{
+				_useTrayIcon = value;
+				if (OnConfigChanged != null)
+				{
+					OnConfigChanged(this, new ConfigChangedEventArgs());
+				}
+			}
+		}
 
 		/// <summary>
 		/// Get/set start with windows flag
 		/// </summary>
-		public bool StartWithWindows { get; set; }
+		public bool StartWithWindows
+		{
+			get
+			{
+				return _startWithWindows;
+			}
+			set
+			{
+				_startWithWindows = value;
+				if (OnConfigChanged != null)
+				{
+					OnConfigChanged(this, new ConfigChangedEventArgs());
+				}
+			}
+		}
 
 		/// <summary>
 		/// Get/set the currnet skin
@@ -70,15 +184,15 @@ namespace WindowsAuthenticator
 		{
 			get
 			{
-				if (string.IsNullOrEmpty(m_currentSkin) == true && RememberSkin == true)
+				if (string.IsNullOrEmpty(_currentSkin) == true && RememberSkin == true)
 				{
-					m_currentSkin = WinAuthHelper.GetSavedSkin();
+					_currentSkin = WinAuthHelper.GetSavedSkin();
 				}
-				return m_currentSkin;
+				return _currentSkin;
 			}
 			set
 			{
-				m_currentSkin = value;
+				_currentSkin = value;
 			}
 		}
 
@@ -101,6 +215,10 @@ namespace WindowsAuthenticator
 				{
 					WinAuthHelper.SetSavedSkin(null);
 				}
+				if (OnConfigChanged != null)
+				{
+					OnConfigChanged(this, new ConfigChangedEventArgs());
+				}
 			}
 		}
 
@@ -111,32 +229,112 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Current authenticator
 		/// </summary>
-		public Authenticator Authenticator { get; set; }
+		public Authenticator Authenticator
+		{
+			get
+			{
+				return _authenticator;
+			}
+			set
+			{
+				_authenticator = value;
+			}
+		}
 
 		/// <summary>
 		/// Get/set auto refresh flag
 		/// </summary>
-		public bool AutoRefresh { get; set; }
+		public bool AutoRefresh
+		{
+			get
+			{
+				return _autoRefresh;
+			}
+			set
+			{
+				_autoRefresh = value;
+				if (OnConfigChanged != null)
+				{
+					OnConfigChanged(this, new ConfigChangedEventArgs());
+				}
+			}
+		}
 
 		/// <summary>
 		/// Get/set allow copy flag
 		/// </summary>
-		public bool AllowCopy { get; set; }
+		public bool AllowCopy
+		{
+			get
+			{
+				return _allowCopy;
+			}
+			set
+			{
+				_allowCopy = value;
+				if (OnConfigChanged != null)
+				{
+					OnConfigChanged(this, new ConfigChangedEventArgs());
+				}
+			}
+		}
 
 		/// <summary>
 		/// Get/set auto copy flag
 		/// </summary>
-		public bool CopyOnCode { get; set; }
+		public bool CopyOnCode
+		{
+			get
+			{
+				return _copyOnCode;
+			}
+			set
+			{
+				_copyOnCode = value;
+				if (OnConfigChanged != null)
+				{
+					OnConfigChanged(this, new ConfigChangedEventArgs());
+				}
+			}
+		}
 
 		/// <summary>
 		/// Get/set hide serial flag
 		/// </summary>
-		public bool HideSerial { get; set; }
+		public bool HideSerial
+		{
+			get
+			{
+				return _hideSerial;
+			}
+			set
+			{
+				_hideSerial = value;
+				if (OnConfigChanged != null)
+				{
+					OnConfigChanged(this, new ConfigChangedEventArgs());
+				}
+			}
+		}
 
 		/// <summary>
 		/// Any auto login hotkey
 		/// </summary>
-		public HoyKeySequence AutoLogin { get; set; }
+		public HoyKeySequence AutoLogin
+		{
+			get
+			{
+				return _autoLogin;
+			}
+			set
+			{
+				_autoLogin = value;
+				if (OnConfigChanged != null)
+				{
+					OnConfigChanged(this, new ConfigChangedEventArgs());
+				}
+			}
+		}
 
 		#endregion
 
@@ -159,6 +357,7 @@ namespace WindowsAuthenticator
 		{
 			WinAuthConfig clone = (WinAuthConfig)this.MemberwiseClone();
 			// close the internal authenticator so the data is kept separate
+			clone.OnConfigChanged = null;
 			clone.Authenticator = (this.Authenticator == null ? null : this.Authenticator.Clone() as Authenticator);
 			return clone;
 		}
@@ -203,14 +402,15 @@ namespace WindowsAuthenticator
 			writer.WriteStartElement("hideserial");
 			writer.WriteValue(this.HideSerial);
 			writer.WriteEndElement();
-			//
+
+			// save the authenticator to the config file
+			this.Authenticator.WriteXmlString(writer);
+
+			// save script with password and generated salt
 			if (this.AutoLogin != null)
 			{
 				this.AutoLogin.WriteXmlString(writer, this.Authenticator.PasswordType, this.Authenticator.Password);
 			}
-
-			// save the authenticator to the config file
-			this.Authenticator.WriteXmlString(writer);
 
 			// close WinAuth
 			writer.WriteEndElement();
@@ -218,6 +418,19 @@ namespace WindowsAuthenticator
 		}
 
 		#endregion
+	}
+
+	/// <summary>
+	/// Config change event arguments
+	/// </summary>
+	public class ConfigChangedEventArgs : EventArgs
+	{
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public ConfigChangedEventArgs() : base()
+		{
+		}
 	}
 
 #if NUNIT

@@ -60,5 +60,18 @@ namespace WindowsAuthenticator
 		{
 			this.Close();
 		}
+
+		/// <summary>
+		/// Click the Diagnostics button
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void btnReport_Click(object sender, EventArgs e)
+		{
+			ErrorReportForm errorreport = new ErrorReportForm();
+			errorreport.Config = ((MainForm)this.Owner).Config;
+			errorreport.ShowDialog(this);
+		}
+
 	}
 }

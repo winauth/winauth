@@ -1037,12 +1037,21 @@ namespace WindowsAuthenticator
 			StringBuilder encryptionTypes = new StringBuilder();
 			if ((PasswordType & PasswordTypes.Explicit) != 0)
 			{
-				data = Encrypt(data, Password);
+				string encrypted = Encrypt(data, Password);
+
+				// test the encryption
+				string decrypted = Decrypt(encrypted, Password, true);
+				if (string.Compare(data, decrypted) == 0)
+				{
+					throw new InvalidEncryptionException(data, Password, encrypted, decrypted);
+				}
+				data = encrypted;
+
 				encryptionTypes.Append("y");
 			}
 			if ((PasswordType & PasswordTypes.User) != 0)
 			{
-				// we encrpyt the data using the Windows User account key
+				// we encrypt the data using the Windows User account key
 				byte[] plain = Authenticator.StringToByteArray(data);
 				byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.CurrentUser);
 				data = Authenticator.ByteArrayToString(cipher);

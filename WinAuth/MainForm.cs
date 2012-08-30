@@ -110,7 +110,7 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Configuration settings for the application (including the Authenticator data)
 		/// </summary>
-		private WinAuthConfig Config
+		internal WinAuthConfig Config
 		{
 			get
 			{
@@ -450,6 +450,8 @@ namespace WindowsAuthenticator
 			Authenticator auth = (config != null && config.Authenticator != null ? config.Authenticator : null);
 			if (config != null && auth != null)
 			{
+				bool save = false;
+
 				// if there is no filename, we imported a different authenticator, so clone some of the current config
 				if (string.IsNullOrEmpty(config.Filename) == true)
 				{
@@ -463,12 +465,15 @@ namespace WindowsAuthenticator
 					
 					// set the filename
 					config.Filename = configFile;
+
+					save = true;
 				}
 
 				// if this was an import, i.e. an .rms file, then clear authFile so we are forced to save a new name
 				if (auth.LoadedFormat != Authenticator.FileFormat.WinAuth)
 				{
 					config.Filename = null;
+					save = true;
 				}
 
 				// set up the Authenticator
@@ -479,10 +484,16 @@ namespace WindowsAuthenticator
 				ShowCode();
 
 				// re-save
-				SaveAuthenticator(Config.Filename);
+				if (save == true)
+				{
+					SaveAuthenticator(Config.Filename);
+				}
 
 				// set title
 				notifyIcon.Text = this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
+
+				// hook event for config changes
+				this.Config.OnConfigChanged += new ConfigChangedHandler(OnConfigChanged);
 			}
 		}
 
@@ -552,6 +563,24 @@ namespace WindowsAuthenticator
 				Config.Filename = configFile;
 				notifyIcon.Text = this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
 				return true;
+			}
+			catch (InvalidEncryptionException iee)
+			{
+				// detect invalid encryption data
+				DialogResult r = MessageBox.Show(this,
+				  "An unexpected error occurred whilst saving your authenticator: " + iee.Message + ".\n\nPlease try again or restart WinAuth.\n\nWould you like to send an error report to help try and fix this problem?",
+				  WinAuth.APPLICATION_NAME,
+				  MessageBoxButtons.YesNo,
+				  MessageBoxIcon.Error);
+				if (r == System.Windows.Forms.DialogResult.Yes)
+				{
+					ErrorReportForm errorreport = new ErrorReportForm();
+					errorreport.Config = this.Config;
+					errorreport.ErrorException = iee;
+					errorreport.ShowDialog(this);
+				}
+
+				return false;
 			}
 			catch (Exception ex)
 			{
@@ -641,6 +670,9 @@ namespace WindowsAuthenticator
 
 			// set filename and window title
 			notifyIcon.Text = this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
+
+			// hook change event back
+			this.Config.OnConfigChanged +=new ConfigChangedHandler(OnConfigChanged);
 
 			// prompt to backup
 			InitializedForm initForm = new InitializedForm();
@@ -972,6 +1004,7 @@ namespace WindowsAuthenticator
 				System.Diagnostics.Process.GetCurrentProcess().Kill();
 				return;
 			}
+			this.Config.OnConfigChanged += new ConfigChangedHandler(OnConfigChanged);
 
 			// load the skin
 			if (string.IsNullOrEmpty(skin) == true)
@@ -1440,10 +1473,10 @@ namespace WindowsAuthenticator
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			// save current config
-			if (Config.Authenticator != null)
-			{
-				SaveAuthenticator(Config.Filename);
-			}
+			//if (Config.Authenticator != null)
+			//{
+			//  SaveAuthenticator(Config.Filename);
+			//}
 
 			// keep in the tray when closing Form 
 			if (UseTrayIcon == true && this.Visible == true && m_explictClose == false)
@@ -1491,10 +1524,10 @@ namespace WindowsAuthenticator
 		private void MainForm_Resize(object sender, EventArgs e)
 		{
 			// save current config
-			if (this.WindowState == FormWindowState.Minimized && Config != null && Config.Authenticator != null)
-			{
-				SaveAuthenticator(Config.Filename);
-			}
+			//if (this.WindowState == FormWindowState.Minimized && Config != null && Config.Authenticator != null)
+			//{
+			//  SaveAuthenticator(Config.Filename);
+			//}
 		}
 
 		/// <summary>
@@ -1755,8 +1788,8 @@ namespace WindowsAuthenticator
 				// install the new hook
 				HookHotkey(this.Config);
 
-				// save
-				SaveAuthenticator(Config.Filename);
+				// save changes
+				//SaveAuthenticator(Config.Filename);
 			}
 		}
 
@@ -1935,6 +1968,20 @@ namespace WindowsAuthenticator
 
 			// hide icon
 			//notifyIcon.Visible = false;
+		}
+
+		/// <summary>
+		/// Event called when any property in the config is changed
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="args"></param>
+		void OnConfigChanged(object source, ConfigChangedEventArgs args)
+		{
+			// resave on any changes
+			if (string.IsNullOrEmpty(Config.Filename) == false)
+			{
+				SaveAuthenticator(Config.Filename);
+			}
 		}
 
 		#endregion

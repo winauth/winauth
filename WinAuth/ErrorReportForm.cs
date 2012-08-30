@@ -1,0 +1,136 @@
+﻿/*
+ * Copyright (C) 2010 Colin Mackie.
+ * This software is distributed under the terms of the GNU General Public License.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Text;
+using System.Security;
+using System.Security.Cryptography;
+using System.Windows.Forms;
+using System.Xml;
+
+namespace WindowsAuthenticator
+{
+	/// <summary>
+	/// General error report form
+	/// </summary>
+	public partial class ErrorReportForm : Form
+	{
+		/// <summary>
+		/// Current Winauth config settings
+		/// </summary>
+		public WinAuthConfig Config { get; set; }
+
+		/// <summary>
+		/// Exception that caused the error report
+		/// </summary>
+		public Exception ErrorException { get; set; }
+
+		/// <summary>
+		/// Create the  Form
+		/// </summary>
+		public ErrorReportForm()
+		{
+			InitializeComponent();
+		}
+
+		/// <summary>
+		/// Click the OK button
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void btnOK_Click(object sender, EventArgs e)
+		{
+			this.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.Close();
+		}
+
+		/// <summary>
+		/// Load the error report form
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void ErrorReportForm_Load(object sender, EventArgs e)
+		{
+			// build data
+			try
+			{
+				dataText.Text = WinAuthHelper.PGPEncrypt(BuildDiagnostics(), WinAuthHelper.WINAUTH_PGP_PUBLICKEY);
+			}
+			catch (Exception ex)
+			{
+				dataText.Text = string.Format("{0}\n\n{1}", ex.Message, new System.Diagnostics.StackTrace(ex).ToString());
+			}
+		}
+
+		/// <summary>
+		/// Build a diagnostics string for the current Config and any exception that had been thrown
+		/// </summary>
+		/// <returns>diagnostics information</returns>
+		private string BuildDiagnostics()
+		{
+			StringBuilder diag = new StringBuilder();
+
+			// clone the authenticator so we can extract key in case machine/user encrypted
+			WinAuthConfig clone = this.Config.Clone() as WinAuthConfig;
+			clone.Authenticator.PasswordType = WindowsAuthenticator.Authenticator.PasswordTypes.None;
+
+			// add the config and authenticator
+			try
+			{
+				StringBuilder xml = new StringBuilder();
+				XmlWriterSettings settings = new XmlWriterSettings();
+				settings.Indent = true;
+				using (XmlWriter writer = XmlWriter.Create(xml, settings))
+				{
+					clone.WriteXmlString(writer);
+				}
+				diag.Append(xml.ToString()).Append(Environment.NewLine).Append(Environment.NewLine);
+			}
+			catch (Exception ex)
+			{
+				diag.Append(ex.Message).Append(Environment.NewLine).Append(Environment.NewLine);
+			}
+
+			// add the exception
+			if (ErrorException != null)
+			{
+				Exception ex = ErrorException;
+				while (ex != null)
+				{
+					diag.Append("Stack: ").Append(new System.Diagnostics.StackTrace(ex).ToString()).Append(Environment.NewLine); ;
+					ex = ex.InnerException;
+				}
+				if (ErrorException is InvalidEncryptionException)
+				{
+					diag.Append("Plain: " + ((InvalidEncryptionException)ErrorException).Plain).Append(Environment.NewLine);
+					diag.Append("Password: " + ((InvalidEncryptionException)ErrorException).Password).Append(Environment.NewLine);
+					diag.Append("Encrypted: " + ((InvalidEncryptionException)ErrorException).Encrypted).Append(Environment.NewLine);
+					diag.Append("Decrypted: " + ((InvalidEncryptionException)ErrorException).Decrypted).Append(Environment.NewLine);
+				}
+			}
+
+			return diag.ToString();
+		}
+
+	}
+}

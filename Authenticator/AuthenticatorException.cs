@@ -114,4 +114,23 @@ namespace WindowsAuthenticator
 	{
 		public InvalidRestoreCodeException(string msg) : base(msg) { }
 	}
+
+	/// <summary>
+	/// Invalid encryption detected
+	/// </summary>
+	public class InvalidEncryptionException : AuthenticatorException
+	{
+		public InvalidEncryptionException(string plain, string password, string encrypted, string decrypted) : base()
+		{
+			Plain = plain;
+			Password = password;
+			Encrypted = encrypted;
+			Decrypted = decrypted;
+		}
+
+		public string Plain { get; set; }
+		public string Password { get; set; }
+		public string Encrypted { get; set; }
+		public string Decrypted { get; set; }
+	}
 }

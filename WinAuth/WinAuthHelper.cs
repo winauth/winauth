@@ -24,6 +24,17 @@ using System.Xml;
 using System.Windows;
 using System.Windows.Forms;
 
+using Org.BouncyCastle.Math;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Engines;
+using Org.BouncyCastle.Crypto.Macs;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Crypto.Paddings;
+using Org.BouncyCastle.Crypto.Digests;
+using Org.BouncyCastle.Crypto.Generators;
+using Org.BouncyCastle.Bcpg;
+using Org.BouncyCastle.Bcpg.OpenPgp;
+
 using Microsoft.Win32;
 
 namespace WindowsAuthenticator
@@ -77,6 +88,30 @@ namespace WindowsAuthenticator
 		/// Number of saved authenticators
 		/// </summary>
 		private const int MAX_SAVED_FILES = 4;
+
+		/// <summary>
+		/// The WinAuth PGP public key
+		/// </summary>
+		public const string WINAUTH_PGP_PUBLICKEY =
+			@"-----BEGIN PGP PUBLIC KEY BLOCK-----
+			Version: BCPG C# v1.7.4114.6375
+			
+			mQEMBFA8sxQBCAC5EWjbGHDgyo4e9rcwse1mWbCOyeTwGZH2malJreF2v81KwBZa
+			eCAPX6cP6EWJPlMOgkJpBQOgh+AezkYEidrW4+NXCGv+Z03U1YBc7e/nYnABZrJx
+			XsqWVyM3d3iLSpKsMfk2OAIAIvoCvzcdx0ljm2IXGKRHGnc0nU7hSFXh5S/sJErN
+			Cgrll6lD2CPNIPuUiMSWptgO1RAjerk0rwLh1DSChicPMJZfxJWn7JD1VVQLmAon
+			EJ4x0MUIbff7ZmEna4O2rF9mrCjwfANkcz8N6WFp3PrfhxArXkvOBPYF9iEigFRS
+			QVt6XAF6sjGhSYxZRaRj0tE4PyajE/HfNk0DAAkBAbQbV2luQXV0aCA8d2luYXV0
+			aEBnbWFpbC5jb20+iQE0BBABAgASBQJQPRWEApsPAhYBAhUCAgsDABYJEJ3DDyNp
+			qwwqApsPAhYBAhUCAgsDqb8IAKJRlRu5ne2BuHrMlKW/BI6I/hpkGQ8BzmO7LatM
+			YYj//XKkbQ2BSvbDNI1al5HSo1iseokIZqD07iMwsp9GvLXSOVCROK9HYJ4dHsdP
+			l68KgNDWu8ZDhPRGerf4+pn1jRfXW4NdFT8W1TX3RArpdVSd5Q2tV2tZrANErBYa
+			UTDodsNKwikcgk89a2NI+Lh17lFGCFdAdZ07gRwu6cOm4SqP2TjWjDreXqlE9fHd
+			0dwmYeS1QlGYK3ETNS1KvVTNaKdht231jGwlxy09Rxtx1EBLqFNsc+BW5rjYEPN2
+			EAlelUJsVidUjZNB1ySm9uW8xurSEXWPZxWITl+LYmgwtn0=
+			=dvwu
+			-----END PGP PUBLIC KEY BLOCK-----";
+
 
 		/// <summary>
 		/// Load the authenticator and configuration settings
@@ -663,5 +698,187 @@ namespace WindowsAuthenticator
 				key.SetValue(WINAUTHREGKEY_TIMEDIFF, diff, RegistryValueKind.QWord);
 			}
 		}
+
+		/// <summary>
+		/// Build a PGP key pair
+		/// </summary>
+		/// <param name="bits">number of bits in key, e.g. 2048</param>
+		/// <param name="identifier">key identifier, e.g. "Your Name <your@emailaddress.com>" </param>
+		/// <param name="password">key password or null</param>
+		/// <param name="privateKey">returned ascii private key</param>
+		/// <param name="publicKey">returned ascii public key</param>
+		public static void PGPGenerateKey(int bits, string identifier, string password, out string privateKey, out string publicKey)
+		{
+			// generate a new RSA keypair 
+			RsaKeyPairGenerator gen = new RsaKeyPairGenerator();
+			gen.Init(new RsaKeyGenerationParameters(BigInteger.ValueOf(0x101), new Org.BouncyCastle.Security.SecureRandom(), bits, 80));
+			AsymmetricCipherKeyPair pair = gen.GenerateKeyPair();
+
+			// create PGP subpacket
+			PgpSignatureSubpacketGenerator hashedGen = new PgpSignatureSubpacketGenerator();
+			hashedGen.SetKeyFlags(true, PgpKeyFlags.CanCertify | PgpKeyFlags.CanSign | PgpKeyFlags.CanEncryptCommunications | PgpKeyFlags.CanEncryptStorage);
+			hashedGen.SetPreferredCompressionAlgorithms(false, new int[] { (int)CompressionAlgorithmTag.Zip });
+			hashedGen.SetPreferredHashAlgorithms(false, new int[] { (int)HashAlgorithmTag.Sha1 });
+			hashedGen.SetPreferredSymmetricAlgorithms(false, new int[] { (int)SymmetricKeyAlgorithmTag.Cast5 });
+			PgpSignatureSubpacketVector sv = hashedGen.Generate();
+			PgpSignatureSubpacketGenerator unhashedGen = new PgpSignatureSubpacketGenerator();
+
+			// create the PGP key
+			PgpSecretKey secretKey = new PgpSecretKey(
+				PgpSignature.DefaultCertification,
+				PublicKeyAlgorithmTag.RsaGeneral,
+				pair.Public,
+				pair.Private,
+				DateTime.Now,
+				identifier,
+				SymmetricKeyAlgorithmTag.Cast5,
+				(password != null ? password.ToCharArray() : null),
+				hashedGen.Generate(),
+				unhashedGen.Generate(),
+				new Org.BouncyCastle.Security.SecureRandom());
+
+			// extract the keys
+			using (MemoryStream ms = new MemoryStream())
+			{
+				using (ArmoredOutputStream ars = new ArmoredOutputStream(ms))
+				{
+					secretKey.Encode(ars);
+				}
+				privateKey = Encoding.ASCII.GetString(ms.ToArray());
+			}
+			using (MemoryStream ms = new MemoryStream())
+			{
+				using (ArmoredOutputStream ars = new ArmoredOutputStream(ms))
+				{
+					secretKey.PublicKey.Encode(ars);
+				}
+				publicKey = Encoding.ASCII.GetString(ms.ToArray());
+			}
+		}
+
+		/// <summary>
+		/// Encrypt string using a PGP public key
+		/// </summary>
+		/// <param name="plain">plain text to encrypt</param>
+		/// <param name="armoredPublicKey">public key in ASCII "-----BEGIN PGP PUBLIC KEY BLOCK----- .. -----END PGP PUBLIC KEY BLOCK-----" format</param>
+		/// <returns>PGP message string</returns>
+		public static string PGPEncrypt(string plain, string armoredPublicKey)
+		{
+			// encode data
+			byte[] data = Encoding.UTF8.GetBytes(plain);
+
+			// create the WinAuth public key
+			PgpPublicKey publicKey = null;
+			using (MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(armoredPublicKey)))
+			{
+				using (Stream dis = PgpUtilities.GetDecoderStream(ms))
+				{
+					PgpPublicKeyRingBundle bundle = new PgpPublicKeyRingBundle(dis);
+					foreach (PgpPublicKeyRing keyring in bundle.GetKeyRings())
+					{
+						foreach (PgpPublicKey key in keyring.GetPublicKeys())
+						{
+							if (key.IsEncryptionKey == true && key.IsRevoked() == false)
+							{
+								publicKey = key;
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			// encrypt the data using PGP
+			using (MemoryStream encryptedStream = new MemoryStream())
+			{
+				using (ArmoredOutputStream armored = new ArmoredOutputStream(encryptedStream))
+				{
+					PgpEncryptedDataGenerator pedg = new PgpEncryptedDataGenerator(Org.BouncyCastle.Bcpg.SymmetricKeyAlgorithmTag.Cast5, true, new Org.BouncyCastle.Security.SecureRandom());
+					pedg.AddMethod(publicKey);
+					using (Stream pedgStream = pedg.Open(armored, new byte[4096]))
+					{
+						PgpCompressedDataGenerator pcdg = new PgpCompressedDataGenerator(Org.BouncyCastle.Bcpg.CompressionAlgorithmTag.Zip);
+						using (Stream pcdgStream = pcdg.Open(pedgStream))
+						{
+							PgpLiteralDataGenerator pldg = new PgpLiteralDataGenerator();
+							using (Stream encrypter = pldg.Open(pcdgStream, PgpLiteralData.Binary, "", (long)data.Length, DateTime.Now))
+							{
+								encrypter.Write(data, 0, data.Length);
+							}
+						}
+					}
+				}
+
+				return Encoding.ASCII.GetString(encryptedStream.ToArray());
+			}
+		}
+
+		/// <summary>
+		/// Decrypt a PGP message (i.e. "-----BEGIN PGP MESSAGE----- ... -----END PGP MESSAGE-----")
+		/// using the supplied private key.
+		/// </summary>
+		/// <param name="armoredCipher">PGP message to decrypt</param>
+		/// <param name="armoredPrivateKey">PGP private key</param>
+		/// <param name="keyPassword">PGP private key password or null if none</param>
+		/// <returns>decrypted plain text</returns>
+		public static string PGPDecrypt(string armoredCipher, string armoredPrivateKey, string keyPassword)
+		{
+			// decode the private key
+			PgpPrivateKey privateKey = null;
+			using (MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(armoredPrivateKey)))
+			{
+				using (Stream dis = PgpUtilities.GetDecoderStream(ms))
+				{
+					PgpSecretKeyRingBundle bundle = new PgpSecretKeyRingBundle(dis);
+					foreach (PgpSecretKeyRing keyring in bundle.GetKeyRings())
+					{
+						foreach (PgpSecretKey key in keyring.GetSecretKeys())
+						{
+							privateKey = key.ExtractPrivateKey(keyPassword != null ? keyPassword.ToCharArray() : null);
+							break;
+						}
+					}
+				}
+			}
+
+			// decrypt armored block using our private key
+			byte[] cipher = Encoding.ASCII.GetBytes(armoredCipher);
+			using (MemoryStream decryptedStream = new MemoryStream())
+			{
+				using (MemoryStream inputStream = new MemoryStream(cipher))
+				{
+					using (ArmoredInputStream ais = new ArmoredInputStream(inputStream))
+					{
+						PgpObject message = new PgpObjectFactory(ais).NextPgpObject();
+						if (message is PgpEncryptedDataList)
+						{
+							foreach (PgpPublicKeyEncryptedData pked in ((PgpEncryptedDataList)message).GetEncryptedDataObjects())
+							{
+								message = new PgpObjectFactory(pked.GetDataStream(privateKey)).NextPgpObject();
+							}
+						}
+						if (message is PgpCompressedData)
+						{
+							message = new PgpObjectFactory(((PgpCompressedData)message).GetDataStream()).NextPgpObject();
+						}
+						if (message is PgpLiteralData)
+						{
+							byte[] buffer = new byte[4096];
+							using (Stream stream = ((PgpLiteralData)message).GetInputStream())
+							{
+								int read;
+								while ((read = stream.Read(buffer, 0, 4096)) > 0)
+								{
+									decryptedStream.Write(buffer, 0, read);
+								}
+							}
+						}
+
+						return Encoding.UTF8.GetString(decryptedStream.ToArray());
+					}
+				}
+			}
+		}
+
 	}
 }

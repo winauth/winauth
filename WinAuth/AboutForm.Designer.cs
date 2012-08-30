@@ -33,26 +33,27 @@
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.richTextBox1 = new System.Windows.Forms.RichTextBox();
 			this.btnOK = new System.Windows.Forms.Button();
+			this.btnReport = new System.Windows.Forms.Button();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// aboutLabel
 			// 
-			this.aboutLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-									| System.Windows.Forms.AnchorStyles.Right)));
+			this.aboutLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.aboutLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.aboutLabel.Location = new System.Drawing.Point(6, 16);
 			this.aboutLabel.Name = "aboutLabel";
 			this.aboutLabel.Size = new System.Drawing.Size(381, 85);
 			this.aboutLabel.TabIndex = 1;
 			this.aboutLabel.Text = "WinAuth {0}\r\n\r\nCopyright (C) {1}. Colin Mackie. All rights reserved.\r\n\r\nLicense:\r" +
-					"\n";
+    "\n";
 			// 
 			// groupBox1
 			// 
-			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-									| System.Windows.Forms.AnchorStyles.Left)
-									| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox1.Controls.Add(this.richTextBox1);
 			this.groupBox1.Controls.Add(this.aboutLabel);
 			this.groupBox1.Location = new System.Drawing.Point(12, 12);
@@ -63,9 +64,9 @@
 			// 
 			// richTextBox1
 			// 
-			this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-									| System.Windows.Forms.AnchorStyles.Left)
-									| System.Windows.Forms.AnchorStyles.Right)));
+			this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.richTextBox1.Location = new System.Drawing.Point(6, 104);
 			this.richTextBox1.Name = "richTextBox1";
 			this.richTextBox1.ReadOnly = true;
@@ -85,6 +86,17 @@
 			this.btnOK.UseVisualStyleBackColor = true;
 			this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
 			// 
+			// btnReport
+			// 
+			this.btnReport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.btnReport.Location = new System.Drawing.Point(12, 373);
+			this.btnReport.Name = "btnReport";
+			this.btnReport.Size = new System.Drawing.Size(112, 23);
+			this.btnReport.TabIndex = 3;
+			this.btnReport.Text = "Error Report...";
+			this.btnReport.UseVisualStyleBackColor = true;
+			this.btnReport.Click += new System.EventHandler(this.btnReport_Click);
+			// 
 			// AboutForm
 			// 
 			this.AcceptButton = this.btnOK;
@@ -92,6 +104,7 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.btnOK;
 			this.ClientSize = new System.Drawing.Size(417, 408);
+			this.Controls.Add(this.btnReport);
 			this.Controls.Add(this.btnOK);
 			this.Controls.Add(this.groupBox1);
 			this.Name = "AboutForm";
@@ -109,5 +122,6 @@
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.Button btnOK;
 		private System.Windows.Forms.RichTextBox richTextBox1;
+		private System.Windows.Forms.Button btnReport;
 	}
 }
