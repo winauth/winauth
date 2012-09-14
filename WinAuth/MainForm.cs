@@ -904,10 +904,19 @@ namespace WindowsAuthenticator
 		/// </summary>
 		public void Sync()
 		{
+			// Issue#63: ignore if no authenticator
+			if (Authenticator == null)
+			{
+				return;
+			}
+
 			Authenticator.Sync();
 
 			// refresh this machine time diff based on this new diff
 			WinAuthHelper.SetMachineTimeDiff(Authenticator.ServerTimeDiff);
+
+			// Issue#62: save changes
+			SaveAuthenticator(Config.Filename);
 			
 			ShowCode();
 			MessageBox.Show(this, "Time synced successfully.", "Sync Time", MessageBoxButtons.OK);
@@ -918,7 +927,8 @@ namespace WindowsAuthenticator
 		/// </summary>
 		private void CopyCodeToClipboard()
 		{
-			if (m_ignoreClipboard == true)
+			// Issue#63: ignore if no authenticator
+			if (m_ignoreClipboard == true || Authenticator == null)
 			{
 				return;
 			}
@@ -1542,32 +1552,39 @@ namespace WindowsAuthenticator
 			openMenuItem.Visible = (UseTrayIcon == true && this.Visible == false);
 			openMenuItemSeparator.Visible = (UseTrayIcon == true && this.Visible == false);
 
-			syncServerTimeMenuItem.Enabled = (Authenticator != null);
-			copyOnCodeMenuItem.Enabled = (Authenticator != null);
 			allowCopyMenuItem.Enabled = (Authenticator != null);
-			autoRefreshMenuItem.Enabled = (Authenticator != null);
-
-			saveAsMenuItem.Enabled = (Authenticator != null);
-
-			autoRefreshMenuItem.Checked = (autoRefreshMenuItem.Enabled == true ? AutoRefresh : false);
-			copyOnCodeMenuItem.Checked = (copyOnCodeMenuItem.Enabled == true ? CopyOnCode : false);
 			allowCopyMenuItem.Checked = (allowCopyMenuItem.Enabled == true ? AllowCopy : false);
+
 			alwaysOnTopMenuItem.Checked = (alwaysOnTopMenuItem.Enabled == true ? AlwaysOnTop : false);
-			hideSerialMenuItem.Checked = (hideSerialMenuItem.Enabled == true ? HideSerial : false);
-			useTrayIconMenuItem.Checked = (useTrayIconMenuItem.Enabled == true ? UseTrayIcon : false);
-			startWithWindowsMenuItem.Checked = (startWithWindowsMenuItem.Enabled == true ? StartWithWindows : false);
+
+			autoLoginMenuItem.Enabled = (Authenticator != null);
+
+			autoRefreshMenuItem.Enabled = (Authenticator != null);
+			autoRefreshMenuItem.Checked = (autoRefreshMenuItem.Enabled == true ? AutoRefresh : false);
+
+			copyOnCodeMenuItem.Enabled = (Authenticator != null);
+			copyOnCodeMenuItem.Checked = (copyOnCodeMenuItem.Enabled == true ? CopyOnCode : false);
+
+			createBackupMenuItem.Enabled = (Authenticator != null);
 
 			defaultSkinMenuItem.Enabled = !string.IsNullOrEmpty(Config.CurrentSkin);
 			defaultSkinMenuItem.Checked = Config.RememberSkin && (Config.CurrentSkin == WinAuthHelper.GetSavedSkin());
 
-			// check we have the separator
-			if (contextMenuStrip.Items.ContainsKey("lastLoadedMenuItemSep") == false)
-			{
-				int exitIndex = contextMenuStrip.Items.IndexOfKey("exitMenuItem");
-				ToolStripSeparator sep = new ToolStripSeparator();
-				sep.Name = "lastLoadedMenuItemSep";
-				contextMenuStrip.Items.Insert(exitIndex, sep);
-			}
+			exportKeyMenuItem.Enabled = (Authenticator != null);
+
+			hideSerialMenuItem.Enabled = (Authenticator != null);
+			hideSerialMenuItem.Checked = (hideSerialMenuItem.Enabled == true ? HideSerial : false);
+
+			saveAsMenuItem.Enabled = (Authenticator != null);
+
+			showRestoreCodeMenuItem.Enabled = (Authenticator != null);
+
+			startWithWindowsMenuItem.Checked = (startWithWindowsMenuItem.Enabled == true ? StartWithWindows : false);
+
+			syncServerTimeMenuItem.Enabled = (Authenticator != null);
+
+			useTrayIconMenuItem.Checked = (useTrayIconMenuItem.Enabled == true ? UseTrayIcon : false);
+
 			// remove old last loaded items
 			int nextindex;
 			int index = 1;
@@ -1578,7 +1595,6 @@ namespace WindowsAuthenticator
 			}
 			// add the last loaded after the separator
 			index = 1;
-			nextindex = contextMenuStrip.Items.IndexOfKey("lastLoadedMenuItemSep");
 			do
 			{
 				string lastloaded = WinAuthHelper.GetLastFile(index);
@@ -1586,6 +1602,16 @@ namespace WindowsAuthenticator
 				{
 					break;
 				}
+
+				// check we have the separator
+				if (contextMenuStrip.Items.ContainsKey("lastLoadedMenuItemSep") == false)
+				{
+					int exitIndex = contextMenuStrip.Items.IndexOfKey("exitMenuItem");
+					ToolStripSeparator sep = new ToolStripSeparator();
+					sep.Name = "lastLoadedMenuItemSep";
+					contextMenuStrip.Items.Insert(exitIndex, sep);
+				}
+				nextindex = contextMenuStrip.Items.IndexOfKey("lastLoadedMenuItemSep");
 
 				ToolStripMenuItem item = new ToolStripMenuItem();
 				item.Name = "lastLoadedMenuItem" + index;
