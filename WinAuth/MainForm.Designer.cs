@@ -53,7 +53,6 @@ namespace WindowsAuthenticator
 			this.registerMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
 			this.loadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.saveMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.saveAsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
 			this.syncServerTimeMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -104,7 +103,6 @@ namespace WindowsAuthenticator
             this.registerMenuItem,
             this.toolStripSeparator4,
             this.loadMenuItem,
-            this.saveMenuItem,
             this.saveAsMenuItem,
             this.toolStripSeparator2,
             this.syncServerTimeMenuItem,
@@ -172,15 +170,6 @@ namespace WindowsAuthenticator
 			this.loadMenuItem.Size = new System.Drawing.Size(220, 22);
 			this.loadMenuItem.Text = "Load...";
 			this.loadMenuItem.Click += new System.EventHandler(this.loadMenuItem_Click);
-			// 
-			// saveMenuItem
-			// 
-			this.saveMenuItem.Name = "saveMenuItem";
-			this.saveMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-			this.saveMenuItem.Size = new System.Drawing.Size(220, 22);
-			this.saveMenuItem.Text = "Save Authenticator";
-			this.saveMenuItem.Visible = false;
-			this.saveMenuItem.Click += new System.EventHandler(this.saveMenuItem_Click);
 			// 
 			// saveAsMenuItem
 			// 
@@ -493,7 +482,6 @@ namespace WindowsAuthenticator
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
 			this.Load += new System.EventHandler(this.MainForm_Load);
 			this.Shown += new System.EventHandler(this.MainForm_Shown);
-			this.Resize += new System.EventHandler(this.MainForm_Resize);
 			this.contextMenuStrip.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
@@ -519,7 +507,6 @@ namespace WindowsAuthenticator
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 		private System.Windows.Forms.ToolStripMenuItem loadMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem saveMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem saveAsMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem hideSerialMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem aboutMenuItem;

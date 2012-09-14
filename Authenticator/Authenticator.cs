@@ -1069,7 +1069,7 @@ namespace WindowsAuthenticator
 
 				// test the encryption
 				string decrypted = Decrypt(encrypted, Password, true);
-				if (string.Compare(data, decrypted) == 0)
+				if (string.Compare(data, decrypted) != 0)
 				{
 					throw new InvalidEncryptionException(data, Password, encrypted, decrypted);
 				}

@@ -18,7 +18,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.Windows.Forms;
+using System.IO;
+using System.Reflection;
+using System.Text;
 
 namespace WindowsAuthenticator
 {
@@ -48,9 +53,34 @@ namespace WindowsAuthenticator
 		[STAThread]
 		static void Main()
 		{
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new MainForm());
+			try
+			{
+				// Issue #53: set the default culture
+				CultureInfo ci = new CultureInfo("en-US");
+				System.Threading.Thread.CurrentThread.CurrentCulture = ci;
+				System.Threading.Thread.CurrentThread.CurrentUICulture = ci;
+				
+				Application.EnableVisualStyles();
+				Application.SetCompatibleTextRenderingDefault(false);
+				Application.Run(new MainForm());
+			}
+			catch (Exception ex)
+			{
+				// Issue #53: add catch for unknown application exceptions to try and get closer to bug
+				StringBuilder capture = new StringBuilder();
+				//
+				Exception e = ex;
+				while (e != null)
+				{
+					capture.Append(new StackTrace(e).ToString()).Append(Environment.NewLine);
+					e = e.InnerException;
+				}
+				//
+				string dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+				File.WriteAllText(Path.Combine(dir, "winauth.log"), capture.ToString());
+
+				throw;
+			}
 		}
 	}
 }

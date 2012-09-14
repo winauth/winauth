@@ -49,7 +49,11 @@ namespace WindowsAuthenticator
 		{
 			// get the version of the application
 			Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-			this.aboutLabel.Text = string.Format(this.aboutLabel.Text, version.ToString(3), DateTime.Today.Year);
+			string debug = string.Empty;
+#if DEBUG
+			debug = " (DEBUG)";
+#endif
+			this.aboutLabel.Text = string.Format(this.aboutLabel.Text, version.ToString(3) + debug, DateTime.Today.Year);
 		}
 
 		/// <summary>

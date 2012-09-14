@@ -95,28 +95,31 @@ namespace WindowsAuthenticator
 		{
 			StringBuilder diag = new StringBuilder();
 
-			// clone the authenticator so we can extract key in case machine/user encrypted
-			WinAuthConfig clone = this.Config.Clone() as WinAuthConfig;
-			if (clone.Authenticator != null)
+			if (this.Config != null)
 			{
-				clone.Authenticator.PasswordType = WindowsAuthenticator.Authenticator.PasswordTypes.None;
-			}
-
-			// add the config and authenticator
-			try
-			{
-				StringBuilder xml = new StringBuilder();
-				XmlWriterSettings settings = new XmlWriterSettings();
-				settings.Indent = true;
-				using (XmlWriter writer = XmlWriter.Create(xml, settings))
+				// clone the authenticator so we can extract key in case machine/user encrypted
+				WinAuthConfig clone = this.Config.Clone() as WinAuthConfig;
+				if (clone.Authenticator != null)
 				{
-					clone.WriteXmlString(writer);
+					clone.Authenticator.PasswordType = WindowsAuthenticator.Authenticator.PasswordTypes.None;
 				}
-				diag.Append(xml.ToString()).Append(Environment.NewLine).Append(Environment.NewLine);
-			}
-			catch (Exception ex)
-			{
-				diag.Append(ex.Message).Append(Environment.NewLine).Append(Environment.NewLine);
+
+				// add the config and authenticator
+				try
+				{
+					StringBuilder xml = new StringBuilder();
+					XmlWriterSettings settings = new XmlWriterSettings();
+					settings.Indent = true;
+					using (XmlWriter writer = XmlWriter.Create(xml, settings))
+					{
+						clone.WriteXmlString(writer);
+					}
+					diag.Append(xml.ToString()).Append(Environment.NewLine).Append(Environment.NewLine);
+				}
+				catch (Exception ex)
+				{
+					diag.Append(ex.Message).Append(Environment.NewLine).Append(Environment.NewLine);
+				}
 			}
 
 			if (string.IsNullOrEmpty(ConfigFileContents) == false)

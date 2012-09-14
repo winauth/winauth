@@ -1472,12 +1472,6 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			// save current config
-			//if (Config.Authenticator != null)
-			//{
-			//  SaveAuthenticator(Config.Filename);
-			//}
-
 			// keep in the tray when closing Form 
 			if (UseTrayIcon == true && this.Visible == true && m_explictClose == false)
 			{
@@ -1514,20 +1508,6 @@ namespace WindowsAuthenticator
 					Hide();
 				}
 			}
-		}
-
-		/// <summary>
-		/// Form resize event to save authenticator when we mininize
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void MainForm_Resize(object sender, EventArgs e)
-		{
-			// save current config
-			//if (this.WindowState == FormWindowState.Minimized && Config != null && Config.Authenticator != null)
-			//{
-			//  SaveAuthenticator(Config.Filename);
-			//}
 		}
 
 		/// <summary>
@@ -1568,7 +1548,6 @@ namespace WindowsAuthenticator
 			autoRefreshMenuItem.Enabled = (Authenticator != null);
 
 			saveAsMenuItem.Enabled = (Authenticator != null);
-			saveMenuItem.Enabled = (Authenticator != null);
 
 			autoRefreshMenuItem.Checked = (autoRefreshMenuItem.Enabled == true ? AutoRefresh : false);
 			copyOnCodeMenuItem.Checked = (copyOnCodeMenuItem.Enabled == true ? CopyOnCode : false);
@@ -1667,19 +1646,6 @@ namespace WindowsAuthenticator
 		{
 			// load the data
 			LoadAuthenticator(null);
-		}
-
-		/// <summary>
-		/// Click menu item to save authenticator
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void saveMenuItem_Click(object sender, EventArgs e)
-		{
-			//if (Authenticator != null)
-			//{
-			//  SaveAuthenticator(Config.Filename);
-			//}
 		}
 
 		/// <summary>
@@ -1787,9 +1753,6 @@ namespace WindowsAuthenticator
 
 				// install the new hook
 				HookHotkey(this.Config);
-
-				// save changes
-				//SaveAuthenticator(Config.Filename);
 			}
 		}
 

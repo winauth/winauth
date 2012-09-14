@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -600,7 +601,7 @@ namespace WindowsAuthenticator
 		{
 			using (RegistryKey key = Registry.CurrentUser.OpenSubKey(WINAUTHREGKEY, false))
 			{
-				return (key == null ? null : key.GetValue(string.Format(WINAUTHREGKEY_LASTFILE, index), null) as string);
+				return (key == null ? null : key.GetValue(string.Format(CultureInfo.InvariantCulture, WINAUTHREGKEY_LASTFILE, index), null) as string);
 			}
 		}
 
@@ -631,11 +632,11 @@ namespace WindowsAuthenticator
 					string lastfile = lastfiles[index-1];
 					if (string.IsNullOrEmpty(lastfile) == true)
 					{
-						key.DeleteValue(string.Format(WINAUTHREGKEY_LASTFILE, index), false);
+						key.DeleteValue(string.Format(CultureInfo.InvariantCulture, WINAUTHREGKEY_LASTFILE, index), false);
 					}
 					else
 					{
-						key.SetValue(string.Format(WINAUTHREGKEY_LASTFILE, index), lastfile);
+						key.SetValue(string.Format(CultureInfo.InvariantCulture, WINAUTHREGKEY_LASTFILE, index), lastfile);
 					}
 				}
 			}
