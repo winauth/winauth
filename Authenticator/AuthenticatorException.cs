@@ -133,4 +133,22 @@ namespace WindowsAuthenticator
 		public string Encrypted { get; set; }
 		public string Decrypted { get; set; }
 	}
+
+	/// <summary>
+	/// Error on setting secret data (invalid decoding) caused by corruption or wrong password
+	/// </summary>
+	public class InvalidSecretDataException : AuthenticatorException
+	{
+		public InvalidSecretDataException(Exception inner, string password, string encType, List<string> decrypted)
+			: base("Error decoding Secret Data", inner)
+		{
+			Password = password;
+			EncType = encType;
+			Decrypted = decrypted;
+		}
+
+		public string Password { get; set; }
+		public string EncType { get; set; }
+		public List<string> Decrypted { get; set; }
+	}
 }

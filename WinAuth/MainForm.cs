@@ -564,11 +564,11 @@ namespace WindowsAuthenticator
 				notifyIcon.Text = this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
 				return true;
 			}
-			catch (InvalidEncryptionException iee)
+			catch (AuthenticatorException ae)
 			{
 				// detect invalid encryption data
 				DialogResult r = MessageBox.Show(this,
-				  "An unexpected error occurred whilst saving your authenticator: " + iee.Message + ".\n\nPlease try again or restart WinAuth.\n\nWould you like to send an error report to help try and fix this problem?",
+				  "An unexpected error occurred whilst saving your authenticator: " + ae.Message + ".\n\nPlease try again or restart WinAuth.\n\nWould you like to send an error report to help try and fix this problem?",
 				  WinAuth.APPLICATION_NAME,
 				  MessageBoxButtons.YesNo,
 				  MessageBoxIcon.Error);
@@ -576,7 +576,7 @@ namespace WindowsAuthenticator
 				{
 					ErrorReportForm errorreport = new ErrorReportForm();
 					errorreport.Config = this.Config;
-					errorreport.ErrorException = iee;
+					errorreport.ErrorException = ae;
 					errorreport.ShowDialog(this);
 				}
 

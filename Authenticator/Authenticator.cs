@@ -875,7 +875,11 @@ namespace WindowsAuthenticator
 				node = rootnode.SelectSingleNode("secretdata");
 				if (node != null)
 				{
+					// save off the processed decryptions so we can send bug report
+					List<string> datas = new List<string>();
 					string data = node.InnerText;
+					datas.Add(data);
+
 					XmlAttribute attr = node.Attributes["encrypted"];
 					if (attr != null && attr.InnerText.Length != 0)
 					{
@@ -887,6 +891,7 @@ namespace WindowsAuthenticator
 							byte[] cipher = Authenticator.StringToByteArray(data);
 							byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.CurrentUser);
 							data = Authenticator.ByteArrayToString(plain);
+							datas.Add(data);
 						}
 						else if (encryptedType == "m")
 						{
@@ -895,6 +900,7 @@ namespace WindowsAuthenticator
 							byte[] cipher = Authenticator.StringToByteArray(data);
 							byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
 							data = Authenticator.ByteArrayToString(plain);
+							datas.Add(data);
 						}
 						else if (encryptedType == "y")
 						{
@@ -906,9 +912,18 @@ namespace WindowsAuthenticator
 							PasswordType = PasswordTypes.Explicit;
 							Password = password;
 							data = Decrypt(data, password, false);
+							datas.Add(data);
 						}
 					}
-					SecretData = data;
+					try
+					{
+						SecretData = data;
+					}
+					catch (Exception ex)
+					{
+						// we get a decode error if the data decrypted but isn't valid
+						throw new InvalidSecretDataException(ex, password, (attr != null ? attr.InnerText : null), datas);
+					}
 
 					long offset = 0;
 					node = rootnode.SelectSingleNode("servertimediff");
@@ -933,9 +948,12 @@ namespace WindowsAuthenticator
 			node = rootnode.SelectSingleNode("secretdata");
 			if (node != null)
 			{
-				PasswordTypes passwordType = PasswordTypes.None;
+				// save off the processed decryptions so we can send bug report
 				string data = node.InnerText;
 				XmlAttribute attr = node.Attributes["encrypted"];
+				List<string> datas = new List<string>();
+				datas.Add(data);
+				PasswordTypes passwordType = PasswordTypes.None;
 				if (attr != null && attr.InnerText.Length != 0)
 				{
 					char[] encTypes = attr.InnerText.ToCharArray();
@@ -954,6 +972,7 @@ namespace WindowsAuthenticator
 										byte[] cipher = Authenticator.StringToByteArray(data);
 										byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.CurrentUser);
 										data = Authenticator.ByteArrayToString(plain);
+										datas.Add(data);
 									}
 									catch (System.Security.Cryptography.CryptographicException)
 									{
@@ -970,6 +989,7 @@ namespace WindowsAuthenticator
 										byte[] cipher = Authenticator.StringToByteArray(data);
 										byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
 										data = Authenticator.ByteArrayToString(plain);
+										datas.Add(data);
 									}
 									catch (System.Security.Cryptography.CryptographicException)
 									{
@@ -987,6 +1007,7 @@ namespace WindowsAuthenticator
 									passwordType |= PasswordTypes.Explicit;
 									Password = password;
 									data = Decrypt(data, password, true);
+									datas.Add(data);
 									break;
 								}
 							default:
@@ -995,7 +1016,14 @@ namespace WindowsAuthenticator
 					}
 					PasswordType = passwordType;
 				}
-				SecretData = data;
+				try
+				{
+					SecretData = data;
+				}
+				catch (Exception ex)
+				{
+					throw new InvalidSecretDataException(ex, password, (attr != null ? attr.InnerText : null), datas);
+				}
 
 				long offset = 0;
 				node = rootnode.SelectSingleNode("servertimediff");

@@ -41,6 +41,11 @@ namespace WindowsAuthenticator
 		public WinAuthConfig Config { get; set; }
 
 		/// <summary>
+		/// Winauth config file
+		/// </summary>
+		public string ConfigFileContents { get; set; }
+
+		/// <summary>
 		/// Exception that caused the error report
 		/// </summary>
 		public Exception ErrorException { get; set; }
@@ -92,7 +97,10 @@ namespace WindowsAuthenticator
 
 			// clone the authenticator so we can extract key in case machine/user encrypted
 			WinAuthConfig clone = this.Config.Clone() as WinAuthConfig;
-			clone.Authenticator.PasswordType = WindowsAuthenticator.Authenticator.PasswordTypes.None;
+			if (clone.Authenticator != null)
+			{
+				clone.Authenticator.PasswordType = WindowsAuthenticator.Authenticator.PasswordTypes.None;
+			}
 
 			// add the config and authenticator
 			try
@@ -111,13 +119,18 @@ namespace WindowsAuthenticator
 				diag.Append(ex.Message).Append(Environment.NewLine).Append(Environment.NewLine);
 			}
 
+			if (string.IsNullOrEmpty(ConfigFileContents) == false)
+			{
+				diag.Append(ConfigFileContents).Append(Environment.NewLine).Append(Environment.NewLine);
+			}
+
 			// add the exception
 			if (ErrorException != null)
 			{
 				Exception ex = ErrorException;
 				while (ex != null)
 				{
-					diag.Append("Stack: ").Append(new System.Diagnostics.StackTrace(ex).ToString()).Append(Environment.NewLine); ;
+					diag.Append("Stack: ").Append(ex.Message).Append(Environment.NewLine).Append(new System.Diagnostics.StackTrace(ex).ToString()).Append(Environment.NewLine);
 					ex = ex.InnerException;
 				}
 				if (ErrorException is InvalidEncryptionException)
@@ -126,6 +139,15 @@ namespace WindowsAuthenticator
 					diag.Append("Password: " + ((InvalidEncryptionException)ErrorException).Password).Append(Environment.NewLine);
 					diag.Append("Encrypted: " + ((InvalidEncryptionException)ErrorException).Encrypted).Append(Environment.NewLine);
 					diag.Append("Decrypted: " + ((InvalidEncryptionException)ErrorException).Decrypted).Append(Environment.NewLine);
+				}
+				else if (ErrorException is InvalidSecretDataException)
+				{
+					diag.Append("EncType: " + ((InvalidSecretDataException)ErrorException).EncType).Append(Environment.NewLine);
+					diag.Append("Password: " + ((InvalidSecretDataException)ErrorException).Password).Append(Environment.NewLine);
+					foreach (string data in ((InvalidSecretDataException)ErrorException).Decrypted)
+					{
+						diag.Append("Data: " + data).Append(Environment.NewLine);
+					}
 				}
 			}
 

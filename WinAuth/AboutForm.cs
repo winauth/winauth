@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
@@ -68,8 +69,21 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		private void btnReport_Click(object sender, EventArgs e)
 		{
+			// display the error form, loading it with current authenticator data
 			ErrorReportForm errorreport = new ErrorReportForm();
 			errorreport.Config = ((MainForm)this.Owner).Config;
+			if (errorreport.Config != null && string.IsNullOrEmpty(errorreport.Config.Filename) == false)
+			{
+				errorreport.ConfigFileContents = File.ReadAllText(errorreport.Config.Filename);
+			}
+			else
+			{
+				string configFile = WinAuthHelper.GetLastFile(1);
+				if (string.IsNullOrEmpty(configFile) == false && File.Exists(configFile) == true)
+				{
+					errorreport.ConfigFileContents = File.ReadAllText(configFile);
+				}
+			}
 			errorreport.ShowDialog(this);
 		}
 

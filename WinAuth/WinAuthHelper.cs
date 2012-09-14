@@ -329,6 +329,23 @@ namespace WindowsAuthenticator
 							{
 								MessageBox.Show(form, "The authenticator data in " + configFile + " is not valid", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
 							}
+							catch (AuthenticatorException ae)
+							{
+								// detect invalid encryption data
+								DialogResult r = MessageBox.Show(form,
+									"An unexpected error occurred whilst load your authenticator: " + ae.Message + ".\n\nPlease try again or restart WinAuth.\n\nWould you like to send an error report to help try and fix this problem?",
+									WinAuth.APPLICATION_NAME,
+									MessageBoxButtons.YesNo,
+									MessageBoxIcon.Error);
+								if (r == System.Windows.Forms.DialogResult.Yes)
+								{
+									ErrorReportForm errorreport = new ErrorReportForm();
+									errorreport.Config = config;
+									errorreport.ConfigFileContents = File.ReadAllText(configFile);
+									errorreport.ErrorException = ae;
+									errorreport.ShowDialog(form);
+								}
+							}
 							catch (Exception ex)
 							{
 								MessageBox.Show(form, "Unable to load authenticator from " + configFile + ": " + ex.Message, "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
