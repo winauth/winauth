@@ -77,6 +77,9 @@
     <Compile Include="BetaForm.designer.cs">
       <DependentUpon>BetaForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ColouredProgressBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ErrorReportForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -227,6 +230,14 @@
   <ItemGroup>
     <Content Include="auth.bmp" />
     <Content Include="auth.ico" />
+    <None Include="skins\winauth.skin.bma-1.1.xml" />
+    <None Include="skins\winauth.skin.gw2.xml" />
+    <None Include="images\GW2Background.png" />
+    <None Include="images\BattleNetBackground.png" />
+    <None Include="images\spinner.gif" />
+    <None Include="Resources\BATTLENET.png" />
+    <None Include="images\guildwars2.png" />
+    <None Include="images\battlenet.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Authenticator\Authenticator.csproj">

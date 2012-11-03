@@ -42,7 +42,7 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Get a new Authenticator based of the field entries
 		/// </summary>
-		public Authenticator Authenticator
+		public BattleNetAuthenticator Authenticator
 		{
 			get
 			{
@@ -53,12 +53,12 @@ namespace WindowsAuthenticator
 				}
 
 				// create the data and authenticator
-				Authenticator auth = new Authenticator();
+				BattleNetAuthenticator auth = new BattleNetAuthenticator();
 				auth.Serial = serial1Field.Text + "-" + serial2Field.Text + "-" + serial3Field.Text + "-" + serial4Field.Text;
 				//
 				// this is an ascii encoded representation, e.g. a3 -> 0x61,0x33,
 				string key = keyField.Text.Replace(" ", string.Empty).ToUpper();
-				byte[] keyBytes = Authenticator.StringToByteArray(key);
+				byte[] keyBytes = WindowsAuthenticator.Authenticator.StringToByteArray(key);
 				//
 				auth.SecretKey = keyBytes;
 				//

@@ -55,7 +55,7 @@ namespace WindowsAuthenticator
 		{
 			try
 			{
-				// Issue #53: set the default culture
+				// Issue #53: set a default culture
 				CultureInfo ci = new CultureInfo("en-US");
 				System.Threading.Thread.CurrentThread.CurrentCulture = ci;
 				System.Threading.Thread.CurrentThread.CurrentUICulture = ci;

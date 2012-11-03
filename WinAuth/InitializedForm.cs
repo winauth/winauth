@@ -34,7 +34,7 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Current authenticator
 		/// </summary>
-		public Authenticator Authenticator { get; set; }
+		public BattleNetAuthenticator Authenticator { get; set; }
 
 		/// <summary>
 		/// Time for next code refresh

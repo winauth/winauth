@@ -128,6 +128,19 @@ namespace WindowsAuthenticator
 					this.AutoRefresh = m_config.AutoRefresh;
 					this.HideSerial = m_config.HideSerial;
 					this.AllowCopy = m_config.AllowCopy;
+
+					// set skin if we have switched to differnt authenticator type and we have no explicit skin
+					if (string.IsNullOrEmpty(m_config.CurrentSkin) == true)
+					{
+						if (m_config.Authenticator is GuildWarsAuthenticator)
+						{
+							LoadSkin("resource:winauth_skin_gw2");
+						}
+						else if (m_config.Authenticator is BattleNetAuthenticator)
+						{
+							LoadSkin("resource:winauth_skin_bma_1_1");
+						}
+					}
 				}
 			}
 		}
@@ -470,11 +483,11 @@ namespace WindowsAuthenticator
 				}
 
 				// if this was an import, i.e. an .rms file, then clear authFile so we are forced to save a new name
-				if (auth.LoadedFormat != Authenticator.FileFormat.WinAuth)
-				{
-					config.Filename = null;
-					save = true;
-				}
+				//if (auth.LoadedFormat != Authenticator.FileFormat.WinAuth)
+				//{
+				//  config.Filename = null;
+				//  save = true;
+				//}
 
 				// set up the Authenticator
 				Config = config;
@@ -601,7 +614,7 @@ namespace WindowsAuthenticator
 			if (Authenticator != null)
 			{
 				DialogResult warning = MessageBox.Show(this, "WARNING: You already have an authenticator registered.\n\n"
-					+ "You will NOT be able to access your Battle.net account if you continue and this authenticator is overwritten.\n\n"
+					+ "You will NOT be able to access your account if you continue and this authenticator is overwritten.\n\n"
 					+ "Do you still want to create a new authenticator?", "New  Authenticator", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
 				if (warning != System.Windows.Forms.DialogResult.Yes)
 				{
@@ -613,40 +626,29 @@ namespace WindowsAuthenticator
 			Authenticator authenticator = null;
 			try
 			{
-				// get the current country code
-				string region = (RegionInfo.CurrentRegion != null ? RegionInfo.CurrentRegion.TwoLetterISORegionName : null);
 				EnrollForm enrollform = new EnrollForm();
-				enrollform.CurrentRegion = region;
 				if (enrollform.ShowDialog(this) != System.Windows.Forms.DialogResult.OK)
 				{
 					return false;
 				}
-				region = enrollform.CurrentRegion;
-	
-				// create and enroll a new authenticator
-				authenticator = new Authenticator();
-				authenticator.Enroll(region);
+				authenticator = enrollform.CurrentAuthenticator;
 			}
 			catch (Exception ex)
 			{
 				MessageBox.Show(this,
-					"There was an error registering your authenticator:\n\n" + ex.Message + "\n\nThis may be because the Battle.net servers are unavailable. Please try again later.",
+					"There was an error registering your authenticator:\n\n" + ex.Message + "\n\nThis may be because the servers were unavailable or there is a problem with your internet connection. Please try again.",
 					"New Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				return false;
 			}
 
 			// prompt now done
-			if (MessageBox.Show(this,
-				"Your authenticator has been created and registered.\n\n"
-				+ "You will now be prompted to save it to a file on your computer before you can add it to your account.\n\n"
-				+ "1. Choose a file to save your new authenticator.\n"
-				+ "2. Select the encrpytion option.\n"
-				+ "3. Add your authenticator to your Battle.net account.\n\n"
-				+ "Click \"OK\" to save your authenticator.",
-				"New Registered Authenticator", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK)
-			{
-				return false;
-			}
+			//if (MessageBox.Show(this,
+			//	"Your authenticator has been created and registered.\n\n"
+			//	+ "You will now be prompted to save it to a file on your computer.",
+			//	"New Authenticator", MessageBoxButtons.OKCancel, MessageBoxIcon.Information) != DialogResult.OK)
+			//{
+			//	return false;
+			//}
 
 			// remember old config
 			WinAuthConfig oldconfig = Config;
@@ -674,13 +676,16 @@ namespace WindowsAuthenticator
 			// hook change event back
 			this.Config.OnConfigChanged +=new ConfigChangedHandler(OnConfigChanged);
 
-			// prompt to backup
-			InitializedForm initForm = new InitializedForm();
-			initForm.Authenticator = Config.Authenticator;
-			if (initForm.ShowDialog(this) == System.Windows.Forms.DialogResult.Yes)
-			{
-				BackupData();
-			}
+			//if (authenticator is BattleNetAuthenticator)
+			//{
+			//	// prompt to backup
+			//	InitializedForm initForm = new InitializedForm();
+			//	initForm.Authenticator = (BattleNetAuthenticator)authenticator;
+			//	if (initForm.ShowDialog(this) == System.Windows.Forms.DialogResult.Yes)
+			//	{
+			//		BackupData();
+			//	}
+			//}
 
 			// show the new code
 			ShowCode();
@@ -691,14 +696,13 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Show the form to backup the data
 		/// </summary>
-		private void BackupData()
-		{
-			BackupForm backup = new BackupForm();
-			//backup.CurrentAuthenticator = this.Authenticator;
-			backup.CurrentAuthenticatorFile = Config.Filename;
-			backup.CurrentConfig = this.Config;
-			backup.ShowDialog(this);
-		}
+		//private void BackupData()
+		//{
+		//	BackupForm backup = new BackupForm();
+		//	backup.CurrentAuthenticatorFile = Config.Filename;
+		//	backup.CurrentConfig = this.Config;
+		//	backup.ShowDialog(this);
+		//}
 
 		/// <summary>
 		/// Show the form to import a key
@@ -706,7 +710,7 @@ namespace WindowsAuthenticator
 		private bool ImportKey()
 		{
 			// already have one?
-			if (Authenticator != null)
+			if (Authenticator != null && Authenticator is BattleNetAuthenticator)
 			{
 				DialogResult warning = MessageBox.Show(this, "WARNING: You already have an authenticator registered.\n\n"
 					+ "You will NOT be able to access your Battle.net account if you continue and this authenticator is overwritten.\n\n"
@@ -728,7 +732,8 @@ namespace WindowsAuthenticator
 			WinAuthConfig oldconfig = Config;
 			// set the new authenticator
 			Config = Config.Clone() as WinAuthConfig;
-			Config.Authenticator = import.Authenticator;
+			BattleNetAuthenticator authenticator = import.Authenticator;
+			Config.Authenticator = authenticator;
 			Config.AutoLogin = null;
 			// save config data
 			if (SaveAuthenticator(null) == false)
@@ -745,12 +750,12 @@ namespace WindowsAuthenticator
 			notifyIcon.Text = this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
 
 			// prompt to backup
-			InitializedForm initForm = new InitializedForm();
-			initForm.Authenticator = Config.Authenticator;
-			if (initForm.ShowDialog(this) == System.Windows.Forms.DialogResult.Yes)
-			{
-				BackupData();
-			}
+			//InitializedForm initForm = new InitializedForm();
+			//initForm.Authenticator = authenticator;
+			//if (initForm.ShowDialog(this) == System.Windows.Forms.DialogResult.Yes)
+			//{
+			//	BackupData();
+			//}
 
 			// show new code and serial
 			ShowCode();
@@ -775,7 +780,7 @@ namespace WindowsAuthenticator
 
 			// get the form
 			ExportForm export = new ExportForm();
-			export.Authenticator = this.Authenticator;
+			export.Authenticator = this.Authenticator as BattleNetAuthenticator;
 			if (export.ShowDialog(this) != System.Windows.Forms.DialogResult.OK)
 			{
 				return;
@@ -794,7 +799,7 @@ namespace WindowsAuthenticator
 			}
 
 			ShowRestoreCodeForm restorecodeform = new ShowRestoreCodeForm();
-			restorecodeform.Authenticator = this.Authenticator;
+			restorecodeform.Authenticator = this.Authenticator as BattleNetAuthenticator;
 			restorecodeform.ShowDialog(this);
 		}
 
@@ -804,7 +809,7 @@ namespace WindowsAuthenticator
 		private bool RestoreAuthenticator()
 		{
 			// already have one?
-			if (Authenticator != null)
+			if (Authenticator != null && Authenticator is BattleNetAuthenticator)
 			{
 				DialogResult warning = MessageBox.Show(this, "WARNING: You already have an authenticator registered.\n\n"
 					+ "You will NOT be able to access your Battle.net account if you continue and this authenticator is overwritten.\n\n"
@@ -873,6 +878,10 @@ namespace WindowsAuthenticator
 			if (Authenticator != null)
 			{
 				string code = Authenticator.CurrentCode;
+				if (CodeField is SecretTextBox)
+				{
+					((SecretTextBox)CodeField).SpaceOut = Authenticator.CodeDigits / 2;
+				}
 				CodeField.Text = code;
 
 				// optionally copy the code to the clipboard, only when not minimized
@@ -881,10 +890,13 @@ namespace WindowsAuthenticator
 					CopyCodeToClipboard();
 				}
 
-				serialLabel.Text = Authenticator.Serial;
-				if (HideSerial == false)
+				if (Authenticator is BattleNetAuthenticator)
 				{
-					serialLabel.Visible = true;
+					serialLabel.Text = ((BattleNetAuthenticator)Authenticator).Serial;
+					if (HideSerial == false)
+					{
+						serialLabel.Visible = true;
+					}
 				}
 				CodeDisplayed = DateTime.Now;
 			}
@@ -1032,7 +1044,10 @@ namespace WindowsAuthenticator
 
 			Authenticator authenticator = this.Authenticator;
 			serialLabel.Visible = !Config.HideSerial;
-			serialLabel.Text = (authenticator != null ? authenticator.Serial : string.Empty);
+			if (authenticator is BattleNetAuthenticator)
+			{
+				serialLabel.Text = (authenticator != null ? ((BattleNetAuthenticator)authenticator).Serial : string.Empty);
+			}
 			CodeField.Text = (authenticator != null && Config.AutoRefresh == true ? authenticator.CurrentCode : string.Empty);
 			if (CodeField is SecretTextBox)
 			{
@@ -1079,15 +1094,25 @@ namespace WindowsAuthenticator
 				}
 				skin = ofd.FileName;
 			}
-			if (skin.IndexOf(Path.DirectorySeparatorChar) != -1 || skin.IndexOf(".") != -1)
+
+			string skinxml = null;
+			if (skin.IndexOf("resource:") != -1)
 			{
 				skinfile = skin;
+				ResourceManager rm = new ResourceManager("WindowsAuthenticator.Properties.Resources", typeof(MainForm).Assembly);
+				skinxml = rm.GetObject(skin.Substring(9)) as string;
 			}
-			else
+			else if ((skin.IndexOf(Path.DirectorySeparatorChar) != -1 || skin.IndexOf(".") != -1) && File.Exists(skin) == true)
+			{
+				skinfile = skin;
+				skinxml = File.ReadAllText(skinfile);
+			}
+			else if (File.Exists(skin) == true)
 			{
 				skinfile = System.Reflection.Assembly.GetExecutingAssembly().Location.Replace(".exe", "") + "." + skin + ".xml";
+				skinxml = File.ReadAllText(skinfile);
 			}
-			if (File.Exists(skinfile) == false)
+			else
 			{
 				return;
 			}
@@ -1097,7 +1122,7 @@ namespace WindowsAuthenticator
 				try
 				{
 					XmlDocument skindoc = new XmlDocument();
-					skindoc.Load(skinfile);
+					skindoc.LoadXml(skinxml);
 					XmlNode rootnode = skindoc.DocumentElement;
 					XmlNode node = rootnode.SelectSingleNode("/skin");
 					if (node == null)
@@ -1144,6 +1169,7 @@ namespace WindowsAuthenticator
 					if (node != null)
 					{
 						SetSkinControl(progressBar, node);
+						progressBar.Style = ProgressBarStyle.Continuous;
 					}
 
 					node = rootnode.SelectSingleNode("/skin/copyclipboardbutton");
@@ -1329,8 +1355,9 @@ namespace WindowsAuthenticator
 							if (pi.Name == "BackgroundImage")
 							{
 								// set the size based on the image
-								((Control)control).Width = image.Width;
-								((Control)control).Height = image.Height;
+								((Control)control).ClientSize = new Size(image.Width, image.Height);
+								//((Control)control).Width = image.Width + (SystemInformation.BorderSize.Width * 2);
+								//((Control)control).Height = image.Height + SystemInformation.CaptionHeight;
 							}
 
 							pi.SetValue(control, image, null);
@@ -1565,19 +1592,21 @@ namespace WindowsAuthenticator
 			copyOnCodeMenuItem.Enabled = (Authenticator != null);
 			copyOnCodeMenuItem.Checked = (copyOnCodeMenuItem.Enabled == true ? CopyOnCode : false);
 
-			createBackupMenuItem.Enabled = (Authenticator != null);
+			//createBackupMenuItem.Enabled = (Authenticator != null);
 
 			defaultSkinMenuItem.Enabled = !string.IsNullOrEmpty(Config.CurrentSkin);
 			defaultSkinMenuItem.Checked = Config.RememberSkin && (Config.CurrentSkin == WinAuthHelper.GetSavedSkin());
 
-			exportKeyMenuItem.Enabled = (Authenticator != null);
+			exportKeyMenuItem.Enabled = (Authenticator != null && Authenticator is BattleNetAuthenticator);
 
 			hideSerialMenuItem.Enabled = (Authenticator != null);
 			hideSerialMenuItem.Checked = (hideSerialMenuItem.Enabled == true ? HideSerial : false);
+			hideSerialMenuItem.Visible = (Authenticator != null && Authenticator is BattleNetAuthenticator);
 
 			saveAsMenuItem.Enabled = (Authenticator != null);
 
-			showRestoreCodeMenuItem.Enabled = (Authenticator != null);
+			showRestoreCodeMenuItem.Enabled = (Authenticator != null && Authenticator is BattleNetAuthenticator);
+			//restoreMenuItem.Visible = (Authenticator != null && Authenticator is BattleNetAuthenticator);
 
 			startWithWindowsMenuItem.Checked = (startWithWindowsMenuItem.Enabled == true ? StartWithWindows : false);
 
@@ -1689,10 +1718,10 @@ namespace WindowsAuthenticator
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void createBackupMenuItem_Click(object sender, EventArgs e)
-		{
-			BackupData();
-		}
+		//private void createBackupMenuItem_Click(object sender, EventArgs e)
+		//{
+		//	BackupData();
+		//}
 
 		/// <summary>
 		/// Click the import menu item

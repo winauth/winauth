@@ -276,9 +276,13 @@ namespace WindowsAuthenticator
 							{
 								try
 								{
-									auth = new Authenticator();
-									auth.Load(authenticatorNode, password, version);
-									config.Authenticator = auth;
+									//auth = new Authenticator();
+									//auth.Load(authenticatorNode, password, version);
+									//config.Authenticator = auth;
+									using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(authenticatorNode.OuterXml)))
+									{
+										config.Authenticator = Authenticator.ReadFromStream(ms, password, version);
+									}
 								}
 								catch (EncrpytedSecretDataException)
 								{
@@ -296,9 +300,13 @@ namespace WindowsAuthenticator
 
 										try
 										{
-											auth = new Authenticator();
-											auth.Load(authenticatorNode, passwordForm.Password, version);
-											config.Authenticator = auth;
+											//auth = new Authenticator();
+											//auth.Load(authenticatorNode, passwordForm.Password, version);
+											//config.Authenticator = auth;
+											using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(authenticatorNode.OuterXml)))
+											{
+												config.Authenticator = Authenticator.ReadFromStream(ms, password, version);
+											}
 											break;
 										}
 										catch (BadPasswordException)
@@ -477,10 +485,10 @@ namespace WindowsAuthenticator
 					data = ImportAuthenticator(configFile, null);
 
 					// if this was an import, i.e. an .rms file, then clear authFile so we aare forcesto save a new name
-					if (data != null && data.LoadedFormat != Authenticator.FileFormat.WinAuth)
-					{
-						configFile = null;
-					}
+					//if (data != null && data.LoadedFormat != Authenticator.FileFormat.WinAuth)
+					//{
+					//  configFile = null;
+					//}
 				}
 				catch (EncrpytedSecretDataException)
 				{
@@ -541,20 +549,9 @@ namespace WindowsAuthenticator
 		{
 			using (FileStream fs = new FileStream(configFile, FileMode.Open))
 			{
-				Authenticator auth = new Authenticator();
+				// load ours or the Android XML file
+				Authenticator auth = Authenticator.ReadFromStream(fs, password);
 
-				// read the file
-				string ext = Path.GetExtension(configFile).ToLower();
-				if (ext == ".xml")
-				{
-					// load ours or the Android XML file
-					auth.Load(fs, Authenticator.FileFormat.WinAuth, password);
-				}
-				else
-				{
-					// load the Java MIDP recordfile
-					auth.Load(fs, Authenticator.FileFormat.Midp, password);
-				}
 				return auth;
 			}
 		}

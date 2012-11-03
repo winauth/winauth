@@ -406,7 +406,8 @@ namespace WindowsAuthenticator
 			// save the authenticator to the config file
 			if (this.Authenticator != null)
 			{
-				this.Authenticator.WriteXmlString(writer);
+				//this.Authenticator.WriteXmlString(writer);
+				this.Authenticator.WriteToWriter(writer);
 			}
 
 			// save script with password and generated salt

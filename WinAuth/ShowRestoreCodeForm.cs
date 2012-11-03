@@ -35,7 +35,7 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Current authenticator
 		/// </summary>
-		public Authenticator Authenticator { get; set; }
+		public BattleNetAuthenticator Authenticator { get; set; }
 
 		/// <summary>
 		/// Create a new form
@@ -98,12 +98,12 @@ namespace WindowsAuthenticator
 		/// <param name="e"></param>
 		void VerifyRestoreCode(object sender, DoWorkEventArgs e)
 		{
-			Authenticator auth = e.Argument as Authenticator;
+			BattleNetAuthenticator auth = e.Argument as BattleNetAuthenticator;
 
 			// check if this authenticator is too old to be restored
 			try
 			{
-				Authenticator testrestore = new Authenticator();
+				BattleNetAuthenticator testrestore = new BattleNetAuthenticator();
 				testrestore.Restore(auth.Serial, auth.RestoreCode);
 				auth.RestoreCodeVerified = true;
 				e.Result = null;

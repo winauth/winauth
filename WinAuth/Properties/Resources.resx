@@ -117,8 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AUTOLOGIN_SCRIPT_TOOLTIP" xml:space="preserve">
-    <value>In Advanced mode you are able to edit the script that is used to send the code keys to your application.</value>
+  <data name="COPYCLIPBOARD_TOOLTIP" xml:space="preserve">
+    <value>Copy the current code to your clipboard</value>
+  </data>
+  <data name="COPYCLIPBOARD_TOOLTIP_TITLE" xml:space="preserve">
+    <value>Copy To Clipboard</value>
+  </data>
+  <data name="SYNCBUTTON_TOOLTIP" xml:space="preserve">
+    <value>Synchronize the time in your authenticator with Battle.net. Use this if your code is not working.</value>
   </data>
   <data name="AUTOLOGIN_TBADVANCED_TOOLTIP" xml:space="preserve">
     <value>You can use a mixture of key command and plain text to build up your string.
@@ -139,22 +145,32 @@ To login an account, you might use:
 
 my@email.com{TAB}password{ENTER 2000}{CODE}{ENTER}</value>
   </data>
-	<data name="SYNCBUTTON_TOOLTIP_TITLE" xml:space="preserve">
-    <value>Synchronize Time</value>
-  </data>
-	<data name="SYNCBUTTON_TOOLTIP" xml:space="preserve">
-    <value>Synchronize the time in your authenticator with Battle.net. Use this if your code is not working.</value>
-  </data>
-	<data name="COPYCLIPBOARD_TOOLTIP_TITLE" xml:space="preserve">
-    <value>Copy To Clipboard</value>
-  </data>
-	<data name="COPYCLIPBOARD_TOOLTIP" xml:space="preserve">
-    <value>Copy the current code to your clipboard</value>
+  <data name="REFRESHCODE_TOOLTIP" xml:space="preserve">
+    <value>Refresh and displayed the current code</value>
   </data>
   <data name="REFRESHCODE_TOOLTIP_TITLE" xml:space="preserve">
     <value>Refresh Code</value>
   </data>
-	<data name="REFRESHCODE_TOOLTIP" xml:space="preserve">
-    <value>Refresh and displayed the current code</value>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="BattleNetBackground" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\BattleNetBackground.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AUTOLOGIN_SCRIPT_TOOLTIP" xml:space="preserve">
+    <value>In Advanced mode you are able to edit the script that is used to send the code keys to your application.</value>
+  </data>
+  <data name="SYNCBUTTON_TOOLTIP_TITLE" xml:space="preserve">
+    <value>Synchronize Time</value>
+  </data>
+  <data name="guildwars2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\guildwars2.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="battlenet" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\battlenet.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="winauth_skin_bma_1_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\skins\winauth.skin.bma-1.1.xml;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="winauth_skin_gw2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\skins\winauth.skin.gw2.xml;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

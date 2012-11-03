@@ -223,7 +223,7 @@ namespace WindowsAuthenticator
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.Name = "RestoreForm";
 			this.ShowIcon = false;
-			this.Text = "Restore Authenticator";
+			this.Text = "Restore Battle.Net Authenticator";
 			this.Load += new System.EventHandler(this.RestoreForm_Load);
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();

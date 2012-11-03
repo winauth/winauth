@@ -46,8 +46,14 @@ namespace WindowsAuthenticator
 		private void InitializeComponent()
 		{
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.serial4Field = new WindowsAuthenticator.RestrictedTextBox();
+			this.serial3Field = new WindowsAuthenticator.RestrictedTextBox();
 			this.label4 = new System.Windows.Forms.Label();
+			this.serial2Field = new WindowsAuthenticator.RestrictedTextBox();
 			this.label2 = new System.Windows.Forms.Label();
+			this.timeField = new WindowsAuthenticator.RestrictedTextBox();
+			this.keyField = new WindowsAuthenticator.RestrictedTextBox();
+			this.serial1Field = new WindowsAuthenticator.RestrictedTextBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.label10 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
@@ -58,20 +64,14 @@ namespace WindowsAuthenticator
 			this.label3 = new System.Windows.Forms.Label();
 			this.okButton = new System.Windows.Forms.Button();
 			this.cancelButton = new System.Windows.Forms.Button();
-			this.serial4Field = new WindowsAuthenticator.RestrictedTextBox();
-			this.serial3Field = new WindowsAuthenticator.RestrictedTextBox();
-			this.serial2Field = new WindowsAuthenticator.RestrictedTextBox();
-			this.timeField = new WindowsAuthenticator.RestrictedTextBox();
-			this.keyField = new WindowsAuthenticator.RestrictedTextBox();
-			this.serial1Field = new WindowsAuthenticator.RestrictedTextBox();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// groupBox1
 			// 
-			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-									| System.Windows.Forms.AnchorStyles.Left)
-									| System.Windows.Forms.AnchorStyles.Right)));
+			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox1.Controls.Add(this.serial4Field);
 			this.groupBox1.Controls.Add(this.serial3Field);
 			this.groupBox1.Controls.Add(this.label4);
@@ -95,6 +95,32 @@ namespace WindowsAuthenticator
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Raw Key";
 			// 
+			// serial4Field
+			// 
+			this.serial4Field.ForceUppercase = true;
+			this.serial4Field.HexOnly = false;
+			this.serial4Field.LettersAndNumbersOnly = true;
+			this.serial4Field.LettersOnly = false;
+			this.serial4Field.Location = new System.Drawing.Point(244, 48);
+			this.serial4Field.MaxLength = 4;
+			this.serial4Field.Name = "serial4Field";
+			this.serial4Field.NumbersOnly = false;
+			this.serial4Field.Size = new System.Drawing.Size(44, 20);
+			this.serial4Field.TabIndex = 3;
+			// 
+			// serial3Field
+			// 
+			this.serial3Field.ForceUppercase = true;
+			this.serial3Field.HexOnly = false;
+			this.serial3Field.LettersAndNumbersOnly = true;
+			this.serial3Field.LettersOnly = false;
+			this.serial3Field.Location = new System.Drawing.Point(176, 48);
+			this.serial3Field.MaxLength = 4;
+			this.serial3Field.Name = "serial3Field";
+			this.serial3Field.NumbersOnly = false;
+			this.serial3Field.Size = new System.Drawing.Size(44, 20);
+			this.serial3Field.TabIndex = 2;
+			// 
 			// label4
 			// 
 			this.label4.Location = new System.Drawing.Point(226, 51);
@@ -103,6 +129,19 @@ namespace WindowsAuthenticator
 			this.label4.TabIndex = 3;
 			this.label4.Text = "-";
 			// 
+			// serial2Field
+			// 
+			this.serial2Field.ForceUppercase = true;
+			this.serial2Field.HexOnly = false;
+			this.serial2Field.LettersAndNumbersOnly = true;
+			this.serial2Field.LettersOnly = false;
+			this.serial2Field.Location = new System.Drawing.Point(108, 48);
+			this.serial2Field.MaxLength = 4;
+			this.serial2Field.Name = "serial2Field";
+			this.serial2Field.NumbersOnly = false;
+			this.serial2Field.Size = new System.Drawing.Size(44, 20);
+			this.serial2Field.TabIndex = 1;
+			// 
 			// label2
 			// 
 			this.label2.Location = new System.Drawing.Point(158, 51);
@@ -110,6 +149,44 @@ namespace WindowsAuthenticator
 			this.label2.Size = new System.Drawing.Size(12, 20);
 			this.label2.TabIndex = 3;
 			this.label2.Text = "-";
+			// 
+			// timeField
+			// 
+			this.timeField.ForceUppercase = false;
+			this.timeField.HexOnly = false;
+			this.timeField.LettersAndNumbersOnly = false;
+			this.timeField.LettersOnly = false;
+			this.timeField.Location = new System.Drawing.Point(125, 189);
+			this.timeField.Name = "timeField";
+			this.timeField.NumbersOnly = true;
+			this.timeField.Size = new System.Drawing.Size(163, 20);
+			this.timeField.TabIndex = 5;
+			// 
+			// keyField
+			// 
+			this.keyField.ForceUppercase = true;
+			this.keyField.HexOnly = true;
+			this.keyField.LettersAndNumbersOnly = false;
+			this.keyField.LettersOnly = false;
+			this.keyField.Location = new System.Drawing.Point(56, 115);
+			this.keyField.MaxLength = 80;
+			this.keyField.Name = "keyField";
+			this.keyField.NumbersOnly = false;
+			this.keyField.Size = new System.Drawing.Size(485, 20);
+			this.keyField.TabIndex = 4;
+			// 
+			// serial1Field
+			// 
+			this.serial1Field.ForceUppercase = true;
+			this.serial1Field.HexOnly = false;
+			this.serial1Field.LettersAndNumbersOnly = false;
+			this.serial1Field.LettersOnly = true;
+			this.serial1Field.Location = new System.Drawing.Point(56, 48);
+			this.serial1Field.MaxLength = 2;
+			this.serial1Field.Name = "serial1Field";
+			this.serial1Field.NumbersOnly = false;
+			this.serial1Field.Size = new System.Drawing.Size(28, 20);
+			this.serial1Field.TabIndex = 0;
 			// 
 			// label1
 			// 
@@ -158,8 +235,8 @@ namespace WindowsAuthenticator
 			this.label8.Size = new System.Drawing.Size(535, 31);
 			this.label8.TabIndex = 3;
 			this.label8.Text = "Enter the time difference. This is a number, being the differnce between your dev" +
-					"ice\'s time and the Battle.net server\'s time. It may be a normal number, e.g. \"98" +
-					"57\" or a negative number, e.g. \"-965\".";
+    "ice\'s time and the Battle.net server\'s time. It may be a normal number, e.g. \"98" +
+    "57\" or a negative number, e.g. \"-965\".";
 			// 
 			// label5
 			// 
@@ -168,7 +245,7 @@ namespace WindowsAuthenticator
 			this.label5.Size = new System.Drawing.Size(535, 20);
 			this.label5.TabIndex = 3;
 			this.label5.Text = "Enter the key. This will usually be seen as a string of 40 characters containing " +
-					"0-9 and A-F, e.g. 8F5BC4DA...";
+    "0-9 and A-F, e.g. 8F5BC4DA...";
 			// 
 			// label3
 			// 
@@ -200,83 +277,6 @@ namespace WindowsAuthenticator
 			this.cancelButton.Text = "Cancel";
 			this.cancelButton.UseVisualStyleBackColor = true;
 			// 
-			// serial4Field
-			// 
-			this.serial4Field.ForceUppercase = true;
-			this.serial4Field.HexOnly = false;
-			this.serial4Field.LettersAndNumbersOnly = true;
-			this.serial4Field.LettersOnly = false;
-			this.serial4Field.Location = new System.Drawing.Point(244, 48);
-			this.serial4Field.MaxLength = 4;
-			this.serial4Field.Name = "serial4Field";
-			this.serial4Field.NumbersOnly = false;
-			this.serial4Field.Size = new System.Drawing.Size(44, 20);
-			this.serial4Field.TabIndex = 3;
-			// 
-			// serial3Field
-			// 
-			this.serial3Field.ForceUppercase = true;
-			this.serial3Field.HexOnly = false;
-			this.serial3Field.LettersAndNumbersOnly = true;
-			this.serial3Field.LettersOnly = false;
-			this.serial3Field.Location = new System.Drawing.Point(176, 48);
-			this.serial3Field.MaxLength = 4;
-			this.serial3Field.Name = "serial3Field";
-			this.serial3Field.NumbersOnly = false;
-			this.serial3Field.Size = new System.Drawing.Size(44, 20);
-			this.serial3Field.TabIndex = 2;
-			// 
-			// serial2Field
-			// 
-			this.serial2Field.ForceUppercase = true;
-			this.serial2Field.HexOnly = false;
-			this.serial2Field.LettersAndNumbersOnly = true;
-			this.serial2Field.LettersOnly = false;
-			this.serial2Field.Location = new System.Drawing.Point(108, 48);
-			this.serial2Field.MaxLength = 4;
-			this.serial2Field.Name = "serial2Field";
-			this.serial2Field.NumbersOnly = false;
-			this.serial2Field.Size = new System.Drawing.Size(44, 20);
-			this.serial2Field.TabIndex = 1;
-			// 
-			// timeField
-			// 
-			this.timeField.ForceUppercase = false;
-			this.timeField.HexOnly = false;
-			this.timeField.LettersAndNumbersOnly = false;
-			this.timeField.LettersOnly = false;
-			this.timeField.Location = new System.Drawing.Point(125, 189);
-			this.timeField.Name = "timeField";
-			this.timeField.NumbersOnly = true;
-			this.timeField.Size = new System.Drawing.Size(163, 20);
-			this.timeField.TabIndex = 5;
-			// 
-			// keyField
-			// 
-			this.keyField.ForceUppercase = true;
-			this.keyField.HexOnly = true;
-			this.keyField.LettersAndNumbersOnly = false;
-			this.keyField.LettersOnly = false;
-			this.keyField.Location = new System.Drawing.Point(56, 115);
-			this.keyField.MaxLength = 80;
-			this.keyField.Name = "keyField";
-			this.keyField.NumbersOnly = false;
-			this.keyField.Size = new System.Drawing.Size(485, 20);
-			this.keyField.TabIndex = 4;
-			// 
-			// serial1Field
-			// 
-			this.serial1Field.ForceUppercase = true;
-			this.serial1Field.HexOnly = false;
-			this.serial1Field.LettersAndNumbersOnly = false;
-			this.serial1Field.LettersOnly = true;
-			this.serial1Field.Location = new System.Drawing.Point(56, 48);
-			this.serial1Field.MaxLength = 2;
-			this.serial1Field.Name = "serial1Field";
-			this.serial1Field.NumbersOnly = false;
-			this.serial1Field.Size = new System.Drawing.Size(28, 20);
-			this.serial1Field.TabIndex = 0;
-			// 
 			// ImportForm
 			// 
 			this.AcceptButton = this.okButton;
@@ -290,7 +290,7 @@ namespace WindowsAuthenticator
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.Name = "ImportForm";
 			this.ShowIcon = false;
-			this.Text = "Import";
+			this.Text = "Import Battle.Net Key";
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
 			this.ResumeLayout(false);

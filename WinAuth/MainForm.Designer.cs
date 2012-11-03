@@ -63,7 +63,6 @@ namespace WindowsAuthenticator
 			this.importMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.exportKeyMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
-			this.createBackupMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.autoLoginMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
 			this.menuItemSkin = new System.Windows.Forms.ToolStripMenuItem();
@@ -83,7 +82,7 @@ namespace WindowsAuthenticator
 			this.exitMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.serialLabel = new System.Windows.Forms.Label();
 			this.refreshTimer = new System.Windows.Forms.Timer(this.components);
-			this.progressBar = new System.Windows.Forms.ProgressBar();
+			this.progressBar = new WindowsAuthenticator.ColouredProgressBar();
 			this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
 			this.syncTooltip = new System.Windows.Forms.ToolTip(this.components);
 			this.clipboardTooltip = new System.Windows.Forms.ToolTip(this.components);
@@ -113,7 +112,6 @@ namespace WindowsAuthenticator
             this.importMenuItem,
             this.exportKeyMenuItem,
             this.toolStripSeparator7,
-            this.createBackupMenuItem,
             this.autoLoginMenuItem,
             this.toolStripSeparator6,
             this.menuItemSkin,
@@ -134,13 +132,13 @@ namespace WindowsAuthenticator
 			this.contextMenuStrip.Name = "contextMenuStrip1";
 			this.contextMenuStrip.ShowCheckMargin = true;
 			this.contextMenuStrip.ShowImageMargin = false;
-			this.contextMenuStrip.Size = new System.Drawing.Size(221, 576);
+			this.contextMenuStrip.Size = new System.Drawing.Size(254, 532);
 			this.contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip_Opening);
 			// 
 			// openMenuItem
 			// 
 			this.openMenuItem.Name = "openMenuItem";
-			this.openMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.openMenuItem.Size = new System.Drawing.Size(253, 22);
 			this.openMenuItem.Text = "Open";
 			this.openMenuItem.Visible = false;
 			this.openMenuItem.Click += new System.EventHandler(this.openMenuItem_Click);
@@ -148,121 +146,114 @@ namespace WindowsAuthenticator
 			// openMenuItemSeparator
 			// 
 			this.openMenuItemSeparator.Name = "openMenuItemSeparator";
-			this.openMenuItemSeparator.Size = new System.Drawing.Size(217, 6);
+			this.openMenuItemSeparator.Size = new System.Drawing.Size(250, 6);
 			this.openMenuItemSeparator.Visible = false;
 			// 
 			// registerMenuItem
 			// 
 			this.registerMenuItem.Name = "registerMenuItem";
-			this.registerMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.registerMenuItem.Size = new System.Drawing.Size(253, 22);
 			this.registerMenuItem.Text = "Create New Authenticator...";
 			this.registerMenuItem.Click += new System.EventHandler(this.registerMenuItem_Click);
 			// 
 			// toolStripSeparator4
 			// 
 			this.toolStripSeparator4.Name = "toolStripSeparator4";
-			this.toolStripSeparator4.Size = new System.Drawing.Size(217, 6);
+			this.toolStripSeparator4.Size = new System.Drawing.Size(250, 6);
 			// 
 			// loadMenuItem
 			// 
 			this.loadMenuItem.Name = "loadMenuItem";
 			this.loadMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-			this.loadMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.loadMenuItem.Size = new System.Drawing.Size(253, 22);
 			this.loadMenuItem.Text = "Load...";
 			this.loadMenuItem.Click += new System.EventHandler(this.loadMenuItem_Click);
 			// 
 			// saveAsMenuItem
 			// 
 			this.saveAsMenuItem.Name = "saveAsMenuItem";
-			this.saveAsMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.saveAsMenuItem.Size = new System.Drawing.Size(253, 22);
 			this.saveAsMenuItem.Text = "Save...";
 			this.saveAsMenuItem.Click += new System.EventHandler(this.saveAsMenuItem_Click);
 			// 
 			// toolStripSeparator2
 			// 
 			this.toolStripSeparator2.Name = "toolStripSeparator2";
-			this.toolStripSeparator2.Size = new System.Drawing.Size(217, 6);
+			this.toolStripSeparator2.Size = new System.Drawing.Size(250, 6);
 			// 
 			// syncServerTimeMenuItem
 			// 
 			this.syncServerTimeMenuItem.Name = "syncServerTimeMenuItem";
-			this.syncServerTimeMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.syncServerTimeMenuItem.Size = new System.Drawing.Size(253, 22);
 			this.syncServerTimeMenuItem.Text = "Sync Server Time";
 			this.syncServerTimeMenuItem.Click += new System.EventHandler(this.syncServerTimeMenuItem_Click);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(217, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(250, 6);
 			// 
 			// showRestoreCodeMenuItem
 			// 
 			this.showRestoreCodeMenuItem.Name = "showRestoreCodeMenuItem";
-			this.showRestoreCodeMenuItem.Size = new System.Drawing.Size(220, 22);
-			this.showRestoreCodeMenuItem.Text = "Show Restore Code...";
+			this.showRestoreCodeMenuItem.Size = new System.Drawing.Size(253, 22);
+			this.showRestoreCodeMenuItem.Text = "Show Battle.Net Restore Code...";
 			this.showRestoreCodeMenuItem.Click += new System.EventHandler(this.showRestoreCodeMenuItem_Click);
 			// 
 			// restoreMenuItem
 			// 
 			this.restoreMenuItem.Name = "restoreMenuItem";
-			this.restoreMenuItem.Size = new System.Drawing.Size(220, 22);
-			this.restoreMenuItem.Text = "Restore...";
+			this.restoreMenuItem.Size = new System.Drawing.Size(253, 22);
+			this.restoreMenuItem.Text = "Restore Battle.Net Authenticator...";
 			this.restoreMenuItem.Click += new System.EventHandler(this.restoreMenuItem_Click);
 			// 
 			// toolStripSeparator9
 			// 
 			this.toolStripSeparator9.Name = "toolStripSeparator9";
-			this.toolStripSeparator9.Size = new System.Drawing.Size(217, 6);
+			this.toolStripSeparator9.Size = new System.Drawing.Size(250, 6);
 			// 
 			// importMenuItem
 			// 
 			this.importMenuItem.Name = "importMenuItem";
-			this.importMenuItem.Size = new System.Drawing.Size(220, 22);
-			this.importMenuItem.Text = "Import Raw Key...";
+			this.importMenuItem.Size = new System.Drawing.Size(253, 22);
+			this.importMenuItem.Text = "Import Raw Battle.Net Key...";
 			this.importMenuItem.Click += new System.EventHandler(this.importMenuItem_Click);
 			// 
 			// exportKeyMenuItem
 			// 
 			this.exportKeyMenuItem.Name = "exportKeyMenuItem";
-			this.exportKeyMenuItem.Size = new System.Drawing.Size(220, 22);
-			this.exportKeyMenuItem.Text = "Export Raw Key...";
+			this.exportKeyMenuItem.Size = new System.Drawing.Size(253, 22);
+			this.exportKeyMenuItem.Text = "Export Raw Battle.Net Key...";
 			this.exportKeyMenuItem.Click += new System.EventHandler(this.exportKeyMenuItem_Click);
 			// 
 			// toolStripSeparator7
 			// 
 			this.toolStripSeparator7.Name = "toolStripSeparator7";
-			this.toolStripSeparator7.Size = new System.Drawing.Size(217, 6);
-			// 
-			// createBackupMenuItem
-			// 
-			this.createBackupMenuItem.Name = "createBackupMenuItem";
-			this.createBackupMenuItem.Size = new System.Drawing.Size(220, 22);
-			this.createBackupMenuItem.Text = "Backup by Email...";
-			this.createBackupMenuItem.Click += new System.EventHandler(this.createBackupMenuItem_Click);
+			this.toolStripSeparator7.Size = new System.Drawing.Size(250, 6);
 			// 
 			// autoLoginMenuItem
 			// 
 			this.autoLoginMenuItem.Name = "autoLoginMenuItem";
-			this.autoLoginMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.autoLoginMenuItem.Size = new System.Drawing.Size(253, 22);
 			this.autoLoginMenuItem.Text = "Auto Login...";
 			this.autoLoginMenuItem.Click += new System.EventHandler(this.autoLoginMenuItem_Click);
 			// 
 			// toolStripSeparator6
 			// 
 			this.toolStripSeparator6.Name = "toolStripSeparator6";
-			this.toolStripSeparator6.Size = new System.Drawing.Size(217, 6);
+			this.toolStripSeparator6.Size = new System.Drawing.Size(250, 6);
 			// 
 			// menuItemSkin
 			// 
 			this.menuItemSkin.Name = "menuItemSkin";
-			this.menuItemSkin.Size = new System.Drawing.Size(220, 22);
+			this.menuItemSkin.Size = new System.Drawing.Size(253, 22);
 			this.menuItemSkin.Text = "Choose Skin...";
 			this.menuItemSkin.Click += new System.EventHandler(this.menuItemSkin_Click);
 			// 
 			// defaultSkinMenuItem
 			// 
 			this.defaultSkinMenuItem.Name = "defaultSkinMenuItem";
-			this.defaultSkinMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.defaultSkinMenuItem.Size = new System.Drawing.Size(253, 22);
 			this.defaultSkinMenuItem.Tag = "";
 			this.defaultSkinMenuItem.Text = "Always use this skin";
 			this.defaultSkinMenuItem.Click += new System.EventHandler(this.defaultSkinMenuItem_Click);
@@ -270,84 +261,84 @@ namespace WindowsAuthenticator
 			// toolStripSeparator10
 			// 
 			this.toolStripSeparator10.Name = "toolStripSeparator10";
-			this.toolStripSeparator10.Size = new System.Drawing.Size(217, 6);
+			this.toolStripSeparator10.Size = new System.Drawing.Size(250, 6);
 			// 
 			// startWithWindowsMenuItem
 			// 
 			this.startWithWindowsMenuItem.Name = "startWithWindowsMenuItem";
-			this.startWithWindowsMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.startWithWindowsMenuItem.Size = new System.Drawing.Size(253, 22);
 			this.startWithWindowsMenuItem.Text = "Start with Windows";
 			this.startWithWindowsMenuItem.Click += new System.EventHandler(this.startWithWindowsMenuItem_Click);
 			// 
 			// useTrayIconMenuItem
 			// 
 			this.useTrayIconMenuItem.Name = "useTrayIconMenuItem";
-			this.useTrayIconMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.useTrayIconMenuItem.Size = new System.Drawing.Size(253, 22);
 			this.useTrayIconMenuItem.Text = "Use System Tray Icon";
 			this.useTrayIconMenuItem.Click += new System.EventHandler(this.useTrayIconMenuItem_Click);
 			// 
 			// alwaysOnTopMenuItem
 			// 
 			this.alwaysOnTopMenuItem.Name = "alwaysOnTopMenuItem";
-			this.alwaysOnTopMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.alwaysOnTopMenuItem.Size = new System.Drawing.Size(253, 22);
 			this.alwaysOnTopMenuItem.Text = "Always on Top";
 			this.alwaysOnTopMenuItem.Click += new System.EventHandler(this.alwaysOnTopMenuItem_Click);
 			// 
 			// toolStripSeparator8
 			// 
 			this.toolStripSeparator8.Name = "toolStripSeparator8";
-			this.toolStripSeparator8.Size = new System.Drawing.Size(217, 6);
+			this.toolStripSeparator8.Size = new System.Drawing.Size(250, 6);
 			// 
 			// allowCopyMenuItem
 			// 
 			this.allowCopyMenuItem.Name = "allowCopyMenuItem";
-			this.allowCopyMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.allowCopyMenuItem.Size = new System.Drawing.Size(253, 22);
 			this.allowCopyMenuItem.Text = "Allow Copying of Code";
 			this.allowCopyMenuItem.Click += new System.EventHandler(this.allowCopyMenuItem_Click);
 			// 
 			// hideSerialMenuItem
 			// 
 			this.hideSerialMenuItem.Name = "hideSerialMenuItem";
-			this.hideSerialMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.hideSerialMenuItem.Size = new System.Drawing.Size(253, 22);
 			this.hideSerialMenuItem.Text = "Hide Serial Number";
 			this.hideSerialMenuItem.Click += new System.EventHandler(this.hideSerialMenuItem_Click);
 			// 
 			// copyOnCodeMenuItem
 			// 
 			this.copyOnCodeMenuItem.Name = "copyOnCodeMenuItem";
-			this.copyOnCodeMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.copyOnCodeMenuItem.Size = new System.Drawing.Size(253, 22);
 			this.copyOnCodeMenuItem.Text = "Auto Clipboard Copy";
 			this.copyOnCodeMenuItem.Click += new System.EventHandler(this.copyOnCodeMenuItem_Click);
 			// 
 			// autoRefreshMenuItem
 			// 
 			this.autoRefreshMenuItem.Name = "autoRefreshMenuItem";
-			this.autoRefreshMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.autoRefreshMenuItem.Size = new System.Drawing.Size(253, 22);
 			this.autoRefreshMenuItem.Text = "Auto Refresh";
 			this.autoRefreshMenuItem.Click += new System.EventHandler(this.autoRefreshMenuItem_Click);
 			// 
 			// toolStripSeparator3
 			// 
 			this.toolStripSeparator3.Name = "toolStripSeparator3";
-			this.toolStripSeparator3.Size = new System.Drawing.Size(217, 6);
+			this.toolStripSeparator3.Size = new System.Drawing.Size(250, 6);
 			// 
 			// aboutMenuItem
 			// 
 			this.aboutMenuItem.Name = "aboutMenuItem";
-			this.aboutMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.aboutMenuItem.Size = new System.Drawing.Size(253, 22);
 			this.aboutMenuItem.Text = "About...";
 			this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
 			// 
 			// toolStripSeparator5
 			// 
 			this.toolStripSeparator5.Name = "toolStripSeparator5";
-			this.toolStripSeparator5.Size = new System.Drawing.Size(217, 6);
+			this.toolStripSeparator5.Size = new System.Drawing.Size(250, 6);
 			// 
 			// exitMenuItem
 			// 
 			this.exitMenuItem.Name = "exitMenuItem";
 			this.exitMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-			this.exitMenuItem.Size = new System.Drawing.Size(220, 22);
+			this.exitMenuItem.Size = new System.Drawing.Size(253, 22);
 			this.exitMenuItem.Text = "E&xit";
 			this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
 			// 
@@ -368,7 +359,7 @@ namespace WindowsAuthenticator
 			this.refreshTimer.Interval = 500;
 			this.refreshTimer.Tick += new System.EventHandler(this.refreshTimer_Tick);
 			// 
-			// progressBar
+			// WindowsAuthenticator.ColouredProgressBar
 			// 
 			this.progressBar.Location = new System.Drawing.Point(25, 180);
 			this.progressBar.Maximum = 29;
@@ -453,7 +444,7 @@ namespace WindowsAuthenticator
 			this.codeField.ReadOnly = true;
 			this.codeField.SecretMode = false;
 			this.codeField.Size = new System.Drawing.Size(269, 34);
-			this.codeField.SpaceOut = 4;
+			this.codeField.SpaceOut = 0;
 			this.codeField.TabIndex = 0;
 			this.codeField.TabStop = false;
 			this.codeField.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -462,7 +453,7 @@ namespace WindowsAuthenticator
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
+			this.BackgroundImage = global::WindowsAuthenticator.Properties.Resources.BattleNetBackground;
 			this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
 			this.ClientSize = new System.Drawing.Size(320, 419);
 			this.ContextMenuStrip = this.contextMenuStrip;
@@ -499,7 +490,7 @@ namespace WindowsAuthenticator
 		private System.Windows.Forms.Label serialLabel;
 		private System.Windows.Forms.ToolStripMenuItem copyOnCodeMenuItem;
 		private System.Windows.Forms.Timer refreshTimer;
-		private System.Windows.Forms.ProgressBar progressBar;
+		private WindowsAuthenticator.ColouredProgressBar progressBar;
 		private System.Windows.Forms.ToolStripMenuItem syncServerTimeMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
 		private System.Windows.Forms.ToolStripMenuItem alwaysOnTopMenuItem;
@@ -514,7 +505,6 @@ namespace WindowsAuthenticator
 		private System.Windows.Forms.ToolStripMenuItem allowCopyMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem autoLoginMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
-		private System.Windows.Forms.ToolStripMenuItem createBackupMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem importMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
 		private System.Windows.Forms.ToolStripMenuItem exportKeyMenuItem;

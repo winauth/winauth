@@ -29,6 +29,7 @@
 		<top>180</top>
 		<width>270</width>
 		<height>6</height>
+		<forecolor>#0787C6</forecolor>
 	</progressbar>
 	<codebutton type="System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
 		<left>70</left>

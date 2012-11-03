@@ -63,7 +63,7 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Get a new Authenticator based of the field entries
 		/// </summary>
-		public Authenticator Authenticator {get; set;}
+		public BattleNetAuthenticator Authenticator { get; set; }
 
 		/// <summary>
 		/// Build the xml for the offical Android BMA file
@@ -72,7 +72,7 @@ namespace WindowsAuthenticator
 		private string BuildAndroidBMAXml()
 		{
 			// convert key and serial into combined string (BMA uses lowercase)
-			string code = Authenticator.ByteArrayToString(Authenticator.SecretKey).ToLower() + Authenticator.Serial;
+			string code = WindowsAuthenticator.Authenticator.ByteArrayToString(Authenticator.SecretKey).ToLower() + Authenticator.Serial;
 			// encrypt with BMA key
 			byte[] plain = Encoding.UTF8.GetBytes(code);
 			for (int i = plain.Length - 1; i >= 0; i--)
@@ -80,7 +80,7 @@ namespace WindowsAuthenticator
 				plain[i] ^= MOBILE_AUTHENTICATOR_KEY[i];
 			}
 			// convert to string and format from the template
-			code = Authenticator.ByteArrayToString(plain).ToLower();
+			code = WindowsAuthenticator.Authenticator.ByteArrayToString(plain).ToLower();
 			return string.Format(ANDROID_BMA, Authenticator.ServerTimeDiff, code);
 		}
 
@@ -98,7 +98,7 @@ namespace WindowsAuthenticator
 
 			// populate the key fields
 			this.serialField.Text = Authenticator.Serial;
-			this.keyField.Text = Authenticator.ByteArrayToString(Authenticator.SecretKey);
+			this.keyField.Text = WindowsAuthenticator.Authenticator.ByteArrayToString(Authenticator.SecretKey);
 			this.timeField.Text = Authenticator.ServerTimeDiff.ToString();
 			this.xmlField.Text = BuildAndroidBMAXml();
 		}

@@ -27,70 +27,54 @@ using System.Windows.Forms;
 namespace WindowsAuthenticator
 {
 	/// <summary>
-	/// General enroll form to choose region
+	/// General enroll form to create authenticator
 	/// </summary>
 	public partial class EnrollForm : Form
 	{
 		/// <summary>
-		/// Inner class holding the regions information
+		/// Get/set the current game
 		/// </summary>
-		class BattleNetRegion
-		{
-			/// <summary>
-			/// Code for region, e.g. "US"
-			/// </summary>
-			public string Code;
-
-			/// <summary>
-			/// Display name of region, e.g. "Americas"
-			/// </summary>
-			public string Name;
-
-			/// <summary>
-			/// Create a new BattleNetRegion object
-			/// </summary>
-			/// <param name="code">region code</param>
-			/// <param name="name">region name</param>
-			public BattleNetRegion(string code, string name)
-			{
-				Code = code;
-				Name = name;
-			}
-
-			/// <summary>
-			/// Get the display sting for the region
-			/// </summary>
-			/// <returns></returns>
-			public override string ToString()
-			{
-				return Name;
-			}
-		}
+		public Type AuthenticatorType { get; set; }
 
 		/// <summary>
-		/// List of known battle.net regions
+		/// The newly created authenticator
 		/// </summary>
-		private static List<BattleNetRegion> Regions = new List<BattleNetRegion>
-		{
-			new BattleNetRegion("US", "Americas/Oceania"),
-			new BattleNetRegion("EU", "Europe/Russia"),
-			new BattleNetRegion("CN", "China"),
-			new BattleNetRegion("KR", "Korea"),
-			new BattleNetRegion("TW", "Taiwan")
-		};
+		public Authenticator CurrentAuthenticator { get; set; }
 
 		/// <summary>
-		/// Quicklist of ISO3166 country codes that are in EU region
+		/// THe battle.net authenticator
 		/// </summary>
-		private static List<string> EU_COUNTRIES = new List<string>
-		{
-			"AT", "BA", "BE", "BG", "CH", "CZ", "DE", "DK", "ES", "FI", "FR", "GB", "GG", "GI", "GR", "HR", "HU", "IE", "IM", "IS", "IT", "JE", "LT", "LU", "LV", "MD", "ME", "MT", "NL", "NO", "PL", "PT", "RO", "RU", "SE", "SI", "UK"
-		};
+		public BattleNetAuthenticator m_bnAuthenticator;
 
 		/// <summary>
-		/// current region code
+		/// The GW2 authenicator
 		/// </summary>
-		private string m_currentRegion;
+		public GuildWarsAuthenticator m_gw2Authenticator;
+
+		/// <summary>
+		/// Gap between groups for resizing
+		/// </summary>
+		private int m_gap;
+
+		/// <summary>
+		/// Gap at bottom for rezising
+		/// </summary>
+		private int m_bottomGap;
+
+		/// <summary>
+		/// Original height of dialog
+		/// </summary>
+		private int m_height;
+
+		/// <summary>
+		/// Time for next code refresh
+		/// </summary>
+		private DateTime NextRefresh { get; set; }
+
+		/// <summary>
+		/// Current code field
+		/// </summary>
+		private SecretTextBox m_codeField;
 
 		/// <summary>
 		/// Create the  Form
@@ -101,82 +85,256 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
-		/// Click the OK button
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void btnOK_Click(object sender, EventArgs e)
-		{
-			this.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.Close();
-		}
-
-		/// <summary>
 		/// Load the form
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void EnrollForm_Load(object sender, EventArgs e)
 		{
-			string region = CurrentRegion;
-			this.regionsList.Items.Clear();
-			foreach (BattleNetRegion br in Regions)
-			{
-				this.regionsList.Items.Add(br);
-				if (string.Compare(br.Code, region) == 0)
-				{
-					regionsList.SelectedItem = br;
-				}
-			}
-			if (regionsList.SelectedItem == null)
-			{
-				regionsList.SelectedItem = regionsList.Items[0];
-			}
+			m_gap = bnGroup.Top - (btnBattlenet.Top + btnBattlenet.Height);
+			m_bottomGap = this.Height - Math.Max(bnGroup.Top + bnGroup.Height, gw2Group.Top + gw2Group.Height);
+			btnGuildwars.Left = btnBattlenet.Left;
+			btnGuildwars.Top = btnBattlenet.Top + btnBattlenet.Height + m_gap;
+			gw2Group.Left = bnGroup.Left;
+			bnGroup.Visible = false;
+			gw2Group.Visible = false;
+			this.Height = m_height = btnGuildwars.Top + btnGuildwars.Height + m_bottomGap;
+			this.Width = btnBattlenet.Width + 42;
 		}
 
-		/// <summary>
-		/// Get/set the current region
-		/// </summary>
-		public string CurrentRegion
-		{
-			get
-			{
-				return m_currentRegion;
-			}
-			set
-			{
-				string region = value.ToUpper();
-				if (string.IsNullOrEmpty(region) == false && region != "CN" && region != "US" && region != "KR" && region != "TW")
-				{
-					// rewrite obvious ones
-					if (EU_COUNTRIES.Contains(region) == true)
-					{
-						region = "EU";
-					}
-					else if (region == "CA" || region == "NZ" || region == "AU" || region == "BR")
-					{
-						region = "US";
-					}
-					else if (region == "KP")
-					{
-						region = "KR";
-					}
-				}
-
-				m_currentRegion = region;
-			}
-		}
+		#region Battle.Net
 
 		/// <summary>
-		/// Change the region selection
+		/// Click the Battle.net button
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void regionsList_SelectedIndexChanged(object sender, EventArgs e)
+		private void btnBattlenet_Click(object sender, EventArgs e)
 		{
-			CurrentRegion = ((BattleNetRegion)regionsList.SelectedItem).Code;
+			AuthenticatorType = typeof(BattleNetAuthenticator);
+			m_codeField = null;
+
+			// show the right form
+			if (gw2Group.Visible == true)
+			{
+				this.Height = m_height;
+				gw2Group.Visible = false;
+			}
+			bnGroup.Visible = true;
+			this.Height = m_height + bnGroup.Height + m_gap;
+			btnGuildwars.Top = bnGroup.Top + bnGroup.Height + m_gap;
+			btnGuildwars.Left = btnBattlenet.Left;
+
+			// use saved if we have one
+			if (m_bnAuthenticator != null)
+			{
+				CurrentAuthenticator = m_bnAuthenticator;
+				m_codeField = bnCode;
+			}
 		}
+
+		/// <summary>
+		/// Clickc the register button to enroll authenticator
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void gnRegister_Click(object sender, EventArgs e)
+		{
+			if (m_bnAuthenticator == null)
+			{
+				bnSerial.Text = "registering...";
+				m_bnAuthenticator = new BattleNetAuthenticator();
+				System.Threading.Thread thread = new System.Threading.Thread(new System.Threading.ThreadStart(createBnAuthenticator));
+				thread.Start();
+			}
+			CurrentAuthenticator = m_bnAuthenticator;
+			refreshTimer.Enabled = true;
+		}
+
+		/// <summary>
+		/// Enroll the authenticator in a new thread
+		/// </summary>
+		private void createBnAuthenticator()
+		{
+			m_bnAuthenticator.Enroll();
+			m_codeField = bnCode;
+			this.Invoke(new MethodInvoker(delegate()
+				{
+					bnCode.Text = m_bnAuthenticator.CurrentCode;
+					bnSerial.Text = m_bnAuthenticator.Serial.Replace("-", "");
+					bnRestoreCode.Text = m_bnAuthenticator.RestoreCode;
+				}
+			));
+		}
+
+		/// <summary>
+		/// Change the seceret text boxes to allow copying
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void bncopyCheckbox_CheckedChanged(object sender, EventArgs e)
+		{
+			bnCode.SecretMode = !bnAllowCopy.Checked;
+			bnSerial.SecretMode = !bnAllowCopy.Checked;
+			bnRestoreCode.SecretMode = !bnAllowCopy.Checked;
+		}
+
+		/// <summary>
+		/// Click to finish and save authenticator
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void bnFinish_Click(object sender, EventArgs e)
+		{
+			this.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.Close();
+		}
+
+		#endregion
+
+		#region GuildWars2
+
+		/// <summary>
+		/// Click the GuildWars2 button
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void btnGuildwars_Click(object sender, EventArgs e)
+		{
+			AuthenticatorType = typeof(GuildWarsAuthenticator);
+			m_codeField = null;
+
+			// set sizes
+			if (bnGroup.Visible == true)
+			{
+				this.Height = m_height;
+				bnGroup.Visible = false;
+			}
+			btnGuildwars.Top = btnBattlenet.Top + btnBattlenet.Height + m_gap;
+			gw2Group.Visible = true;
+			gw2Group.Top = btnGuildwars.Top + btnGuildwars.Height + m_gap;
+			this.Height = m_height + gw2Group.Height + m_gap;
+
+			// use existing authenticator if we have one
+			if (m_gw2Authenticator != null)
+			{
+				CurrentAuthenticator = m_gw2Authenticator;
+				m_codeField = gw2Code;
+			}
+		}
+
+		/// <summary>
+		/// Click the enroll the new authenticator
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void gw2GenerateCodeButton_Click(object sender, EventArgs e)
+		{
+			gw2Code.Text = "registering...";
+			if (m_gw2Authenticator == null)
+			{
+				m_gw2Authenticator = new GuildWarsAuthenticator();
+				System.Threading.Thread thread = new System.Threading.Thread(new System.Threading.ThreadStart(createGw2Authenticator));
+				thread.Start();
+			}
+			CurrentAuthenticator = m_gw2Authenticator;
+			refreshTimer.Enabled = true;
+		}
+
+		/// <summary>
+		/// Create (and sync time) for GW2 authenticator
+		/// </summary>
+		private void createGw2Authenticator()
+		{
+			m_gw2Authenticator.Enroll(gw2SecretCode.Text.Trim());
+			m_codeField = gw2Code;
+			this.Invoke(new MethodInvoker(delegate()
+				{
+					gw2Code.Text = m_gw2Authenticator.CurrentCode;
+				}
+			));
+		}
+
+		/// <summary>
+		/// Update the code field for the current authenticator - can be called from differetn thread
+		/// </summary>
+		private void updateCode()
+		{
+			if (m_codeField == null || CurrentAuthenticator == null)
+			{
+				return;
+			}
+
+			if (this.InvokeRequired)
+			{
+				this.Invoke(new MethodInvoker(delegate()
+					{
+						m_codeField.Text = CurrentAuthenticator.CurrentCode;
+					}
+				));
+			}
+			else
+			{
+				m_codeField.Text = CurrentAuthenticator.CurrentCode;
+			}
+		}
+		
+		/// <summary>
+		/// Timer tick to update code and progress bar
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void refreshTimer_Tick(object sender, EventArgs e)
+		{
+			if (CurrentAuthenticator != null && m_codeField != null)
+			{
+				DateTime now = DateTime.Now;
+
+				int tillUpdate = (int)((CurrentAuthenticator.ServerTime % 30000L) / 1000L);
+				if (CurrentAuthenticator is BattleNetAuthenticator)
+				{
+					bnProgressBar.Value = tillUpdate;
+				}
+				else if (CurrentAuthenticator is GuildWarsAuthenticator)
+				{
+					gw2ProgressBar.Value = tillUpdate;
+				}
+				if (tillUpdate == 0)
+				{
+					NextRefresh = now;
+				}
+				if (now >= NextRefresh)
+				{
+					NextRefresh = now.AddSeconds(30);
+					updateCode();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Change the secret text boxes to allow copying
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void gw2copyCheckbox_CheckedChanged(object sender, EventArgs e)
+		{
+			gw2Code.SecretMode = !gw2copyCheckbox.Checked;
+		}
+
+		/// <summary>
+		/// Click to finish and save authenticator
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void gw2Finished_Click(object sender, EventArgs e)
+		{
+			this.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.Close();
+		}
+
+		#endregion
 
 	}
 
 }
+

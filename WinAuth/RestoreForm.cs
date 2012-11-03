@@ -98,7 +98,7 @@ namespace WindowsAuthenticator
 			// restore the authenticator
 			try
 			{
-				Authenticator auth = new Authenticator();
+				BattleNetAuthenticator auth = new BattleNetAuthenticator();
 				auth.Restore(serial, restorecode);
 				this.Authenticator = auth;
 

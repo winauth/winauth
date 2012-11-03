@@ -119,7 +119,7 @@ namespace WindowsAuthenticator
 				string text = m_text;
 
 				// if we have spacing, we add a space in between each set of chars
-				if (m_spaceOut != 0)
+				if (m_spaceOut != 0 && m_text != null)
 				{
 					StringBuilder sb = new StringBuilder();
 					for (int i = 0; i < m_text.Length; i += m_spaceOut)
@@ -130,7 +130,7 @@ namespace WindowsAuthenticator
 				}
 
 				// draw the whole string
-				g.DrawString(text, base.Font, brush, new RectangleF(0, 0, base.Width, base.Height), sf);
+				g.DrawString((text != null ? text : string.Empty), base.Font, brush, new RectangleF(0, 0, base.Width, base.Height), sf);
 			}
 		}
 
