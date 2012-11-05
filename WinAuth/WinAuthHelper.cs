@@ -287,6 +287,11 @@ namespace WindowsAuthenticator
 					{
 						config.HideSerial = boolVal;
 					}
+					node = doc.DocumentElement.SelectSingleNode("skin");
+					if (node != null && string.IsNullOrEmpty(node.InnerText) == false)
+					{
+						config.CurrentSkin = node.InnerText;
+					}
 
 					// load the authenticator(s) - may have multiple authenticators in future version
 					XmlNodeList nodes = doc.DocumentElement.SelectNodes("authenticator");

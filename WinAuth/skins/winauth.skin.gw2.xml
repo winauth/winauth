@@ -1247,7 +1247,11 @@ CuUrhgpMoXy1vH37P+0kJ8wGz6DSAAAAAElFTkSuQmCC</base64>
 		</font>
 	</codefield>
 	<serialfield>
-		<visible>false</visible>
+		<left>92</left>
+		<top>220</top>
+		<width>138</width>
+		<height>17</height>
+		<forecolor>#000000</forecolor>
 	</serialfield>
 	<progressbar>
 		<left>105</left>

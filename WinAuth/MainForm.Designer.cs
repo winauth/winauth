@@ -247,8 +247,7 @@ namespace WindowsAuthenticator
 			// 
 			this.menuItemSkin.Name = "menuItemSkin";
 			this.menuItemSkin.Size = new System.Drawing.Size(253, 22);
-			this.menuItemSkin.Text = "Choose Skin...";
-			this.menuItemSkin.Click += new System.EventHandler(this.menuItemSkin_Click);
+			this.menuItemSkin.Text = "Skin";
 			// 
 			// defaultSkinMenuItem
 			// 

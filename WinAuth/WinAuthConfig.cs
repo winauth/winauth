@@ -184,7 +184,7 @@ namespace WindowsAuthenticator
 		{
 			get
 			{
-				if (string.IsNullOrEmpty(_currentSkin) == true && RememberSkin == true)
+				if (RememberSkin == true)
 				{
 					_currentSkin = WinAuthHelper.GetSavedSkin();
 				}
@@ -193,6 +193,10 @@ namespace WindowsAuthenticator
 			set
 			{
 				_currentSkin = value;
+				if (OnConfigChanged != null)
+				{
+					OnConfigChanged(this, new ConfigChangedEventArgs());
+				}
 			}
 		}
 
@@ -407,6 +411,10 @@ namespace WindowsAuthenticator
 			//
 			writer.WriteStartElement("hideserial");
 			writer.WriteValue(this.HideSerial);
+			writer.WriteEndElement();
+			//
+			writer.WriteStartElement("skin");
+			writer.WriteValue(_currentSkin ?? string.Empty);
 			writer.WriteEndElement();
 
 			// save the authenticator to the config file

@@ -171,36 +171,5 @@ namespace WindowsAuthenticator.Properties {
                 return ResourceManager.GetString("SYNCBUTTON_TOOLTIP_TITLE", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
-        ///&lt;skin&gt;
-        ///	&lt;form&gt;
-        ///		&lt;backgroundimage&gt;
-        ///			&lt;base64&gt;iVBORw0KGgoAAAANSUhEUgAAAUAAAAGiCAIAAAAZfoh0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41Ljg3O4BdAAD/gElEQVR4Xuz9B5gc1dX+i9Z0T+ecJ+ekGeWckQCRcxBCCIksECLnYKISksgii5yNA8Y2GOcEzsYmR4MxJplggk1G97f2qtpTMxrxwXfPuec59/nr2TQ11dXV1VX73Su9ay2n63/7r7u7e5j519PT8789x1f4XEdHB0fzXfp1nebfV/j8/zn0/9yB/3+8A87/4l/A/LMfrDL//hfn+Uof4Rvtt+g3/v/gS7/SFf6fg//PHfh/4A [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string winauth_skin_bma_1_1 {
-            get {
-                return ResourceManager.GetString("winauth_skin_bma_1_1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
-        ///&lt;skin&gt;
-        ///	&lt;form&gt;
-        ///		&lt;backgroundimage&gt;
-        ///			&lt;base64&gt;iVBORw0KGgoAAAANSUhEUgAAAUAAAAGiCAIAAAAZfoh0AAAAAXNSR0IArs4c6QAAAARnQU1BAACx
-        ///jwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41
-        ///LjEwMPRyoQAA/39JREFUeF7snQVAFUv7/8/M1kkaJRUMMJAGQUBpBCTsRsUGERW7uwO7u7sbUUQw
-        ///sbuwu7vA/zOzq1e9qKDe+39/73u+d+5xz9nlnD2wn32eZ+aZZ2QftdJKq/+z0gKslVb/h6UFWCut
-        ////g9LC7BWWv0flhZgrbT6PywtwFpp9X9YWoC10ur/sLQAa6XV/2FpAdZKq//D0gKslVb/h6UFWCut
-        ////g9LC/D/ik4fPZKV [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string winauth_skin_gw2 {
-            get {
-                return ResourceManager.GetString("winauth_skin_gw2", resourceCulture);
-            }
-        }
     }
 }

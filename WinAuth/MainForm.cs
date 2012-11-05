@@ -17,6 +17,7 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -45,6 +46,21 @@ namespace WindowsAuthenticator
 		/// Number of seconds for code to display when not on autorefresh
 		/// </summary>
 		public const int CODE_DISPLAY_DURATION = 10;
+
+		/// <summary>
+		/// Set of standard skins include as resources
+		/// </summary>
+		private static Dictionary<string, string> SKINS = new Dictionary<string, string>
+		{
+			{ "Battle.net Mobile", "resource:WindowsAuthenticator.skins.winauth.skin.bma-1.1.xml"},
+			{ "Battle.net Mobile (1.0.1)", "resource:WindowsAuthenticator.skins.winauth.skin.bma-1.0.1.xml"},
+			{ "Cataclysm (keychain)", "resource:WindowsAuthenticator.skins.winauth.skin.cataclysm.xml"},
+			{ "Diablo III", "resource:WindowsAuthenticator.skins.winauth.skin.diablo3.xml"},
+			{ "Diablo III (keychain)", "resource:WindowsAuthenticator.skins.winauth.skin.diablo3-keyfob.xml"},
+			{ "Guild Wars 2", "resource:WindowsAuthenticator.skins.winauth.skin.gw2.xml"},
+			{ "Mists of Pandaria", "resource:WindowsAuthenticator.skins.winauth.skin.mop.xml"},
+			{ "WinAuth (keychain)", "resource:WindowsAuthenticator.skins.winauth.skin.keyfob.xml"}
+		};
 
 		#region Initialization
 
@@ -134,11 +150,11 @@ namespace WindowsAuthenticator
 					{
 						if (m_config.Authenticator is GuildWarsAuthenticator)
 						{
-							LoadSkin("resource:winauth_skin_gw2");
+							LoadSkin(SKINS["Guild Wars 2"]);
 						}
 						else if (m_config.Authenticator is BattleNetAuthenticator)
 						{
-							LoadSkin("resource:winauth_skin_bma_1_1");
+							LoadSkin(SKINS["Battle.net Mobile"]);
 						}
 					}
 				}
@@ -486,6 +502,11 @@ namespace WindowsAuthenticator
 				Config = config;
 				// unhook and rehook hotkey
 				HookHotkey(this.Config);
+				// set skin
+				if (string.IsNullOrEmpty(Config.CurrentSkin) == false)
+				{
+					LoadSkin(Config.CurrentSkin);
+				}
 				// show the new code
 				ShowCode();
 
@@ -1029,6 +1050,9 @@ namespace WindowsAuthenticator
 			this.Config = config;
 			this.Config.OnConfigChanged += new ConfigChangedHandler(OnConfigChanged);
 
+			// load skins into menu
+			AddSkinMenus();
+
 			// load the skin
 			if (string.IsNullOrEmpty(skin) == true)
 			{
@@ -1100,8 +1124,19 @@ namespace WindowsAuthenticator
 			if (skin.IndexOf("resource:") != -1)
 			{
 				skinfile = skin;
-				ResourceManager rm = new ResourceManager("WindowsAuthenticator.Properties.Resources", typeof(MainForm).Assembly);
-				skinxml = rm.GetObject(skin.Substring(9)) as string;
+				skin = skin.Substring(9);
+				//ResourceManager rm = new ResourceManager("WindowsAuthenticator.Properties.Resources", typeof(MainForm).Assembly);
+				//skinxml = rm.GetObject(skin.Substring(9)) as string;
+				using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(skin))
+				{
+					if (stream != null)
+					{
+						using (StreamReader sr = new StreamReader(stream))
+						{
+							skinxml = sr.ReadToEnd();
+						}
+					}
+				}
 			}
 			else if ((skin.IndexOf(Path.DirectorySeparatorChar) != -1 || skin.IndexOf(".") != -1) && File.Exists(skin) == true)
 			{
@@ -1657,6 +1692,45 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Add skins from resources
+		/// </summary>
+		private void AddSkinMenus()
+		{
+			//List<string> skins = new List<string>();
+			//foreach (string name in Assembly.GetExecutingAssembly().GetManifestResourceNames())
+			//{
+			//}
+			//using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("WindowsAuthenticator.skins.winauth.skin.bma-1.1.xml"))
+			//{
+			//	using (StreamReader sr = new StreamReader(stream))
+			//	{
+			//		string r = sr.ReadToEnd();
+			//	}
+			//}
+
+			ToolStripMenuItem skinitem;
+			int skinindex = 1;
+			foreach (string skinname in SKINS.Keys)
+			{
+				skinitem = new ToolStripMenuItem();
+				skinitem.Text = skinname;
+				skinitem.Name = "skinMenuItem_" + skinindex++;
+				skinitem.Tag = SKINS[skinname];
+				skinitem.Click += new System.EventHandler(this.skinMenuItem_Click);
+				menuItemSkin.DropDownItems.Add(skinitem);
+			}
+			//
+			menuItemSkin.DropDownItems.Add("-");
+			//
+			skinitem = new ToolStripMenuItem();
+			skinitem.Text = "Other...";
+			skinitem.Name = "skinMenuItem_0";
+			skinitem.Tag = string.Empty;
+			skinitem.Click += new System.EventHandler(this.skinMenuItem_Click);
+			menuItemSkin.DropDownItems.Add(skinitem);
+		}
+
+		/// <summary>
 		/// Click the Open menu item when on icon tray
 		/// </summary>
 		/// <param name="sender"></param>
@@ -1792,6 +1866,18 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Click menu item to load a skin
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void skinMenuItem_Click(object sender, EventArgs e)
+		{
+			// get the filename of the previous authenticator and load it
+			string skin = ((ToolStripMenuItem)sender).Tag as string;
+			LoadSkin(skin);
+		}
+
+		/// <summary>
 		/// Click the AutoLogin menu item
 		/// </summary>
 		/// <param name="sender"></param>
@@ -1891,16 +1977,6 @@ namespace WindowsAuthenticator
 		{
 			AboutForm about = new AboutForm();
 			about.ShowDialog(this);
-		}
-
-		/// <summary>
-		/// Choose a new skin file
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void menuItemSkin_Click(object sender, EventArgs e)
-		{
-			LoadSkin(null);
 		}
 
 		/// <summary>

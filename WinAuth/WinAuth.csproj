@@ -231,8 +231,17 @@
   <ItemGroup>
     <Content Include="auth.bmp" />
     <Content Include="auth.ico" />
-    <None Include="skins\winauth.skin.bma-1.1.xml" />
-    <None Include="skins\winauth.skin.gw2.xml" />
+    <EmbeddedResource Include="skins\winauth.skin.winbma.xml" />
+    <EmbeddedResource Include="skins\winauth.skin.mop.xml" />
+    <EmbeddedResource Include="skins\winauth.skin.keyfob.xml" />
+    <EmbeddedResource Include="skins\winauth.skin.foobma.xml" />
+    <EmbeddedResource Include="skins\winauth.skin.diablo3-keyfob.xml" />
+    <EmbeddedResource Include="skins\winauth.skin.diablo3.xml" />
+    <EmbeddedResource Include="skins\winauth.skin.default.xml" />
+    <EmbeddedResource Include="skins\winauth.skin.cataclysm.xml" />
+    <EmbeddedResource Include="skins\winauth.skin.bma-1.0.1.xml" />
+    <EmbeddedResource Include="skins\winauth.skin.bma-1.1.xml" />
+    <EmbeddedResource Include="skins\winauth.skin.gw2.xml" />
     <None Include="images\GW2Background.png" />
     <None Include="images\BattleNetBackground.png" />
     <None Include="images\spinner.gif" />
