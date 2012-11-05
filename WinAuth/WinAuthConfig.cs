@@ -366,12 +366,18 @@ namespace WindowsAuthenticator
 		/// Write the data as xml into an XmlWriter
 		/// </summary>
 		/// <param name="writer">XmlWriter to write config</param>
-		public void WriteXmlString(XmlWriter writer)
+		public void WriteXmlString(XmlWriter writer, bool includeFilename = false)
 		{
 			// get the version of the application
 			Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 
 			writer.WriteStartDocument(true);
+			//
+			if (includeFilename == true && string.IsNullOrEmpty(this.Filename) == false)
+			{
+				writer.WriteComment(this.Filename);
+			}
+			//
 			writer.WriteStartElement("WinAuth");
 			writer.WriteAttributeString("version", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(2));
 			//

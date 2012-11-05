@@ -411,7 +411,6 @@ namespace WindowsAuthenticator
 					}
 					try
 					{
-						//SecretData = data;
 						authenticator.SecretData = ConvertAndriodSecretData(data);
 					}
 					catch (Exception ex)
@@ -509,7 +508,6 @@ namespace WindowsAuthenticator
 					}
 					try
 					{
-						//SecretData = data;
 						authenticator.SecretData = data;
 					}
 					catch (Exception ex)

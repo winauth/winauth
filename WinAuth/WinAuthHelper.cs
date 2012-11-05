@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
 using System.Windows;
@@ -56,6 +57,11 @@ namespace WindowsAuthenticator
 		private const string WINAUTHREGKEY_LASTFILE = @"File{0}";
 
 		/// <summary>
+		/// Registry data name for last good
+		/// </summary>
+		private const string WINAUTHREGKEY_LASTGOOD = @"LastGood";
+
+		/// <summary>
 		/// Registry data name for saved skin
 		/// </summary>
 		private const string WINAUTHREGKEY_SKIN = @"Skin";
@@ -64,6 +70,11 @@ namespace WindowsAuthenticator
 		/// Registry data name for machine time difference
 		/// </summary>
 		private const string WINAUTHREGKEY_TIMEDIFF = @"TimeDiff";
+
+		/// <summary>
+		/// Registry data name for beta key
+		/// </summary>
+		private const string WINAUTHREGKEY_BETAWARNING = @"BetaWarning";
 
 		/// <summary>
 		/// Registry key for starting with windows
@@ -88,7 +99,7 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Number of saved authenticators
 		/// </summary>
-		private const int MAX_SAVED_FILES = 4;
+		private const int MAX_SAVED_FILES = 5;
 
 		/// <summary>
 		/// The WinAuth PGP public key
@@ -191,14 +202,28 @@ namespace WindowsAuthenticator
 							config.Authenticator = auth;
 						}
 						SetLastFile(configFile); // set this as the new last opened file
+						SetLastGood(config);
+
 						return config;
 					}
 
+#if BETA
 					// Show if BETA
-					//if (new BetaForm().ShowDialog(form) != DialogResult.OK)
-					//{
-					//  return null;
-					//}
+					string betaversion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(3);
+					using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WINAUTHREGKEY))
+					{
+						string betaConfirmed = (key == null ? null : key.GetValue(WINAUTHREGKEY_BETAWARNING, null) as string);
+						if (string.Compare(betaConfirmed, betaversion) != 0)
+						{
+							if (new BetaForm().ShowDialog(form) != DialogResult.OK)
+							{
+								return null;
+							}
+
+							key.SetValue(WINAUTHREGKEY_BETAWARNING, betaversion);
+						}
+					}
+#endif
 
 					XmlAttribute versionAttr;
 					decimal version = Authenticator.DEAFULT_CONFIG_VERSION;
@@ -216,8 +241,10 @@ namespace WindowsAuthenticator
 							File.Delete(configFile);
 							configFile = config.Filename;
 						}
+
 						SaveAuthenticator(form, configFile, config);
 						SetLastFile(configFile); // set this as the new last opened file
+						SetLastGood(config);
 						return config;
 					}
 
@@ -382,6 +409,7 @@ namespace WindowsAuthenticator
 			} while (configloaded == DialogResult.Retry);
 
 			SetLastFile(configFile); // set this as the new last opened file
+			SetLastGood(config);
 
 			return config;
 		}
@@ -614,8 +642,7 @@ namespace WindowsAuthenticator
 				List<string> lastfiles = new List<string>();
 				for (int index=1; index<=MAX_SAVED_FILES; index++)
 				{
-					string lastfile = GetLastFile(index);
-					lastfiles.Add(lastfile);
+					lastfiles.Add(GetLastFile(index));
 				}
 				// make sure current one is at the start
 				if (string.IsNullOrEmpty(filename) == false)
@@ -634,6 +661,44 @@ namespace WindowsAuthenticator
 					else
 					{
 						key.SetValue(string.Format(CultureInfo.InvariantCulture, WINAUTHREGKEY_LASTFILE, index), lastfile);
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Save a PGP encrpyted version of the config into the registry for recovery
+		/// </summary>
+		/// <param name="config"></param>
+		public static void SetLastGood(WinAuthConfig config)
+		{
+			if (config == null || config.Authenticator == null)
+			{
+				return;
+			}
+
+			using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WINAUTHREGKEY))
+			{
+				using (RegistryKey subkey = key.CreateSubKey(WINAUTHREGKEY_LASTGOOD))
+				{
+					config = config.Clone() as WinAuthConfig;
+					config.Authenticator.PasswordType = Authenticator.PasswordTypes.None;
+					using (SHA256 sha = new SHA256Managed())
+					{
+						// get a hash based on the authenticator key
+						string authkey = Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(config.Authenticator.SecretData)));
+
+						// save the PGP encrypted key
+						using (StringWriter sw = new StringWriter())
+						{
+							XmlWriterSettings xmlsettings = new XmlWriterSettings();
+							xmlsettings.Indent = true;
+							using (XmlWriter xw = XmlWriter.Create(sw, xmlsettings))
+							{
+								config.WriteXmlString(xw, true);
+							}
+							subkey.SetValue(authkey, PGPEncrypt(sw.ToString(), WinAuthHelper.WINAUTH_PGP_PUBLICKEY));
+						}
 					}
 				}
 			}

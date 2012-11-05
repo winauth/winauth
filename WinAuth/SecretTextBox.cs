@@ -47,6 +47,12 @@ namespace WindowsAuthenticator
 		private bool m_secretMode;
 
 		/// <summary>
+		/// Save the font as when we switch secret mode the old font needs resetting
+		/// </summary>
+		private string m_fontFamily;
+		private float m_fontSize;
+
+		/// <summary>
 		/// Create a new SecretTextBox
 		/// </summary>
 		public SecretTextBox()
@@ -69,6 +75,18 @@ namespace WindowsAuthenticator
 				this.Enabled = !value; // we disable so cannot select/copy 
 				this.SetStyle(ControlStyles.UserPaint, value);
 				Text = m_text;
+				//
+				// when we disable secret mode we need to reset the font else sometimes it doesn't show corretly
+				if (m_fontFamily == null)
+				{
+					m_fontFamily = this.Font.FontFamily.Name;
+					m_fontSize = this.Font.Size;
+				}
+				if (value == false)
+				{
+					this.Font = new Font(m_fontFamily, m_fontSize);
+				}
+				//
 				this.Invalidate(); // force it to redraw
 			}
 		}

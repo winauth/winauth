@@ -482,13 +482,6 @@ namespace WindowsAuthenticator
 					save = true;
 				}
 
-				// if this was an import, i.e. an .rms file, then clear authFile so we are forced to save a new name
-				//if (auth.LoadedFormat != Authenticator.FileFormat.WinAuth)
-				//{
-				//  config.Filename = null;
-				//  save = true;
-				//}
-
 				// set up the Authenticator
 				Config = config;
 				// unhook and rehook hotkey
@@ -656,6 +649,7 @@ namespace WindowsAuthenticator
 			Config = Config.Clone() as WinAuthConfig;
 			Config.Authenticator = authenticator;
 			Config.AutoLogin = null; // clear autologin
+
 			// save config data
 			if (SaveAuthenticator(null) == false)
 			{
@@ -663,6 +657,8 @@ namespace WindowsAuthenticator
 				Config = oldconfig;
 				return false;
 			}
+
+			WinAuthHelper.SetLastGood(Config);
 
 			// refresh this machine time diff based on this new authenticator
 			WinAuthHelper.SetMachineTimeDiff(authenticator.ServerTimeDiff);
@@ -742,6 +738,8 @@ namespace WindowsAuthenticator
 				Config = oldconfig;
 				return false;
 			}
+
+			WinAuthHelper.SetLastGood(Config);
 
 			// unhook and rehook hotkey
 			HookHotkey(this.Config);
@@ -840,6 +838,8 @@ namespace WindowsAuthenticator
 				Config = oldconfig;
 				return false;
 			}
+
+			WinAuthHelper.SetLastGood(Config);
 
 			// unhook and rehook hotkey
 			HookHotkey(this.Config);
@@ -1020,12 +1020,13 @@ namespace WindowsAuthenticator
 				}
 			}
 			// load config data
-			this.Config = WinAuthHelper.LoadConfig(this, configFile, password);
-			if (this.Config == null)
+			WinAuthConfig config = WinAuthHelper.LoadConfig(this, configFile, password);
+			if (config == null)
 			{
 				System.Diagnostics.Process.GetCurrentProcess().Kill();
 				return;
 			}
+			this.Config = config;
 			this.Config.OnConfigChanged += new ConfigChangedHandler(OnConfigChanged);
 
 			// load the skin
@@ -1626,8 +1627,8 @@ namespace WindowsAuthenticator
 			index = 1;
 			do
 			{
-				string lastloaded = WinAuthHelper.GetLastFile(index);
-				if (string.IsNullOrEmpty(lastloaded) == true)
+				object lastloaded = WinAuthHelper.GetLastFile(index);
+				if (lastloaded == null || (lastloaded is string && ((string)lastloaded).Length == 0))
 				{
 					break;
 				}
@@ -1645,8 +1646,8 @@ namespace WindowsAuthenticator
 				ToolStripMenuItem item = new ToolStripMenuItem();
 				item.Name = "lastLoadedMenuItem" + index;
 				item.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D1 + (index-1))));
-				item.Text = index + " " + lastloaded;
-				item.Tag = lastloaded;
+				item.Text = index + " " + (lastloaded is WinAuthConfig ? ((WinAuthConfig)lastloaded).Filename : (string)lastloaded);
+				item.Tag = (lastloaded is WinAuthConfig ? ((WinAuthConfig)lastloaded).Filename : (string)lastloaded);
 				item.Click += new System.EventHandler(this.lastloadedMenuItem_Click);
 				contextMenuStrip.Items.Insert(nextindex, item);
 

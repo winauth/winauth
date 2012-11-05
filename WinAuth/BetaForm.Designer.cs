@@ -46,7 +46,7 @@ namespace WindowsAuthenticator
 			this.groupBox1.Controls.Add(this.ckAgree);
 			this.groupBox1.Location = new System.Drawing.Point(12, 12);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(543, 285);
+			this.groupBox1.Size = new System.Drawing.Size(543, 230);
 			this.groupBox1.TabIndex = 2;
 			this.groupBox1.TabStop = false;
 			// 
@@ -57,7 +57,7 @@ namespace WindowsAuthenticator
 			this.betaLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.betaLabel.Location = new System.Drawing.Point(6, 16);
 			this.betaLabel.Name = "betaLabel";
-			this.betaLabel.Size = new System.Drawing.Size(515, 234);
+			this.betaLabel.Size = new System.Drawing.Size(515, 174);
 			this.betaLabel.TabIndex = 4;
 			this.betaLabel.Text = resources.GetString("betaLabel.Text");
 			// 
@@ -65,11 +65,11 @@ namespace WindowsAuthenticator
 			// 
 			this.ckAgree.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.ckAgree.AutoSize = true;
-			this.ckAgree.Location = new System.Drawing.Point(117, 248);
+			this.ckAgree.Location = new System.Drawing.Point(117, 193);
 			this.ckAgree.Name = "ckAgree";
-			this.ckAgree.Size = new System.Drawing.Size(302, 17);
+			this.ckAgree.Size = new System.Drawing.Size(298, 17);
 			this.ckAgree.TabIndex = 1;
-			this.ckAgree.Text = "OK, I read the above, made a backup and am ready to go.";
+			this.ckAgree.Text = "OK, I read the above and will make an unencrypted copy.";
 			this.ckAgree.UseVisualStyleBackColor = true;
 			this.ckAgree.CheckedChanged += new System.EventHandler(this.ckAgree_CheckedChanged);
 			// 
@@ -77,7 +77,7 @@ namespace WindowsAuthenticator
 			// 
 			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btnCancel.Location = new System.Drawing.Point(480, 303);
+			this.btnCancel.Location = new System.Drawing.Point(480, 248);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(75, 23);
 			this.btnCancel.TabIndex = 1;
@@ -89,7 +89,7 @@ namespace WindowsAuthenticator
 			this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.btnOK.Enabled = false;
-			this.btnOK.Location = new System.Drawing.Point(399, 303);
+			this.btnOK.Location = new System.Drawing.Point(399, 248);
 			this.btnOK.Name = "btnOK";
 			this.btnOK.Size = new System.Drawing.Size(75, 23);
 			this.btnOK.TabIndex = 0;
@@ -103,7 +103,7 @@ namespace WindowsAuthenticator
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.btnCancel;
-			this.ClientSize = new System.Drawing.Size(567, 338);
+			this.ClientSize = new System.Drawing.Size(567, 283);
 			this.Controls.Add(this.btnOK);
 			this.Controls.Add(this.btnCancel);
 			this.Controls.Add(this.groupBox1);

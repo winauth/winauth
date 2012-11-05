@@ -24,6 +24,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace WindowsAuthenticator
 {
@@ -82,10 +83,27 @@ namespace WindowsAuthenticator
 			}
 			else
 			{
-				string configFile = WinAuthHelper.GetLastFile(1);
-				if (string.IsNullOrEmpty(configFile) == false && File.Exists(configFile) == true)
+				object config = WinAuthHelper.GetLastFile(1);
+				if (config != null)
 				{
-					errorreport.ConfigFileContents = File.ReadAllText(configFile);
+					if (config is string && ((string)config).Length != 0 && File.Exists((string)config) == true)
+					{
+						errorreport.ConfigFileContents = File.ReadAllText((string)config);
+					}
+					else if (config is WinAuthConfig)
+					{
+						using (MemoryStream ms = new MemoryStream())
+						{
+							XmlWriterSettings settings = new XmlWriterSettings();
+							settings.Indent = true;
+							using (XmlWriter writer = XmlWriter.Create(ms, settings))
+							{
+								((WinAuthConfig)config).WriteXmlString(writer);
+							}
+							ms.Position = 0;
+							errorreport.ConfigFileContents = new StreamReader(ms).ReadToEnd();
+						}
+					}
 				}
 			}
 			errorreport.ShowDialog(this);
