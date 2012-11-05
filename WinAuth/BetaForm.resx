@@ -118,13 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="betaLabel.Text" xml:space="preserve">
-    <value>This is BETA version of WinAuth {0}.
+    <value>This is a BETA version of WinAuth {0}.
 
-Whilst every effort has been made to ensure your authenticator data cannot be corrupt, errors can happen.
+Whilst every effort has been made to ensure your authenticator data cannot become corrupt, errors can happen.
 
-PLEASE MAKE A UNENCRYPTED COPY OF YOUR CURRENT AUTHENTICATOR FILES.
+Therefore, please make an UNENCRYPTED copy of yrou current authenticator files. Or, write down your RESTORE CODE and SERIAL NUMBER.
 
-After this window closes, eight-click within the WinAuth window and select "Save...", choose a new file name and not overwriting your current file. Select "I do NOT want to use a password or encryption".
+Cancel this dialog and run the previous version of WinAuth. Right-click within the WinAuth window and select "Save...", choose a new file name and not overwriting your current file. Select "I do NOT want to use a password or encryption".
 
 Once you have made a copy you will always be able to restore that previous version. If you are at all unsure, click Cancel or remove the authenticator from your online account before proceeding.
 </value>

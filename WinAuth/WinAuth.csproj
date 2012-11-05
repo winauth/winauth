@@ -30,7 +30,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;BETA</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -231,7 +231,6 @@
   <ItemGroup>
     <Content Include="auth.bmp" />
     <Content Include="auth.ico" />
-    <EmbeddedResource Include="skins\winauth.skin.winbma.xml" />
     <EmbeddedResource Include="skins\winauth.skin.mop.xml" />
     <EmbeddedResource Include="skins\winauth.skin.keyfob.xml" />
     <EmbeddedResource Include="skins\winauth.skin.foobma.xml" />

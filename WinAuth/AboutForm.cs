@@ -51,6 +51,9 @@ namespace WindowsAuthenticator
 			// get the version of the application
 			Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 			string debug = string.Empty;
+#if BETA
+			debug = " (BETA)";
+#endif
 #if DEBUG
 			debug = " (DEBUG)";
 #endif
