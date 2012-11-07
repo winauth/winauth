@@ -329,6 +329,7 @@ namespace WindowsAuthenticator
 										{
 											break;
 										}
+										password = passwordForm.Password;
 
 										try
 										{
