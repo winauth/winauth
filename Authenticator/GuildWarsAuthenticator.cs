@@ -56,18 +56,22 @@ namespace WindowsAuthenticator
 		private const int CODE_DIGITS = 6;
 
 		/// <summary>
-		/// Type of file format for loading key
+		/// URL used to sync time
 		/// </summary>
-		//public enum FileFormat
-		//{
-		//	WinAuth, // WinAuth xml
-		//	Android, // Android BMA
-		//	Midp,
-		//}
-
 		private const string TIME_SYNC_URL = "http://www.google.com";
 
 		#region Authenticator data
+
+		public override string Serial
+		{
+			get
+			{
+				return Base32.getInstance().Encode(SecretKey);
+			}
+			set
+			{
+			}
+		}
 
 		/// <summary>
 		/// Get/set the combined secret data value as hex coded string arrays

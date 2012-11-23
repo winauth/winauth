@@ -911,13 +911,10 @@ namespace WindowsAuthenticator
 					CopyCodeToClipboard();
 				}
 
-				if (Authenticator is BattleNetAuthenticator)
+				serialLabel.Text = Authenticator.Serial;
+				if (HideSerial == false)
 				{
-					serialLabel.Text = ((BattleNetAuthenticator)Authenticator).Serial;
-					if (HideSerial == false)
-					{
-						serialLabel.Visible = true;
-					}
+					serialLabel.Visible = true;
 				}
 				CodeDisplayed = DateTime.Now;
 			}
@@ -1069,10 +1066,8 @@ namespace WindowsAuthenticator
 
 			Authenticator authenticator = this.Authenticator;
 			serialLabel.Visible = !Config.HideSerial;
-			if (authenticator is BattleNetAuthenticator)
-			{
-				serialLabel.Text = (authenticator != null ? ((BattleNetAuthenticator)authenticator).Serial : string.Empty);
-			}
+			serialLabel.Text = (authenticator != null ? authenticator.Serial : string.Empty);
+
 			CodeField.Text = (authenticator != null && Config.AutoRefresh == true ? authenticator.CurrentCode : string.Empty);
 			if (CodeField is SecretTextBox)
 			{
@@ -1637,7 +1632,6 @@ namespace WindowsAuthenticator
 
 			hideSerialMenuItem.Enabled = (Authenticator != null);
 			hideSerialMenuItem.Checked = (hideSerialMenuItem.Enabled == true ? HideSerial : false);
-			hideSerialMenuItem.Visible = (Authenticator != null && Authenticator is BattleNetAuthenticator);
 
 			saveAsMenuItem.Enabled = (Authenticator != null);
 

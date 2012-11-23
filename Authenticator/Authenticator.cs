@@ -46,7 +46,7 @@ using OpenNETCF.Security.Cryptography;
 namespace WindowsAuthenticator
 {
 	/// <summary>
-	/// Class that implements Battle.net Mobile Authenticator v1.1.0.
+	/// Class that implements base RFC 4226 an RFC 6238 authenticator
 	/// </summary>
 	public abstract class Authenticator : ICloneable
 	{
@@ -71,12 +71,12 @@ namespace WindowsAuthenticator
 		public const decimal DEAFULT_CONFIG_VERSION = (decimal)1.6;
 
 		/// <summary>
-		/// Name attribute of the "string" hash element in the Mobile Authenticator file
+		/// Name attribute of the "string" hash element in the Battle.net Mobile Authenticator file
 		/// </summary>
 		private const string BMA_HASH_NAME = "com.blizzard.bma.AUTH_STORE.HASH";
 
 		/// <summary>
-		/// Name attribute of the "long" offset element in the Mobile Authenticator file
+		/// Name attribute of the "long" offset element in the Battle.net Mobile Authenticator file
 		/// </summary>
 		private const string BMA_OFFSET_NAME = "com.blizzard.bma.AUTH_STORE.CLOCK_OFFSET";
 
@@ -86,7 +86,7 @@ namespace WindowsAuthenticator
 		private const int DEFAULT_CODE_DIGITS = 6;
 
 		/// <summary>
-		/// Private encrpytion key used to encrypt mobile authenticator data.
+		/// Private encrpytion key used to encrypt Battle.net mobile authenticator data.
 		/// </summary>
 		private static byte[] MOBILE_AUTHENTICATOR_KEY = new byte[]
 			{
@@ -108,6 +108,11 @@ namespace WindowsAuthenticator
 		}
 
 		#region Authenticator data
+
+		/// <summary>
+		/// Serial number of authenticator
+		/// </summary>
+		public virtual string Serial { get; set; }
 
 		/// <summary>
 		/// Secret key used for Authenticator
@@ -150,7 +155,6 @@ namespace WindowsAuthenticator
 			}
 			set
 			{
-				// for Battle.net, extract key + serial
 				if (string.IsNullOrEmpty(value) == false)
 				{
 					SecretKey = Authenticator.StringToByteArray(value);
@@ -237,21 +241,6 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
-		/// Synchorise this authenticator's time with server time. We update our data record with the difference from our UTC time.
-		/// </summary>
-		public abstract void Sync();
-
-		/// <summary>
-		/// Restore an authenticator from the serial number and restore code.
-		/// </summary>
-		/// <param name="serial">serial code, e.g. US-1234-5678-1234</param>
-		/// <param name="restoreCode">restore code given on enroll, 10 chars.</param>
-		public virtual void Restore(string serial, string restoreCode)
-		{
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
 		/// Calculate the current code for the authenticator.
 		/// </summary>
 		/// <param name="resyncTime">flag to resync time</param>
@@ -298,10 +287,24 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
-		/// Calculate the restore code for an authenticator. This is taken from the last 10 bytes of a digest of the serial and secret key,
-		/// which is then specially encoded to alphanumerics.
+		/// Synchorise this authenticator's time with server time. We update our data record with the difference from our UTC time.
 		/// </summary>
-		/// <returns>restore code for authenticator (always 10 chars)</returns>
+		public abstract void Sync();
+
+		/// <summary>
+		/// Restore an authenticator from the serial and code (only used in Battle.net)
+		/// </summary>
+		/// <param name="serial">serial code, e.g. US-1234-5678-1234</param>
+		/// <param name="restoreCode">restore code given on enroll, 10 chars.</param>
+		public virtual void Restore(string serial, string restoreCode)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Calculate the Battle.net restore code for an authenticator.
+		/// </summary>
+		/// <returns>restore code for authenticator</returns>
 		protected virtual string BuildRestoreCode()
     {
 			throw new NotImplementedException();
@@ -309,12 +312,25 @@ namespace WindowsAuthenticator
 
 		#region Load / Save
 
+		/// <summary>
+		/// Load an authenticator from a Stream with an explicit password
+		/// </summary>
+		/// <param name="stream">Stream to read</param>
+		/// <param name="password">explicit password if requried</param>
+		/// <returns>loaded Authenticator</returns>
 		public static Authenticator ReadFromStream(Stream stream, string password)
 		{
 			Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 			return ReadFromStream(stream, password, decimal.Parse(version.ToString(2)));
 		}
 
+		/// <summary>
+		/// Load an authenticator from a Stream with an explicit password for this current version
+		/// </summary>
+		/// <param name="stream">Stream to read</param>
+		/// <param name="password">explicit password if requried</param>
+		/// <param name="version">expected version of authenticator</param>
+		/// <returns>loaded Authenticator</returns>
 		public static Authenticator ReadFromStream(Stream stream, string password, decimal version)
 		{
 			using (XmlReader xr = XmlReader.Create(stream))
@@ -535,6 +551,10 @@ namespace WindowsAuthenticator
 			}
 		}
 
+		/// <summary>
+		/// Write this authenticator into an XmlWriter
+		/// </summary>
+		/// <param name="writer">XmlWriter to receive authenticator</param>
 		public void WriteToWriter(XmlWriter writer)
 		{
 			writer.WriteStartElement("authenticator");

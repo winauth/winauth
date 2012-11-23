@@ -155,7 +155,7 @@ namespace WindowsAuthenticator.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Synchronize the time in your authenticator with Battle.net. Use this if your code is not working..
+        ///   Looks up a localized string similar to Synchronize the time in your authenticator with the server. Use this if your code is not working..
         /// </summary>
         internal static string SYNCBUTTON_TOOLTIP {
             get {

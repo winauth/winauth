@@ -124,7 +124,7 @@
     <value>Copy To Clipboard</value>
   </data>
   <data name="SYNCBUTTON_TOOLTIP" xml:space="preserve">
-    <value>Synchronize the time in your authenticator with Battle.net. Use this if your code is not working.</value>
+    <value>Synchronize the time in your authenticator with the server. Use this if your code is not working.</value>
   </data>
   <data name="AUTOLOGIN_TBADVANCED_TOOLTIP" xml:space="preserve">
     <value>You can use a mixture of key command and plain text to build up your string.
