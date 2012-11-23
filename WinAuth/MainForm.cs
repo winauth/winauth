@@ -1037,6 +1037,19 @@ namespace WindowsAuthenticator
 					configFile = arg;
 				}
 			}
+
+			// load skins into menu
+			AddSkinMenus();
+
+#if BETA
+			// show the beta warning if needed
+			if (WinAuthHelper.BetaWarning(this) == false)
+			{
+				System.Diagnostics.Process.GetCurrentProcess().Kill();
+				return;
+			}
+#endif
+
 			// load config data
 			WinAuthConfig config = WinAuthHelper.LoadConfig(this, configFile, password);
 			if (config == null)
@@ -1044,11 +1057,9 @@ namespace WindowsAuthenticator
 				System.Diagnostics.Process.GetCurrentProcess().Kill();
 				return;
 			}
+
 			this.Config = config;
 			this.Config.OnConfigChanged += new ConfigChangedHandler(OnConfigChanged);
-
-			// load skins into menu
-			AddSkinMenus();
 
 			// load the skin
 			if (string.IsNullOrEmpty(skin) == true)
@@ -1061,10 +1072,12 @@ namespace WindowsAuthenticator
 				LoadSkin(skin);
 			}
 
-			// set title
-			notifyIcon.Text = this.Text = WinAuth.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
-
 			Authenticator authenticator = this.Authenticator;
+
+			// set title
+			notifyIcon.Text = this.Text = WinAuth.APPLICATION_TITLE + (authenticator != null ? " - " + Path.GetFileNameWithoutExtension(Config.Filename) : string.Empty);
+
+			// set serial
 			serialLabel.Visible = !Config.HideSerial;
 			serialLabel.Text = (authenticator != null ? authenticator.Serial : string.Empty);
 
@@ -1085,7 +1098,7 @@ namespace WindowsAuthenticator
 			HookHotkey(this.Config);
 
 			// finally enable the timer to show code changes
-			refreshTimer.Enabled = true;			
+			refreshTimer.Enabled = true;
 		}
 
 		/// <summary>
@@ -2067,7 +2080,7 @@ namespace WindowsAuthenticator
 		void OnConfigChanged(object source, ConfigChangedEventArgs args)
 		{
 			// resave on any changes
-			if (string.IsNullOrEmpty(Config.Filename) == false)
+			if (Config != null && Config.Authenticator != null && string.IsNullOrEmpty(Config.Filename) == false)
 			{
 				SaveAuthenticator(Config.Filename);
 			}

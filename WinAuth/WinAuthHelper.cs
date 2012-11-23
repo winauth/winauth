@@ -207,24 +207,6 @@ namespace WindowsAuthenticator
 						return config;
 					}
 
-#if BETA
-					// Show if BETA
-					string betaversion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(3);
-					using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WINAUTHREGKEY))
-					{
-						string betaConfirmed = (key == null ? null : key.GetValue(WINAUTHREGKEY_BETAWARNING, null) as string);
-						if (string.Compare(betaConfirmed, betaversion) != 0)
-						{
-							if (new BetaForm().ShowDialog(form) != DialogResult.OK)
-							{
-								return null;
-							}
-
-							key.SetValue(WINAUTHREGKEY_BETAWARNING, betaversion);
-						}
-					}
-#endif
-
 					XmlAttribute versionAttr;
 					decimal version = Authenticator.DEAFULT_CONFIG_VERSION;
 					if ((versionAttr = node.Attributes["version"]) != null && (version = decimal.Parse(versionAttr.InnerText, System.Globalization.CultureInfo.InvariantCulture)) < (decimal)1.4)
@@ -324,7 +306,7 @@ namespace WindowsAuthenticator
 										DialogResult result = passwordForm.ShowDialog(form);
 										if (result != System.Windows.Forms.DialogResult.OK)
 										{
-											return null;
+											return config;
 										}
 										password = passwordForm.Password;
 
@@ -341,7 +323,7 @@ namespace WindowsAuthenticator
 											MessageBox.Show(form, "Invalid password", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
 											if (retries++ >= MAX_PASSWORD_RETRIES - 1)
 											{
-												return null;
+												return config;
 											}
 										}
 									} while (true);
@@ -773,6 +755,34 @@ namespace WindowsAuthenticator
 				key.SetValue(WINAUTHREGKEY_TIMEDIFF, diff, RegistryValueKind.QWord);
 			}
 		}
+
+#if BETA
+		/// <summary>
+		/// Display a beta warning and return if true if we accepted. Beta version set in registry so
+		/// we don't have to show again.
+		/// </summary>
+		/// <returns>true if beta accetped</returns>
+		public static bool BetaWarning(MainForm form)
+		{
+			// Show if BETA
+			string betaversion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(3);
+			using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WINAUTHREGKEY))
+			{
+				string betaConfirmed = (key == null ? null : key.GetValue(WINAUTHREGKEY_BETAWARNING, null) as string);
+				if (string.Compare(betaConfirmed, betaversion) != 0)
+				{
+					if (new BetaForm().ShowDialog(form) != DialogResult.OK)
+					{
+						return false;
+					}
+
+					key.SetValue(WINAUTHREGKEY_BETAWARNING, betaversion);
+				}
+			}
+
+			return true;
+		}
+#endif
 
 		/// <summary>
 		/// Build a PGP key pair
