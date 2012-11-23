@@ -96,7 +96,7 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Flag to hide serial number
 		/// </summary>
-		private bool _hideSerial;
+		private bool _hideSerial = true;
 
 		/// <summary>
 		/// Auto login sequence

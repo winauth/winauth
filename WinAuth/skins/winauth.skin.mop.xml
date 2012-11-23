@@ -5087,6 +5087,10 @@ hQ08AAAAAElFTkSuQmCC</base64>
 		<width>138</width>
 		<height>17</height>
 		<forecolor>#000000</forecolor>
+		<font>
+			<name>Arial</name>
+			<size>10</size>
+		</font>
 	</serialfield>
 	<progressbar>
 		<left>70</left>

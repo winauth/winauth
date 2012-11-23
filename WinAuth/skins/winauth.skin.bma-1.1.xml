@@ -23,6 +23,10 @@
 		<top>160</top>
 		<width>138</width>
 		<height>17</height>
+		<font>
+			<name>Arial</name>
+			<size>10</size>
+		</font>
 	</serialfield>
 	<progressbar>
 		<left>25</left>

@@ -1252,6 +1252,10 @@ CuUrhgpMoXy1vH37P+0kJ8wGz6DSAAAAAElFTkSuQmCC</base64>
 		<width>138</width>
 		<height>17</height>
 		<forecolor>#000000</forecolor>
+		<font>
+			<name>Arial</name>
+			<size>10</size>
+		</font>
 	</serialfield>
 	<progressbar>
 		<left>105</left>
