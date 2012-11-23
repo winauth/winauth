@@ -308,9 +308,6 @@ namespace WindowsAuthenticator
 							{
 								try
 								{
-									//auth = new Authenticator();
-									//auth.Load(authenticatorNode, password, version);
-									//config.Authenticator = auth;
 									using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(authenticatorNode.OuterXml)))
 									{
 										config.Authenticator = Authenticator.ReadFromStream(ms, password, version);
@@ -327,15 +324,12 @@ namespace WindowsAuthenticator
 										DialogResult result = passwordForm.ShowDialog(form);
 										if (result != System.Windows.Forms.DialogResult.OK)
 										{
-											break;
+											return null;
 										}
 										password = passwordForm.Password;
 
 										try
 										{
-											//auth = new Authenticator();
-											//auth.Load(authenticatorNode, passwordForm.Password, version);
-											//config.Authenticator = auth;
 											using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(authenticatorNode.OuterXml)))
 											{
 												config.Authenticator = Authenticator.ReadFromStream(ms, password, version);
@@ -347,7 +341,7 @@ namespace WindowsAuthenticator
 											MessageBox.Show(form, "Invalid password", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
 											if (retries++ >= MAX_PASSWORD_RETRIES - 1)
 											{
-												break;
+												return null;
 											}
 										}
 									} while (true);
@@ -517,12 +511,6 @@ namespace WindowsAuthenticator
 				{
 					// import the file
 					data = ImportAuthenticator(configFile, null);
-
-					// if this was an import, i.e. an .rms file, then clear authFile so we aare forcesto save a new name
-					//if (data != null && data.LoadedFormat != Authenticator.FileFormat.WinAuth)
-					//{
-					//  configFile = null;
-					//}
 				}
 				catch (EncrpytedSecretDataException)
 				{
@@ -601,6 +589,7 @@ namespace WindowsAuthenticator
 			// create the xml
 			XmlWriterSettings settings = new XmlWriterSettings();
 			settings.Indent = true;
+			settings.Encoding = Encoding.UTF8;
 
 			// Issue 41 (http://code.google.com/p/winauth/issues/detail?id=41): saving may crash leaving file corrupt, so write into memory stream first before an atomic file write
 			using (MemoryStream ms = new MemoryStream())
