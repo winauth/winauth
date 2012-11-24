@@ -524,6 +524,11 @@ namespace WindowsAuthenticator
 					}
 					try
 					{
+						// pre-version 2 we kept compatability with the Android file
+						if (version < (decimal)2)
+						{
+							data = ConvertAndriodSecretData(data);
+						}
 						authenticator.SecretData = data;
 					}
 					catch (Exception ex)
