@@ -38,7 +38,7 @@ namespace WindowsAuthenticator
 			this.gw2copyCheckbox = new System.Windows.Forms.CheckBox();
 			this.gw2Code = new WindowsAuthenticator.SecretTextBox();
 			this.gw2ProgressBar = new System.Windows.Forms.ProgressBar();
-			this.gw2Finished = new System.Windows.Forms.Button();
+			this.gw2Finish = new System.Windows.Forms.Button();
 			this.gw2GenerateCodeButton = new System.Windows.Forms.Button();
 			this.gw2SecretCode = new System.Windows.Forms.TextBox();
 			this.label9 = new System.Windows.Forms.Label();
@@ -79,13 +79,13 @@ namespace WindowsAuthenticator
 			// btnCancel
 			// 
 			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.btnCancel.Location = new System.Drawing.Point(759, 514);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(75, 23);
 			this.btnCancel.TabIndex = 4;
 			this.btnCancel.Text = "Cancel";
 			this.btnCancel.UseVisualStyleBackColor = true;
+			this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
 			// 
 			// btnBattlenet
 			// 
@@ -116,7 +116,7 @@ namespace WindowsAuthenticator
 			this.gw2Group.Controls.Add(this.gw2copyCheckbox);
 			this.gw2Group.Controls.Add(this.gw2Code);
 			this.gw2Group.Controls.Add(this.gw2ProgressBar);
-			this.gw2Group.Controls.Add(this.gw2Finished);
+			this.gw2Group.Controls.Add(this.gw2Finish);
 			this.gw2Group.Controls.Add(this.gw2GenerateCodeButton);
 			this.gw2Group.Controls.Add(this.gw2SecretCode);
 			this.gw2Group.Controls.Add(this.label9);
@@ -164,15 +164,15 @@ namespace WindowsAuthenticator
 			this.gw2ProgressBar.Step = 1;
 			this.gw2ProgressBar.TabIndex = 7;
 			// 
-			// gw2Finished
+			// gw2Finish
 			// 
-			this.gw2Finished.Location = new System.Drawing.Point(118, 294);
-			this.gw2Finished.Name = "gw2Finished";
-			this.gw2Finished.Size = new System.Drawing.Size(70, 22);
-			this.gw2Finished.TabIndex = 4;
-			this.gw2Finished.Text = "Save";
-			this.gw2Finished.UseVisualStyleBackColor = true;
-			this.gw2Finished.Click += new System.EventHandler(this.gw2Finished_Click);
+			this.gw2Finish.Location = new System.Drawing.Point(118, 294);
+			this.gw2Finish.Name = "gw2Finish";
+			this.gw2Finish.Size = new System.Drawing.Size(70, 22);
+			this.gw2Finish.TabIndex = 4;
+			this.gw2Finish.Text = "Save";
+			this.gw2Finish.UseVisualStyleBackColor = true;
+			this.gw2Finish.Click += new System.EventHandler(this.btnFinish_Click);
 			// 
 			// gw2GenerateCodeButton
 			// 
@@ -398,7 +398,7 @@ namespace WindowsAuthenticator
 			this.bnFinish.TabIndex = 4;
 			this.bnFinish.Text = "Save";
 			this.bnFinish.UseVisualStyleBackColor = true;
-			this.bnFinish.Click += new System.EventHandler(this.bnFinish_Click);
+			this.bnFinish.Click += new System.EventHandler(this.btnFinish_Click);
 			// 
 			// bnLabel1
 			// 
@@ -415,7 +415,6 @@ namespace WindowsAuthenticator
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.CancelButton = this.btnCancel;
 			this.ClientSize = new System.Drawing.Size(846, 549);
 			this.ControlBox = false;
 			this.Controls.Add(this.btnGuildwars);
@@ -451,7 +450,7 @@ namespace WindowsAuthenticator
 		private System.Windows.Forms.Timer refreshTimer;
 		private System.Windows.Forms.CheckBox gw2copyCheckbox;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Button gw2Finished;
+		private System.Windows.Forms.Button gw2Finish;
 		private System.Windows.Forms.GroupBox bnGroup;
 		private System.Windows.Forms.Label bnLabel1;
 		private System.Windows.Forms.Button bnFinish;

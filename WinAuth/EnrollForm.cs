@@ -180,12 +180,54 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Click to cancel authenticator. If we have created a code, prompt in case this was unintentional
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void btnCancel_Click(object sender, EventArgs e)
+		{
+			if (CurrentAuthenticator != null)
+			{
+				DialogResult result = MessageBox.Show(this,
+					"You have created a new authenticator but it has not yet been saved.\r\n\r\n"
+					+ "If you have attached the authenticator to your account without saving, you might not be able to login in the future.\r\n\r\n"
+					+ "Do you want to save your authenticator?",
+					WinAuth.APPLICATION_NAME,
+					MessageBoxButtons.YesNoCancel,
+					MessageBoxIcon.Question,
+					MessageBoxDefaultButton.Button1);
+				if (result == System.Windows.Forms.DialogResult.Cancel)
+				{
+					// go back to dialog
+					return;
+				}
+				else if (result == System.Windows.Forms.DialogResult.Yes)
+				{
+					// return OK to do save
+					this.DialogResult = System.Windows.Forms.DialogResult.OK;
+					this.Close();
+					return;
+				}
+			}
+
+			// cancel dialog and don't save
+			this.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.Close();
+		}
+
+		/// <summary>
 		/// Click to finish and save authenticator
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void bnFinish_Click(object sender, EventArgs e)
+		private void btnFinish_Click(object sender, EventArgs e)
 		{
+			if (this.CurrentAuthenticator == null)
+			{
+				MessageBox.Show(this, "You need to click 'Create Authenticator' before it can be saved.", WinAuth.APPLICATION_NAME, MessageBoxButtons.OK, MessageBoxIcon.Information);
+				return;
+			}
+
 			this.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.Close();
 		}
@@ -319,17 +361,6 @@ namespace WindowsAuthenticator
 		private void gw2copyCheckbox_CheckedChanged(object sender, EventArgs e)
 		{
 			gw2Code.SecretMode = !gw2copyCheckbox.Checked;
-		}
-
-		/// <summary>
-		/// Click to finish and save authenticator
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void gw2Finished_Click(object sender, EventArgs e)
-		{
-			this.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.Close();
 		}
 
 		#endregion
