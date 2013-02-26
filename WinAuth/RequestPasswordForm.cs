@@ -147,6 +147,24 @@ namespace WindowsAuthenticator
 		}
 
 		/// <summary>
+		/// Click Cancel
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void btnCancel_Click(object sender, EventArgs e)
+		{
+			DialogResult result = MessageBox.Show(this,
+				"You must pick an encryption option to save your authenticator.\r\n\r\n"
+				+ "If you have attached the authenticator to your account without saving, you might not be able to login in the future.\r\n\r\n"
+				+ "Are you sure you want to cancel?",
+				WinAuth.APPLICATION_NAME,
+				MessageBoxButtons.YesNo,
+				MessageBoxIcon.Question,
+				MessageBoxDefaultButton.Button2);
+			this.DialogResult = (result == System.Windows.Forms.DialogResult.Yes ? System.Windows.Forms.DialogResult.Cancel : System.Windows.Forms.DialogResult.None);
+		}
+
+		/// <summary>
 		/// Click any of the password type radio button
 		/// </summary>
 		/// <param name="sender"></param>
