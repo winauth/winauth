@@ -208,19 +208,19 @@ namespace WindowsAuthenticator
 
 			// Battle.net does a GEO IP lookup anyway so there is no need to pass the region
 			// however China has its own URL so we must still do our own GEO IP lookup to find the country
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(GEOIPURL);
-			request.Method = "GET";
-			request.ContentType = "application/json";
+			HttpWebRequest georequest = (HttpWebRequest)WebRequest.Create(GEOIPURL);
+			georequest.Method = "GET";
+			georequest.ContentType = "application/json";
 			// get response
 			string responseString = null;
-			using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+			using (HttpWebResponse georesponse = (HttpWebResponse)georequest.GetResponse())
 			{
 				// OK?
-				if (response.StatusCode == HttpStatusCode.OK)
+				if (georesponse.StatusCode == HttpStatusCode.OK)
 				{
 					using (MemoryStream ms = new MemoryStream())
 					{
-						using (Stream bs = response.GetResponseStream())
+						using (Stream bs = georesponse.GetResponseStream())
 						{
 							byte[] temp = new byte[RESPONSE_BUFFER_SIZE];
 							int read;
@@ -241,6 +241,7 @@ namespace WindowsAuthenticator
 				{
 					// match the correct region
 					country = match.Groups[1].Value.ToUpper();
+
 					if (EU_COUNTRIES.Contains(country) == true)
 					{
 						region = REGION_EU;
@@ -253,8 +254,33 @@ namespace WindowsAuthenticator
 					{
 						region = REGION_CN;
 					}
+					else
+					{
+						region = REGION_US;
+					}
 				}
 			}
+
+			// allow override of country for CN using US from app.config
+			System.Configuration.AppSettingsReader config = new System.Configuration.AppSettingsReader();
+			try
+			{
+				string configcountry = config.GetValue("BattleNetAuthenticator.Country", typeof(string)) as string;
+				if (string.IsNullOrEmpty(configcountry) == false)
+				{
+					country = configcountry;
+				}
+			}
+			catch (InvalidOperationException ) { }
+			try
+			{
+				string configregion = config.GetValue("BattleNetAuthenticator.Region", typeof(string)) as string;
+				if (string.IsNullOrEmpty(configregion) == false)
+				{
+					region = configregion;
+				}
+			}
+			catch (InvalidOperationException ) {}
 
 			// generate byte array of data:
 			//  00 byte[20] one-time key used to decrypt data when returned;
@@ -277,7 +303,7 @@ namespace WindowsAuthenticator
 			byte[] encrypted = rsa.ProcessBlock(data, 0, data.Length);
 
 			// call the enroll server
-			request = (HttpWebRequest)WebRequest.Create(GetMobileUrl(region) + ENROLL_PATH);
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(GetMobileUrl(region) + ENROLL_PATH);
 			request.Method = "POST";
 			request.ContentType = "application/octet-stream";
 			request.ContentLength = encrypted.Length;
