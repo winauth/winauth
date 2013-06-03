@@ -43,7 +43,7 @@ using NUnit.Framework;
 using OpenNETCF.Security.Cryptography;
 #endif
 
-namespace WindowsAuthenticator
+namespace WinAuth
 {
 	/// <summary>
 	/// Class that implements Battle.net Mobile Authenticator v1.1.0.

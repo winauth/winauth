@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Security.Cryptography;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -43,7 +44,7 @@ using NUnit.Framework;
 using OpenNETCF.Security.Cryptography;
 #endif
 
-namespace WindowsAuthenticator
+namespace WinAuth
 {
 	/// <summary>
 	/// Class that implements base RFC 4226 an RFC 6238 authenticator
@@ -66,19 +67,24 @@ namespace WindowsAuthenticator
 		private const int PBKDF2_KEYSIZE = 256;
 
 		/// <summary>
+		/// Version for encrpytion changes
+		/// </summary>
+		private static string ENCRYPTION_HEADER = Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes("WINAUTH3"));
+
+		/// <summary>
 		/// Default config version for loading an unknown file
 		/// </summary>
-		public const decimal DEAFULT_CONFIG_VERSION = (decimal)1.6;
+		//public const decimal DEAFULT_CONFIG_VERSION = (decimal)3.0;
 
 		/// <summary>
 		/// Name attribute of the "string" hash element in the Battle.net Mobile Authenticator file
 		/// </summary>
-		private const string BMA_HASH_NAME = "com.blizzard.bma.AUTH_STORE.HASH";
+		//private const string BMA_HASH_NAME = "com.blizzard.bma.AUTH_STORE.HASH";
 
 		/// <summary>
 		/// Name attribute of the "long" offset element in the Battle.net Mobile Authenticator file
 		/// </summary>
-		private const string BMA_OFFSET_NAME = "com.blizzard.bma.AUTH_STORE.CLOCK_OFFSET";
+		//private const string BMA_OFFSET_NAME = "com.blizzard.bma.AUTH_STORE.CLOCK_OFFSET";
 
 		/// <summary>
 		/// Default number of digits in code
@@ -88,13 +94,13 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Private encrpytion key used to encrypt Battle.net mobile authenticator data.
 		/// </summary>
-		private static byte[] MOBILE_AUTHENTICATOR_KEY = new byte[]
-			{
-				0x39,0x8e,0x27,0xfc,0x50,0x27,0x6a,0x65,0x60,0x65,0xb0,0xe5,0x25,0xf4,0xc0,0x6c,
-				0x04,0xc6,0x10,0x75,0x28,0x6b,0x8e,0x7a,0xed,0xa5,0x9d,0xa9,0x81,0x3b,0x5d,0xd6,
-				0xc8,0x0d,0x2f,0xb3,0x80,0x68,0x77,0x3f,0xa5,0x9b,0xa4,0x7c,0x17,0xca,0x6c,0x64,
-				0x79,0x01,0x5c,0x1d,0x5b,0x8b,0x8f,0x6b,0x9a
-			};
+    //private static byte[] MOBILE_AUTHENTICATOR_KEY = new byte[]
+    //  {
+    //    0x39,0x8e,0x27,0xfc,0x50,0x27,0x6a,0x65,0x60,0x65,0xb0,0xe5,0x25,0xf4,0xc0,0x6c,
+    //    0x04,0xc6,0x10,0x75,0x28,0x6b,0x8e,0x7a,0xed,0xa5,0x9d,0xa9,0x81,0x3b,0x5d,0xd6,
+    //    0xc8,0x0d,0x2f,0xb3,0x80,0x68,0x77,0x3f,0xa5,0x9b,0xa4,0x7c,0x17,0xca,0x6c,0x64,
+    //    0x79,0x01,0x5c,0x1d,0x5b,0x8b,0x8f,0x6b,0x9a
+    //  };
 
 		/// <summary>
 		/// Type of password to use to encrypt secret data
@@ -312,6 +318,7 @@ namespace WindowsAuthenticator
 
 		#region Load / Save
 
+/*
 		/// <summary>
 		/// Load an authenticator from a Stream with an explicit password
 		/// </summary>
@@ -374,7 +381,7 @@ namespace WindowsAuthenticator
 					// get offset value
 					long offset = 0;
 					node = rootnode.SelectSingleNode("/map/long[@name='" + BMA_OFFSET_NAME + "']");
-					if (node != null && LongTryParse(node.Attributes["value"].InnerText, out offset) /* long.TryParse(node.Attributes["value"].InnerText, out offset) == true */)
+					if (node != null && LongTryParse(node.Attributes["value"].InnerText, out offset)) // long.TryParse(node.Attributes["value"].InnerText, out offset) == true
 					{
 						authenticator.ServerTimeDiff = offset;
 					}
@@ -437,7 +444,7 @@ namespace WindowsAuthenticator
 
 					long offset = 0;
 					node = rootnode.SelectSingleNode("servertimediff");
-					if (node != null && LongTryParse(node.InnerText, out offset) == true /* long.TryParse(node.InnerText, out offset) == true */)
+					if (node != null && LongTryParse(node.InnerText, out offset) == true) // long.TryParse(node.InnerText, out offset) == true
 					{
 						authenticator.ServerTimeDiff = offset;
 					}
@@ -538,7 +545,7 @@ namespace WindowsAuthenticator
 
 					long offset = 0;
 					node = rootnode.SelectSingleNode("servertimediff");
-					if (node != null && LongTryParse(node.InnerText, out offset) == true /* long.TryParse(node.InnerText, out offset) == true */)
+					if (node != null && LongTryParse(node.InnerText, out offset) == true) // long.TryParse(node.InnerText, out offset) == true
 					{
 						authenticator.ServerTimeDiff = offset;
 					}
@@ -555,58 +562,231 @@ namespace WindowsAuthenticator
 				throw new InvalidOperationException();
 			}
 		}
+*/
+
+    public static Authenticator ReadXml(XmlReader reader, string password = null)
+    {
+      Authenticator authenticator = null;
+      string authenticatorType = reader.GetAttribute("type");
+      if (string.IsNullOrEmpty(authenticatorType) == false)
+      {
+        authenticatorType = authenticatorType.Replace("WindowsAuthenticator.", "WinAuth.");
+        Type type = System.Reflection.Assembly.GetExecutingAssembly().GetType(authenticatorType, false, true);
+        authenticator = Activator.CreateInstance(type) as Authenticator;
+      }
+      if (authenticator == null)
+      {
+        authenticator = new BattleNetAuthenticator();
+      }
+
+      reader.MoveToContent();
+      if (reader.IsEmptyElement)
+      {
+        reader.Read();
+        return null;
+      }
+
+      reader.Read();
+      while (reader.EOF == false)
+      {
+        if (reader.IsStartElement())
+        {
+          switch (reader.Name)
+          {
+            case "servertimediff":
+              authenticator.ServerTimeDiff = reader.ReadElementContentAsLong();
+              break;
+
+            case "restorecodeverified":
+              authenticator.RestoreCodeVerified = reader.ReadElementContentAsBoolean();
+              break;
+
+            case "secretdata":
+              string encrypted = reader.GetAttribute("encrypted");
+              string data = reader.ReadElementContentAsString();
+
+              PasswordTypes passwordType = PasswordTypes.None;
+
+              if (string.IsNullOrEmpty(encrypted) == false)
+              {
+								// this is an old version so there is no hash
+                data = DecryptSequence(data, encrypted, password, out passwordType);
+
+                /*
+                char[] encTypes = encrypted.ToCharArray();
+                // we read the string in reverse order (the order they were encrypted)
+                for (int i = encTypes.Length - 1; i >= 0; i--)
+                {
+                  char encryptedType = encTypes[i];
+                  switch (encryptedType)
+                  {
+                    case 'u':
+                      {
+                        // we are going to decrypt with the Windows User account key
+                        try
+                        {
+                          passwordType |= PasswordTypes.User;
+                          byte[] cipher = StringToByteArray(data);
+                          byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.CurrentUser);
+                          data = ByteArrayToString(plain);
+                        }
+                        catch (System.Security.Cryptography.CryptographicException)
+                        {
+                          throw new InvalidUserDecryptionException();
+                        }
+                        break;
+                      }
+                    case 'm':
+                      {
+                        // we are going to decrypt with the Windows local machine key
+                        try
+                        {
+                          passwordType |= PasswordTypes.Machine;
+                          byte[] cipher = StringToByteArray(data);
+                          byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
+                          data = ByteArrayToString(plain);
+                        }
+                        catch (System.Security.Cryptography.CryptographicException)
+                        {
+                          throw new InvalidMachineDecryptionException();
+                        }
+                        break;
+                      }
+                    case 'y':
+                      {
+                        // we use an explicit password to encrypt data
+                        if (string.IsNullOrEmpty(password) == true)
+                        {
+                          throw new EncrpytedSecretDataException();
+                        }
+                        passwordType |= PasswordTypes.Explicit;
+                        authenticator.Password = password;
+                        data = Decrypt(data, password, true);
+                        break;
+                      }
+                    default:
+                      break;
+                  }
+                }
+                */
+              }
+
+              authenticator.PasswordType = passwordType;
+              authenticator.SecretData = data;
+
+              break;
+
+            default:
+              reader.Skip();
+              break;
+          }
+        }
+        else
+        {
+          reader.Read();
+          break;
+        }
+      }
+
+      return authenticator;
+    }
+
+		public void ReadXml(XmlReader reader)
+		{
+			reader.MoveToContent();
+			if (reader.IsEmptyElement)
+			{
+				reader.Read();
+				return;
+			}
+
+			reader.Read();
+			while (reader.EOF == false)
+			{
+				if (reader.IsStartElement())
+				{
+					switch (reader.Name)
+					{
+						case "servertimediff":
+							ServerTimeDiff = reader.ReadElementContentAsLong();
+							break;
+
+						case "restorecodeverified":
+							RestoreCodeVerified = reader.ReadElementContentAsBoolean();
+							break;
+
+						case "secretdata":
+							SecretData = reader.ReadElementContentAsString();
+							break;
+
+						default:
+							reader.Skip();
+							break;
+					}
+				}
+				else
+				{
+					reader.Read();
+					break;
+				}
+			}
+		}
 
 		/// <summary>
 		/// Write this authenticator into an XmlWriter
 		/// </summary>
 		/// <param name="writer">XmlWriter to receive authenticator</param>
-		public void WriteToWriter(XmlWriter writer)
+    public void WriteToWriter(XmlWriter writer)
 		{
-			writer.WriteStartElement("authenticator");
-			writer.WriteAttributeString("type", this.GetType().FullName);
+      writer.WriteStartElement("authenticatordata");
+      writer.WriteAttributeString("type", this.GetType().FullName);
 			//
 			writer.WriteStartElement("servertimediff");
 			writer.WriteString(ServerTimeDiff.ToString());
 			writer.WriteEndElement();
 			//
 			writer.WriteStartElement("secretdata");
-			string data = SecretData;
+      writer.WriteString(SecretData);
+      writer.WriteEndElement();
 
-			StringBuilder encryptionTypes = new StringBuilder();
-			if ((PasswordType & PasswordTypes.Explicit) != 0)
-			{
-				string encrypted = Encrypt(data, Password);
+      //string encryptedTypes;
+      //string data = EncryptSequence(SecretData, PasswordType, Password, out encryptedTypes);
 
-				// test the encryption
-				string decrypted = Decrypt(encrypted, Password, true);
-				if (string.Compare(data, decrypted) != 0)
-				{
-					throw new InvalidEncryptionException(data, Password, encrypted, decrypted);
-				}
-				data = encrypted;
+      //string data = SecretData;
+      //StringBuilder encryptionTypes = new StringBuilder();
+      //if ((PasswordType & PasswordTypes.Explicit) != 0)
+      //{
+      //  string encrypted = Encrypt(data, Password);
 
-				encryptionTypes.Append("y");
-			}
-			if ((PasswordType & PasswordTypes.User) != 0)
-			{
-				// we encrypt the data using the Windows User account key
-				byte[] plain = StringToByteArray(data);
-				byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.CurrentUser);
-				data = ByteArrayToString(cipher);
-				encryptionTypes.Append("u");
-			}
-			if ((PasswordType & PasswordTypes.Machine) != 0)
-			{
-				// we encrypt the data using the Local Machine account key
-				byte[] plain = StringToByteArray(data);
-				byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.LocalMachine);
-				data = ByteArrayToString(cipher);
-				encryptionTypes.Append("m");
-			}
-			writer.WriteAttributeString("encrypted", encryptionTypes.ToString());
-			writer.WriteString(data);
-			writer.WriteEndElement();
-			//
+      //  // test the encryption
+      //  string decrypted = Decrypt(encrypted, Password, true);
+      //  if (string.Compare(data, decrypted) != 0)
+      //  {
+      //    throw new InvalidEncryptionException(data, Password, encrypted, decrypted);
+      //  }
+      //  data = encrypted;
+
+      //  encryptionTypes.Append("y");
+      //}
+      //if ((PasswordType & PasswordTypes.User) != 0)
+      //{
+      //  // we encrypt the data using the Windows User account key
+      //  byte[] plain = StringToByteArray(data);
+      //  byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.CurrentUser);
+      //  data = ByteArrayToString(cipher);
+      //  encryptionTypes.Append("u");
+      //}
+      //if ((PasswordType & PasswordTypes.Machine) != 0)
+      //{
+      //  // we encrypt the data using the Local Machine account key
+      //  byte[] plain = StringToByteArray(data);
+      //  byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.LocalMachine);
+      //  data = ByteArrayToString(cipher);
+      //  encryptionTypes.Append("m");
+      //}
+      //writer.WriteAttributeString("encrypted", encryptionTypes.ToString());
+      //writer.WriteAttributeString("encrypted", encryptedTypes);
+
 			if (RestoreCodeVerified == true)
 			{
 				writer.WriteStartElement("restorecodeverified");
@@ -623,17 +803,17 @@ namespace WindowsAuthenticator
 		/// <param name="key">SecretKey value</param>
 		/// <param name="serial">Serial value</param>
 		/// <returns>XORed string</returns>
-		private static string ConvertAndriodSecretData(string secretData)
-		{
-			// we used to keep compatability with Android which was XORed with a secret key
-			byte[] bytes = Authenticator.StringToByteArray(secretData);
-			for (int i = bytes.Length - 1; i >= 0; i--)
-			{
-				bytes[i] ^= MOBILE_AUTHENTICATOR_KEY[i];
-			}
-			string full = Encoding.UTF8.GetString(bytes, 0, bytes.Length); // this is hex key + ascii serial
-			return full.Substring(0, 40) + Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(full.Substring(40)));
-		}
+    //private static string ConvertAndriodSecretData(string secretData)
+    //{
+    //  // we used to keep compatability with Android which was XORed with a secret key
+    //  byte[] bytes = Authenticator.StringToByteArray(secretData);
+    //  for (int i = bytes.Length - 1; i >= 0; i--)
+    //  {
+    //    bytes[i] ^= MOBILE_AUTHENTICATOR_KEY[i];
+    //  }
+    //  string full = Encoding.UTF8.GetString(bytes, 0, bytes.Length); // this is hex key + ascii serial
+    //  return full.Substring(0, 40) + Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(full.Substring(40)));
+    //}
 
 		#endregion
 
@@ -712,6 +892,168 @@ namespace WindowsAuthenticator
 			// Use BitConverter, but it sticks dashes in the string
 			return BitConverter.ToString(bytes).Replace("-", string.Empty);
 		}
+
+    public static string DecryptSequence(string data, string encryptedTypes, string password, out PasswordTypes passwordType)
+    {
+			// check for encrpytion header
+			if (data.Length < ENCRYPTION_HEADER.Length || data.IndexOf(ENCRYPTION_HEADER) != 0)
+			{
+				return DecryptSequenceNoHash(data, encryptedTypes, password, out passwordType);
+			}
+
+			// extract salt and hash
+			using (var sha = new SHA256Managed())
+			{
+				// jump header
+				int datastart = ENCRYPTION_HEADER.Length;
+				string salt = data.Substring(datastart, Math.Min(SALT_LENGTH * 2, data.Length - datastart));
+				datastart += salt.Length;
+				string hash = data.Substring(datastart, Math.Min(sha.HashSize / 8 * 2, data.Length - datastart));
+				datastart += hash.Length;
+				data = data.Substring(datastart);
+
+				// decrypt encrypt content and try again
+				char[] encTypes = encryptedTypes.ToCharArray();
+				passwordType = PasswordTypes.None;
+
+				data = DecryptSequenceNoHash(data, encryptedTypes, password, out passwordType);
+
+				// check the hash
+				byte[] compareplain = StringToByteArray(salt + data);
+				string comparehash = ByteArrayToString(sha.ComputeHash(compareplain));
+				if (string.Compare(comparehash, hash) != 0)
+				{
+					throw new BadPasswordException();
+				}
+			}
+
+      return data;
+    }
+
+		private static string DecryptSequenceNoHash(string data, string encryptedTypes, string password, out PasswordTypes passwordType)
+		{
+			// decrypt encrypt content and try again
+			char[] encTypes = encryptedTypes.ToCharArray();
+			passwordType = PasswordTypes.None;
+
+			try
+			{
+				// we read the string in reverse order (the order they were encrypted)
+				for (int i = encTypes.Length - 1; i >= 0; i--)
+				{
+					char encryptedType = encTypes[i];
+					switch (encryptedType)
+					{
+						case 'u':
+							{
+								// we are going to decrypt with the Windows User account key
+								passwordType |= PasswordTypes.User;
+								byte[] cipher = StringToByteArray(data);
+								byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.CurrentUser);
+								data = ByteArrayToString(plain);
+								//data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+								break;
+							}
+						case 'm':
+							{
+								// we are going to decrypt with the Windows local machine key
+								passwordType |= PasswordTypes.Machine;
+								byte[] cipher = Authenticator.StringToByteArray(data);
+								//byte[] cipher = Encoding.UTF8.GetBytes(data);
+								byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
+								data = ByteArrayToString(plain);
+								//data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+								break;
+							}
+						case 'y':
+							{
+								// we use an explicit password to encrypt data
+								if (string.IsNullOrEmpty(password) == true)
+								{
+									throw new EncrpytedSecretDataException();
+								}
+								passwordType |= PasswordTypes.Explicit;
+								data = Authenticator.Decrypt(data, password, true);
+								//byte[] plain = Authenticator.StringToByteArray(data);
+								//data = ByteArrayToString(plain);
+								//data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+								break;
+							}
+						default:
+							break;
+					}
+				}
+			}
+			catch (EncrpytedSecretDataException)
+			{
+				throw;
+			}
+			catch (Exception ex)
+			{
+				throw new BadPasswordException(ex.Message, ex);
+			}
+
+			return data;
+		}
+
+		public static string EncryptSequence(string data, PasswordTypes passwordType, string password, out string encryptedTypes)
+    {
+			// get hash of original
+			string salt;
+			using (var random = new RNGCryptoServiceProvider())
+			{
+				byte[] saltbytes = new byte[SALT_LENGTH];
+				random.GetBytes(saltbytes);
+				salt = ByteArrayToString(saltbytes);
+			}
+			string hash;
+			using (var sha = new SHA256Managed())
+			{
+        byte[] plain = StringToByteArray(salt + data);
+				hash = ByteArrayToString(sha.ComputeHash(plain));
+			}
+
+      StringBuilder encryptionTypes = new StringBuilder();
+      if ((passwordType & PasswordTypes.Explicit) != 0)
+      {
+        string encrypted = Encrypt(data, password);
+
+        // test the encryption
+        string decrypted = Decrypt(encrypted, password, true);
+        if (string.Compare(data, decrypted) != 0)
+        {
+          throw new InvalidEncryptionException(data, password, encrypted, decrypted);
+        }
+        data = encrypted;
+
+        encryptionTypes.Append("y");
+      }
+      if ((passwordType & PasswordTypes.User) != 0)
+      {
+        // we encrypt the data using the Windows User account key
+        byte[] plain = StringToByteArray(data);
+        //byte[] plain = Encoding.UTF8.GetBytes(data);
+        byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.CurrentUser);
+        data = ByteArrayToString(cipher);
+        //data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+        encryptionTypes.Append("u");
+      }
+      if ((passwordType & PasswordTypes.Machine) != 0)
+      {
+        // we encrypt the data using the Local Machine account key
+        byte[] plain = StringToByteArray(data);
+        //byte[] plain = Encoding.UTF8.GetBytes(data);
+        byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.LocalMachine);
+        data = ByteArrayToString(cipher);
+        //data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+        encryptionTypes.Append("m");
+      }
+
+      encryptedTypes = encryptionTypes.ToString();
+
+			// prepend the salt + hash
+			return ENCRYPTION_HEADER + salt + hash + data;
+    }
 
 		/// <summary>
 		/// Encrypt a string with a given key

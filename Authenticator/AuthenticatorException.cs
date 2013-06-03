@@ -26,7 +26,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace WindowsAuthenticator
+namespace WinAuth
 {
 	/// <summary>
 	/// Base Authenticator exception class
@@ -103,6 +103,8 @@ namespace WindowsAuthenticator
 	public class BadPasswordException : AuthenticatorException
 	{
 		public BadPasswordException() : base() { }
+
+		public BadPasswordException(string msg, Exception ex) : base(msg, ex) { }
 	}
 
 	public class InvalidRestoreResponseException : AuthenticatorException
