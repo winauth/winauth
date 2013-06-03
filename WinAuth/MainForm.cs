@@ -1360,7 +1360,7 @@ namespace WindowsAuthenticator
 					{
 						string fontname = (childnode.SelectSingleNode("name") != null ? childnode.SelectSingleNode("name").InnerText : ((Control)control).Font.Name);
 						float fontsize = (childnode.SelectSingleNode("size") != null ? float.Parse(childnode.SelectSingleNode("size").InnerText, System.Globalization.CultureInfo.InvariantCulture) : ((Control)control).Font.Size);
-						FontStyle fontstyle = (childnode.SelectSingleNode("style") != null ? (FontStyle)Enum.Parse(typeof(FontStyle), childnode.SelectSingleNode("styke").InnerText) : ((Control)control).Font.Style);
+						FontStyle fontstyle = (childnode.SelectSingleNode("style") != null ? (FontStyle)Enum.Parse(typeof(FontStyle), childnode.SelectSingleNode("style").InnerText) : ((Control)control).Font.Style);
 						Font font = new System.Drawing.Font(fontname, fontsize, fontstyle);
 
 						pi.SetValue(control, font, null);

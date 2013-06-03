@@ -67,7 +67,7 @@ namespace WindowsAuthenticator
 			catch (Exception ex)
 			{
 				// Issue #53: add catch for unknown application exceptions to try and get closer to bug
-				StringBuilder capture = new StringBuilder();
+				StringBuilder capture = new StringBuilder(ex.Message + Environment.NewLine);
 				//
 				Exception e = ex;
 				while (e != null)

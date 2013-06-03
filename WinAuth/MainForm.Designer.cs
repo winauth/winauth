@@ -387,7 +387,7 @@ namespace WindowsAuthenticator
 			this.calcCodeButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
 			this.calcCodeButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(45)))), ((int)(((byte)(53)))));
 			this.calcCodeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.calcCodeButton.Font = new System.Drawing.Font("Arial Narrow", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.calcCodeButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.calcCodeButton.ForeColor = System.Drawing.Color.White;
 			this.calcCodeButton.Location = new System.Drawing.Point(70, 210);
 			this.calcCodeButton.Name = "calcCodeButton";
