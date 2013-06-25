@@ -30,14 +30,6 @@ namespace WinAuth
 
   public class AuthenticatorListBox : ListBox
   {
-		private static Dictionary<string, string> ICONS = new Dictionary<string, string>
-		{
-			{"Battle.Net", "BattleNetAuthenticatorIcon.png"},
-			{"Guild Wars 2", "GuildWarsAuthenticatorIcon.png"},
-			{"Google", "GoogleAuthenticatorIcon.png"},
-			{"Microsoft", "MicrosoftAuthenticatorIcon.png"}
-		};
-
 		public AuthenticatorListBox()
     {
       this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.ResizeRedraw | ControlStyles.UserPaint, true);
@@ -146,6 +138,10 @@ namespace WinAuth
 		{
 			this.ContextMenuStrip.Items.Clear();
 			var item = this.CurrentItem;
+			if (item == null)
+			{
+				return;
+			}
 			var auth = item.Authenticator;
 			if (item != null)
 			{
@@ -221,9 +217,9 @@ namespace WinAuth
 				menuitem.DropDownItems.Add("-");
 				this.ContextMenuStrip.Items.Add(menuitem);
 				int iconindex = 1;
-				foreach (string icon in ICONS.Keys)
+				foreach (string icon in WinAuthMain.AUTHENTICATOR_ICONS.Keys)
 				{
-					string iconfile = ICONS[icon];
+					string iconfile = WinAuthMain.AUTHENTICATOR_ICONS[icon];
 					subitem = new ToolStripMenuItem();
 					subitem.Text = icon;
 					subitem.Name = "iconMenuItem_" + iconindex++;

@@ -372,6 +372,27 @@ namespace WinAuth
 			Serial = Encoding.Default.GetString(responseData, 8, 17);
 		}
 
+#if DEBUG
+		/// <summary>
+		/// Debug version of enroll that just returns a known test authenticator
+		/// </summary>
+		/// <param name="testmode"></param>
+		public void Enroll(bool testmode)
+		{
+			if (!testmode)
+			{
+				Enroll();
+			}
+			else
+			{
+				ServerTimeDiff = 0;
+				SecretKey = new byte[20] { 0x7B, 0x0B, 0xFA, 0x82, 0x30, 0xE5, 0x44, 0x24, 0xAB, 0x51, 0x77, 0x7D, 0xAD, 0xBF, 0xD5, 0x37, 0x41, 0x43, 0xE3, 0xB0 };
+				Serial = "US-1306-2525-4376"; // Restore: CR24KPKF51
+			}
+		}
+#endif
+
+
 		/// <summary>
 		/// Synchorise this authenticator's time with server time. We update our data record with the difference from our UTC time.
 		/// </summary>

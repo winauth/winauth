@@ -37,9 +37,11 @@
 			this.authenticatorMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.commandPanel = new MetroFramework.Controls.MetroPanel();
+			this.addAuthenticatorChoiceButton = new MetroFramework.Controls.MetroButton();
 			this.addAuthenticatorButton = new MetroFramework.Controls.MetroButton();
 			this.metroStyleManager = new MetroFramework.Components.MetroStyleManager(this.components);
 			this.metroStyleExtender = new MetroFramework.Components.MetroStyleExtender(this.components);
+			this.addAuthenticatorMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.authenticatorList = new WinAuth.AuthenticatorListBox();
 			this.authenticatorMenu.SuspendLayout();
 			this.commandPanel.SuspendLayout();
@@ -67,6 +69,7 @@
 			// 
 			// commandPanel
 			// 
+			this.commandPanel.Controls.Add(this.addAuthenticatorChoiceButton);
 			this.commandPanel.Controls.Add(this.addAuthenticatorButton);
 			this.commandPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.commandPanel.HorizontalScrollbarBarColor = true;
@@ -79,19 +82,35 @@
 			this.commandPanel.VerticalScrollbarBarColor = true;
 			this.commandPanel.VerticalScrollbarHighlightOnWheel = false;
 			this.commandPanel.VerticalScrollbarSize = 10;
+			this.commandPanel.Click += new System.EventHandler(this.addAuthenticatorChoiceButton_Click);
+			// 
+			// addAuthenticatorChoiceButton
+			// 
+			this.addAuthenticatorChoiceButton.Location = new System.Drawing.Point(69, 14);
+			this.addAuthenticatorChoiceButton.Name = "addAuthenticatorChoiceButton";
+			this.addAuthenticatorChoiceButton.Size = new System.Drawing.Size(24, 23);
+			this.addAuthenticatorChoiceButton.TabIndex = 0;
+			this.addAuthenticatorChoiceButton.Text = "▼";
+			this.addAuthenticatorChoiceButton.UseSelectable = true;
 			// 
 			// addAuthenticatorButton
 			// 
 			this.addAuthenticatorButton.Location = new System.Drawing.Point(0, 14);
 			this.addAuthenticatorButton.Name = "addAuthenticatorButton";
-			this.addAuthenticatorButton.Size = new System.Drawing.Size(75, 23);
+			this.addAuthenticatorButton.Size = new System.Drawing.Size(70, 23);
 			this.addAuthenticatorButton.TabIndex = 0;
-			this.addAuthenticatorButton.Text = "Add...";
+			this.addAuthenticatorButton.Text = "Add";
 			this.addAuthenticatorButton.UseSelectable = true;
+			this.addAuthenticatorButton.Click += new System.EventHandler(this.addAuthenticatorButton_Click);
 			// 
 			// metroStyleManager
 			// 
 			this.metroStyleManager.Owner = this;
+			// 
+			// addAuthenticatorMenu
+			// 
+			this.addAuthenticatorMenu.Name = "addMenu";
+			this.addAuthenticatorMenu.Size = new System.Drawing.Size(61, 4);
 			// 
 			// authenticatorList
 			// 
@@ -144,6 +163,8 @@
 		private System.Windows.Forms.ToolStripMenuItem testToolStripMenuItem;
 		private MetroFramework.Controls.MetroPanel commandPanel;
 		private MetroFramework.Controls.MetroButton addAuthenticatorButton;
+		private MetroFramework.Controls.MetroButton addAuthenticatorChoiceButton;
+		private System.Windows.Forms.ContextMenuStrip addAuthenticatorMenu;
 
   }
 }

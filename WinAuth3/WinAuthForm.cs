@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -117,6 +118,9 @@ namespace WinAuth
 				authenticatorList.Items.Add(new AuthenticatorListitem(auth, index));
 				index++;
 			}
+
+			// initialize UI
+			LoadAddAuthenticatorTypes();
     }
 
 
@@ -214,9 +218,147 @@ namespace WinAuth
     }
 */
 
+		/// <summary>
+		/// Show an error message dialog
+		/// </summary>
+		/// <param name="form">owning form</param>
+		/// <param name="message">optional message to display</param>
+		/// <param name="ex">optional exception details</param>
+		/// <param name="buttons">button choice other than OK</param>
+		/// <returns>DialogResult</returns>
+		public static DialogResult ErrorDialog(Form form, string message = null, Exception ex = null, MessageBoxButtons buttons = MessageBoxButtons.OK)
+		{
+			if (message == null)
+			{
+				message = "An error has occurred" + (ex != null ? ": " + ex.Message : string.Empty);
+			}
+			if (ex != null && string.IsNullOrEmpty(ex.Message) == false)
+			{
+				message += Environment.NewLine + Environment.NewLine + ex.Message;
+			}
+#if DEBUG
+      StringBuilder capture = new StringBuilder();
+      Exception e = ex;
+      while (e != null)
+      {
+        capture.Append(new System.Diagnostics.StackTrace(e).ToString()).Append(Environment.NewLine);
+        e = e.InnerException;
+      }
+			message += Environment.NewLine + Environment.NewLine + capture.ToString();
+#endif
+			return MessageBox.Show(form, message, WinAuthMain.APPLICATION_TITLE, buttons, MessageBoxIcon.Exclamation);
+		}
+
+		/// <summary>
+		/// Show a confirmation Yes/No dialog
+		/// </summary>
+		/// <param name="form">owning form</param>
+		/// <param name="message">message to display</param>
+		/// <param name="buttons">button if other than YesNo</param>
+		/// <returns>DialogResult</returns>
+		public static DialogResult ConfirmDialog(Form form, string message, MessageBoxButtons buttons = MessageBoxButtons.YesNo)
+		{
+			return MessageBox.Show(form, message, WinAuthMain.APPLICATION_TITLE, buttons, MessageBoxIcon.Question);
+		}
+
+		/// <summary>
+		/// Preload the context menu with the possible set of authenticator types
+		/// </summary>
+		private void LoadAddAuthenticatorTypes()
+		{
+			addAuthenticatorMenu.Items.Clear();
+
+			ToolStripMenuItem subitem;
+			int index = 0;
+			foreach (RegisteredAuthenticator auth in WinAuthMain.REGISTERED_AUTHENTICATORS)
+			{
+				subitem = new ToolStripMenuItem();
+				subitem.Text = auth.Name;
+				subitem.Name = "addAuthenticatorMenuItem_" + index++;
+				subitem.Tag = auth;
+				if (string.IsNullOrEmpty(auth.Icon) == false)
+				{
+					subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("WinAuth.Resources." + auth.Icon));
+					subitem.ImageAlign = ContentAlignment.MiddleLeft;
+					subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
+				}
+				subitem.Click += addAuthenticatorMenu_Click;
+				addAuthenticatorMenu.Items.Add(subitem);
+			}
+		}
+
+		/// <summary>
+		/// Click on a choice of new authenticator
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		void addAuthenticatorMenu_Click(object sender, EventArgs e)
+		{
+			ToolStripItem menuitem = (ToolStripItem)sender;
+			RegisteredAuthenticator registeredauth = menuitem.Tag as RegisteredAuthenticator;
+			if (registeredauth != null)
+			{
+				if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.BattleNet)
+				{
+					// create the Battle.net authenticator
+					AddBattleNetAuthenticator form = new AddBattleNetAuthenticator();
+					if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+					{
+						// add the new authenticator
+						int existing = 0;
+						string name;
+						do
+						{
+							name = "Battle.net" + (existing != 0 ? " (" + existing + ")" : string.Empty);
+							existing++;
+						} while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name).Count() != 0);
+						
+						WinAuthAuthenticator winauthauthenticator = new WinAuthAuthenticator();
+						winauthauthenticator.Name = name;
+						winauthauthenticator.AuthenticatorData = form.Authenticator;
+						//winauthauthenticator.Skin = registeredauth.Icon;
+						authenticatorList.Items.Add(new AuthenticatorListitem(winauthauthenticator, authenticatorList.Items.Count));
+					}
+				}
+				else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.RFC6238_TIME)
+				{
+					// create the RFC6238 time based authenticator
+				}
+				else
+				{
+					throw new NotImplementedException("TRAP: New authenticator not implemented for " + registeredauth.AuthenticatorType.ToString());
+				}
+			}
+		}
+
+		/// <summary>
+		/// Timer tick event
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void mainTimer_Tick(object sender, EventArgs e)
 		{
 			authenticatorList.Tick(sender, e);
+		}
+
+		/// <summary>
+		/// Click to add a new authenticator
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void addAuthenticatorButton_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		/// <summary>
+		/// Click to add a new authenticator
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void addAuthenticatorChoiceButton_Click(object sender, EventArgs e)
+		{
+			addAuthenticatorMenu.Show(addAuthenticatorChoiceButton, 0, addAuthenticatorChoiceButton.Height - 1);
 		}
 
 #endregion
@@ -237,6 +379,7 @@ namespace WinAuth
       }
     }
 #endregion
+
 
   }
 }
