@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>ilmerge</id>
+    <version>2.13.0307</version>
+    <title>ILMerge</title>
+    <authors>mbarnett</authors>
+    <owners>mbarnett</owners>
+    <licenseUrl>http://research.microsoft.com/en-us/people/mbarnett/ilmerge-license.aspx</licenseUrl>
+    <projectUrl>http://research.microsoft.com/en-us/people/mbarnett/ILMerge.aspx</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>ILMerge is a utility that can be used to merge multiple .NET assemblies into a single assembly. ILMerge takes a set of input assemblies and merges them into one target assembly. The first assembly in the list of input assemblies is the primary assembly. When the primary assembly is an executable, then the target assembly is created as an executable with the same entry point as the primary assembly. Also, if the primary assembly has a strong name, and a .snk file is provided, then the target assembly is re-signed with the specified key so that it also has a strong name.
+ 
+ILMerge is packaged as a console application. But all of its functionality is also available programmatically. 
+
+There are several options that control the behavior of ILMerge. See the documentation that comes with the tool for details.</description>
+    <summary>ILMerge is a static linker for .NET assemblies.</summary>
+    <releaseNotes />
+    <copyright>Microsoft Corporation</copyright>
+    <language>en-US</language>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System" targetFramework="" />
+      <frameworkAssembly assemblyName="System.Xml" targetFramework="" />
+    </frameworkAssemblies>
+  </metadata>
+</package>
