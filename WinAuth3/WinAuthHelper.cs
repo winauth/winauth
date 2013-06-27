@@ -136,15 +136,15 @@ namespace WinAuth
     {
       WinAuthConfig config = new WinAuthConfig();
 
-      if (string.IsNullOrEmpty(configFile) == true)
-      {
-        configFile = GetLastFile(1);
-        if (string.IsNullOrEmpty(configFile) == false && File.Exists(configFile) == false)
-        {
-          // ignore it if file does't exist
-          configFile = null;
-        }
-      }
+			//if (string.IsNullOrEmpty(configFile) == true)
+			//{
+			//	configFile = GetLastFile(1);
+			//	if (string.IsNullOrEmpty(configFile) == false && File.Exists(configFile) == false)
+			//	{
+			//		// ignore it if file does't exist
+			//		configFile = null;
+			//	}
+			//}
       if (string.IsNullOrEmpty(configFile) == true)
       {
         // check for file in current directory
@@ -193,6 +193,8 @@ namespace WinAuth
 					config.ReadXml(reader, password);
 				}
 
+				config.Filename = configFile;
+
 				if (config.Version < WinAuthConfig.CURRENTVERSION)
 				{
 					FileInfo fi = new FileInfo(configFile);
@@ -202,7 +204,7 @@ namespace WinAuth
 					}
 					//config.PasswordType = Authenticator.PasswordTypes.Explicit;
 					//config.Password = "test";
-					SaveConfig(form, configFile, config);
+					SaveConfig(config);
 				}
 				//else
 				//{
@@ -422,7 +424,7 @@ namespace WinAuth
 
 */
 
-      SetLastFile(configFile); // set this as the new last opened file
+      //SetLastFile(configFile); // set this as the new last opened file
       SetLastGood(config);
 
       return config;
@@ -516,10 +518,9 @@ namespace WinAuth
     /// <summary>
     /// Save the authenticator
     /// </summary>
-    /// <param name="form">parent winform</param>
     /// <param name="configFile">filename to save to</param>
     /// <param name="config">current settings to save</param>
-    public static void SaveConfig(Form form, string configFile, WinAuthConfig config)
+    public static void SaveConfig(WinAuthConfig config)
     {
       // create the xml
       XmlWriterSettings settings = new XmlWriterSettings();
@@ -535,18 +536,27 @@ namespace WinAuth
           config.WriteXmlString(writer);
         }
 
+				// if no config file yet, use defaault
+				if (string.IsNullOrEmpty(config.Filename) == true)
+				{
+					string configDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuthMain.APPLICATION_NAME);
+					Directory.CreateDirectory(configDirectory);
+					config.Filename = Path.Combine(configDirectory, DEFAULT_AUTHENTICATOR_FILE_NAME);
+				}
+
         // write memory stream to file
         byte[] data = ms.ToArray();
-        using (FileStream fs = new FileStream(configFile, FileMode.Create, FileAccess.Write, FileShare.None))
+				using (FileStream fs = new FileStream(config.Filename, FileMode.Create, FileAccess.Write, FileShare.None))
         {
           fs.Write(data, 0, data.Length);
         }
       }
 
-      // use this as the last fle
-      SetLastFile(configFile);
+      // use this as the last file
+      //SetLastFile(config.Filename);
     }
 
+/*
     /// <summary>
     /// Get the last authenticator file name from the registry
     /// </summary>
@@ -595,6 +605,7 @@ namespace WinAuth
         }
       }
     }
+*/
 
     /// <summary>
     /// Save a PGP encrpyted version of the config into the registry for recovery
@@ -723,7 +734,7 @@ namespace WinAuth
 		/// we don't have to show again.
 		/// </summary>
 		/// <returns>true if beta accetped</returns>
-		public static bool BetaWarning(MainForm form)
+		public static bool BetaWarning(Form form)
 		{
 			// Show if BETA
 			string betaversion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(3);

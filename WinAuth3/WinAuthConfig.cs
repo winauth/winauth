@@ -88,6 +88,11 @@ namespace WinAuth
     /// </summary>
     private bool _startWithWindows;
 
+		/// <summary>
+		/// Flag to size form based on numebr authenticators
+		/// </summary>
+		private bool _autoSize;
+
     /// <summary>
     /// Flag for auto refresh of code
     /// </summary>
@@ -144,7 +149,7 @@ namespace WinAuth
         _alwaysOnTop = value;
         if (OnConfigChanged != null)
         {
-          OnConfigChanged(this, new ConfigChangedEventArgs());
+          OnConfigChanged(this, new ConfigChangedEventArgs("AlwaysOnTop"));
         }
       }
     }
@@ -163,7 +168,7 @@ namespace WinAuth
         _useTrayIcon = value;
         if (OnConfigChanged != null)
         {
-          OnConfigChanged(this, new ConfigChangedEventArgs());
+          OnConfigChanged(this, new ConfigChangedEventArgs("UseTrayIcon"));
         }
       }
     }
@@ -182,10 +187,29 @@ namespace WinAuth
         _startWithWindows = value;
         if (OnConfigChanged != null)
         {
-          OnConfigChanged(this, new ConfigChangedEventArgs());
+          OnConfigChanged(this, new ConfigChangedEventArgs("StartWithWindows"));
         }
       }
     }
+
+		/// <summary>
+		/// Get/set start with windows flag
+		/// </summary>
+		public bool AutoSize
+		{
+			get
+			{
+				return _autoSize;
+			}
+			set
+			{
+				_autoSize = value;
+				if (OnConfigChanged != null)
+				{
+					OnConfigChanged(this, new ConfigChangedEventArgs("AutoSize"));
+				}
+			}
+		}
 
     /// <summary>
     /// Get/set the currnet skin
@@ -370,7 +394,7 @@ namespace WinAuth
     {
       Version = CURRENTVERSION;
       AlwaysOnTop = true;
-      //AutoRefresh = true;
+			AutoSize = true;
     }
 
     #region ICloneable
@@ -484,6 +508,10 @@ namespace WinAuth
             case "startwithwindows":
               _startWithWindows = reader.ReadElementContentAsBoolean();
               break;
+
+						case "autosize":
+							_autoSize = reader.ReadElementContentAsBoolean();
+							break;
 
             // previous setting used as defaults for new
             case "autorefresh":
@@ -616,6 +644,10 @@ namespace WinAuth
       writer.WriteStartElement("startwithwindows");
       writer.WriteValue(this.StartWithWindows);
       writer.WriteEndElement();
+			//
+			writer.WriteStartElement("autosize");
+			writer.WriteValue(this.AutoSize);
+			writer.WriteEndElement();
 
       foreach (WinAuthAuthenticator wa in this.Authenticators)
       {
@@ -637,14 +669,17 @@ namespace WinAuth
   /// </summary>
   public class ConfigChangedEventArgs : EventArgs
   {
+		public string PropertyName { get; private set; }
+
     /// <summary>
     /// Default constructor
     /// </summary>
-    public ConfigChangedEventArgs()
-      : base()
-    {
-    }
-  }
+		public ConfigChangedEventArgs(string propertyName)
+			: base()
+		{
+			PropertyName = propertyName;
+		}
+	}
 
   public class WinAuthInvalidConfigException : ApplicationException
   {

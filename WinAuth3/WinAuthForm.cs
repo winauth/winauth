@@ -24,8 +24,12 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Resources;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Windows.Forms;
 
 using MetroFramework;
@@ -42,15 +46,45 @@ namespace WinAuth
 
     #region Properties
 
+		/// <summary>
+		/// The current winauth config
+		/// </summary>
     public WinAuthConfig Config { get; set; }
+
+		/// <summary>
+		/// Flag used to set AutoSizing based on authenticators
+		/// </summary>
+		public bool AutoAuthenticatorSize { get; set; }
+
+		/// <summary>
+		/// Flag used to see if we are closing manually
+		/// </summary>
+		private bool m_explictClose;
+
+		/// <summary>
+		/// Hook for hotkey to send code to window
+		/// </summary>
+		private KeyboardHook m_hook;
+
+		/// <summary>
+		/// Flag to say we are processing sending message to other window
+		/// </summary>
+		private object m_sendingKeys = new object();
+
+		/// <summary>
+		/// Delegates for clipbaord manipulation
+		/// </summary>
+		/// <param name="data"></param>
+		public delegate void SetClipboardDataDelegate(object data);
+		public delegate object GetClipboardDataDelegate(Type format);
 
     #endregion
 
-    private void WinAuthForm_Resize(object sender, EventArgs e)
-    {
-
-    }
-
+		/// <summary>
+		/// Load the main form
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
     private void WinAuthForm_Load(object sender, EventArgs e)
     {
       // get any command arguments
@@ -93,6 +127,14 @@ namespace WinAuth
         }
       }
 
+#if BETA
+			if (WinAuthHelper.BetaWarning(this) == false)
+			{
+				this.Close();
+				return;
+			}
+#endif
+
       // load config data
 			do
 			{
@@ -129,20 +171,62 @@ namespace WinAuth
 			} while (true);
 
 			// set up list
-			authenticatorList.Items.Clear();
-			int index = 0;
-			foreach (var auth in Config.Authenticators)
+			loadAuthenticatorList();
+
+			// set always on top
+			this.TopMost = this.Config.AlwaysOnTop;
+
+			// size the form based on the authenticators
+			if (this.Config.AutoSize == true)
 			{
-				authenticatorList.Items.Add(new AuthenticatorListitem(auth, index));
-				index++;
+				setAutoSize();
 			}
 
 			// initialize UI
 			LoadAddAuthenticatorTypes();
-    }
+			loadOptionsMenu();
+			introLabel.Visible = (this.Config.Authenticators.Count == 0);
+
+			// set title
+			notifyIcon.Visible = this.Config.UseTrayIcon;
+			notifyIcon.Text = this.Text = WinAuthMain.APPLICATION_TITLE;
+
+			// hook hotkeys
+			HookHotkeys();
+		}
 
 
 #region Private Methods
+
+		/// <summary>
+		/// Load the authenticators into the display list
+		/// </summary>
+		/// <param name="added">authenticator we just added</param>
+		private void loadAuthenticatorList(WinAuthAuthenticator added = null)
+		{
+			// set up list
+			authenticatorList.Items.Clear();
+			int index = 0;
+			foreach (var auth in Config.Authenticators)
+			{
+				var ali = new AuthenticatorListitem(auth, index);
+				if (added != null && added == auth && auth.AutoRefresh == false)
+				{
+					ali.LastUpdate = DateTime.Now;
+					ali.DisplayUntil = DateTime.Now.AddSeconds(10);
+				}
+				authenticatorList.Items.Add(ali);
+				index++;
+			}
+		}
+
+		/// <summary>
+		/// Save the current config
+		/// </summary>
+		private void SaveConfig()
+		{
+			WinAuthHelper.SaveConfig(this.Config);
+		}
 
 /*
     /// <summary>
@@ -274,9 +358,9 @@ namespace WinAuth
 		/// <param name="message">message to display</param>
 		/// <param name="buttons">button if other than YesNo</param>
 		/// <returns>DialogResult</returns>
-		public static DialogResult ConfirmDialog(Form form, string message, MessageBoxButtons buttons = MessageBoxButtons.YesNo)
+		public static DialogResult ConfirmDialog(Form form, string message, MessageBoxButtons buttons = MessageBoxButtons.YesNo, MessageBoxIcon icon = MessageBoxIcon.Question, MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Button1)
 		{
-			return MessageBox.Show(form, message, WinAuthMain.APPLICATION_TITLE, buttons, MessageBoxIcon.Question);
+			return MessageBox.Show(form, message, WinAuthMain.APPLICATION_TITLE, buttons, icon, defaultButton);
 		}
 
 		/// <summary>
@@ -303,6 +387,193 @@ namespace WinAuth
 				subitem.Click += addAuthenticatorMenu_Click;
 				addAuthenticatorMenu.Items.Add(subitem);
 			}
+		}
+
+		/// <summary>
+		/// Unhook the current key hook
+		/// </summary>
+		private void UnhookHotkeys()
+		{
+			// remove the hotkey hook
+			if (m_hook != null)
+			{
+				m_hook.UnHook();
+				m_hook = null;
+			}
+		}
+
+		/// <summary>
+		/// Hook the hot key for the authenticator
+		/// </summary>
+		/// <param name="config">current config settings</param>
+		private void HookHotkeys()
+		{
+			// unhook any old hotkeys
+			UnhookHotkeys();
+
+			// hook hotkey
+			Dictionary<Tuple<Keys, WinAPI.KeyModifiers>, WinAuthAuthenticator> keys = new Dictionary<Tuple<Keys, WinAPI.KeyModifiers>, WinAuthAuthenticator>();
+			foreach (var auth in Config.Authenticators)
+			{
+				if (auth.AutoLogin != null)
+				{
+					keys.Add(new Tuple<Keys, WinAPI.KeyModifiers>((Keys)auth.AutoLogin.HotKey, auth.AutoLogin.Modifiers), auth);
+				}
+			}
+			if (keys.Count != 0)
+			{
+				m_hook = new KeyboardHook(keys);
+				m_hook.KeyDown += new KeyboardHook.KeyboardHookEventHandler(Hotkey_KeyDown);
+			}
+		}
+
+		/// <summary>
+		/// A hotkey keyboard event occured, e.g. "Ctrl-Alt-C"
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		void Hotkey_KeyDown(object sender, KeyboardHookEventArgs e)
+		{
+			// avoid multiple keypresses being sent
+			if (Monitor.TryEnter(m_sendingKeys) == true && e.Authenticator != null)
+			{
+				try
+				{
+					// get keyboard sender
+					KeyboardSender keysend = new KeyboardSender(e.Authenticator.AutoLogin.WindowTitle, e.Authenticator.AutoLogin.ProcessName, e.Authenticator.AutoLogin.WindowTitleRegex);
+
+					// get the script and execute it
+					string script = (string.IsNullOrEmpty(e.Authenticator.AutoLogin.AdvancedScript) == false ? e.Authenticator.AutoLogin.AdvancedScript : "{CODE}");
+
+					// send the whole script
+					keysend.SendKeys(this, script, e.Authenticator.AuthenticatorData.CurrentCode);
+
+					// mark event as handled
+					e.Handled = true;
+				}
+				finally
+				{
+					Monitor.Exit(m_sendingKeys);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Put data into the clipboard
+		/// </summary>
+		/// <param name="data"></param>
+		public void SetClipboardData(object data)
+		{
+			bool clipRetry = false;
+			do
+			{
+				try
+				{
+					Clipboard.Clear();
+					Clipboard.SetDataObject(data, true, 4, 250);
+				}
+				catch (ExternalException)
+				{
+					// only show an error the first time
+					clipRetry = (MessageBox.Show(this, "Unable to copy to the clipboard. Another application is probably using it.\n\nTry again?",
+						WinAuthMain.APPLICATION_NAME,
+						MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
+				}
+			}
+			while (clipRetry == true);
+		}
+
+		/// <summary>
+		/// Get data from the clipboard
+		/// </summary>
+		/// <param name="format"></param>
+		/// <returns></returns>
+		public object GetClipboardData(Type format)
+		{
+			bool clipRetry = false;
+			do
+			{
+				try
+				{
+					IDataObject clipdata = Clipboard.GetDataObject();
+					return (clipdata != null ? clipdata.GetData(format) : null);
+				}
+				catch (ExternalException)
+				{
+					// only show an error the first time
+					clipRetry = (MessageBox.Show(this, "Unable to copy to the clipboard. Another application is probably using it.\n\nTry again?",
+						WinAuthMain.APPLICATION_NAME,
+						MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
+				}
+			}
+			while (clipRetry == true);
+
+			return null;
+		}
+
+		/// <summary>
+		/// Set the size of the form based on config AutoSize property
+		/// </summary>
+		private void setAutoSize()
+		{
+			if (Config.AutoSize == true)
+			{
+				int height = this.Height - authenticatorList.Height;
+				height += (this.Config.Authenticators.Count * authenticatorList.ItemHeight);
+				this.Height = height;
+
+				//this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+				this.Resizable = false;
+			}
+			else
+			{
+				this.Resizable = true;
+			}
+		}
+
+		/// <summary>
+		/// Set up the notify icon when the main form is shown
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void WinAuthForm_Shown(object sender, EventArgs e)
+		{
+			// if we use tray icon make sure it is set
+			if (this.Config.UseTrayIcon == true)
+			{
+				notifyIcon.Visible = true;
+				notifyIcon.Text = this.Text;
+
+				// if initially minizied, we need to hide
+				if (WindowState == FormWindowState.Minimized)
+				{
+					Hide();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Minimize to icon when closing or unbind and close
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void WinAuthForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			// keep in the tray when closing Form 
+			if (Config.UseTrayIcon == true && this.Visible == true && m_explictClose == false)
+			{
+				e.Cancel = true;
+				notifyIcon.Visible = true;
+				//notifyIcon.Text = this.Text;
+				Hide();
+				return;
+			}
+
+			// remove the hotkey hook
+			UnhookHotkeys();
+
+			// ensure the notify icon is closed
+			notifyIcon.Visible = false;
 		}
 
 		/// <summary>
@@ -334,8 +605,15 @@ namespace WinAuth
 						WinAuthAuthenticator winauthauthenticator = new WinAuthAuthenticator();
 						winauthauthenticator.Name = name;
 						winauthauthenticator.AuthenticatorData = form.Authenticator;
+						winauthauthenticator.AutoRefresh = false;
 						//winauthauthenticator.Skin = registeredauth.Icon;
-						authenticatorList.Items.Add(new AuthenticatorListitem(winauthauthenticator, authenticatorList.Items.Count));
+						this.Config.Authenticators.Add(winauthauthenticator);
+
+						SaveConfig();
+
+						loadAuthenticatorList(winauthauthenticator);
+
+						//authenticatorList.Items.Add(new AuthenticatorListitem(winauthauthenticator, authenticatorList.Items.Count));
 					}
 				}
 				else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.RFC6238_TIME)
@@ -346,6 +624,13 @@ namespace WinAuth
 				{
 					throw new NotImplementedException("TRAP: New authenticator not implemented for " + registeredauth.AuthenticatorType.ToString());
 				}
+
+				// reset UI
+				setAutoSize();
+				introLabel.Visible = (this.Config.Authenticators.Count == 0);
+
+				// reset hotkeeys
+				HookHotkeys();
 			}
 		}
 
@@ -360,23 +645,218 @@ namespace WinAuth
 		}
 
 		/// <summary>
-		/// Click to add a new authenticator
+		/// Click the Add button to add an authenticator
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void addAuthenticatorButton_Click(object sender, EventArgs e)
 		{
-
+			addAuthenticatorMenu.Show(addAuthenticatorButton, addAuthenticatorButton.Width, 0);
 		}
 
 		/// <summary>
-		/// Click to add a new authenticator
+		/// Click the Options button to show menu
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void addAuthenticatorChoiceButton_Click(object sender, EventArgs e)
+		private void optionsButton_Click(object sender, EventArgs e)
 		{
-			addAuthenticatorMenu.Show(addAuthenticatorChoiceButton, 0, addAuthenticatorChoiceButton.Height - 1);
+			optionsMenu.Show(optionsButton, optionsButton.Width - optionsMenu.Width, optionsButton.Height - 1);
+		}
+
+		/// <summary>
+		/// Double click notify to re-open
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void notifyIcon_DoubleClick(object sender, EventArgs e)
+		{
+			BringToFront();
+			Show();
+			WindowState = FormWindowState.Normal;
+			Activate();
+		}
+
+		/// <summary>
+		/// Event fired when an authenticator is removed (i.e. deleted) from the list
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="args"></param>
+		private void authenticatorList_ItemRemoved(object source, AuthenticatorListItemRemovedEventArgs args)
+		{
+			foreach (var auth in Config.Authenticators)
+			{
+				if (auth == args.Item.Authenticator)
+				{
+					Config.Authenticators.Remove(auth);
+					break;
+				}
+			}
+
+			SaveConfig();
+
+			// update UI
+			setAutoSize();
+			introLabel.Visible = (this.Config.Authenticators.Count == 0);
+		}
+
+#endregion
+
+#region Options menu
+
+		/// <summary>
+		/// Load the menu items for the options menu
+		/// </summary>
+		private void loadOptionsMenu()
+		{
+			ToolStripMenuItem menuitem;
+
+			this.optionsMenu.Items.Clear();
+
+			menuitem = new ToolStripMenuItem("Open");
+			menuitem.Name = "openOptionsMenuItem";
+			menuitem.Click += openOptionsMenuItem_Click;
+			this.optionsMenu.Items.Add(menuitem);
+			this.optionsMenu.Items.Add(new ToolStripSeparator() { Name = "openOptionsSeparatorItem" });
+
+			menuitem = new ToolStripMenuItem("Start With Windows");
+			menuitem.Name = "startWithWindowsOptionsMenuItem";
+			menuitem.Click += startWithWindowsOptionsMenuItem_Click;
+			this.optionsMenu.Items.Add(menuitem);
+
+			menuitem = new ToolStripMenuItem("Always on Top");
+			menuitem.Name = "alwaysOnTopOptionsMenuItem";
+			menuitem.Click += alwaysOnTopOptionsMenuItem_Click;
+			this.optionsMenu.Items.Add(menuitem);
+
+			menuitem = new ToolStripMenuItem("Use System Tray Icon");
+			menuitem.Name = "useSystemTrayIconOptionsMenuItem";
+			menuitem.Click += useSystemTrayIconOptionsMenuItem_Click;
+			this.optionsMenu.Items.Add(menuitem);
+
+			menuitem = new ToolStripMenuItem("Auto Size");
+			menuitem.Name = "autoSizeOptionsMenuItem";
+			menuitem.Click += autoSizeOptionsMenuItem_Click;
+			this.optionsMenu.Items.Add(menuitem);
+
+			this.optionsMenu.Items.Add(new ToolStripSeparator());
+
+			menuitem = new ToolStripMenuItem("About...");
+			menuitem.Name = "aboutOptionsMenuItem";
+			menuitem.Click += aboutOptionMenuItem_Click;
+			this.optionsMenu.Items.Add(menuitem);
+
+			this.optionsMenu.Items.Add(new ToolStripSeparator());
+
+			menuitem = new ToolStripMenuItem("Exit");
+			menuitem.Name = "exitOptionsMenuItem";
+			menuitem.ShortcutKeys = Keys.F4 | Keys.Alt;
+			menuitem.Click += exitOptionMenuItem_Click;
+			this.optionsMenu.Items.Add(menuitem);
+		}
+
+		/// <summary>
+		/// Set the state of the items when opening the Options menu
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void optionsMenu_Opening(object sender, CancelEventArgs e)
+		{
+			ToolStripItem item;
+			ToolStripMenuItem menuitem;
+			menuitem = optionsMenu.Items.Cast<ToolStripItem>().Where(t => t.Name == "openOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem.Visible = (this.Config.UseTrayIcon == true && this.Visible == false);
+			item = optionsMenu.Items.Cast<ToolStripItem>().Where(t => t.Name == "openOptionsSeparatorItem").FirstOrDefault();
+			item.Visible = (this.Config.UseTrayIcon == true && this.Visible == false);
+
+			menuitem = optionsMenu.Items.Cast<ToolStripItem>().Where(t => t.Name == "startWithWindowsOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem.Checked = this.Config.StartWithWindows;
+
+			menuitem = optionsMenu.Items.Cast<ToolStripItem>().Where(t => t.Name == "alwaysOnTopOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem.Checked = this.Config.AlwaysOnTop;
+
+			menuitem = optionsMenu.Items.Cast<ToolStripItem>().Where(t => t.Name == "useSystemTrayIconOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem.Checked = this.Config.UseTrayIcon;
+
+			menuitem = optionsMenu.Items.Cast<ToolStripItem>().Where(t => t.Name == "autoSizeOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem.Checked = this.Config.AutoSize;
+		}
+
+		/// <summary>
+		/// Click the Open item of the Options menu
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void openOptionsMenuItem_Click(object sender, EventArgs e)
+		{
+			// show the main form
+			BringToFront();
+			Show();
+			WindowState = FormWindowState.Normal;
+			Activate();
+		}
+
+		/// <summary>
+		/// Click the Start With Windows menu item
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void startWithWindowsOptionsMenuItem_Click(object sender, EventArgs e)
+		{
+			this.Config.StartWithWindows = !this.Config.StartWithWindows;
+		}
+
+		/// <summary>
+		/// Click the Always On Top menu item
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void alwaysOnTopOptionsMenuItem_Click(object sender, EventArgs e)
+		{
+			this.Config.AlwaysOnTop = !this.Config.AlwaysOnTop;
+		}
+
+		/// <summary>
+		/// Click the Use Tray Icon menu item
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void useSystemTrayIconOptionsMenuItem_Click(object sender, EventArgs e)
+		{
+			this.Config.UseTrayIcon = !this.Config.UseTrayIcon;
+		}
+
+		/// <summary>
+		/// Click the Auto Size menu item
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void autoSizeOptionsMenuItem_Click(object sender, EventArgs e)
+		{
+			this.Config.AutoSize = !this.Config.AutoSize;
+		}
+
+		/// <summary>
+		/// Click the About menu item
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void aboutOptionMenuItem_Click(object sender, EventArgs e)
+		{
+			AboutForm form = new AboutForm();
+			form.Config = this.Config;
+			form.ShowDialog(this);
+		}
+
+		/// <summary>
+		/// Click the Exit menu item
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void exitOptionMenuItem_Click(object sender, EventArgs e)
+		{
+			m_explictClose = true;
+			this.Close();
 		}
 
 #endregion
@@ -390,14 +870,32 @@ namespace WinAuth
     /// <param name="args"></param>
     void OnConfigChanged(object source, ConfigChangedEventArgs args)
     {
-      // resave on any changes
-      if (Config != null && string.IsNullOrEmpty(Config.Filename) == false)
-      {
-        //SaveAuthenticator(Config.Filename);
-      }
+			if (args.PropertyName == "AlwaysOnTop")
+			{
+				this.TopMost = this.Config.AlwaysOnTop;
+			}
+			else if (args.PropertyName == "UseTrayIcon")
+			{
+				bool useTrayIcon = Config.UseTrayIcon;
+				if (useTrayIcon == false && this.Visible == false)
+				{
+					BringToFront();
+					Show();
+					WindowState = FormWindowState.Normal;
+					Activate();
+				}
+				notifyIcon.Visible = useTrayIcon;
+			}
+			else if (args.PropertyName == "AutoSize")
+			{
+				//this.FormBorderStyle = (this.Config.AutoSize ? System.Windows.Forms.FormBorderStyle.FixedSingle : System.Windows.Forms.FormBorderStyle.Sizable);
+				setAutoSize();
+				this.Invalidate();
+			}
+
+			SaveConfig();
     }
 #endregion
-
 
   }
 }

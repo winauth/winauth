@@ -112,28 +112,16 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="RefreshIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\RefreshIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="MicrosoftAuthenticatorIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\MicrosoftAuthenticatorIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="BattleNetAuthenticatorIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\BattleNetAuthenticatorIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GoogleAuthenticatorIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\GoogleAuthenticatorIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="GuildWarsAuthenticatorIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\GuildWarsAuthenticatorIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="OptionsIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\OptionsIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="label.Text" xml:space="preserve">
+    <value>The following is diagnostic information that might help track down bugs and problems in WinAuth.
+
+Whilst this information does include information about your authenticator, it is only used by the WinAuth author and solely for the purposes of investigating bugs and error reports. It does not include any personal or identifying information and has been encrypted using PGP and so cannot be read by anyone else.
+
+If you are happy to send this data to help improve WinAuth, please copy the text below and either go to http://code.google.com/p/winauth and create a new Issue or email it directly to winauth@gmail.com.</value>
   </data>
 </root>

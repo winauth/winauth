@@ -46,6 +46,22 @@ namespace WinAuth
 		public string LastCode { get; set; }
 	}
 
+	public delegate void AuthenticatorListItemRemovedHandler(object source, AuthenticatorListItemRemovedEventArgs args);
+
+	public class AuthenticatorListItemRemovedEventArgs : EventArgs
+	{
+		public AuthenticatorListitem Item { get; private set; }
+
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public AuthenticatorListItemRemovedEventArgs(AuthenticatorListitem item)
+			: base()
+		{
+			Item = item;
+		}
+	}
+
   public class AuthenticatorListBox : ListBox
   {
 		public AuthenticatorListBox()
@@ -58,6 +74,8 @@ namespace WinAuth
 			this.ContextMenuStrip.Opening += ContextMenuStrip_Opening;
 			this.ContextMenuStrip.Closed += ContextMenuStrip_Closed;
     }
+
+		public event AuthenticatorListItemRemovedHandler ItemRemoved;
 
 		private AuthenticatorListitem _currentItem;
 
@@ -214,6 +232,15 @@ namespace WinAuth
 				menuitem.Click += ContextMenu_Click;
 				this.ContextMenuStrip.Items.Add(menuitem);
 				//
+				this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+				//
+				menuitem = new ToolStripMenuItem("Delete");
+				menuitem.Name = "deleteMenuItem";
+				menuitem.Click += ContextMenu_Click;
+				this.ContextMenuStrip.Items.Add(menuitem);
+				//
+				this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+				//
 				menuitem = new ToolStripMenuItem("Copy On New Code");
 				menuitem.CheckState = (auth.CopyOnCode == true ? CheckState.Checked : CheckState.Unchecked);
 				menuitem.Name = "copyOnCodeMenuItem";
@@ -334,6 +361,22 @@ namespace WinAuth
 				ShowSecretKeyForm form = new ShowSecretKeyForm();
 				form.CurrentAuthenticator = auth;
 				form.ShowDialog(this.Parent as Form);
+			}
+			else if (menuitem.Name == "deleteMenuItem")
+			{
+				if (WinAuthForm.ConfirmDialog(this.Parent as Form,
+					"Are you sure you want to delete this authenticator?" + Environment.NewLine + Environment.NewLine
+					+ "This will permanently remove it and you may no longer be able to access you account.", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+				{
+					int index = item.Index;
+					this.Items.Remove(item);
+					ItemRemoved(this, new AuthenticatorListItemRemovedEventArgs(item));
+					if (index >= this.Items.Count)
+					{
+						index = this.Items.Count - 1;
+					}
+					this.CurrentItem = (this.Items.Count != 0 ? this.Items[index] as AuthenticatorListitem : null);
+				}
 			}
 			else if (menuitem.Name.StartsWith("iconMenuItem_") == true)
 			{
