@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2010 Colin Mackie.
+ * Copyright (C) 2013 Colin Mackie.
  * This software is distributed under the terms of the GNU General Public License.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 
-namespace WindowsAuthenticator
+namespace WinAuth
 {
 	/// <summary>
 	/// Class holding the various Windows API consts and extern function

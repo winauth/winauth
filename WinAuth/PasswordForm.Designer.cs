@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-namespace WindowsAuthenticator
+namespace WinAuth
 {
 	partial class PasswordForm
 	{
@@ -48,7 +48,6 @@ namespace WindowsAuthenticator
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.label2 = new System.Windows.Forms.Label();
 			this.tbPassword = new System.Windows.Forms.TextBox();
-			this.label1 = new System.Windows.Forms.Label();
 			this.btnOk = new System.Windows.Forms.Button();
 			this.btnCancel = new System.Windows.Forms.Button();
 			this.groupBox1.SuspendLayout();
@@ -58,10 +57,9 @@ namespace WindowsAuthenticator
 			// 
 			this.groupBox1.Controls.Add(this.label2);
 			this.groupBox1.Controls.Add(this.tbPassword);
-			this.groupBox1.Controls.Add(this.label1);
 			this.groupBox1.Location = new System.Drawing.Point(12, 12);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(319, 99);
+			this.groupBox1.Size = new System.Drawing.Size(319, 56);
 			this.groupBox1.TabIndex = 0;
 			this.groupBox1.TabStop = false;
 			// 
@@ -69,7 +67,7 @@ namespace WindowsAuthenticator
 			// 
 			this.label2.AutoSize = true;
 			this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label2.Location = new System.Drawing.Point(9, 56);
+			this.label2.Location = new System.Drawing.Point(6, 20);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(71, 16);
 			this.label2.TabIndex = 2;
@@ -77,25 +75,16 @@ namespace WindowsAuthenticator
 			// 
 			// tbPassword
 			// 
-			this.tbPassword.Location = new System.Drawing.Point(106, 55);
+			this.tbPassword.Location = new System.Drawing.Point(83, 19);
 			this.tbPassword.Name = "tbPassword";
-			this.tbPassword.Size = new System.Drawing.Size(188, 20);
+			this.tbPassword.Size = new System.Drawing.Size(230, 20);
 			this.tbPassword.TabIndex = 0;
 			this.tbPassword.UseSystemPasswordChar = true;
-			// 
-			// label1
-			// 
-			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label1.Location = new System.Drawing.Point(6, 16);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(306, 56);
-			this.label1.TabIndex = 2;
-			this.label1.Text = "This Authenticator has been password protected.\r\n\r\n";
 			// 
 			// btnOk
 			// 
 			this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnOk.Location = new System.Drawing.Point(176, 125);
+			this.btnOk.Location = new System.Drawing.Point(176, 87);
 			this.btnOk.Name = "btnOk";
 			this.btnOk.Size = new System.Drawing.Size(75, 23);
 			this.btnOk.TabIndex = 0;
@@ -107,7 +96,7 @@ namespace WindowsAuthenticator
 			// 
 			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btnCancel.Location = new System.Drawing.Point(257, 125);
+			this.btnCancel.Location = new System.Drawing.Point(257, 87);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(75, 23);
 			this.btnCancel.TabIndex = 1;
@@ -120,7 +109,7 @@ namespace WindowsAuthenticator
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.btnCancel;
-			this.ClientSize = new System.Drawing.Size(350, 160);
+			this.ClientSize = new System.Drawing.Size(350, 122);
 			this.Controls.Add(this.btnCancel);
 			this.Controls.Add(this.btnOk);
 			this.Controls.Add(this.groupBox1);
@@ -140,7 +129,6 @@ namespace WindowsAuthenticator
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.TextBox tbPassword;
-		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button btnOk;
 		private System.Windows.Forms.Button btnCancel;
 	}

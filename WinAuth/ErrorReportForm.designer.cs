@@ -1,4 +1,4 @@
-namespace WindowsAuthenticator
+namespace WinAuth
 {
 	partial class ErrorReportForm
 	{

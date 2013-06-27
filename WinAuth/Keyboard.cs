@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2010 Colin Mackie.
+ * Copyright (C) 2013 Colin Mackie.
  * This software is distributed under the terms of the GNU General Public License.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 
-namespace WindowsAuthenticator
+namespace WinAuth
 {
 	/// <summary>
 	/// A generic keyboard hook to find keys and send to the application. Used in WinAuth to set up a global hotkey
@@ -91,13 +91,13 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Our keys to watch for. If none in this list send nothing. We hold a key and associated Modifier
 		/// </summary>
-		private Dictionary<Keys, WinAPI.KeyModifiers> m_hookedKeys = new Dictionary<Keys, WinAPI.KeyModifiers>();
+		private Dictionary<Tuple<Keys, WinAPI.KeyModifiers>, WinAuthAuthenticator> m_hookedKeys = new Dictionary<Tuple<Keys, WinAPI.KeyModifiers>, WinAuthAuthenticator>();
 
 		/// <summary>
 		/// Create out new KeyBoard hook for these keys
 		/// </summary>
 		/// <param name="keys"></param>
-		public KeyboardHook(Dictionary<Keys, WinAPI.KeyModifiers> keys)
+		public KeyboardHook(Dictionary<Tuple<Keys, WinAPI.KeyModifiers>, WinAuthAuthenticator> keys)
 		{
 			m_hookedKeys = keys;
 			Hook();
@@ -181,10 +181,21 @@ namespace WindowsAuthenticator
 		public void KeyCallback(int code, KeyboardHookEventArgs kea)
 		{
 			// key and modifers match?
-			if (!m_hookedKeys.ContainsKey(kea.Key) || m_hookedKeys[kea.Key] != kea.Modifiers)
+			WinAuthAuthenticator match = null;
+			foreach (var e in m_hookedKeys)
+			{
+				if (e.Key.Item1 == kea.Key && e.Key.Item2  == kea.Modifiers)
+				{
+					match = e.Value;
+					break;
+				}
+			}
+			//if (!m_hookedKeys.ContainsKey(kea.Key) || m_hookedKeys[kea.Key] != kea.Modifiers)
+			if (match == null)
 			{
 				return;
 			}
+			kea.Authenticator = match;
 
 			// call user events
 			if ((code == WinAPI.WM_KEYDOWN || code == WinAPI.WM_SYSKEYDOWN) && KeyDown != null)
@@ -222,7 +233,7 @@ namespace WindowsAuthenticator
 		/// Send the keys to the expected window or current window if null
 		/// </summary>
 		/// <param name="keys">stirng to send</param>
-		public void SendKeys(MainForm form, string keys, string code)
+		public void SendKeys(WinAuthForm form, string keys, string code)
 		{
 			if (m_hWnd != IntPtr.Zero && m_hWnd != WinAPI.GetForegroundWindow())
 			{
@@ -290,10 +301,10 @@ namespace WindowsAuthenticator
 										}
 										break;
 									case "COPY":
-										form.Invoke(new MainForm.SetClipboardDataDelegate(form.SetClipboardData), new object[] {code});
+										form.Invoke(new WinAuthForm.SetClipboardDataDelegate(form.SetClipboardData), new object[] { code });
 										break;
 									case "PASTE":
-										string clipboard = form.Invoke(new MainForm.GetClipboardDataDelegate(form.GetClipboardData), new object[] { typeof(string) }) as string;
+										string clipboard = form.Invoke(new WinAuthForm.GetClipboardDataDelegate(form.GetClipboardData), new object[] { typeof(string) }) as string;
 										if (string.IsNullOrEmpty(clipboard) == false)
 										{
 											foreach (char key in clipboard)
@@ -452,6 +463,11 @@ namespace WindowsAuthenticator
 		/// Currnet key
 		/// </summary>
 		public Keys Key;
+
+		/// <summary>
+		/// Applied authenticator
+		/// </summary>
+		public WinAuthAuthenticator Authenticator;
 
 		/// <summary>
 		/// Combined modifiers

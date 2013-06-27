@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2010 Colin Mackie.
+ * Copyright (C) 2013 Colin Mackie.
  * This software is distributed under the terms of the GNU General Public License.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,11 +24,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 
-#if NUNIT
-using NUnit.Framework;
-#endif
-
-namespace WindowsAuthenticator
+namespace WinAuth
 {
 	/// <summary>
 	/// A hot key sequence and command containing the key, modifier and script
@@ -189,6 +185,118 @@ namespace WindowsAuthenticator
 			}
 		}
 
+    public void ReadXml(XmlReader reader, string password)
+    {
+      reader.MoveToContent();
+
+      if (reader.IsEmptyElement)
+      {
+        reader.Read();
+        return;
+      }
+
+      reader.Read();
+      while (reader.EOF == false)
+      {
+        if (reader.IsStartElement())
+        {
+          switch (reader.Name)
+          {
+            case "modifiers":
+      				Modifiers = (WinAPI.KeyModifiers)BitConverter.ToInt32(Authenticator.StringToByteArray(reader.ReadElementContentAsString()), 0);
+              break;
+
+            case "hotkey":
+              HotKey = (WinAPI.VirtualKeyCode)BitConverter.ToUInt16(Authenticator.StringToByteArray(reader.ReadElementContentAsString()), 0);
+              break;
+
+            case "windowtitle":
+              WindowTitle = reader.ReadElementContentAsString();
+              break;
+
+            case "windowtitleregex":
+              WindowTitleRegex = reader.ReadElementContentAsBoolean();
+              break;
+
+            case "processname":
+              ProcessName = reader.ReadElementContentAsString();
+              break;
+
+            case "advanced":
+              Advanced = reader.ReadElementContentAsBoolean();
+              break;
+
+            case "script":
+              string encrypted = reader.GetAttribute("encrypted");
+              string data = reader.ReadElementContentAsString();
+
+              if (string.IsNullOrEmpty(encrypted) == false)
+              {
+                Authenticator.PasswordTypes passwordType;
+                data = Authenticator.DecryptSequence(data, encrypted, password, out passwordType);
+                byte[] plain = Authenticator.StringToByteArray(data);
+                data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+
+/*
+                char[] encTypes = encrypted.ToCharArray();
+                // we read the string in reverse order (the order they were encrypted)
+                for (int i = encTypes.Length - 1; i >= 0; i--)
+                {
+                  char encryptedType = encTypes[i];
+                  switch (encryptedType)
+                  {
+                    case 'u':
+                      {
+                        // we are going to decrypt with the Windows User account key
+                        byte[] cipher = Authenticator.StringToByteArray(data);
+                        byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.CurrentUser);
+                        data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+                        break;
+                      }
+                    case 'm':
+                      {
+                        // we are going to decrypt with the Windows local machine key
+                        byte[] cipher = Authenticator.StringToByteArray(data);
+                        byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
+                        data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+                        break;
+                      }
+                    case 'y':
+                      {
+                        // we use an explicit password to encrypt data
+                        if (string.IsNullOrEmpty(password) == true)
+                        {
+                          throw new EncrpytedSecretDataException();
+                        }
+                        data = Authenticator.Decrypt(data, password, true);
+                        byte[] plain = Authenticator.StringToByteArray(data);
+                        data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+                        break;
+                      }
+                    default:
+                      break;
+                  }
+                }
+*/
+              }
+
+              AdvancedScript = data;
+
+              break;
+
+            default:
+              reader.Skip();
+              break;
+          }
+        }
+        else
+        {
+          reader.Read();
+          break;
+        }
+      }
+    }
+
 		/// <summary>
 		/// Write data into the XmlWriter
 		/// </summary>
@@ -223,7 +331,7 @@ namespace WindowsAuthenticator
 			//
 			writer.WriteStartElement("script");
 			string script = AdvancedScript.Replace("\n", string.Empty);
-
+/*
 			StringBuilder passwordTypeAttribue = new StringBuilder();
 			if ((passwordType & Authenticator.PasswordTypes.Explicit) != 0)
 			{
@@ -248,6 +356,7 @@ namespace WindowsAuthenticator
 				passwordTypeAttribue.Append("m");
 			}
 			writer.WriteAttributeString("encrypted", passwordTypeAttribue.ToString());
+ */
 			writer.WriteCData(script);
 			writer.WriteEndElement();
 

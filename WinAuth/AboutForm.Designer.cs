@@ -1,4 +1,4 @@
-﻿namespace WindowsAuthenticator
+namespace WinAuth
 {
 	partial class AboutForm
 	{
@@ -33,6 +33,7 @@
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.richTextBox2 = new System.Windows.Forms.RichTextBox();
 			this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+			this.label2 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.btnOK = new System.Windows.Forms.Button();
 			this.btnReport = new System.Windows.Forms.Button();
@@ -46,10 +47,9 @@
 			this.aboutLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.aboutLabel.Location = new System.Drawing.Point(6, 16);
 			this.aboutLabel.Name = "aboutLabel";
-			this.aboutLabel.Size = new System.Drawing.Size(385, 85);
+			this.aboutLabel.Size = new System.Drawing.Size(385, 33);
 			this.aboutLabel.TabIndex = 1;
-			this.aboutLabel.Text = "WinAuth {0}\r\n\r\nCopyright (C) {1}. Colin Mackie. All rights reserved.\r\n\r\nLicense:\r" +
-    "\n";
+			this.aboutLabel.Text = "WinAuth {0}\r\nCopyright (C) {1}. Colin Mackie. All rights reserved.\r\n";
 			// 
 			// groupBox1
 			// 
@@ -58,45 +58,54 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox1.Controls.Add(this.richTextBox2);
 			this.groupBox1.Controls.Add(this.richTextBox1);
+			this.groupBox1.Controls.Add(this.label2);
 			this.groupBox1.Controls.Add(this.label1);
 			this.groupBox1.Controls.Add(this.aboutLabel);
 			this.groupBox1.Location = new System.Drawing.Point(12, 12);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(397, 480);
+			this.groupBox1.Size = new System.Drawing.Size(397, 310);
 			this.groupBox1.TabIndex = 2;
 			this.groupBox1.TabStop = false;
 			// 
 			// richTextBox2
 			// 
-			this.richTextBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.richTextBox2.Location = new System.Drawing.Point(6, 369);
+			this.richTextBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.richTextBox2.Location = new System.Drawing.Point(6, 213);
 			this.richTextBox2.Name = "richTextBox2";
 			this.richTextBox2.ReadOnly = true;
-			this.richTextBox2.Size = new System.Drawing.Size(385, 105);
+			this.richTextBox2.Size = new System.Drawing.Size(385, 91);
 			this.richTextBox2.TabIndex = 4;
 			this.richTextBox2.Text = resources.GetString("richTextBox2.Text");
 			// 
 			// richTextBox1
 			// 
-			this.richTextBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.richTextBox1.Location = new System.Drawing.Point(6, 104);
+			this.richTextBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.richTextBox1.Location = new System.Drawing.Point(6, 78);
 			this.richTextBox1.Name = "richTextBox1";
 			this.richTextBox1.ReadOnly = true;
-			this.richTextBox1.Size = new System.Drawing.Size(385, 217);
+			this.richTextBox1.Size = new System.Drawing.Size(385, 105);
 			this.richTextBox1.TabIndex = 3;
 			this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
+			// 
+			// label2
+			// 
+			this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label2.Location = new System.Drawing.Point(6, 61);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(385, 19);
+			this.label2.TabIndex = 1;
+			this.label2.Text = "License";
 			// 
 			// label1
 			// 
 			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label1.Location = new System.Drawing.Point(6, 342);
+			this.label1.Location = new System.Drawing.Point(6, 196);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(385, 24);
+			this.label1.Size = new System.Drawing.Size(385, 19);
 			this.label1.TabIndex = 1;
 			this.label1.Text = "Copyright, Trademarks and other notices:";
 			// 
@@ -104,7 +113,7 @@
 			// 
 			this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnOK.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.btnOK.Location = new System.Drawing.Point(334, 498);
+			this.btnOK.Location = new System.Drawing.Point(334, 329);
 			this.btnOK.Name = "btnOK";
 			this.btnOK.Size = new System.Drawing.Size(75, 23);
 			this.btnOK.TabIndex = 3;
@@ -115,7 +124,7 @@
 			// btnReport
 			// 
 			this.btnReport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnReport.Location = new System.Drawing.Point(12, 498);
+			this.btnReport.Location = new System.Drawing.Point(12, 327);
 			this.btnReport.Name = "btnReport";
 			this.btnReport.Size = new System.Drawing.Size(112, 23);
 			this.btnReport.TabIndex = 3;
@@ -129,10 +138,11 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.btnOK;
-			this.ClientSize = new System.Drawing.Size(421, 533);
+			this.ClientSize = new System.Drawing.Size(421, 362);
 			this.Controls.Add(this.btnReport);
 			this.Controls.Add(this.btnOK);
 			this.Controls.Add(this.groupBox1);
+			this.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.Name = "AboutForm";
 			this.ShowIcon = false;
 			this.Text = "About Windows Authenticator";
@@ -151,5 +161,6 @@
 		private System.Windows.Forms.Button btnReport;
 		private System.Windows.Forms.RichTextBox richTextBox2;
 		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Label label2;
 	}
 }

@@ -1,5 +1,5 @@
-﻿/*
- * Copyright (C) 2010 Colin Mackie.
+/*
+ * Copyright (C) 2013 Colin Mackie.
  * This software is distributed under the terms of the GNU General Public License.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@ using System.Security.Cryptography;
 using System.Windows.Forms;
 using System.Xml;
 
-namespace WindowsAuthenticator
+namespace WinAuth
 {
 	/// <summary>
 	/// General error report form
@@ -99,9 +99,10 @@ namespace WindowsAuthenticator
 			{
 				// clone the authenticator so we can extract key in case machine/user encrypted
 				WinAuthConfig clone = this.Config.Clone() as WinAuthConfig;
-				if (clone.Authenticator != null)
+				foreach (var auth in clone.Authenticators)
 				{
-					clone.Authenticator.PasswordType = WindowsAuthenticator.Authenticator.PasswordTypes.None;
+					auth.PasswordType = Authenticator.PasswordTypes.None;
+					auth.AuthenticatorData.PasswordType = Authenticator.PasswordTypes.None;
 				}
 
 				// add the config and authenticator

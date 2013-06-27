@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2010 Colin Mackie.
+ * Copyright (C) 2013 Colin Mackie.
  * This software is distributed under the terms of the GNU General Public License.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace WindowsAuthenticator
+namespace WinAuth
 {
 	/// <summary>
 	/// Form display initialization confirmation.
@@ -35,7 +35,7 @@ namespace WindowsAuthenticator
 		/// <summary>
 		/// Current authenticator
 		/// </summary>
-		public BattleNetAuthenticator Authenticator { get; set; }
+		public WinAuthAuthenticator CurrentAuthenticator { get; set; }
 
 		/// <summary>
 		/// Create a new form
@@ -63,17 +63,15 @@ namespace WindowsAuthenticator
 		private void ShowRestoreCodeForm_Load(object sender, EventArgs e)
 		{
 			this.serialNumberField.SecretMode = true;
-			this.serialNumberField.Text = Authenticator.Serial;
 			this.restoreCodeField.SecretMode = true;
-			this.restoreCodeField.Text = Authenticator.RestoreCode;
 
 			// if needed start a background thread to verify the restore code
-			if (this.Authenticator.RestoreCodeVerified == false)
+			if (CurrentAuthenticator.AuthenticatorData.RestoreCodeVerified == false)
 			{
 				BackgroundWorker verify = new BackgroundWorker();
 				verify.DoWork += new DoWorkEventHandler(VerifyRestoreCode);
 				verify.RunWorkerCompleted += new RunWorkerCompletedEventHandler(VerifyRestoreCodeCompleted);
-				verify.RunWorkerAsync(this.Authenticator);
+				verify.RunWorkerAsync(CurrentAuthenticator.AuthenticatorData);
 			}
 		}
 
@@ -87,7 +85,7 @@ namespace WindowsAuthenticator
 			string message = e.Result as string;
 			if (string.IsNullOrEmpty(message) == false)
 			{
-				MessageBox.Show(this, message, WinAuth.APPLICATION_NAME, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				MessageBox.Show(this, message, WinAuthMain.APPLICATION_NAME, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 			}
 		}
 
@@ -122,6 +120,28 @@ namespace WindowsAuthenticator
 				e.Result = "Oops. An error (" + ex2.Message + ") occured whilst validating your restore code."
 						+ "Please log a ticket at http://code.google.com/p/winauth so we can fix this.";
 			}
+		}
+
+		/// <summary>
+		/// Show the codes
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void showCodeButton_Click(object sender, EventArgs e)
+		{
+			this.serialNumberField.Text = CurrentAuthenticator.AuthenticatorData.Serial;
+			this.restoreCodeField.Text = CurrentAuthenticator.AuthenticatorData.RestoreCode;
+		}
+
+		/// <summary>
+		/// Click the allow copy chekcbox
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void allowCopyCheckBox_CheckedChanged(object sender, EventArgs e)
+		{
+			this.serialNumberField.SecretMode = !allowCopyCheckBox.Checked;
+			this.restoreCodeField.SecretMode = !allowCopyCheckBox.Checked;
 		}
 
 	}

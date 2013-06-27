@@ -1,5 +1,5 @@
-﻿/*
- * Copyright (C) 2010 Colin Mackie.
+/*
+ * Copyright (C) 2013 Colin Mackie.
  * This software is distributed under the terms of the GNU General Public License.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 
-namespace WindowsAuthenticator
+namespace WinAuth
 {
 	/// <summary>
 	/// General about form
@@ -40,6 +40,11 @@ namespace WindowsAuthenticator
 		{
 			InitializeComponent();
 		}
+
+		/// <summary>
+		/// Current config object
+		/// </summary>
+		public WinAuthConfig Config { get; set; }
 
 		/// <summary>
 		/// Load the about form
@@ -79,34 +84,23 @@ namespace WindowsAuthenticator
 		{
 			// display the error form, loading it with current authenticator data
 			ErrorReportForm errorreport = new ErrorReportForm();
-			errorreport.Config = ((MainForm)this.Owner).Config;
-			if (errorreport.Config != null && string.IsNullOrEmpty(errorreport.Config.Filename) == false)
+			errorreport.Config = Config;
+			if (string.IsNullOrEmpty(errorreport.Config.Filename) == false)
 			{
 				errorreport.ConfigFileContents = File.ReadAllText(errorreport.Config.Filename);
 			}
 			else
 			{
-				object config = WinAuthHelper.GetLastFile(1);
-				if (config != null)
+				using (MemoryStream ms = new MemoryStream())
 				{
-					if (config is string && ((string)config).Length != 0 && File.Exists((string)config) == true)
+					XmlWriterSettings settings = new XmlWriterSettings();
+					settings.Indent = true;
+					using (XmlWriter writer = XmlWriter.Create(ms, settings))
 					{
-						errorreport.ConfigFileContents = File.ReadAllText((string)config);
+						Config.WriteXmlString(writer);
 					}
-					else if (config is WinAuthConfig)
-					{
-						using (MemoryStream ms = new MemoryStream())
-						{
-							XmlWriterSettings settings = new XmlWriterSettings();
-							settings.Indent = true;
-							using (XmlWriter writer = XmlWriter.Create(ms, settings))
-							{
-								((WinAuthConfig)config).WriteXmlString(writer);
-							}
-							ms.Position = 0;
-							errorreport.ConfigFileContents = new StreamReader(ms).ReadToEnd();
-						}
-					}
+					ms.Position = 0;
+					errorreport.ConfigFileContents = new StreamReader(ms).ReadToEnd();
 				}
 			}
 			errorreport.ShowDialog(this);
