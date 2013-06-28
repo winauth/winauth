@@ -311,7 +311,7 @@ namespace WinAuth
 
 					BattleNetAuthenticator authenticator = new BattleNetAuthenticator();
 #if DEBUG
-					authenticator.Enroll(true);
+					authenticator.Enroll(System.Diagnostics.Debugger.IsAttached);
 #else
 					authenticator.Enroll();
 #endif

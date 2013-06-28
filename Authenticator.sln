@@ -2,9 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authenticator", "Authenticator\Authenticator.csproj", "{EAF2D5CE-D817-453A-8A32-3D531570AE04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinAuth", "winauth\WinAuth.csproj", "{AE0E0B45-A1FB-41C9-8889-56BBB2D1DDD7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinAuth3", "WinAuth3\WinAuth3.csproj", "{DC7B671F-E320-4A26-842D-F5AC5CF99887}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinAuth", "WinAuth\WinAuth.csproj", "{DC7B671F-E320-4A26-842D-F5AC5CF99887}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,16 +24,6 @@ Global
 		{EAF2D5CE-D817-453A-8A32-3D531570AE04}.Release|Mixed Platforms.Build.0 = Release|x86
 		{EAF2D5CE-D817-453A-8A32-3D531570AE04}.Release|x86.ActiveCfg = Release|x86
 		{EAF2D5CE-D817-453A-8A32-3D531570AE04}.Release|x86.Build.0 = Release|x86
-		{AE0E0B45-A1FB-41C9-8889-56BBB2D1DDD7}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{AE0E0B45-A1FB-41C9-8889-56BBB2D1DDD7}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{AE0E0B45-A1FB-41C9-8889-56BBB2D1DDD7}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{AE0E0B45-A1FB-41C9-8889-56BBB2D1DDD7}.Debug|x86.ActiveCfg = Debug|x86
-		{AE0E0B45-A1FB-41C9-8889-56BBB2D1DDD7}.Debug|x86.Build.0 = Debug|x86
-		{AE0E0B45-A1FB-41C9-8889-56BBB2D1DDD7}.Release|Any CPU.ActiveCfg = Release|x86
-		{AE0E0B45-A1FB-41C9-8889-56BBB2D1DDD7}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{AE0E0B45-A1FB-41C9-8889-56BBB2D1DDD7}.Release|Mixed Platforms.Build.0 = Release|x86
-		{AE0E0B45-A1FB-41C9-8889-56BBB2D1DDD7}.Release|x86.ActiveCfg = Release|x86
-		{AE0E0B45-A1FB-41C9-8889-56BBB2D1DDD7}.Release|x86.Build.0 = Release|x86
 		{DC7B671F-E320-4A26-842D-F5AC5CF99887}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DC7B671F-E320-4A26-842D-F5AC5CF99887}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC7B671F-E320-4A26-842D-F5AC5CF99887}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

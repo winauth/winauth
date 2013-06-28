@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>zxing.presentation</name>
+    </assembly>
+    <members>
+        <member name="M:ZXing.BitmapSourceLuminanceSource.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZXing.BitmapSourceLuminanceSource"/> class.
+            </summary>
+            <param name="width">The width.</param>
+            <param name="height">The height.</param>
+        </member>
+        <member name="M:ZXing.BitmapSourceLuminanceSource.#ctor(System.Windows.Media.Imaging.BitmapSource)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZXing.BitmapSourceLuminanceSource"/> class.
+            </summary>
+            <param name="bitmap">The bitmap.</param>
+        </member>
+        <member name="M:ZXing.BitmapSourceLuminanceSource.CreateLuminanceSource(System.Byte[],System.Int32,System.Int32)">
+            <summary>
+            Should create a new luminance source with the right class type.
+            The method is used in methods crop and rotate.
+            </summary>
+            <param name="newLuminances">The new luminances.</param>
+            <param name="width">The width.</param>
+            <param name="height">The height.</param>
+            <returns></returns>
+        </member>
+        <member name="T:ZXing.Presentation.BarcodeReader">
+            <summary>
+            A smart class to decode the barcode inside a bitmap object which is derived from BitmapSource
+            </summary>
+        </member>
+        <member name="M:ZXing.Presentation.BarcodeReader.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZXing.Presentation.BarcodeReader"/> class.
+            </summary>
+        </member>
+        <member name="M:ZXing.Presentation.BarcodeReader.#ctor(ZXing.Reader,System.Func{System.Windows.Media.Imaging.BitmapSource,ZXing.LuminanceSource},System.Func{ZXing.LuminanceSource,ZXing.Binarizer})">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZXing.Presentation.BarcodeReader"/> class.
+            </summary>
+            <param name="reader">Sets the reader which should be used to find and decode the barcode.
+            If null then MultiFormatReader is used</param>
+            <param name="createLuminanceSource">Sets the function to create a luminance source object for a bitmap.
+            If null, an exception is thrown when Decode is called</param>
+            <param name="createBinarizer">Sets the function to create a binarizer object for a luminance source.
+            If null then HybridBinarizer is used</param>
+        </member>
+        <member name="M:ZXing.Presentation.BarcodeReader.#ctor(ZXing.Reader,System.Func{System.Windows.Media.Imaging.BitmapSource,ZXing.LuminanceSource},System.Func{ZXing.LuminanceSource,ZXing.Binarizer},System.Func{System.Byte[],System.Int32,System.Int32,ZXing.RGBLuminanceSource.BitmapFormat,ZXing.LuminanceSource})">
+            <summary>
+            Initializes a new instance of the <see cref="T:ZXing.Presentation.BarcodeReader"/> class.
+            </summary>
+            <param name="reader">Sets the reader which should be used to find and decode the barcode.
+            If null then MultiFormatReader is used</param>
+            <param name="createLuminanceSource">Sets the function to create a luminance source object for a bitmap.
+            If null, an exception is thrown when Decode is called</param>
+            <param name="createBinarizer">Sets the function to create a binarizer object for a luminance source.
+            If null then HybridBinarizer is used</param>
+        </member>
+    </members>
+</doc>

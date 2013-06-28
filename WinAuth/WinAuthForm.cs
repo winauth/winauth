@@ -606,14 +606,38 @@ namespace WinAuth
 						winauthauthenticator.Name = name;
 						winauthauthenticator.AuthenticatorData = form.Authenticator;
 						winauthauthenticator.AutoRefresh = false;
-						//winauthauthenticator.Skin = registeredauth.Icon;
 						this.Config.Authenticators.Add(winauthauthenticator);
 
 						SaveConfig();
 
 						loadAuthenticatorList(winauthauthenticator);
+					}
+				}
+				else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Google)
+				{
+					// create the Google authenticator
+					AddGoogleAuthenticator form = new AddGoogleAuthenticator();
+					if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+					{
+						// add the new authenticator
+						WinAuthAuthenticator winauthauthenticator = form.Authenticator;
+						if (string.IsNullOrEmpty(winauthauthenticator.Name) == true)
+						{
+							int existing = 0;
+							string name;
+							do
+							{
+								name = "Google" + (existing != 0 ? " (" + existing + ")" : string.Empty);
+								existing++;
+							} while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name).Count() != 0);
+							winauthauthenticator.Name = name;
+						}
+						winauthauthenticator.AutoRefresh = false;
+						this.Config.Authenticators.Add(winauthauthenticator);
 
-						//authenticatorList.Items.Add(new AuthenticatorListitem(winauthauthenticator, authenticatorList.Items.Count));
+						SaveConfig();
+
+						loadAuthenticatorList(winauthauthenticator);
 					}
 				}
 				else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.RFC6238_TIME)

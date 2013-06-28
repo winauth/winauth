@@ -26,8 +26,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Web;
 
-using MessagingToolkit.QRCode;
-using MessagingToolkit.QRCode.Codec;
+using ZXing;
 
 namespace WinAuth
 {
@@ -78,9 +77,12 @@ namespace WinAuth
 		{
 			this.secretKeyField.Text = Regex.Replace(CurrentAuthenticator.AuthenticatorData.Serial, ".{3}", "$0 ").Trim();
 
-			var qr = new MessagingToolkit.QRCode.Codec.QRCodeEncoder();
 			string url = "otpauth://totp/" + HttpUtility.HtmlEncode(CurrentAuthenticator.Name) + "?secret=" + CurrentAuthenticator.AuthenticatorData.Serial;
-			qrImage.Image = qr.Encode(url);
+
+			BarcodeWriter writer = new BarcodeWriter();
+			writer.Format = BarcodeFormat.QR_CODE;
+			writer.Options = new ZXing.Common.EncodingOptions { Width = qrImage.Width, Height = qrImage.Height };
+			qrImage.Image = writer.Write(url);
 		}
 
 		/// <summary>
