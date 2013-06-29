@@ -54,6 +54,7 @@ namespace WinAuth
 		{
 			{"Battle.Net", "BattleNetAuthenticatorIcon.png"},
 			{"Guild Wars 2", "GuildWarsAuthenticatorIcon.png"},
+			{"Trion", "TrionAuthenticatorIcon.png"},
 			{"Google", "GoogleAuthenticatorIcon.png"},
 			{"Microsoft", "MicrosoftAuthenticatorIcon.png"}
 		};
@@ -62,6 +63,7 @@ namespace WinAuth
 		{
 			new RegisteredAuthenticator {Name="Battle.Net", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.BattleNet, Icon="BattleNetAuthenticatorIcon.png"},
 			new RegisteredAuthenticator {Name="Guild Wars 2", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.RFC6238_TIME, Icon="GuildWarsAuthenticatorIcon.png"},
+			new RegisteredAuthenticator {Name="Trion", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Trion, Icon="GoogleAuthenticatorIcon.png"},
 			new RegisteredAuthenticator {Name="Google", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Google, Icon="GoogleAuthenticatorIcon.png"},
 			new RegisteredAuthenticator {Name="Microsoft", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.RFC6238_TIME, Icon="MicrosoftAuthenticatorIcon.png"}
 		};

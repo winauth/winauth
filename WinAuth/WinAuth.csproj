@@ -98,6 +98,12 @@
     <Compile Include="AddGoogleAuthenticator.designer.cs">
       <DependentUpon>AddGoogleAuthenticator.cs</DependentUpon>
     </Compile>
+    <Compile Include="AddTrionAuthenticator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddTrionAuthenticator.designer.cs">
+      <DependentUpon>AddTrionAuthenticator.cs</DependentUpon>
+    </Compile>
     <Compile Include="AuthenticatorListBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -172,6 +178,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AddGoogleAuthenticator.resx">
       <DependentUpon>AddGoogleAuthenticator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddTrionAuthenticator.resx">
+      <DependentUpon>AddTrionAuthenticator.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="BetaForm.resx">
       <DependentUpon>BetaForm.cs</DependentUpon>

@@ -613,6 +613,32 @@ namespace WinAuth
 						loadAuthenticatorList(winauthauthenticator);
 					}
 				}
+				if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Trion)
+				{
+					// create the Battle.net authenticator
+					AddTrionAuthenticator form = new AddTrionAuthenticator();
+					if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+					{
+						// add the new authenticator
+						int existing = 0;
+						string name;
+						do
+						{
+							name = "Battle.net" + (existing != 0 ? " (" + existing + ")" : string.Empty);
+							existing++;
+						} while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name).Count() != 0);
+
+						WinAuthAuthenticator winauthauthenticator = new WinAuthAuthenticator();
+						winauthauthenticator.Name = name;
+						winauthauthenticator.AuthenticatorData = form.Authenticator;
+						winauthauthenticator.AutoRefresh = false;
+						this.Config.Authenticators.Add(winauthauthenticator);
+
+						SaveConfig();
+
+						loadAuthenticatorList(winauthauthenticator);
+					}
+				}
 				else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Google)
 				{
 					// create the Google authenticator
