@@ -30,7 +30,6 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddBattleNetAuthenticator));
-			this.newAuthenticatorGroup = new System.Windows.Forms.GroupBox();
 			this.newAuthenticatorProgress = new System.Windows.Forms.ProgressBar();
 			this.allowCopyNewButton = new System.Windows.Forms.CheckBox();
 			this.newRestoreCodeField = new WinAuth.SecretTextBox();
@@ -43,52 +42,43 @@
 			this.label3 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
-			this.restoreAuthenticatorGroup = new System.Windows.Forms.GroupBox();
 			this.restoreRestoreCodeField = new System.Windows.Forms.TextBox();
 			this.label7 = new System.Windows.Forms.Label();
 			this.restoreSerialNumberField = new System.Windows.Forms.TextBox();
 			this.label8 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
-			this.importAuthenticatorGroup = new System.Windows.Forms.GroupBox();
 			this.importPrivateKeyField = new System.Windows.Forms.TextBox();
 			this.label11 = new System.Windows.Forms.Label();
 			this.okButton = new System.Windows.Forms.Button();
 			this.cancelButton = new System.Windows.Forms.Button();
-			this.restoreAuthenticatorButton = new WinAuth.GroupRadioButton();
-			this.createAuthenticatorButton = new WinAuth.GroupRadioButton();
-			this.importAuthenticatorButton = new WinAuth.GroupRadioButton();
 			this.newAuthenticatorTimer = new System.Windows.Forms.Timer(this.components);
-			this.pictureBox1 = new System.Windows.Forms.PictureBox();
-			this.newAuthenticatorGroup.SuspendLayout();
-			this.restoreAuthenticatorGroup.SuspendLayout();
-			this.importAuthenticatorGroup.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.icon3RadioButton = new WinAuth.GroupRadioButton();
+			this.icon2RadioButton = new WinAuth.GroupRadioButton();
+			this.icon1RadioButton = new WinAuth.GroupRadioButton();
+			this.icon3 = new System.Windows.Forms.PictureBox();
+			this.icon2 = new System.Windows.Forms.PictureBox();
+			this.icon1 = new System.Windows.Forms.PictureBox();
+			this.label10 = new System.Windows.Forms.Label();
+			this.label12 = new System.Windows.Forms.Label();
+			this.nameField = new System.Windows.Forms.TextBox();
+			this.tabControl1 = new System.Windows.Forms.TabControl();
+			this.tabPage1 = new System.Windows.Forms.TabPage();
+			this.restoreAuthenticatorTab = new System.Windows.Forms.TabPage();
+			this.importAuthenticatorTab = new System.Windows.Forms.TabPage();
+			this.groupBox1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.icon3)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.icon2)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.icon1)).BeginInit();
+			this.tabControl1.SuspendLayout();
+			this.tabPage1.SuspendLayout();
+			this.restoreAuthenticatorTab.SuspendLayout();
+			this.importAuthenticatorTab.SuspendLayout();
 			this.SuspendLayout();
-			// 
-			// newAuthenticatorGroup
-			// 
-			this.newAuthenticatorGroup.Controls.Add(this.newAuthenticatorProgress);
-			this.newAuthenticatorGroup.Controls.Add(this.allowCopyNewButton);
-			this.newAuthenticatorGroup.Controls.Add(this.newRestoreCodeField);
-			this.newAuthenticatorGroup.Controls.Add(this.newLoginCodeField);
-			this.newAuthenticatorGroup.Controls.Add(this.label6);
-			this.newAuthenticatorGroup.Controls.Add(this.newSerialNumberField);
-			this.newAuthenticatorGroup.Controls.Add(this.label5);
-			this.newAuthenticatorGroup.Controls.Add(this.enrollAuthenticatorButton);
-			this.newAuthenticatorGroup.Controls.Add(this.label4);
-			this.newAuthenticatorGroup.Controls.Add(this.label3);
-			this.newAuthenticatorGroup.Controls.Add(this.label2);
-			this.newAuthenticatorGroup.Controls.Add(this.label1);
-			this.newAuthenticatorGroup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.newAuthenticatorGroup.Location = new System.Drawing.Point(12, 78);
-			this.newAuthenticatorGroup.Name = "newAuthenticatorGroup";
-			this.newAuthenticatorGroup.Size = new System.Drawing.Size(458, 256);
-			this.newAuthenticatorGroup.TabIndex = 1;
-			this.newAuthenticatorGroup.TabStop = false;
 			// 
 			// newAuthenticatorProgress
 			// 
-			this.newAuthenticatorProgress.Location = new System.Drawing.Point(120, 210);
+			this.newAuthenticatorProgress.Location = new System.Drawing.Point(121, 199);
 			this.newAuthenticatorProgress.Maximum = 30;
 			this.newAuthenticatorProgress.Minimum = 1;
 			this.newAuthenticatorProgress.Name = "newAuthenticatorProgress";
@@ -102,7 +92,7 @@
 			// 
 			this.allowCopyNewButton.AutoSize = true;
 			this.allowCopyNewButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.allowCopyNewButton.Location = new System.Drawing.Point(284, 159);
+			this.allowCopyNewButton.Location = new System.Drawing.Point(285, 148);
 			this.allowCopyNewButton.Name = "allowCopyNewButton";
 			this.allowCopyNewButton.Size = new System.Drawing.Size(83, 17);
 			this.allowCopyNewButton.TabIndex = 4;
@@ -113,7 +103,7 @@
 			// newRestoreCodeField
 			// 
 			this.newRestoreCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-			this.newRestoreCodeField.Location = new System.Drawing.Point(120, 221);
+			this.newRestoreCodeField.Location = new System.Drawing.Point(121, 210);
 			this.newRestoreCodeField.Multiline = true;
 			this.newRestoreCodeField.Name = "newRestoreCodeField";
 			this.newRestoreCodeField.SecretMode = false;
@@ -124,7 +114,7 @@
 			// newLoginCodeField
 			// 
 			this.newLoginCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-			this.newLoginCodeField.Location = new System.Drawing.Point(120, 182);
+			this.newLoginCodeField.Location = new System.Drawing.Point(121, 171);
 			this.newLoginCodeField.Multiline = true;
 			this.newLoginCodeField.Name = "newLoginCodeField";
 			this.newLoginCodeField.SecretMode = false;
@@ -138,7 +128,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.label6.AutoSize = true;
 			this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label6.Location = new System.Drawing.Point(17, 226);
+			this.label6.Location = new System.Drawing.Point(18, 215);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(95, 16);
 			this.label6.TabIndex = 1;
@@ -147,7 +137,7 @@
 			// newSerialNumberField
 			// 
 			this.newSerialNumberField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-			this.newSerialNumberField.Location = new System.Drawing.Point(120, 153);
+			this.newSerialNumberField.Location = new System.Drawing.Point(121, 142);
 			this.newSerialNumberField.Multiline = true;
 			this.newSerialNumberField.Name = "newSerialNumberField";
 			this.newSerialNumberField.SecretMode = false;
@@ -161,7 +151,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.label5.AutoSize = true;
 			this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label5.Location = new System.Drawing.Point(19, 186);
+			this.label5.Location = new System.Drawing.Point(20, 175);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(80, 16);
 			this.label5.TabIndex = 1;
@@ -170,7 +160,7 @@
 			// enrollAuthenticatorButton
 			// 
 			this.enrollAuthenticatorButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.enrollAuthenticatorButton.Location = new System.Drawing.Point(63, 100);
+			this.enrollAuthenticatorButton.Location = new System.Drawing.Point(64, 89);
 			this.enrollAuthenticatorButton.Name = "enrollAuthenticatorButton";
 			this.enrollAuthenticatorButton.Size = new System.Drawing.Size(215, 24);
 			this.enrollAuthenticatorButton.TabIndex = 0;
@@ -184,7 +174,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.label4.AutoSize = true;
 			this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label4.Location = new System.Drawing.Point(17, 158);
+			this.label4.Location = new System.Drawing.Point(18, 147);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(97, 16);
 			this.label4.TabIndex = 1;
@@ -193,7 +183,7 @@
 			// label3
 			// 
 			this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label3.Location = new System.Drawing.Point(6, 104);
+			this.label3.Location = new System.Drawing.Point(7, 93);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(51, 25);
 			this.label3.TabIndex = 1;
@@ -204,9 +194,9 @@
 			this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label2.Location = new System.Drawing.Point(6, 133);
+			this.label2.Location = new System.Drawing.Point(7, 122);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(446, 25);
+			this.label2.Size = new System.Drawing.Size(332, 25);
 			this.label2.TabIndex = 1;
 			this.label2.Text = "5. You will need to add the following details to your account.";
 			// 
@@ -215,32 +205,17 @@
 			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label1.Location = new System.Drawing.Point(6, 25);
+			this.label1.Location = new System.Drawing.Point(7, 14);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(446, 72);
+			this.label1.Size = new System.Drawing.Size(428, 72);
 			this.label1.TabIndex = 0;
 			this.label1.Text = resources.GetString("label1.Text");
 			// 
-			// restoreAuthenticatorGroup
-			// 
-			this.restoreAuthenticatorGroup.Controls.Add(this.restoreRestoreCodeField);
-			this.restoreAuthenticatorGroup.Controls.Add(this.label7);
-			this.restoreAuthenticatorGroup.Controls.Add(this.restoreSerialNumberField);
-			this.restoreAuthenticatorGroup.Controls.Add(this.label8);
-			this.restoreAuthenticatorGroup.Controls.Add(this.label9);
-			this.restoreAuthenticatorGroup.Enabled = false;
-			this.restoreAuthenticatorGroup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.restoreAuthenticatorGroup.Location = new System.Drawing.Point(12, 340);
-			this.restoreAuthenticatorGroup.Name = "restoreAuthenticatorGroup";
-			this.restoreAuthenticatorGroup.Size = new System.Drawing.Size(458, 111);
-			this.restoreAuthenticatorGroup.TabIndex = 3;
-			this.restoreAuthenticatorGroup.TabStop = false;
-			// 
 			// restoreRestoreCodeField
 			// 
-			this.restoreRestoreCodeField.Location = new System.Drawing.Point(120, 75);
+			this.restoreRestoreCodeField.Location = new System.Drawing.Point(120, 70);
 			this.restoreRestoreCodeField.Name = "restoreRestoreCodeField";
-			this.restoreRestoreCodeField.Size = new System.Drawing.Size(158, 22);
+			this.restoreRestoreCodeField.Size = new System.Drawing.Size(158, 20);
 			this.restoreRestoreCodeField.TabIndex = 1;
 			// 
 			// label7
@@ -249,7 +224,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.label7.AutoSize = true;
 			this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label7.Location = new System.Drawing.Point(17, 48);
+			this.label7.Location = new System.Drawing.Point(17, 43);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(97, 16);
 			this.label7.TabIndex = 1;
@@ -257,9 +232,9 @@
 			// 
 			// restoreSerialNumberField
 			// 
-			this.restoreSerialNumberField.Location = new System.Drawing.Point(120, 47);
+			this.restoreSerialNumberField.Location = new System.Drawing.Point(120, 42);
 			this.restoreSerialNumberField.Name = "restoreSerialNumberField";
-			this.restoreSerialNumberField.Size = new System.Drawing.Size(158, 22);
+			this.restoreSerialNumberField.Size = new System.Drawing.Size(158, 20);
 			this.restoreSerialNumberField.TabIndex = 0;
 			// 
 			// label8
@@ -268,7 +243,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.label8.AutoSize = true;
 			this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label8.Location = new System.Drawing.Point(17, 76);
+			this.label8.Location = new System.Drawing.Point(17, 71);
 			this.label8.Name = "label8";
 			this.label8.Size = new System.Drawing.Size(95, 16);
 			this.label8.TabIndex = 1;
@@ -278,29 +253,17 @@
 			// 
 			this.label9.AutoSize = true;
 			this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label9.Location = new System.Drawing.Point(6, 22);
+			this.label9.Location = new System.Drawing.Point(6, 17);
 			this.label9.Name = "label9";
 			this.label9.Size = new System.Drawing.Size(273, 16);
 			this.label9.TabIndex = 1;
 			this.label9.Text = "Enter your Serial Number and Restore Code.";
 			// 
-			// importAuthenticatorGroup
-			// 
-			this.importAuthenticatorGroup.Controls.Add(this.importPrivateKeyField);
-			this.importAuthenticatorGroup.Controls.Add(this.label11);
-			this.importAuthenticatorGroup.Enabled = false;
-			this.importAuthenticatorGroup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.importAuthenticatorGroup.Location = new System.Drawing.Point(12, 457);
-			this.importAuthenticatorGroup.Name = "importAuthenticatorGroup";
-			this.importAuthenticatorGroup.Size = new System.Drawing.Size(458, 73);
-			this.importAuthenticatorGroup.TabIndex = 5;
-			this.importAuthenticatorGroup.TabStop = false;
-			// 
 			// importPrivateKeyField
 			// 
-			this.importPrivateKeyField.Location = new System.Drawing.Point(120, 33);
+			this.importPrivateKeyField.Location = new System.Drawing.Point(109, 14);
 			this.importPrivateKeyField.Name = "importPrivateKeyField";
-			this.importPrivateKeyField.Size = new System.Drawing.Size(332, 22);
+			this.importPrivateKeyField.Size = new System.Drawing.Size(326, 20);
 			this.importPrivateKeyField.TabIndex = 0;
 			// 
 			// label11
@@ -309,7 +272,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.label11.AutoSize = true;
 			this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label11.Location = new System.Drawing.Point(17, 36);
+			this.label11.Location = new System.Drawing.Point(6, 17);
 			this.label11.Name = "label11";
 			this.label11.Size = new System.Drawing.Size(79, 16);
 			this.label11.TabIndex = 1;
@@ -320,7 +283,7 @@
 			this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.okButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.okButton.Location = new System.Drawing.Point(315, 542);
+			this.okButton.Location = new System.Drawing.Point(310, 413);
 			this.okButton.Name = "okButton";
 			this.okButton.Size = new System.Drawing.Size(75, 23);
 			this.okButton.TabIndex = 6;
@@ -333,7 +296,7 @@
 			this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.cancelButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.cancelButton.Location = new System.Drawing.Point(396, 542);
+			this.cancelButton.Location = new System.Drawing.Point(391, 413);
 			this.cancelButton.Name = "cancelButton";
 			this.cancelButton.Size = new System.Drawing.Size(75, 23);
 			this.cancelButton.TabIndex = 7;
@@ -341,62 +304,185 @@
 			this.cancelButton.UseVisualStyleBackColor = true;
 			this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
 			// 
-			// restoreAuthenticatorButton
-			// 
-			this.restoreAuthenticatorButton.AutoSize = true;
-			this.restoreAuthenticatorButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.restoreAuthenticatorButton.Group = "Authenticator";
-			this.restoreAuthenticatorButton.Location = new System.Drawing.Point(20, 337);
-			this.restoreAuthenticatorButton.Name = "restoreAuthenticatorButton";
-			this.restoreAuthenticatorButton.Size = new System.Drawing.Size(154, 20);
-			this.restoreAuthenticatorButton.TabIndex = 2;
-			this.restoreAuthenticatorButton.TabStop = true;
-			this.restoreAuthenticatorButton.Text = "Restore Authenticator";
-			this.restoreAuthenticatorButton.UseVisualStyleBackColor = true;
-			this.restoreAuthenticatorButton.CheckedChanged += new System.EventHandler(this.restoreAuthenticatorButton_CheckedChanged);
-			// 
-			// createAuthenticatorButton
-			// 
-			this.createAuthenticatorButton.AutoSize = true;
-			this.createAuthenticatorButton.Checked = true;
-			this.createAuthenticatorButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.createAuthenticatorButton.Group = "Authenticator";
-			this.createAuthenticatorButton.Location = new System.Drawing.Point(20, 75);
-			this.createAuthenticatorButton.Name = "createAuthenticatorButton";
-			this.createAuthenticatorButton.Size = new System.Drawing.Size(176, 20);
-			this.createAuthenticatorButton.TabIndex = 0;
-			this.createAuthenticatorButton.TabStop = true;
-			this.createAuthenticatorButton.Text = "Create New Authenticator";
-			this.createAuthenticatorButton.UseVisualStyleBackColor = true;
-			this.createAuthenticatorButton.CheckedChanged += new System.EventHandler(this.createAuthenticatorButton_CheckedChanged);
-			// 
-			// importAuthenticatorButton
-			// 
-			this.importAuthenticatorButton.AutoSize = true;
-			this.importAuthenticatorButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.importAuthenticatorButton.Group = "Authenticator";
-			this.importAuthenticatorButton.Location = new System.Drawing.Point(20, 455);
-			this.importAuthenticatorButton.Name = "importAuthenticatorButton";
-			this.importAuthenticatorButton.Size = new System.Drawing.Size(143, 20);
-			this.importAuthenticatorButton.TabIndex = 4;
-			this.importAuthenticatorButton.TabStop = true;
-			this.importAuthenticatorButton.Text = "Import Authenticator";
-			this.importAuthenticatorButton.UseVisualStyleBackColor = true;
-			this.importAuthenticatorButton.CheckedChanged += new System.EventHandler(this.importAuthenticatorButton_CheckedChanged);
-			// 
 			// newAuthenticatorTimer
 			// 
 			this.newAuthenticatorTimer.Interval = 500;
 			this.newAuthenticatorTimer.Tick += new System.EventHandler(this.newAuthenticatorTimer_Tick);
 			// 
-			// pictureBox1
+			// groupBox1
 			// 
-			this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-			this.pictureBox1.Location = new System.Drawing.Point(12, 12);
-			this.pictureBox1.Name = "pictureBox1";
-			this.pictureBox1.Size = new System.Drawing.Size(456, 60);
-			this.pictureBox1.TabIndex = 8;
-			this.pictureBox1.TabStop = false;
+			this.groupBox1.Controls.Add(this.icon3RadioButton);
+			this.groupBox1.Controls.Add(this.icon2RadioButton);
+			this.groupBox1.Controls.Add(this.icon1RadioButton);
+			this.groupBox1.Controls.Add(this.icon3);
+			this.groupBox1.Controls.Add(this.icon2);
+			this.groupBox1.Controls.Add(this.icon1);
+			this.groupBox1.Controls.Add(this.label10);
+			this.groupBox1.Controls.Add(this.label12);
+			this.groupBox1.Controls.Add(this.nameField);
+			this.groupBox1.Location = new System.Drawing.Point(12, 12);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(456, 105);
+			this.groupBox1.TabIndex = 9;
+			this.groupBox1.TabStop = false;
+			// 
+			// icon3RadioButton
+			// 
+			this.icon3RadioButton.AutoSize = true;
+			this.icon3RadioButton.Group = "ICON";
+			this.icon3RadioButton.Location = new System.Drawing.Point(220, 59);
+			this.icon3RadioButton.Name = "icon3RadioButton";
+			this.icon3RadioButton.Size = new System.Drawing.Size(14, 13);
+			this.icon3RadioButton.TabIndex = 3;
+			this.icon3RadioButton.Tag = "DiabloIcon.png";
+			this.icon3RadioButton.UseVisualStyleBackColor = true;
+			// 
+			// icon2RadioButton
+			// 
+			this.icon2RadioButton.AutoSize = true;
+			this.icon2RadioButton.Group = "ICON";
+			this.icon2RadioButton.Location = new System.Drawing.Point(144, 59);
+			this.icon2RadioButton.Name = "icon2RadioButton";
+			this.icon2RadioButton.Size = new System.Drawing.Size(14, 13);
+			this.icon2RadioButton.TabIndex = 2;
+			this.icon2RadioButton.Tag = "WarcraftIcon.png";
+			this.icon2RadioButton.UseVisualStyleBackColor = true;
+			// 
+			// icon1RadioButton
+			// 
+			this.icon1RadioButton.AutoSize = true;
+			this.icon1RadioButton.Checked = true;
+			this.icon1RadioButton.Group = "ICON";
+			this.icon1RadioButton.Location = new System.Drawing.Point(68, 59);
+			this.icon1RadioButton.Name = "icon1RadioButton";
+			this.icon1RadioButton.Size = new System.Drawing.Size(14, 13);
+			this.icon1RadioButton.TabIndex = 1;
+			this.icon1RadioButton.TabStop = true;
+			this.icon1RadioButton.Tag = "BattleNetAuthenticatorIcon.png";
+			this.icon1RadioButton.UseVisualStyleBackColor = true;
+			// 
+			// icon3
+			// 
+			this.icon3.Image = global::WinAuth.Properties.Resources.DiabloIcon;
+			this.icon3.Location = new System.Drawing.Point(240, 44);
+			this.icon3.Name = "icon3";
+			this.icon3.Size = new System.Drawing.Size(48, 48);
+			this.icon3.TabIndex = 4;
+			this.icon3.TabStop = false;
+			this.icon3.Tag = "DiabloIcon.png";
+			this.icon3.Click += new System.EventHandler(this.icon3_Click);
+			// 
+			// icon2
+			// 
+			this.icon2.Image = global::WinAuth.Properties.Resources.RiftIcon;
+			this.icon2.Location = new System.Drawing.Point(164, 44);
+			this.icon2.Name = "icon2";
+			this.icon2.Size = new System.Drawing.Size(48, 48);
+			this.icon2.TabIndex = 4;
+			this.icon2.TabStop = false;
+			this.icon2.Tag = "WarcraftIcon.png";
+			this.icon2.Click += new System.EventHandler(this.icon2_Click);
+			// 
+			// icon1
+			// 
+			this.icon1.Image = global::WinAuth.Properties.Resources.BattleNetAuthenticatorIcon;
+			this.icon1.Location = new System.Drawing.Point(88, 44);
+			this.icon1.Name = "icon1";
+			this.icon1.Size = new System.Drawing.Size(48, 48);
+			this.icon1.TabIndex = 4;
+			this.icon1.TabStop = false;
+			this.icon1.Tag = "BattleNetAuthenticatorIcon.png";
+			this.icon1.Click += new System.EventHandler(this.icon1_Click);
+			// 
+			// label10
+			// 
+			this.label10.AutoSize = true;
+			this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label10.Location = new System.Drawing.Point(11, 57);
+			this.label10.Name = "label10";
+			this.label10.Size = new System.Drawing.Size(36, 16);
+			this.label10.TabIndex = 3;
+			this.label10.Text = "Icon:";
+			// 
+			// label12
+			// 
+			this.label12.AutoSize = true;
+			this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label12.Location = new System.Drawing.Point(11, 19);
+			this.label12.Name = "label12";
+			this.label12.Size = new System.Drawing.Size(48, 16);
+			this.label12.TabIndex = 3;
+			this.label12.Text = "Name:";
+			// 
+			// nameField
+			// 
+			this.nameField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.nameField.Location = new System.Drawing.Point(68, 18);
+			this.nameField.Name = "nameField";
+			this.nameField.Size = new System.Drawing.Size(371, 22);
+			this.nameField.TabIndex = 0;
+			// 
+			// tabControl1
+			// 
+			this.tabControl1.Controls.Add(this.tabPage1);
+			this.tabControl1.Controls.Add(this.restoreAuthenticatorTab);
+			this.tabControl1.Controls.Add(this.importAuthenticatorTab);
+			this.tabControl1.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
+			this.tabControl1.Location = new System.Drawing.Point(12, 123);
+			this.tabControl1.Name = "tabControl1";
+			this.tabControl1.SelectedIndex = 0;
+			this.tabControl1.Size = new System.Drawing.Size(456, 278);
+			this.tabControl1.TabIndex = 10;
+			this.tabControl1.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabControl1_DrawItem);
+			// 
+			// tabPage1
+			// 
+			this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
+			this.tabPage1.Controls.Add(this.newAuthenticatorProgress);
+			this.tabPage1.Controls.Add(this.label1);
+			this.tabPage1.Controls.Add(this.allowCopyNewButton);
+			this.tabPage1.Controls.Add(this.label2);
+			this.tabPage1.Controls.Add(this.newRestoreCodeField);
+			this.tabPage1.Controls.Add(this.label3);
+			this.tabPage1.Controls.Add(this.newLoginCodeField);
+			this.tabPage1.Controls.Add(this.label4);
+			this.tabPage1.Controls.Add(this.label6);
+			this.tabPage1.Controls.Add(this.enrollAuthenticatorButton);
+			this.tabPage1.Controls.Add(this.newSerialNumberField);
+			this.tabPage1.Controls.Add(this.label5);
+			this.tabPage1.Location = new System.Drawing.Point(4, 22);
+			this.tabPage1.Name = "tabPage1";
+			this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+			this.tabPage1.Size = new System.Drawing.Size(448, 252);
+			this.tabPage1.TabIndex = 0;
+			this.tabPage1.Text = "New Authenticator";
+			// 
+			// restoreAuthenticatorTab
+			// 
+			this.restoreAuthenticatorTab.BackColor = System.Drawing.SystemColors.Control;
+			this.restoreAuthenticatorTab.Controls.Add(this.restoreRestoreCodeField);
+			this.restoreAuthenticatorTab.Controls.Add(this.label9);
+			this.restoreAuthenticatorTab.Controls.Add(this.label7);
+			this.restoreAuthenticatorTab.Controls.Add(this.label8);
+			this.restoreAuthenticatorTab.Controls.Add(this.restoreSerialNumberField);
+			this.restoreAuthenticatorTab.Location = new System.Drawing.Point(4, 22);
+			this.restoreAuthenticatorTab.Name = "restoreAuthenticatorTab";
+			this.restoreAuthenticatorTab.Padding = new System.Windows.Forms.Padding(3);
+			this.restoreAuthenticatorTab.Size = new System.Drawing.Size(448, 252);
+			this.restoreAuthenticatorTab.TabIndex = 1;
+			this.restoreAuthenticatorTab.Text = "Restore Authenticator";
+			// 
+			// importAuthenticatorTab
+			// 
+			this.importAuthenticatorTab.BackColor = System.Drawing.SystemColors.Control;
+			this.importAuthenticatorTab.Controls.Add(this.importPrivateKeyField);
+			this.importAuthenticatorTab.Controls.Add(this.label11);
+			this.importAuthenticatorTab.Location = new System.Drawing.Point(4, 22);
+			this.importAuthenticatorTab.Name = "importAuthenticatorTab";
+			this.importAuthenticatorTab.Padding = new System.Windows.Forms.Padding(3);
+			this.importAuthenticatorTab.Size = new System.Drawing.Size(448, 252);
+			this.importAuthenticatorTab.TabIndex = 2;
+			this.importAuthenticatorTab.Text = "Import Authenticator";
 			// 
 			// AddBattleNetAuthenticator
 			// 
@@ -404,40 +490,36 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancelButton;
-			this.ClientSize = new System.Drawing.Size(483, 577);
-			this.Controls.Add(this.pictureBox1);
-			this.Controls.Add(this.restoreAuthenticatorButton);
-			this.Controls.Add(this.createAuthenticatorButton);
-			this.Controls.Add(this.importAuthenticatorButton);
+			this.ClientSize = new System.Drawing.Size(478, 448);
+			this.Controls.Add(this.tabControl1);
+			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.cancelButton);
 			this.Controls.Add(this.okButton);
-			this.Controls.Add(this.importAuthenticatorGroup);
-			this.Controls.Add(this.restoreAuthenticatorGroup);
-			this.Controls.Add(this.newAuthenticatorGroup);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
 			this.Name = "AddBattleNetAuthenticator";
 			this.ShowIcon = false;
 			this.Text = "Add Battle.net Authenticator";
 			this.Load += new System.EventHandler(this.AddBattleNetAuthenticator_Load);
-			this.newAuthenticatorGroup.ResumeLayout(false);
-			this.newAuthenticatorGroup.PerformLayout();
-			this.restoreAuthenticatorGroup.ResumeLayout(false);
-			this.restoreAuthenticatorGroup.PerformLayout();
-			this.importAuthenticatorGroup.ResumeLayout(false);
-			this.importAuthenticatorGroup.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+			this.groupBox1.ResumeLayout(false);
+			this.groupBox1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.icon3)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.icon2)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.icon1)).EndInit();
+			this.tabControl1.ResumeLayout(false);
+			this.tabPage1.ResumeLayout(false);
+			this.tabPage1.PerformLayout();
+			this.restoreAuthenticatorTab.ResumeLayout(false);
+			this.restoreAuthenticatorTab.PerformLayout();
+			this.importAuthenticatorTab.ResumeLayout(false);
+			this.importAuthenticatorTab.PerformLayout();
 			this.ResumeLayout(false);
-			this.PerformLayout();
 
 		}
 
 		#endregion
 
-		private System.Windows.Forms.GroupBox newAuthenticatorGroup;
 		private System.Windows.Forms.Label label1;
-		private WinAuth.GroupRadioButton restoreAuthenticatorButton;
-		private WinAuth.GroupRadioButton createAuthenticatorButton;
 		private WinAuth.SecretTextBox newRestoreCodeField;
 		private WinAuth.SecretTextBox newLoginCodeField;
 		private System.Windows.Forms.Label label6;
@@ -447,9 +529,6 @@
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.GroupBox restoreAuthenticatorGroup;
-		private System.Windows.Forms.GroupBox importAuthenticatorGroup;
-		private WinAuth.GroupRadioButton importAuthenticatorButton;
 		private System.Windows.Forms.CheckBox allowCopyNewButton;
 		private System.Windows.Forms.TextBox restoreRestoreCodeField;
 		private System.Windows.Forms.Label label7;
@@ -462,6 +541,19 @@
 		private System.Windows.Forms.Button cancelButton;
 		private System.Windows.Forms.ProgressBar newAuthenticatorProgress;
 		private System.Windows.Forms.Timer newAuthenticatorTimer;
-		private System.Windows.Forms.PictureBox pictureBox1;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private GroupRadioButton icon3RadioButton;
+		private GroupRadioButton icon2RadioButton;
+		private GroupRadioButton icon1RadioButton;
+		private System.Windows.Forms.PictureBox icon3;
+		private System.Windows.Forms.PictureBox icon2;
+		private System.Windows.Forms.PictureBox icon1;
+		private System.Windows.Forms.Label label10;
+		private System.Windows.Forms.Label label12;
+		private System.Windows.Forms.TextBox nameField;
+		private System.Windows.Forms.TabControl tabControl1;
+		private System.Windows.Forms.TabPage tabPage1;
+		private System.Windows.Forms.TabPage restoreAuthenticatorTab;
+		private System.Windows.Forms.TabPage importAuthenticatorTab;
 	}
 }

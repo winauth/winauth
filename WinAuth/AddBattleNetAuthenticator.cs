@@ -44,7 +44,7 @@ namespace WinAuth
 		/// <summary>
 		/// Current authenticator
 		/// </summary>
-		public BattleNetAuthenticator Authenticator { get; protected set; }
+		public WinAuthAuthenticator Authenticator { get; set; }
 
 #region Form Events
 
@@ -55,54 +55,11 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void AddBattleNetAuthenticator_Load(object sender, EventArgs e)
 		{
+			nameField.Text = this.Authenticator.Name;
+
 			newSerialNumberField.SecretMode = true;
 			newLoginCodeField.SecretMode = true;
 			newRestoreCodeField.SecretMode = true;
-		}
-
-		/// <summary>
-		/// Click the radio button to create a new authenticator
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void createAuthenticatorButton_CheckedChanged(object sender, EventArgs e)
-		{
-			if (createAuthenticatorButton.Checked)
-			{
-				newAuthenticatorGroup.Enabled = true;
-				restoreAuthenticatorGroup.Enabled = false;
-				importAuthenticatorGroup.Enabled = false;
-			}
-		}
-
-		/// <summary>
-		/// Click the radio button to restore an authenticator
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void restoreAuthenticatorButton_CheckedChanged(object sender, EventArgs e)
-		{
-			if (restoreAuthenticatorButton.Checked)
-			{
-				newAuthenticatorGroup.Enabled = false;
-				restoreAuthenticatorGroup.Enabled = true;
-				importAuthenticatorGroup.Enabled = false;
-			}
-		}
-
-		/// <summary>
-		/// Click the radio button to import and authenticator
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void importAuthenticatorButton_CheckedChanged(object sender, EventArgs e)
-		{
-			if (importAuthenticatorButton.Checked)
-			{
-				newAuthenticatorGroup.Enabled = false;
-				restoreAuthenticatorGroup.Enabled = false;
-				importAuthenticatorGroup.Enabled = true;
-			}
 		}
 
 		/// <summary>
@@ -124,13 +81,13 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void newAuthenticatorTimer_Tick(object sender, EventArgs e)
 		{
-			if (this.Authenticator != null && newAuthenticatorProgress.Visible == true)
+			if (this.Authenticator.AuthenticatorData != null && newAuthenticatorProgress.Visible == true)
 			{
-				int time = (int)(this.Authenticator.ServerTime / 1000L) % 30;
+				int time = (int)(this.Authenticator.AuthenticatorData.ServerTime / 1000L) % 30;
 				newAuthenticatorProgress.Value = time + 1;
 				if (time == 0)
 				{
-					newLoginCodeField.Text = this.Authenticator.CurrentCode;
+					newLoginCodeField.Text = this.Authenticator.AuthenticatorData.CurrentCode;
 				}
 			}
 		}
@@ -142,7 +99,7 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void cancelButton_Click(object sender, EventArgs e)
 		{
-			if (this.Authenticator != null)
+			if (this.Authenticator.AuthenticatorData != null)
 			{
 				DialogResult result = WinAuthForm.ConfirmDialog(this.Owner,
 					"You have created a new authenticator. "
@@ -175,6 +132,22 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// Draw the tabs of the tabcontrol so they aren't white
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void tabControl1_DrawItem(object sender, DrawItemEventArgs e)
+		{
+			TabPage page = tabControl1.TabPages[e.Index];
+			e.Graphics.FillRectangle(new SolidBrush(page.BackColor), e.Bounds);
+
+			Rectangle paddedBounds = e.Bounds;
+			int yOffset = (e.State == DrawItemState.Selected) ? -2 : 1;
+			paddedBounds.Offset(1, yOffset);
+			TextRenderer.DrawText(e.Graphics, page.Text, this.Font, paddedBounds, page.ForeColor);
+		}
+
 #endregion
 
 #region Private methods
@@ -185,15 +158,15 @@ namespace WinAuth
 		/// <returns>true is successful</returns>
 		private bool verifyAuthenticator()
 		{
-			if (this.createAuthenticatorButton.Checked == true)
+			if (this.tabControl1.SelectedIndex == 0)
 			{
-				if (this.Authenticator == null)
+				if (this.Authenticator.AuthenticatorData == null)
 				{
 					WinAuthForm.ErrorDialog(this.Owner, "You need to create an authenticator and attach it to your account");
 					return false;
 				}
 			}
-			else if (this.restoreAuthenticatorButton.Checked == true)
+			else if (this.tabControl1.SelectedIndex == 1)
 			{
 				string serial = this.restoreSerialNumberField.Text.Trim();
 				string restore = this.restoreRestoreCodeField.Text.Trim();
@@ -207,7 +180,7 @@ namespace WinAuth
 				{
 					BattleNetAuthenticator authenticator = new BattleNetAuthenticator();
 					authenticator.Restore(serial, restore);
-					this.Authenticator = authenticator;
+					this.Authenticator.AuthenticatorData = authenticator;
 				}
 				catch (InvalidRestoreResponseException irre)
 				{
@@ -215,7 +188,7 @@ namespace WinAuth
 					return false;
 				}
 			}
-			else if (this.importAuthenticatorButton.Checked == true)
+			else if (this.tabControl1.SelectedIndex == 2)
 			{
 				string privatekey = this.importPrivateKeyField.Text.Trim();
 				if (privatekey.Length == 0)
@@ -248,7 +221,7 @@ namespace WinAuth
 						}
 					}
 					authenticator.Sync();
-					this.Authenticator = authenticator;
+					this.Authenticator.AuthenticatorData = authenticator;
 				}
 				catch (Exception irre)
 				{
@@ -266,7 +239,7 @@ namespace WinAuth
 		/// <param name="showWarning"></param>
 		private void clearAuthenticator(bool showWarning = true)
 		{
-			if (this.Authenticator != null && showWarning == true)
+			if (this.Authenticator.AuthenticatorData != null && showWarning == true)
 			{
 				DialogResult result = WinAuthForm.ConfirmDialog(this.Owner,
 					"This will clear the authenticator you have just created. "
@@ -277,7 +250,7 @@ namespace WinAuth
 					return;
 				}
 
-				this.Authenticator = null;
+				this.Authenticator.AuthenticatorData = null;
 			}
 
 			newAuthenticatorProgress.Visible = false;
@@ -315,7 +288,7 @@ namespace WinAuth
 #else
 					authenticator.Enroll();
 #endif
-					this.Authenticator = authenticator;
+					this.Authenticator.AuthenticatorData = authenticator;
 					newSerialNumberField.Text = authenticator.Serial;
 					newLoginCodeField.Text = authenticator.CurrentCode;
 					newRestoreCodeField.Text = authenticator.RestoreCode;
@@ -338,6 +311,21 @@ namespace WinAuth
 		}
 
 #endregion
+
+		private void icon1_Click(object sender, EventArgs e)
+		{
+			this.icon1RadioButton.Checked = true;
+		}
+
+		private void icon2_Click(object sender, EventArgs e)
+		{
+			this.icon2RadioButton.Checked = true;
+		}
+
+		private void icon3_Click(object sender, EventArgs e)
+		{
+			this.icon3RadioButton.Checked = true;
+		}
 
 	}
 }

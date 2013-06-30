@@ -589,23 +589,25 @@ namespace WinAuth
 			{
 				if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.BattleNet)
 				{
+					// add the new authenticator
+					WinAuthAuthenticator winauthauthenticator = new WinAuthAuthenticator();
+
+					int existing = 0;
+					string name;
+					do
+					{
+						name = "Battle.net" + (existing != 0 ? " (" + existing + ")" : string.Empty);
+						existing++;
+					} while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name).Count() != 0);
+
+					winauthauthenticator.Name = name;
+					winauthauthenticator.AutoRefresh = false;
+
 					// create the Battle.net authenticator
 					AddBattleNetAuthenticator form = new AddBattleNetAuthenticator();
+					form.Authenticator = winauthauthenticator;
 					if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 					{
-						// add the new authenticator
-						int existing = 0;
-						string name;
-						do
-						{
-							name = "Battle.net" + (existing != 0 ? " (" + existing + ")" : string.Empty);
-							existing++;
-						} while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name).Count() != 0);
-						
-						WinAuthAuthenticator winauthauthenticator = new WinAuthAuthenticator();
-						winauthauthenticator.Name = name;
-						winauthauthenticator.AuthenticatorData = form.Authenticator;
-						winauthauthenticator.AutoRefresh = false;
 						this.Config.Authenticators.Add(winauthauthenticator);
 
 						SaveConfig();

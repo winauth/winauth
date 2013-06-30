@@ -57,39 +57,9 @@ namespace WinAuth
 		{
 			nameField.Text = this.Authenticator.Name;
 
-			createAuthenticatorButton.Checked = true;
-
 			newSerialNumberField.SecretMode = true;
 			newLoginCodeField.SecretMode = true;
 			newRestoreCodeField.SecretMode = true;
-		}
-
-		/// <summary>
-		/// Click the radio button to create a new authenticator
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void createAuthenticatorButton_CheckedChanged(object sender, EventArgs e)
-		{
-			if (createAuthenticatorButton.Checked)
-			{
-				newAuthenticatorGroup.Enabled = true;
-				restoreAuthenticatorGroup.Enabled = false;
-			}
-		}
-
-		/// <summary>
-		/// Click the radio button to restore an authenticator
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void restoreAuthenticatorButton_CheckedChanged(object sender, EventArgs e)
-		{
-			if (restoreAuthenticatorButton.Checked)
-			{
-				newAuthenticatorGroup.Enabled = false;
-				restoreAuthenticatorGroup.Enabled = true;
-			}
 		}
 
 		/// <summary>
@@ -248,6 +218,22 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// Draw the tabs of the tabcontrol so they aren't white
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void tabControl1_DrawItem(object sender, DrawItemEventArgs e)
+		{
+			TabPage page = tabControl1.TabPages[e.Index];
+			e.Graphics.FillRectangle(new SolidBrush(page.BackColor), e.Bounds);
+
+			Rectangle paddedBounds = e.Bounds;
+			int yOffset = (e.State == DrawItemState.Selected) ? -2 : 1;
+			paddedBounds.Offset(1, yOffset);
+			TextRenderer.DrawText(e.Graphics, page.Text, this.Font, paddedBounds, page.ForeColor);
+		}
+
 #endregion
 
 #region Private methods
@@ -258,7 +244,7 @@ namespace WinAuth
 		/// <returns>true is successful</returns>
 		private bool verifyAuthenticator()
 		{
-			if (this.createAuthenticatorButton.Checked == true)
+			if (this.tabControl1.SelectedIndex == 0)
 			{
 				if (this.Authenticator.AuthenticatorData == null)
 				{
@@ -266,7 +252,7 @@ namespace WinAuth
 					return false;
 				}
 			}
-			else if (this.restoreAuthenticatorButton.Checked == true)
+			else
 			{				
 				if (restoreQuestion1Label.Text.Length == 0)
 				{
