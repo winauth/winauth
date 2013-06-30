@@ -83,16 +83,18 @@ namespace WinAuth
 		{
 			get
 			{
-				// for Battle.net, this is the key + serial
-				return Authenticator.ByteArrayToString(SecretKey) + Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(Serial));
+				// this is the key + serial + deviceid
+				return Authenticator.ByteArrayToString(SecretKey) + "|" + Serial + "|" + DeviceId;
 			}
 			set
 			{
-				// for Battle.net, extract key + serial
+				// extract key + serial + deviceid
 				if (string.IsNullOrEmpty(value) == false)
 				{
-					SecretKey = Authenticator.StringToByteArray(value.Substring(0, 40));
-					Serial = Encoding.UTF8.GetString(Authenticator.StringToByteArray(value.Substring(40)));
+					string[] parts = value.Split('|');
+					SecretKey = Authenticator.StringToByteArray(parts[0]);
+					Serial = parts[1];
+					DeviceId = parts[2];
 				}
 				else
 				{
@@ -251,6 +253,56 @@ namespace WinAuth
 
 			// update the Data object
 			ServerTimeDiff = serverTimeDiff;
+		}
+
+		/// <summary>
+		/// Calculate the current code for the authenticator.
+		/// Trion's implementation is broken in that they don't built the signed integer correctly from the 4-byte array, so we have to override
+		/// the proper method
+		/// </summary>
+		/// <param name="resyncTime">flag to resync time</param>
+		/// <returns>authenticator code</returns>
+		protected override string CalculateCode(bool resyncTime)
+		{
+			// sync time if required
+			if (resyncTime == true || ServerTimeDiff == 0)
+			{
+				Sync();
+			}
+
+			HMac hmac = new HMac(new Sha1Digest());
+			hmac.Init(new KeyParameter(SecretKey));
+
+			byte[] codeIntervalArray = BitConverter.GetBytes(CodeInterval);
+			if (BitConverter.IsLittleEndian)
+			{
+				Array.Reverse(codeIntervalArray);
+			}
+			hmac.BlockUpdate(codeIntervalArray, 0, codeIntervalArray.Length);
+
+			byte[] mac = new byte[hmac.GetMacSize()];
+			hmac.DoFinal(mac, 0);
+
+			// the last 4 bits of the mac say where the code starts (e.g. if last 4 bit are 1100, we start at byte 12)
+			int start = mac[19] & 0x0f;
+
+			// extract those 4 bytes
+			byte[] bytes = new byte[4];
+			Array.Copy(mac, start, bytes, 0, 4);
+			if (BitConverter.IsLittleEndian)
+			{
+				Array.Reverse(bytes);
+			}
+			// this is where Trion is broken and their version uses all 32bits
+			//uint fullcode = BitConverter.ToUInt32(bytes, 0) & 0x7fffffff;
+			uint fullcode = BitConverter.ToUInt32(bytes, 0);
+
+			// we use the last 8 digits of this code in radix 10
+			uint codemask = (uint)Math.Pow(10, CodeDigits);
+			string format = new string('0', CodeDigits);
+			string code = (fullcode % codemask).ToString(format);
+
+			return code;
 		}
 
 		/// <summary>

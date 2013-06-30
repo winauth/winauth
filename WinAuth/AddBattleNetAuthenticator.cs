@@ -148,6 +148,49 @@ namespace WinAuth
 			TextRenderer.DrawText(e.Graphics, page.Text, this.Font, paddedBounds, page.ForeColor);
 		}
 
+		/// <summary>
+		/// Click one of the icons
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void icon1_Click(object sender, EventArgs e)
+		{
+			this.icon1RadioButton.Checked = true;
+		}
+
+		/// <summary>
+		/// Click one of the icons
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void icon2_Click(object sender, EventArgs e)
+		{
+			this.icon2RadioButton.Checked = true;
+		}
+
+		/// <summary>
+		/// Click one of the icons
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void icon3_Click(object sender, EventArgs e)
+		{
+			this.icon3RadioButton.Checked = true;
+		}
+
+		/// <summary>
+		/// Select one of the icons
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void iconRadioButton_CheckedChanged(object sender, EventArgs e)
+		{
+			if (((RadioButton)sender).Checked == true)
+			{
+				this.Authenticator.Skin = (string)((RadioButton)sender).Tag;
+			}
+		}
+
 #endregion
 
 #region Private methods
@@ -312,20 +355,6 @@ namespace WinAuth
 
 #endregion
 
-		private void icon1_Click(object sender, EventArgs e)
-		{
-			this.icon1RadioButton.Checked = true;
-		}
-
-		private void icon2_Click(object sender, EventArgs e)
-		{
-			this.icon2RadioButton.Checked = true;
-		}
-
-		private void icon3_Click(object sender, EventArgs e)
-		{
-			this.icon3RadioButton.Checked = true;
-		}
 
 	}
 }

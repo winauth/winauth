@@ -187,6 +187,23 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// We can check if the restore code is valid and rememeber so don't have to do it again
+		/// </summary>
+		public bool RestoreCodeVerified { get; set; }
+
+		/// <summary>
+		/// Get the restore code for an authenticator used to recover a lost authenticator along with the serial number.
+		/// </summary>
+		/// <returns>restore code (10 chars)</returns>
+		public string RestoreCode
+		{
+			get
+			{
+				return BuildRestoreCode();
+			}
+		}
+
 		#endregion
 
 		/// <summary>
@@ -455,7 +472,7 @@ namespace WinAuth
 		/// </summary>
 		/// <param name="serial">serial code, e.g. US-1234-5678-1234</param>
 		/// <param name="restoreCode">restore code given on enroll, 10 chars.</param>
-		public override void Restore(string serial, string restoreCode)
+		public void Restore(string serial, string restoreCode)
 		{
 			// get the serial data
 			byte[] serialBytes = Encoding.UTF8.GetBytes(serial.ToUpper().Replace("-", string.Empty));
@@ -631,6 +648,38 @@ namespace WinAuth
 		}
 
 		/// <summary>
+		/// Read any extra tags from the Xml
+		/// </summary>
+		/// <param name="reader">XmlReader</param>
+		/// <param name="name">name of tag</param>
+		/// <returns>true if read and processed the tag</returns>
+		public override bool ReadExtraXml(XmlReader reader, string name)
+		{
+			switch (name)
+			{
+				case "restorecodeverified":
+					RestoreCodeVerified = reader.ReadElementContentAsBoolean();
+					return true;
+				default:
+					return false;
+			}
+		}
+
+		/// <summary>
+		/// Add extra tags into the XmlWriter
+		/// </summary>
+		/// <param name="writer">XmlWriter to write data</param>
+		protected override void WriteExtraXml(XmlWriter writer)
+		{
+			if (RestoreCodeVerified == true)
+			{
+				writer.WriteStartElement("restorecodeverified");
+				writer.WriteString(bool.TrueString.ToLower());
+				writer.WriteEndElement();
+			}
+		}
+
+		/// <summary>
 		/// Get the base mobil url based on the region
 		/// </summary>
 		/// <param name="region">two letter region code, i.e US or CN</param>
@@ -657,7 +706,7 @@ namespace WinAuth
 		/// which is then specially encoded to alphanumerics.
 		/// </summary>
 		/// <returns>restore code for authenticator (always 10 chars)</returns>
-		protected override string BuildRestoreCode()
+		protected string BuildRestoreCode()
     {
 			// return if not set
 			if (string.IsNullOrEmpty(Serial) == true || SecretKey == null)

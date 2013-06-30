@@ -53,6 +53,7 @@ namespace WinAuth
 		public static Dictionary<string, string> AUTHENTICATOR_ICONS = new Dictionary<string, string>
 		{
 			{"Battle.Net", "BattleNetAuthenticatorIcon.png"},
+			{"World of Warcraft", "WarcraftIcon.png"},
 			{"Diablo III", "DiabloIcon.png"},
 			{"Guild Wars 2", "GuildWarsAuthenticatorIcon.png"},
 			{"Trion", "TrionAuthenticatorIcon.png"},

@@ -152,14 +152,14 @@ namespace WinAuth
 			// 
 			this.restoreAnswer2Field.Location = new System.Drawing.Point(130, 297);
 			this.restoreAnswer2Field.Name = "restoreAnswer2Field";
-			this.restoreAnswer2Field.Size = new System.Drawing.Size(257, 20);
+			this.restoreAnswer2Field.Size = new System.Drawing.Size(257, 22);
 			this.restoreAnswer2Field.TabIndex = 5;
 			// 
 			// restoreAnswer1Field
 			// 
 			this.restoreAnswer1Field.Location = new System.Drawing.Point(130, 252);
 			this.restoreAnswer1Field.Name = "restoreAnswer1Field";
-			this.restoreAnswer1Field.Size = new System.Drawing.Size(257, 20);
+			this.restoreAnswer1Field.Size = new System.Drawing.Size(257, 22);
 			this.restoreAnswer1Field.TabIndex = 4;
 			// 
 			// restoreGetQuestionsButton
@@ -222,14 +222,14 @@ namespace WinAuth
 			// 
 			this.restoreDeviceIdField.Location = new System.Drawing.Point(130, 164);
 			this.restoreDeviceIdField.Name = "restoreDeviceIdField";
-			this.restoreDeviceIdField.Size = new System.Drawing.Size(257, 20);
+			this.restoreDeviceIdField.Size = new System.Drawing.Size(257, 22);
 			this.restoreDeviceIdField.TabIndex = 3;
 			// 
 			// restorePasswordField
 			// 
 			this.restorePasswordField.Location = new System.Drawing.Point(130, 72);
 			this.restorePasswordField.Name = "restorePasswordField";
-			this.restorePasswordField.Size = new System.Drawing.Size(257, 20);
+			this.restorePasswordField.Size = new System.Drawing.Size(257, 22);
 			this.restorePasswordField.TabIndex = 1;
 			this.restorePasswordField.UseSystemPasswordChar = true;
 			// 
@@ -237,7 +237,7 @@ namespace WinAuth
 			// 
 			this.restoreEmailField.Location = new System.Drawing.Point(130, 44);
 			this.restoreEmailField.Name = "restoreEmailField";
-			this.restoreEmailField.Size = new System.Drawing.Size(257, 20);
+			this.restoreEmailField.Size = new System.Drawing.Size(257, 22);
 			this.restoreEmailField.TabIndex = 0;
 			// 
 			// label7
@@ -275,10 +275,10 @@ namespace WinAuth
 			this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.okButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.okButton.Location = new System.Drawing.Point(309, 512);
+			this.okButton.Location = new System.Drawing.Point(309, 485);
 			this.okButton.Name = "okButton";
 			this.okButton.Size = new System.Drawing.Size(75, 23);
-			this.okButton.TabIndex = 2;
+			this.okButton.TabIndex = 1;
 			this.okButton.Text = "OK";
 			this.okButton.UseVisualStyleBackColor = true;
 			this.okButton.Click += new System.EventHandler(this.okButton_Click);
@@ -288,10 +288,10 @@ namespace WinAuth
 			this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.cancelButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.cancelButton.Location = new System.Drawing.Point(390, 512);
+			this.cancelButton.Location = new System.Drawing.Point(390, 485);
 			this.cancelButton.Name = "cancelButton";
 			this.cancelButton.Size = new System.Drawing.Size(75, 23);
-			this.cancelButton.TabIndex = 3;
+			this.cancelButton.TabIndex = 2;
 			this.cancelButton.Text = "Cancel";
 			this.cancelButton.UseVisualStyleBackColor = true;
 			this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
@@ -398,13 +398,13 @@ namespace WinAuth
 			this.tabControl1.Controls.Add(this.newAuthenticatorTab);
 			this.tabControl1.Controls.Add(this.recoverAuthenticatorTab);
 			this.tabControl1.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
+			this.tabControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.tabControl1.ItemSize = new System.Drawing.Size(120, 18);
 			this.tabControl1.Location = new System.Drawing.Point(13, 117);
 			this.tabControl1.Name = "tabControl1";
 			this.tabControl1.SelectedIndex = 0;
-			this.tabControl1.Size = new System.Drawing.Size(456, 382);
-			this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
-			this.tabControl1.TabIndex = 7;
+			this.tabControl1.Size = new System.Drawing.Size(456, 357);
+			this.tabControl1.TabIndex = 0;
 			this.tabControl1.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabControl1_DrawItem);
 			// 
 			// newAuthenticatorTab
@@ -422,7 +422,7 @@ namespace WinAuth
 			this.newAuthenticatorTab.Location = new System.Drawing.Point(4, 22);
 			this.newAuthenticatorTab.Name = "newAuthenticatorTab";
 			this.newAuthenticatorTab.Padding = new System.Windows.Forms.Padding(3);
-			this.newAuthenticatorTab.Size = new System.Drawing.Size(448, 356);
+			this.newAuthenticatorTab.Size = new System.Drawing.Size(448, 331);
 			this.newAuthenticatorTab.TabIndex = 0;
 			this.newAuthenticatorTab.Text = "New Authenticator";
 			// 
@@ -446,7 +446,7 @@ namespace WinAuth
 			this.recoverAuthenticatorTab.Location = new System.Drawing.Point(4, 22);
 			this.recoverAuthenticatorTab.Name = "recoverAuthenticatorTab";
 			this.recoverAuthenticatorTab.Padding = new System.Windows.Forms.Padding(3);
-			this.recoverAuthenticatorTab.Size = new System.Drawing.Size(448, 356);
+			this.recoverAuthenticatorTab.Size = new System.Drawing.Size(448, 331);
 			this.recoverAuthenticatorTab.TabIndex = 1;
 			this.recoverAuthenticatorTab.Text = "Recover Authenticator";
 			// 
@@ -540,7 +540,7 @@ namespace WinAuth
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancelButton;
-			this.ClientSize = new System.Drawing.Size(479, 547);
+			this.ClientSize = new System.Drawing.Size(479, 520);
 			this.Controls.Add(this.tabControl1);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.cancelButton);

@@ -158,6 +158,12 @@
     <Compile Include="ShowSecretKeyForm.designer.cs">
       <DependentUpon>ShowSecretKeyForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ShowTrionSecretForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ShowTrionSecretForm.designer.cs">
+      <DependentUpon>ShowTrionSecretForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="WinAPI.cs" />
     <Compile Include="WinAuthAuthenticator.cs" />
     <Compile Include="WinAuthConfig.cs" />
@@ -197,6 +203,9 @@
     <EmbeddedResource Include="ShowSecretKeyForm.resx">
       <DependentUpon>ShowSecretKeyForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ShowTrionSecretForm.resx">
+      <DependentUpon>ShowTrionSecretForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="WinAuthForm.resx">
       <DependentUpon>WinAuthForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -233,6 +242,7 @@
     <EmbeddedResource Include="Resources\DiabloIcon.png" />
     <EmbeddedResource Include="Resources\DefianceIcon.png" />
     <None Include="Resources\EndOfNationsIcon.png" />
+    <EmbeddedResource Include="Resources\WarcraftIcon.png" />
     <Content Include="winauth.ico" />
   </ItemGroup>
   <ItemGroup>

@@ -72,7 +72,8 @@ namespace WinAuth
 
 			this.ContextMenuStrip = new ContextMenuStrip();
 			this.ContextMenuStrip.Opening += ContextMenuStrip_Opening;
-			this.ContextMenuStrip.Closed += ContextMenuStrip_Closed;
+			//this.ContextMenuStrip.Closed += ContextMenuStrip_Closed;
+			loadContextMenuStrip();
     }
 
 		public event AuthenticatorListItemRemovedHandler ItemRemoved;
@@ -170,150 +171,183 @@ namespace WinAuth
 			}
 		}
 
-		void ContextMenuStrip_Opening(object sender, CancelEventArgs e)
+		private void loadContextMenuStrip()
 		{
 			this.ContextMenuStrip.Items.Clear();
+
+			ToolStripLabel label = new ToolStripLabel();
+			label.Name = "contextMenuItemName";
+			label.ForeColor = SystemColors.HotTrack;
+			this.ContextMenuStrip.Items.Add(label);
+			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+			//
+			EventHandler onclick = new EventHandler(ContextMenu_Click);
+			//
+			ToolStripMenuItem menuitem;
+			ToolStripMenuItem subitem;
+			//
+			menuitem = new ToolStripMenuItem("Show Code");
+			menuitem.Name = "showCodeMenuItem";
+			menuitem.Click += ContextMenu_Click;
+			this.ContextMenuStrip.Items.Add(menuitem);
+			//
+			menuitem = new ToolStripMenuItem("Copy Code");
+			menuitem.Name = "copyCodeMenuItem";
+			menuitem.Click += ContextMenu_Click;
+			this.ContextMenuStrip.Items.Add(menuitem);
+			//
+			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+			//
+			menuitem = new ToolStripMenuItem("Show Serial && Restore Code...");
+			menuitem.Name = "showRestoreCodeMenuItem";
+			menuitem.Click += ContextMenu_Click;
+			this.ContextMenuStrip.Items.Add(menuitem);
+			//
+			menuitem = new ToolStripMenuItem("Show Secret Key...");
+			menuitem.Name = "showGoogleSecretMenuItem";
+			menuitem.Click += ContextMenu_Click;
+			this.ContextMenuStrip.Items.Add(menuitem);
+			//
+			menuitem = new ToolStripMenuItem("Show Serial Key and Device ID...");
+			menuitem.Name = "showTrionSecretMenuItem";
+			menuitem.Click += ContextMenu_Click;
+			this.ContextMenuStrip.Items.Add(menuitem);
+			//
+			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+			//
+			menuitem = new ToolStripMenuItem("Auto Refresh");
+			menuitem.Name = "autoRefreshMenuItem";
+			menuitem.Click += ContextMenu_Click;
+			this.ContextMenuStrip.Items.Add(menuitem);
+			//
+			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+			//
+			menuitem = new ToolStripMenuItem("Delete");
+			menuitem.Name = "deleteMenuItem";
+			menuitem.Click += ContextMenu_Click;
+			this.ContextMenuStrip.Items.Add(menuitem);
+			//
+			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+			//
+			menuitem = new ToolStripMenuItem("Copy On New Code");
+			menuitem.Name = "copyOnCodeMenuItem";
+			menuitem.Click += ContextMenu_Click;
+			this.ContextMenuStrip.Items.Add(menuitem);
+			//
+			menuitem = new ToolStripMenuItem("Icon");
+			menuitem.Name = "iconMenuItem";
+			subitem = new ToolStripMenuItem();
+			subitem.Text = "Auto";
+			subitem.Name = "iconMenuItem_default";
+			subitem.Tag = string.Empty;
+			subitem.Click += ContextMenu_Click;
+			menuitem.DropDownItems.Add(subitem);
+			menuitem.DropDownItems.Add("-");
+			this.ContextMenuStrip.Items.Add(menuitem);
+			int iconindex = 1;
+			foreach (string icon in WinAuthMain.AUTHENTICATOR_ICONS.Keys)
+			{
+				string iconfile = WinAuthMain.AUTHENTICATOR_ICONS[icon];
+				subitem = new ToolStripMenuItem();
+				subitem.Text = icon;
+				subitem.Name = "iconMenuItem_" + iconindex++;
+				subitem.Tag = iconfile;
+				subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("WinAuth.Resources." + iconfile));
+				subitem.ImageAlign = ContentAlignment.MiddleLeft;
+				subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
+				subitem.Click += ContextMenu_Click;
+				menuitem.DropDownItems.Add(subitem);
+			}
+			menuitem.DropDownItems.Add("-");
+			subitem = new ToolStripMenuItem();
+			subitem.Text = "Other...";
+			subitem.Name = "iconMenuItem_0";
+			subitem.Tag = null;
+			subitem.Click += ContextMenu_Click;
+			menuitem.DropDownItems.Add(subitem);
+			this.ContextMenuStrip.Items.Add(menuitem);
+			//
+			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+			//
+			menuitem = new ToolStripMenuItem("Sync Time");
+			menuitem.Name = "syncMenuItem";
+			menuitem.Click += ContextMenu_Click;
+			this.ContextMenuStrip.Items.Add(menuitem);
+		}
+
+		void ContextMenuStrip_Opening(object sender, CancelEventArgs e)
+		{
+			var menu = this.ContextMenuStrip;
 			var item = this.CurrentItem;
-			if (item == null)
+			WinAuthAuthenticator auth = null;
+			if (item == null || (auth = item.Authenticator) == null)
 			{
 				return;
 			}
-			var auth = item.Authenticator;
-			if (item != null)
+
+			ToolStripLabel labelitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "contextMenuItemName").FirstOrDefault() as ToolStripLabel;
+			labelitem.Text = item.Authenticator.Name;
+
+			ToolStripMenuItem menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showCodeMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem.Visible = !auth.AutoRefresh;
+			//
+			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "copyCodeMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem.Enabled = !(auth.AutoRefresh == false && item.DisplayUntil < DateTime.Now);
+			//
+			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showRestoreCodeMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem.Visible = (auth.AuthenticatorData is BattleNetAuthenticator);
+			//
+			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showGoogleSecretMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem.Visible = (auth.AuthenticatorData is GoogleAuthenticator);
+			//
+			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showTrionSecretMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem.Visible = (auth.AuthenticatorData is TrionAuthenticator);
+			//
+			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "autoRefreshMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem.CheckState = (auth.AutoRefresh == true ? CheckState.Checked : CheckState.Unchecked);
+			//
+			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "copyOnCodeMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem.CheckState = (auth.CopyOnCode == true ? CheckState.Checked : CheckState.Unchecked);
+			//
+			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "iconMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			if (string.IsNullOrEmpty(auth.Skin) == true)
 			{
-				ToolStripLabel label = new ToolStripLabel(item.Authenticator.Name);
-				label.ForeColor = SystemColors.HotTrack;
-				this.ContextMenuStrip.Items.Add(label);
-				this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-				//
-				EventHandler onclick = new EventHandler(ContextMenu_Click);
-				//
-				ToolStripMenuItem menuitem;
-				ToolStripMenuItem subitem;
-				if (auth.AutoRefresh == false)
+				ToolStripMenuItem subitem = menuitem.DropDownItems.Cast<ToolStripItem>().Where(i => i.Name == "iconMenuItem_default").FirstOrDefault() as ToolStripMenuItem;
+				subitem.CheckState = CheckState.Checked;
+				foreach (ToolStripItem iconitem in menuitem.DropDownItems)
 				{
-					menuitem = new ToolStripMenuItem("Show Code");
-					menuitem.Name = "showCodeMenuItem";
-					menuitem.Click += ContextMenu_Click;
-					this.ContextMenuStrip.Items.Add(menuitem);
-				}
-				//
-				menuitem = new ToolStripMenuItem("Copy Code");
-				menuitem.Name = "copyCodeMenuItem";
-				if (auth.AutoRefresh == false && item.DisplayUntil < DateTime.Now)
-				{
-					menuitem.Enabled = false;
-				}
-				menuitem.Click += ContextMenu_Click;
-				this.ContextMenuStrip.Items.Add(menuitem);
-				//
-				if (auth.AuthenticatorData is BattleNetAuthenticator)
-				{
-					this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-					menuitem = new ToolStripMenuItem("Show Serial && Restore Code...");
-					menuitem.Name = "showRestoreCodeMenuItem";
-					menuitem.Click += ContextMenu_Click;
-					this.ContextMenuStrip.Items.Add(menuitem);
-				}
-				if (auth.AuthenticatorData is GoogleAuthenticator)
-				{
-					this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-					menuitem = new ToolStripMenuItem("Show Secret Key...");
-					menuitem.Name = "showSecretKeyMenuItem";
-					menuitem.Click += ContextMenu_Click;
-					this.ContextMenuStrip.Items.Add(menuitem);
-				}
-				//
-				this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-				//
-				menuitem = new ToolStripMenuItem("Auto Refresh");
-				menuitem.CheckState = (auth.AutoRefresh == true ? CheckState.Checked : CheckState.Unchecked);
-				menuitem.Name = "autoRefreshMenuItem";
-				menuitem.Click += ContextMenu_Click;
-				this.ContextMenuStrip.Items.Add(menuitem);
-				//
-				this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-				//
-				menuitem = new ToolStripMenuItem("Delete");
-				menuitem.Name = "deleteMenuItem";
-				menuitem.Click += ContextMenu_Click;
-				this.ContextMenuStrip.Items.Add(menuitem);
-				//
-				this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-				//
-				menuitem = new ToolStripMenuItem("Copy On New Code");
-				menuitem.CheckState = (auth.CopyOnCode == true ? CheckState.Checked : CheckState.Unchecked);
-				menuitem.Name = "copyOnCodeMenuItem";
-				menuitem.Click += ContextMenu_Click;
-				this.ContextMenuStrip.Items.Add(menuitem);
-				//
-				menuitem = new ToolStripMenuItem("Icon");
-				menuitem.Name = "iconMenuItem";
-				subitem = new ToolStripMenuItem();
-				subitem.Text = "Auto";
-				subitem.Name = "iconMenuItem_default";
-				subitem.Tag = string.Empty;
-				if (string.IsNullOrEmpty(auth.Skin) == true)
-				{
-					subitem.CheckState = CheckState.Checked;
-				}
-				subitem.Click += ContextMenu_Click;
-				menuitem.DropDownItems.Add(subitem);
-				menuitem.DropDownItems.Add("-");
-				this.ContextMenuStrip.Items.Add(menuitem);
-				int iconindex = 1;
-				foreach (string icon in WinAuthMain.AUTHENTICATOR_ICONS.Keys)
-				{
-					string iconfile = WinAuthMain.AUTHENTICATOR_ICONS[icon];
-					subitem = new ToolStripMenuItem();
-					subitem.Text = icon;
-					subitem.Name = "iconMenuItem_" + iconindex++;
-					subitem.Tag = iconfile;
-					subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("WinAuth.Resources." + iconfile));
-					subitem.ImageAlign = ContentAlignment.MiddleLeft;
-					subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
-					if (string.Compare(auth.Skin, iconfile) == 0)
+					if (iconitem is ToolStripMenuItem)
 					{
-						subitem.CheckState = CheckState.Checked;
+						ToolStripMenuItem iconmenuitem = (ToolStripMenuItem)iconitem;
+						if (string.Compare((string)iconmenuitem.Tag, auth.Skin) == 0)
+						{
+							iconmenuitem.CheckState = CheckState.Checked;
+						}
+						else
+						{
+							iconmenuitem.CheckState = CheckState.Unchecked;
+						}
 					}
-					subitem.Click += ContextMenu_Click;
-					menuitem.DropDownItems.Add(subitem);
 				}
-				menuitem.DropDownItems.Add("-");
-				subitem = new ToolStripMenuItem();
-				subitem.Text = "Other...";
-				subitem.Name = "iconMenuItem_0";
-				subitem.Tag = null;
-				subitem.Click += ContextMenu_Click;
-				menuitem.DropDownItems.Add(subitem);
-				this.ContextMenuStrip.Items.Add(menuitem);
-				//
-				this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-				//
-				menuitem = new ToolStripMenuItem("Sync Time");
-				menuitem.Name = "syncMenuItem";
-				menuitem.Click += ContextMenu_Click;
-				this.ContextMenuStrip.Items.Add(menuitem);
 			}
-			//this.ContextMenuStrip.Items.Add("Add");
 		}
 
-		void ContextMenuStrip_Closed(object sender, ToolStripDropDownClosedEventArgs e)
-		{
-			// display any resources
-			var menuitem = this.ContextMenuStrip.Items.Cast<ToolStripItem>().Where(i => i is ToolStripMenuItem && ((ToolStripMenuItem)i).Name == "iconMenuItem").FirstOrDefault() as ToolStripMenuItem;
-			if (menuitem != null)
-			{
-				foreach (ToolStripItem subitem in menuitem.DropDownItems)
-				{
-					if (subitem.Image != null)
-					{
-						subitem.Image.Dispose();
-						subitem.Image = null;
-					}
-				}
-			}
-		}
+		//void ContextMenuStrip_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+		//{
+		//	// display any resources
+		//	var menuitem = this.ContextMenuStrip.Items.Cast<ToolStripItem>().Where(i => i is ToolStripMenuItem && ((ToolStripMenuItem)i).Name == "iconMenuItem").FirstOrDefault() as ToolStripMenuItem;
+		//	if (menuitem != null)
+		//	{
+		//		foreach (ToolStripItem subitem in menuitem.DropDownItems)
+		//		{
+		//			if (subitem.Image != null)
+		//			{
+		//				subitem.Image.Dispose();
+		//				subitem.Image = null;
+		//			}
+		//		}
+		//	}
+		//}
 
 		void ContextMenu_Click(object sender, EventArgs e)
 		{
@@ -355,10 +389,17 @@ namespace WinAuth
 				form.CurrentAuthenticator = auth;
 				form.ShowDialog(this.Parent as Form);
 			}
-			else if (menuitem.Name == "showSecretKeyMenuItem")
+			else if (menuitem.Name == "showGoogleSecretMenuItem")
 			{
 				// show the secret key for Google authenticator				
 				ShowSecretKeyForm form = new ShowSecretKeyForm();
+				form.CurrentAuthenticator = auth;
+				form.ShowDialog(this.Parent as Form);
+			}
+			else if (menuitem.Name == "showTrionSecretMenuItem")
+			{
+				// show the secret key for Trion authenticator				
+				ShowTrionSecretForm form = new ShowTrionSecretForm();
 				form.CurrentAuthenticator = auth;
 				form.ShowDialog(this.Parent as Form);
 			}
@@ -549,7 +590,7 @@ namespace WinAuth
 
 					using (var font = new Font(e.Font.FontFamily, 12, FontStyle.Regular))
 					{
-						string label = (e.Index + 1) + ". " + auth.Name;
+						string label = (e.Index + 1) + ". " + auth.Name + ":" + auth.AuthenticatorData.CodeInterval;
 						SizeF labelsize = e.Graphics.MeasureString(label, font);
 						rect = new Rectangle(e.Bounds.X + 64, e.Bounds.Y + 8, (int)labelsize.Height, (int)labelsize.Width);
 						if (cliprect.IntersectsWith(rect) == true)

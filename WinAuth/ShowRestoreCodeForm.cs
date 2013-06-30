@@ -66,7 +66,8 @@ namespace WinAuth
 			this.restoreCodeField.SecretMode = true;
 
 			// if needed start a background thread to verify the restore code
-			if (CurrentAuthenticator.AuthenticatorData.RestoreCodeVerified == false)
+			BattleNetAuthenticator authenticator = CurrentAuthenticator.AuthenticatorData as BattleNetAuthenticator;
+			if (authenticator.RestoreCodeVerified == false)
 			{
 				BackgroundWorker verify = new BackgroundWorker();
 				verify.DoWork += new DoWorkEventHandler(VerifyRestoreCode);
@@ -129,8 +130,9 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void showCodeButton_Click(object sender, EventArgs e)
 		{
-			this.serialNumberField.Text = CurrentAuthenticator.AuthenticatorData.Serial;
-			this.restoreCodeField.Text = CurrentAuthenticator.AuthenticatorData.RestoreCode;
+			BattleNetAuthenticator authenticator = CurrentAuthenticator.AuthenticatorData as BattleNetAuthenticator;
+			this.serialNumberField.Text = authenticator.Serial;
+			this.restoreCodeField.Text = authenticator.RestoreCode;
 		}
 
 		/// <summary>
