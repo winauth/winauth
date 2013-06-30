@@ -624,7 +624,7 @@ namespace WinAuth
 						string name;
 						do
 						{
-							name = "Battle.net" + (existing != 0 ? " (" + existing + ")" : string.Empty);
+							name = "Trion" + (existing != 0 ? " (" + existing + ")" : string.Empty);
 							existing++;
 						} while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name).Count() != 0);
 

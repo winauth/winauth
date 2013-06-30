@@ -226,6 +226,11 @@
     <EmbeddedResource Include="Resources\RefreshIcon.png" />
     <EmbeddedResource Include="Resources\MicrosoftAuthenticatorIcon.png" />
     <None Include="Resources\OptionsIcon.png" />
+    <EmbeddedResource Include="Resources\TrionAuthenticatorIcon.png" />
+    <EmbeddedResource Include="Resources\RiftIcon.png" />
+    <None Include="Resources\trion.png" />
+    <None Include="Resources\battlenet.png" />
+    <EmbeddedResource Include="Resources\DiabloIcon.png" />
     <Content Include="winauth.ico" />
   </ItemGroup>
   <ItemGroup>

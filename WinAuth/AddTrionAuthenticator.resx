@@ -117,10 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="label1.Text" xml:space="preserve">
-    <value>1. Go to www.battle.net and login to your account.
-2. Click Security Options from the top menu, choose "Authenticator". Make sure you choose the MOBILE authenticator. Click "Attach Authenticator".
-3. You will received a confirmation email. Please follow its instructions.</value>
+  <data name="label8.Text" xml:space="preserve">
+    <value>5. If you will ever need to restore your authenticator, you will need to provide your account email, password, secret answers and the following device identifier.
+
+Write this Device ID down and keep it somewhere safe.</value>
   </data>
   <metadata name="newAuthenticatorTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>

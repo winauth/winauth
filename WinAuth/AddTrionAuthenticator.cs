@@ -71,7 +71,6 @@ namespace WinAuth
 			{
 				newAuthenticatorGroup.Enabled = true;
 				restoreAuthenticatorGroup.Enabled = false;
-				importAuthenticatorGroup.Enabled = false;
 			}
 		}
 
@@ -86,22 +85,6 @@ namespace WinAuth
 			{
 				newAuthenticatorGroup.Enabled = false;
 				restoreAuthenticatorGroup.Enabled = true;
-				importAuthenticatorGroup.Enabled = false;
-			}
-		}
-
-		/// <summary>
-		/// Click the radio button to import and authenticator
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void importAuthenticatorButton_CheckedChanged(object sender, EventArgs e)
-		{
-			if (importAuthenticatorButton.Checked)
-			{
-				newAuthenticatorGroup.Enabled = false;
-				restoreAuthenticatorGroup.Enabled = false;
-				importAuthenticatorGroup.Enabled = true;
 			}
 		}
 
@@ -113,7 +96,7 @@ namespace WinAuth
 		private void allowCopyNewButton_CheckedChanged(object sender, EventArgs e)
 		{
 			newSerialNumberField.SecretMode = !allowCopyNewButton.Checked;
-			newLoginCodeField.SecretMode = !allowCopyNewButton.Checked;
+			//newLoginCodeField.SecretMode = !allowCopyNewButton.Checked;
 			newRestoreCodeField.SecretMode = !allowCopyNewButton.Checked;
 		}
 
@@ -124,14 +107,47 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void newAuthenticatorTimer_Tick(object sender, EventArgs e)
 		{
-			if (this.Authenticator != null && newAuthenticatorProgress.Visible == true)
+			if (this.Authenticator != null)
 			{
 				int time = (int)(this.Authenticator.ServerTime / 1000L) % 30;
-				newAuthenticatorProgress.Value = time + 1;
 				if (time == 0)
 				{
 					newLoginCodeField.Text = this.Authenticator.CurrentCode;
 				}
+			}
+		}
+
+		/// <summary>
+		/// Click to get they security questions
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void restoreGetQuestionsButton_Click(object sender, EventArgs e)
+		{
+			string email = this.restoreEmailField.Text.Trim();
+			string password = this.restorePasswordField.Text.Trim();
+			if (email.Length == 0 || password.Length == 0)
+			{
+				WinAuthForm.ErrorDialog(this.Owner, "Please enter your account email and password");
+				return;
+			}
+
+			try
+			{
+				string question1, question2;
+				TrionAuthenticator.SecurityQuestions(email, password, out question1, out question2);
+				restoreQuestion1Label.Text = question1 ?? string.Empty;
+				restoreQuestion2Label.Text = question2 ?? string.Empty;
+			}
+			catch (InvalidRestoreResponseException irre)
+			{
+				WinAuthForm.ErrorDialog(this.Owner, irre.Message, irre);
+				return;
+			}
+			catch (Exception ex)
+			{
+				WinAuthForm.ErrorDialog(this.Owner, "Unable to access account: " + ex.Message, ex);
+				return;
 			}
 		}
 
@@ -194,19 +210,28 @@ namespace WinAuth
 				}
 			}
 			else if (this.restoreAuthenticatorButton.Checked == true)
-			{
-				string serial = this.restoreSerialNumberField.Text.Trim();
-				string restore = this.restoreRestoreCodeField.Text.Trim();
-				if (serial.Length == 0 || restore.Length == 0)
+			{				
+				if (restoreQuestion1Label.Text.Length == 0)
 				{
-					WinAuthForm.ErrorDialog(this.Owner, "Please enter the Serial number and Restore code");
+					restoreGetQuestionsButton_Click(null, null);
+					return false;
+				}
+
+				string email = this.restoreEmailField.Text.Trim();
+				string password = this.restorePasswordField.Text.Trim();
+				string deviceId = this.restoreDeviceIdField.Text.Trim();
+				string answer1 = this.restoreAnswer1Field.Text;
+				string answer2 = this.restoreAnswer2Field.Text;
+				if (deviceId.Length == 0 || (restoreQuestion2Label.Text.Length != 0 && answer1.Length == 0) || (restoreQuestion2Label.Text.Length != 0 && answer2.Length == 0))
+				{
+					WinAuthForm.ErrorDialog(this.Owner, "Please enter the device ID and answers to your secret questions");
 					return false;
 				}
 
 				try
 				{
 					TrionAuthenticator authenticator = new TrionAuthenticator();
-					authenticator.Restore(serial, restore);
+					authenticator.Restore(email, password, deviceId, answer1, answer2);
 					this.Authenticator = authenticator;
 				}
 				catch (InvalidRestoreResponseException irre)
@@ -214,45 +239,9 @@ namespace WinAuth
 					WinAuthForm.ErrorDialog(this.Owner, "Unable to restore the authenticator: " + irre.Message, irre);
 					return false;
 				}
-			}
-			else if (this.importAuthenticatorButton.Checked == true)
-			{
-				string privatekey = this.importPrivateKeyField.Text.Trim();
-				if (privatekey.Length == 0)
+				catch (Exception ex)
 				{
-					WinAuthForm.ErrorDialog(this.Owner, "Please enter the Private key");
-					return false;
-				}
-				// just get the hex chars
-				privatekey = Regex.Replace(privatekey, @"0x", "", RegexOptions.IgnoreCase);
-				privatekey = Regex.Replace(privatekey, @"[^0-9abcdef]", "", RegexOptions.IgnoreCase);
-				if (privatekey.Length == 0 || privatekey.Length < 40)
-				{
-					WinAuthForm.ErrorDialog(this.Owner, "The private key must be a sequence of at least 40 hexadecimal characters, e.g. 7B0BFA82... or 0x7B, 0x0B, 0xFA, 0x82, ...");
-					return false;
-				}
-				try
-				{
-					TrionAuthenticator authenticator = new TrionAuthenticator();
-					if (privatekey.Length == 40) // 20 bytes which is key only
-					{
-						authenticator.SecretKey = WinAuth.Authenticator.StringToByteArray(privatekey);
-						authenticator.Serial = "US-Imported";
-					}
-					else
-					{
-						authenticator.SecretData = privatekey;
-						if (string.IsNullOrEmpty(authenticator.Serial) == true)
-						{
-							authenticator.Serial = "US-Imported";
-						}
-					}
-					authenticator.Sync();
-					this.Authenticator = authenticator;
-				}
-				catch (Exception irre)
-				{
-					WinAuthForm.ErrorDialog(this.Owner, "Unable to import the authenticator. The private key is probably invalid.", irre);
+					WinAuthForm.ErrorDialog(this.Owner, "An error occured restoring the authenticator: " + ex.Message, ex);
 					return false;
 				}
 			}
@@ -280,8 +269,6 @@ namespace WinAuth
 				this.Authenticator = null;
 			}
 
-			newAuthenticatorProgress.Visible = false;
-			newAuthenticatorTimer.Enabled = false;
 			newSerialNumberField.Text = string.Empty;
 			newSerialNumberField.SecretMode = true;
 			newLoginCodeField.Text = string.Empty;
@@ -290,10 +277,13 @@ namespace WinAuth
 			newRestoreCodeField.SecretMode = true;
 			allowCopyNewButton.Checked = false;
 
-			restoreSerialNumberField.Text = string.Empty;
-			restoreRestoreCodeField.Text = string.Empty;
-
-			importPrivateKeyField.Text = string.Empty;
+			restoreEmailField.Text = string.Empty;
+			restorePasswordField.Text = string.Empty;
+			restoreDeviceIdField.Text = string.Empty;
+			restoreQuestion1Label.Text = string.Empty;
+			restoreQuestion2Label.Text = string.Empty;
+			restoreAnswer1Field.Text = string.Empty;
+			restoreAnswer2Field.Text = string.Empty;
 		}
 
 		/// <summary>
@@ -318,10 +308,7 @@ namespace WinAuth
 					this.Authenticator = authenticator;
 					newSerialNumberField.Text = authenticator.Serial;
 					newLoginCodeField.Text = authenticator.CurrentCode;
-					//newRestoreCodeField.Text = authenticator.RestoreCode;
-
-					newAuthenticatorProgress.Visible = true;
-					newAuthenticatorTimer.Enabled = true;
+					newRestoreCodeField.Text = authenticator.DeviceId;
 
 					return;
 				}

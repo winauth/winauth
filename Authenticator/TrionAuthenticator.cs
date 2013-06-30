@@ -54,12 +54,12 @@ namespace WinAuth
 		/// <summary>
 		/// Size of model string
 		/// </summary>
-		private const int MODEL_SIZE = 32;
+		private const int MODEL_SIZE = 15;
 
 		/// <summary>
 		/// String of possible chars we use in our random model string
 		/// </summary>
-		private const string MODEL_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890";
+		private const string MODEL_CHARS = "1234567890ABCDEF";
 
 		/// <summary>
 		/// Number of digits in code
@@ -71,6 +71,8 @@ namespace WinAuth
 		/// </summary>
 		private static string ENROLL_URL = "https://rift.trionworlds.com/external/create-device-key";
 		private static string SYNC_URL = "https://auth.trionworlds.com/time";
+		private static string SECURITYQUESTIONS_URL = "https://rift.trionworlds.com/external/get-account-security-questions.action";
+		private static string RESTORE_URL = "https://rift.trionworlds.com/external/retrieve-device-key.action";
 
 		#region Authenticator data
 
@@ -99,6 +101,8 @@ namespace WinAuth
 				}
 			}
 		}
+
+		public string DeviceId {get; set;}
 
 		#endregion
 
@@ -164,7 +168,11 @@ namespace WinAuth
 			SecretKey = Encoding.UTF8.GetBytes(doc.SelectSingleNode("//SecretKey").InnerText);
 
 			// get the serial number
-			Serial = doc.SelectSingleNode("//SerialKey").InnerText;
+			string serial = doc.SelectSingleNode("//SerialKey").InnerText;
+			Serial = Regex.Replace(serial, @"(.{4})", "$1 ").Trim().Replace(" ", "-");
+
+			// save the device
+			DeviceId = doc.SelectSingleNode("//DeviceId").InnerText;
 		}
 
 #if DEBUG
@@ -180,7 +188,8 @@ namespace WinAuth
 			}
 			else
 			{
-				string responseData = "<DeviceKey><DeviceId>zarTM0v5ko0BwrOYQV1HhsE4Q0stqgbF</DeviceId><SerialKey>FJP7H9DG3T67</SerialKey><SecretKey>DP7FFJZKLG6ZNCJTNNMT</SecretKey></DeviceKey>";
+				//string responseData = "<DeviceKey><DeviceId>zarTM0v5ko0BwrOYQV1HhsE4Q0stqgbF</DeviceId><SerialKey>FJP7H9DG3T67</SerialKey><SecretKey>DP7FFJZKLG6ZNCJTNNMT</SecretKey></DeviceKey>";
+				string responseData = "<DeviceKey><DeviceId>19897B57952648559364352F7FE9B8A8</DeviceId><SerialKey>HM3ZMQ233FPZ</SerialKey><SecretKey>6MYNGRGYX7XZQNL6T2M6</SecretKey></DeviceKey>";
 
 				//	<DeviceId />
 				//	<SerialKey />
@@ -200,7 +209,10 @@ namespace WinAuth
 				SecretKey = Encoding.UTF8.GetBytes(doc.SelectSingleNode("//SecretKey").InnerText);
 
 				// get the serial number
-				Serial = doc.SelectSingleNode("//SerialKey").InnerText;
+				string serial = doc.SelectSingleNode("//SerialKey").InnerText;
+				Serial = Regex.Replace(serial, @"(.{4})", "$1 ").Trim().Replace(" ", "-");
+
+				DeviceId = doc.SelectSingleNode("//DeviceId").InnerText;
 			}
 		}
 #endif
@@ -239,6 +251,129 @@ namespace WinAuth
 
 			// update the Data object
 			ServerTimeDiff = serverTimeDiff;
+		}
+
+		/// <summary>
+		/// Get the secret questions for an account
+		/// </summary>
+		/// <param name="email">user's account email</param>
+		/// <param name="password">user's account password</param>
+		/// <param name="question1">returned secret question 1</param>
+		/// <param name="question2">returned secret question 2</param>
+		public static void SecurityQuestions(string email, string password, out string question1, out string question2)
+		{
+			string postdata = "emailAddress=" + email + "&password=" + password;
+
+			// call the enroll server
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(SECURITYQUESTIONS_URL);
+			request.Method = "POST";
+			request.ContentType = "application/x-www-form-urlencoded";
+			request.ContentLength = postdata.Length;
+			StreamWriter requestStream = new StreamWriter(request.GetRequestStream());
+			requestStream.Write(postdata);
+			requestStream.Close();
+			string responseData;
+			using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+			{
+				// OK?
+				if (response.StatusCode != HttpStatusCode.OK)
+				{
+					throw new InvalidRestoreResponseException(string.Format("{0}: {1}", (int)response.StatusCode, response.StatusDescription));
+				}
+
+				// load the response
+				using (StreamReader responseStream = new StreamReader(response.GetResponseStream()))
+				{
+					responseData = responseStream.ReadToEnd();
+				}
+			}
+
+			// return data:
+			// <SecurityQuestions>
+			//	<EmailAddress />
+			//	<FirstQuestion />
+			//	<SecondQuestion />
+			//	<ErrorCode /> only exists if an error
+			// </SecurityQuestions>
+			XmlDocument doc = new XmlDocument();
+			doc.LoadXml(responseData);
+			XmlNode node = doc.SelectSingleNode("//ErrorCode");
+			if (node != null && string.IsNullOrEmpty(node.InnerText) == false)
+			{
+				// an error occured
+				throw new InvalidRestoreResponseException(node.InnerText);
+			}
+
+			// get the questions
+			question1 = doc.SelectSingleNode("//FirstQuestion").InnerText;
+			question2 = doc.SelectSingleNode("//SecondQuestion").InnerText;
+		}
+
+		/// <summary>
+		/// Restore an authenticator using the account details and security questions
+		/// </summary>
+		/// <param name="email">user's account email</param>
+		/// <param name="password">user's account password</param>
+		/// <param name="deviceId">register authenticator deviceid</param>
+		/// <param name="answer1">answer to secret question 1</param>
+		/// <param name="answer2">answer to secret question 2</param>
+		public void Restore(string email, string password, string deviceId, string answer1, string answer2)
+		{
+			string postdata = "emailAddress=" + email
+				+ "&password=" + password
+				+ "&deviceId=" + deviceId
+				+ "&securityAnswer=" + answer1
+				+ "&secondSecurityAnswer=" + answer2;
+
+			// call the enroll server
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(RESTORE_URL);
+			request.Method = "POST";
+			request.ContentType = "application/x-www-form-urlencoded";
+			request.ContentLength = postdata.Length;
+			StreamWriter requestStream = new StreamWriter(request.GetRequestStream());
+			requestStream.Write(postdata);
+			requestStream.Close();
+			string responseData;
+			using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+			{
+				// OK?
+				if (response.StatusCode != HttpStatusCode.OK)
+				{
+					throw new InvalidRestoreResponseException(string.Format("{0}: {1}", (int)response.StatusCode, response.StatusDescription));
+				}
+
+				// load the response
+				using (StreamReader responseStream = new StreamReader(response.GetResponseStream()))
+				{
+					responseData = responseStream.ReadToEnd();
+				}
+			}
+
+			// return data:
+			// <DeviceKey>
+			//	<DeviceId />
+			//	<SerialKey />
+			//	<SecretKey />
+			//	<ErrorCode /> only exists if an error
+			// </DeviceKey>
+			XmlDocument doc = new XmlDocument();
+			doc.LoadXml(responseData);
+			XmlNode node = doc.SelectSingleNode("//ErrorCode");
+			if (node != null && string.IsNullOrEmpty(node.InnerText) == false)
+			{
+				// an error occured
+				throw new InvalidRestoreResponseException(node.InnerText);
+			}
+
+			// get the secret key
+			SecretKey = Encoding.UTF8.GetBytes(doc.SelectSingleNode("//SecretKey").InnerText);
+
+			// get the serial number
+			string serial = doc.SelectSingleNode("//SerialKey").InnerText;
+			Serial = Regex.Replace(serial, @"(.{4})", "$1 ").Trim().Replace(" ", "-");
+
+			// save the device
+			DeviceId = doc.SelectSingleNode("//DeviceId").InnerText;
 		}
 
 		/// <summary>
