@@ -231,6 +231,8 @@
     <None Include="Resources\trion.png" />
     <None Include="Resources\battlenet.png" />
     <EmbeddedResource Include="Resources\DiabloIcon.png" />
+    <EmbeddedResource Include="Resources\DefianceIcon.png" />
+    <None Include="Resources\EndOfNationsIcon.png" />
     <Content Include="winauth.ico" />
   </ItemGroup>
   <ItemGroup>

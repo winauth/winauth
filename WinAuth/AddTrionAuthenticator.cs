@@ -44,7 +44,7 @@ namespace WinAuth
 		/// <summary>
 		/// Current authenticator
 		/// </summary>
-		public TrionAuthenticator Authenticator { get; protected set; }
+		public WinAuthAuthenticator Authenticator { get; set; }
 
 #region Form Events
 
@@ -55,6 +55,10 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void AddTrionAuthenticator_Load(object sender, EventArgs e)
 		{
+			nameField.Text = this.Authenticator.Name;
+
+			createAuthenticatorButton.Checked = true;
+
 			newSerialNumberField.SecretMode = true;
 			newLoginCodeField.SecretMode = true;
 			newRestoreCodeField.SecretMode = true;
@@ -107,12 +111,12 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void newAuthenticatorTimer_Tick(object sender, EventArgs e)
 		{
-			if (this.Authenticator != null)
+			if (this.Authenticator != null && this.Authenticator.AuthenticatorData != null)
 			{
-				int time = (int)(this.Authenticator.ServerTime / 1000L) % 30;
+				int time = (int)(this.Authenticator.AuthenticatorData.ServerTime / 1000L) % 30;
 				if (time == 0)
 				{
-					newLoginCodeField.Text = this.Authenticator.CurrentCode;
+					newLoginCodeField.Text = this.Authenticator.AuthenticatorData.CurrentCode;
 				}
 			}
 		}
@@ -158,7 +162,7 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void cancelButton_Click(object sender, EventArgs e)
 		{
-			if (this.Authenticator != null)
+			if (this.Authenticator.AuthenticatorData != null)
 			{
 				DialogResult result = WinAuthForm.ConfirmDialog(this.Owner,
 					"You have created a new authenticator. "
@@ -191,6 +195,59 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// Select one of the icons
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void iconTrion_Click(object sender, EventArgs e)
+		{
+			trionIconRadioButton.Checked = true;
+		}
+
+		/// <summary>
+		/// Select one of the icons
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void iconRift_Click(object sender, EventArgs e)
+		{
+			riftIconRadioButton.Checked = true;
+		}
+
+		/// <summary>
+		/// Select one of the icons
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void defianceIcon_Click(object sender, EventArgs e)
+		{
+			defianceIconRadioButton.Checked = true;
+		}
+
+		/// <summary>
+		/// Select one of the icons
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void endOfNationsIcon_Click(object sender, EventArgs e)
+		{
+			endOfNationIconRadioButton.Checked = true;
+		}
+
+		/// <summary>
+		/// Set the authenticaotr icon
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void iconRadioButton_CheckedChanged(object sender, EventArgs e)
+		{
+			if (((RadioButton)sender).Checked == true)
+			{
+				this.Authenticator.Skin = (string)((RadioButton)sender).Tag;
+			}
+		}
+
 #endregion
 
 #region Private methods
@@ -203,7 +260,7 @@ namespace WinAuth
 		{
 			if (this.createAuthenticatorButton.Checked == true)
 			{
-				if (this.Authenticator == null)
+				if (this.Authenticator.AuthenticatorData == null)
 				{
 					WinAuthForm.ErrorDialog(this.Owner, "You need to create an authenticator and attach it to your account");
 					return false;
@@ -232,7 +289,7 @@ namespace WinAuth
 				{
 					TrionAuthenticator authenticator = new TrionAuthenticator();
 					authenticator.Restore(email, password, deviceId, answer1, answer2);
-					this.Authenticator = authenticator;
+					this.Authenticator.AuthenticatorData = authenticator;
 				}
 				catch (InvalidRestoreResponseException irre)
 				{
@@ -255,7 +312,7 @@ namespace WinAuth
 		/// <param name="showWarning"></param>
 		private void clearAuthenticator(bool showWarning = true)
 		{
-			if (this.Authenticator != null && showWarning == true)
+			if (this.Authenticator.AuthenticatorData != null && showWarning == true)
 			{
 				DialogResult result = WinAuthForm.ConfirmDialog(this.Owner,
 					"This will clear the authenticator you have just created. "
@@ -266,7 +323,7 @@ namespace WinAuth
 					return;
 				}
 
-				this.Authenticator = null;
+				this.Authenticator.AuthenticatorData = null;
 			}
 
 			newSerialNumberField.Text = string.Empty;
@@ -305,7 +362,7 @@ namespace WinAuth
 #else
 					authenticator.Enroll();
 #endif
-					this.Authenticator = authenticator;
+					this.Authenticator.AuthenticatorData = authenticator;
 					newSerialNumberField.Text = authenticator.Serial;
 					newLoginCodeField.Text = authenticator.CurrentCode;
 					newRestoreCodeField.Text = authenticator.DeviceId;

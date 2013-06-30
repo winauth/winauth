@@ -55,7 +55,18 @@ namespace WinAuth
 			this.okButton = new System.Windows.Forms.Button();
 			this.cancelButton = new System.Windows.Forms.Button();
 			this.newAuthenticatorTimer = new System.Windows.Forms.Timer(this.components);
-			this.trionImage = new System.Windows.Forms.PictureBox();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.endOfNationsIcon = new System.Windows.Forms.PictureBox();
+			this.defianceIcon = new System.Windows.Forms.PictureBox();
+			this.iconRift = new System.Windows.Forms.PictureBox();
+			this.iconTrion = new System.Windows.Forms.PictureBox();
+			this.label10 = new System.Windows.Forms.Label();
+			this.label6 = new System.Windows.Forms.Label();
+			this.nameField = new System.Windows.Forms.TextBox();
+			this.endOfNationIconRadioButton = new WinAuth.GroupRadioButton();
+			this.defianceIconRadioButton = new WinAuth.GroupRadioButton();
+			this.riftIconRadioButton = new WinAuth.GroupRadioButton();
+			this.trionIconRadioButton = new WinAuth.GroupRadioButton();
 			this.restoreAuthenticatorButton = new WinAuth.GroupRadioButton();
 			this.createAuthenticatorButton = new WinAuth.GroupRadioButton();
 			this.newRestoreCodeField = new WinAuth.SecretTextBox();
@@ -63,7 +74,11 @@ namespace WinAuth
 			this.newSerialNumberField = new WinAuth.SecretTextBox();
 			this.newAuthenticatorGroup.SuspendLayout();
 			this.restoreAuthenticatorGroup.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.trionImage)).BeginInit();
+			this.groupBox1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.endOfNationsIcon)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.defianceIcon)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.iconRift)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.iconTrion)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// newAuthenticatorGroup
@@ -78,10 +93,10 @@ namespace WinAuth
 			this.newAuthenticatorGroup.Controls.Add(this.label2);
 			this.newAuthenticatorGroup.Controls.Add(this.label1);
 			this.newAuthenticatorGroup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.newAuthenticatorGroup.Location = new System.Drawing.Point(12, 81);
+			this.newAuthenticatorGroup.Location = new System.Drawing.Point(13, 120);
 			this.newAuthenticatorGroup.Name = "newAuthenticatorGroup";
 			this.newAuthenticatorGroup.Size = new System.Drawing.Size(456, 317);
-			this.newAuthenticatorGroup.TabIndex = 1;
+			this.newAuthenticatorGroup.TabIndex = 6;
 			this.newAuthenticatorGroup.TabStop = false;
 			// 
 			// allowCopyNewButton
@@ -169,10 +184,10 @@ namespace WinAuth
 			this.restoreAuthenticatorGroup.Controls.Add(this.label9);
 			this.restoreAuthenticatorGroup.Enabled = false;
 			this.restoreAuthenticatorGroup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.restoreAuthenticatorGroup.Location = new System.Drawing.Point(12, 404);
+			this.restoreAuthenticatorGroup.Location = new System.Drawing.Point(13, 447);
 			this.restoreAuthenticatorGroup.Name = "restoreAuthenticatorGroup";
 			this.restoreAuthenticatorGroup.Size = new System.Drawing.Size(456, 342);
-			this.restoreAuthenticatorGroup.TabIndex = 3;
+			this.restoreAuthenticatorGroup.TabIndex = 1;
 			this.restoreAuthenticatorGroup.TabStop = false;
 			// 
 			// restoreAnswer2Field
@@ -302,10 +317,10 @@ namespace WinAuth
 			this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.okButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.okButton.Location = new System.Drawing.Point(311, 755);
+			this.okButton.Location = new System.Drawing.Point(311, 800);
 			this.okButton.Name = "okButton";
 			this.okButton.Size = new System.Drawing.Size(75, 23);
-			this.okButton.TabIndex = 4;
+			this.okButton.TabIndex = 2;
 			this.okButton.Text = "OK";
 			this.okButton.UseVisualStyleBackColor = true;
 			this.okButton.Click += new System.EventHandler(this.okButton_Click);
@@ -315,10 +330,10 @@ namespace WinAuth
 			this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
 			this.cancelButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.cancelButton.Location = new System.Drawing.Point(392, 755);
+			this.cancelButton.Location = new System.Drawing.Point(392, 800);
 			this.cancelButton.Name = "cancelButton";
 			this.cancelButton.Size = new System.Drawing.Size(75, 23);
-			this.cancelButton.TabIndex = 5;
+			this.cancelButton.TabIndex = 3;
 			this.cancelButton.Text = "Cancel";
 			this.cancelButton.UseVisualStyleBackColor = true;
 			this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
@@ -329,27 +344,156 @@ namespace WinAuth
 			this.newAuthenticatorTimer.Interval = 500;
 			this.newAuthenticatorTimer.Tick += new System.EventHandler(this.newAuthenticatorTimer_Tick);
 			// 
-			// trionImage
+			// groupBox1
 			// 
-			this.trionImage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.trionImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.trionImage.Image = global::WinAuth.Properties.Resources.trion;
-			this.trionImage.Location = new System.Drawing.Point(13, 12);
-			this.trionImage.Name = "trionImage";
-			this.trionImage.Size = new System.Drawing.Size(454, 59);
-			this.trionImage.TabIndex = 6;
-			this.trionImage.TabStop = false;
+			this.groupBox1.Controls.Add(this.endOfNationIconRadioButton);
+			this.groupBox1.Controls.Add(this.defianceIconRadioButton);
+			this.groupBox1.Controls.Add(this.riftIconRadioButton);
+			this.groupBox1.Controls.Add(this.trionIconRadioButton);
+			this.groupBox1.Controls.Add(this.endOfNationsIcon);
+			this.groupBox1.Controls.Add(this.defianceIcon);
+			this.groupBox1.Controls.Add(this.iconRift);
+			this.groupBox1.Controls.Add(this.iconTrion);
+			this.groupBox1.Controls.Add(this.label10);
+			this.groupBox1.Controls.Add(this.label6);
+			this.groupBox1.Controls.Add(this.nameField);
+			this.groupBox1.Location = new System.Drawing.Point(13, 6);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(456, 105);
+			this.groupBox1.TabIndex = 4;
+			this.groupBox1.TabStop = false;
+			// 
+			// endOfNationsIcon
+			// 
+			this.endOfNationsIcon.Image = global::WinAuth.Properties.Resources.EndOfNationsIcon;
+			this.endOfNationsIcon.Location = new System.Drawing.Point(315, 44);
+			this.endOfNationsIcon.Name = "endOfNationsIcon";
+			this.endOfNationsIcon.Size = new System.Drawing.Size(48, 48);
+			this.endOfNationsIcon.TabIndex = 4;
+			this.endOfNationsIcon.TabStop = false;
+			this.endOfNationsIcon.Tag = "EndOfNationsIcon.png";
+			this.endOfNationsIcon.Click += new System.EventHandler(this.endOfNationsIcon_Click);
+			// 
+			// defianceIcon
+			// 
+			this.defianceIcon.Image = global::WinAuth.Properties.Resources.DefianceIcon;
+			this.defianceIcon.Location = new System.Drawing.Point(240, 44);
+			this.defianceIcon.Name = "defianceIcon";
+			this.defianceIcon.Size = new System.Drawing.Size(48, 48);
+			this.defianceIcon.TabIndex = 4;
+			this.defianceIcon.TabStop = false;
+			this.defianceIcon.Tag = "DefianceIcon.png";
+			this.defianceIcon.Click += new System.EventHandler(this.defianceIcon_Click);
+			// 
+			// iconRift
+			// 
+			this.iconRift.Image = global::WinAuth.Properties.Resources.RiftIcon;
+			this.iconRift.Location = new System.Drawing.Point(164, 44);
+			this.iconRift.Name = "iconRift";
+			this.iconRift.Size = new System.Drawing.Size(48, 48);
+			this.iconRift.TabIndex = 4;
+			this.iconRift.TabStop = false;
+			this.iconRift.Tag = "RiftIcon.png";
+			this.iconRift.Click += new System.EventHandler(this.iconRift_Click);
+			// 
+			// iconTrion
+			// 
+			this.iconTrion.Image = global::WinAuth.Properties.Resources.TrionAuthenticatorIcon;
+			this.iconTrion.Location = new System.Drawing.Point(88, 44);
+			this.iconTrion.Name = "iconTrion";
+			this.iconTrion.Size = new System.Drawing.Size(48, 48);
+			this.iconTrion.TabIndex = 4;
+			this.iconTrion.TabStop = false;
+			this.iconTrion.Tag = "TrionAuthenticatorIcon.png";
+			this.iconTrion.Click += new System.EventHandler(this.iconTrion_Click);
+			// 
+			// label10
+			// 
+			this.label10.AutoSize = true;
+			this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label10.Location = new System.Drawing.Point(11, 57);
+			this.label10.Name = "label10";
+			this.label10.Size = new System.Drawing.Size(36, 16);
+			this.label10.TabIndex = 3;
+			this.label10.Text = "Icon:";
+			// 
+			// label6
+			// 
+			this.label6.AutoSize = true;
+			this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label6.Location = new System.Drawing.Point(11, 19);
+			this.label6.Name = "label6";
+			this.label6.Size = new System.Drawing.Size(48, 16);
+			this.label6.TabIndex = 3;
+			this.label6.Text = "Name:";
+			// 
+			// nameField
+			// 
+			this.nameField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.nameField.Location = new System.Drawing.Point(68, 18);
+			this.nameField.Name = "nameField";
+			this.nameField.Size = new System.Drawing.Size(357, 22);
+			this.nameField.TabIndex = 0;
+			// 
+			// endOfNationIconRadioButton
+			// 
+			this.endOfNationIconRadioButton.AutoSize = true;
+			this.endOfNationIconRadioButton.Group = "ICON";
+			this.endOfNationIconRadioButton.Location = new System.Drawing.Point(295, 59);
+			this.endOfNationIconRadioButton.Name = "endOfNationIconRadioButton";
+			this.endOfNationIconRadioButton.Size = new System.Drawing.Size(14, 13);
+			this.endOfNationIconRadioButton.TabIndex = 4;
+			this.endOfNationIconRadioButton.Tag = "EndOfNationsIcon.png";
+			this.endOfNationIconRadioButton.UseVisualStyleBackColor = true;
+			this.endOfNationIconRadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
+			// 
+			// defianceIconRadioButton
+			// 
+			this.defianceIconRadioButton.AutoSize = true;
+			this.defianceIconRadioButton.Group = "ICON";
+			this.defianceIconRadioButton.Location = new System.Drawing.Point(220, 59);
+			this.defianceIconRadioButton.Name = "defianceIconRadioButton";
+			this.defianceIconRadioButton.Size = new System.Drawing.Size(14, 13);
+			this.defianceIconRadioButton.TabIndex = 3;
+			this.defianceIconRadioButton.Tag = "DefianceIcon.png";
+			this.defianceIconRadioButton.UseVisualStyleBackColor = true;
+			this.defianceIconRadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
+			// 
+			// riftIconRadioButton
+			// 
+			this.riftIconRadioButton.AutoSize = true;
+			this.riftIconRadioButton.Group = "ICON";
+			this.riftIconRadioButton.Location = new System.Drawing.Point(144, 59);
+			this.riftIconRadioButton.Name = "riftIconRadioButton";
+			this.riftIconRadioButton.Size = new System.Drawing.Size(14, 13);
+			this.riftIconRadioButton.TabIndex = 2;
+			this.riftIconRadioButton.Tag = "RiftIcon.png";
+			this.riftIconRadioButton.UseVisualStyleBackColor = true;
+			this.riftIconRadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
+			// 
+			// trionIconRadioButton
+			// 
+			this.trionIconRadioButton.AutoSize = true;
+			this.trionIconRadioButton.Checked = true;
+			this.trionIconRadioButton.Group = "ICON";
+			this.trionIconRadioButton.Location = new System.Drawing.Point(68, 59);
+			this.trionIconRadioButton.Name = "trionIconRadioButton";
+			this.trionIconRadioButton.Size = new System.Drawing.Size(14, 13);
+			this.trionIconRadioButton.TabIndex = 1;
+			this.trionIconRadioButton.TabStop = true;
+			this.trionIconRadioButton.Tag = "TrionAuthenticatorIcon.png";
+			this.trionIconRadioButton.UseVisualStyleBackColor = true;
+			this.trionIconRadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
 			// 
 			// restoreAuthenticatorButton
 			// 
 			this.restoreAuthenticatorButton.AutoSize = true;
 			this.restoreAuthenticatorButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.restoreAuthenticatorButton.Group = "Authenticator";
-			this.restoreAuthenticatorButton.Location = new System.Drawing.Point(20, 401);
+			this.restoreAuthenticatorButton.Location = new System.Drawing.Point(21, 444);
 			this.restoreAuthenticatorButton.Name = "restoreAuthenticatorButton";
 			this.restoreAuthenticatorButton.Size = new System.Drawing.Size(158, 20);
-			this.restoreAuthenticatorButton.TabIndex = 2;
+			this.restoreAuthenticatorButton.TabIndex = 0;
 			this.restoreAuthenticatorButton.TabStop = true;
 			this.restoreAuthenticatorButton.Text = "Recover Authenticator";
 			this.restoreAuthenticatorButton.UseVisualStyleBackColor = true;
@@ -361,10 +505,10 @@ namespace WinAuth
 			this.createAuthenticatorButton.Checked = true;
 			this.createAuthenticatorButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.createAuthenticatorButton.Group = "Authenticator";
-			this.createAuthenticatorButton.Location = new System.Drawing.Point(20, 78);
+			this.createAuthenticatorButton.Location = new System.Drawing.Point(21, 117);
 			this.createAuthenticatorButton.Name = "createAuthenticatorButton";
 			this.createAuthenticatorButton.Size = new System.Drawing.Size(133, 20);
-			this.createAuthenticatorButton.TabIndex = 0;
+			this.createAuthenticatorButton.TabIndex = 5;
 			this.createAuthenticatorButton.TabStop = true;
 			this.createAuthenticatorButton.Text = "New Authenticator";
 			this.createAuthenticatorButton.UseVisualStyleBackColor = true;
@@ -410,8 +554,8 @@ namespace WinAuth
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancelButton;
-			this.ClientSize = new System.Drawing.Size(481, 790);
-			this.Controls.Add(this.trionImage);
+			this.ClientSize = new System.Drawing.Size(481, 835);
+			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.restoreAuthenticatorButton);
 			this.Controls.Add(this.createAuthenticatorButton);
 			this.Controls.Add(this.cancelButton);
@@ -428,7 +572,12 @@ namespace WinAuth
 			this.newAuthenticatorGroup.PerformLayout();
 			this.restoreAuthenticatorGroup.ResumeLayout(false);
 			this.restoreAuthenticatorGroup.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.trionImage)).EndInit();
+			this.groupBox1.ResumeLayout(false);
+			this.groupBox1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.endOfNationsIcon)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.defianceIcon)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.iconRift)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.iconTrion)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -466,6 +615,17 @@ namespace WinAuth
 		private System.Windows.Forms.Label label8;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.PictureBox trionImage;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private WinAuth.GroupRadioButton defianceIconRadioButton;
+		private WinAuth.GroupRadioButton riftIconRadioButton;
+		private WinAuth.GroupRadioButton trionIconRadioButton;
+		private System.Windows.Forms.PictureBox defianceIcon;
+		private System.Windows.Forms.PictureBox iconRift;
+		private System.Windows.Forms.PictureBox iconTrion;
+		private System.Windows.Forms.Label label6;
+		private System.Windows.Forms.TextBox nameField;
+		private WinAuth.GroupRadioButton endOfNationIconRadioButton;
+		private System.Windows.Forms.PictureBox endOfNationsIcon;
+		private System.Windows.Forms.Label label10;
 	}
 }
