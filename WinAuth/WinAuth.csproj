@@ -98,6 +98,18 @@
     <Compile Include="AddGoogleAuthenticator.designer.cs">
       <DependentUpon>AddGoogleAuthenticator.cs</DependentUpon>
     </Compile>
+    <Compile Include="AddGuildWarsAuthenticator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddGuildWarsAuthenticator.designer.cs">
+      <DependentUpon>AddGuildWarsAuthenticator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddMicrosoftAuthenticator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddMicrosoftAuthenticator.designer.cs">
+      <DependentUpon>AddMicrosoftAuthenticator.cs</DependentUpon>
+    </Compile>
     <Compile Include="AddTrionAuthenticator.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -185,6 +197,12 @@
     <EmbeddedResource Include="AddGoogleAuthenticator.resx">
       <DependentUpon>AddGoogleAuthenticator.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="AddGuildWarsAuthenticator.resx">
+      <DependentUpon>AddGuildWarsAuthenticator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddMicrosoftAuthenticator.resx">
+      <DependentUpon>AddMicrosoftAuthenticator.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="AddTrionAuthenticator.resx">
       <DependentUpon>AddTrionAuthenticator.cs</DependentUpon>
     </EmbeddedResource>
@@ -241,8 +259,13 @@
     <None Include="Resources\battlenet.png" />
     <EmbeddedResource Include="Resources\DiabloIcon.png" />
     <EmbeddedResource Include="Resources\DefianceIcon.png" />
-    <None Include="Resources\EndOfNationsIcon.png" />
+    <EmbeddedResource Include="Resources\EndOfNationsIcon.png" />
     <EmbeddedResource Include="Resources\WarcraftIcon.png" />
+    <EmbeddedResource Include="Resources\GoogleIcon.png" />
+    <EmbeddedResource Include="Resources\ChromeIcon.png" />
+    <EmbeddedResource Include="Resources\ArenaNetIcon.png" />
+    <EmbeddedResource Include="Resources\Windows8Icon.png" />
+    <EmbeddedResource Include="Resources\Windows7Icon.png" />
     <Content Include="winauth.ico" />
   </ItemGroup>
   <ItemGroup>

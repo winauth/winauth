@@ -30,22 +30,26 @@ using System.Windows.Forms;
 
 namespace WinAuth
 {
+	public interface IWinAuthAuthenticatorChangedListener
+	{
+		void OnWinAuthAuthenticatorChanged(WinAuthAuthenticator sender, WinAuthAuthenticatorChangedEventArgs e);
+	}
+
   public class WinAuthAuthenticator : ICloneable
   {
     /// <summary>
     /// Event handler fired when property is changed
     /// </summary>
-    public event WinAuthAuthenticatorChangedHandler OnChanged;
+		public event WinAuthAuthenticatorChangedHandler OnWinAuthAuthenticatorChanged;
 
     public Guid Id { get; set; }
-
-    public string Name { get; set; }
 
     public Authenticator AuthenticatorData { get; set; }
 
     public DateTime Created { get; set; }
 
-    private string _skin;
+		private string _name;
+		private string _skin;
     private bool _autoRefresh;
     private bool _allowCopy;
     private bool _copyOnCode;
@@ -69,12 +73,29 @@ namespace WinAuth
       WinAuthAuthenticator clone = this.MemberwiseClone() as WinAuthAuthenticator;
 
       clone.Id = Guid.NewGuid();
+			clone.OnWinAuthAuthenticatorChanged = null;
       clone.AuthenticatorData = (this.AuthenticatorData != null ? this.AuthenticatorData.Clone() as Authenticator : null);
 
       return clone;
     }
 
-    public string Skin
+		public string Name
+		{
+			get
+			{
+				return _name;
+			}
+			set
+			{
+				_name = value;
+				if (OnWinAuthAuthenticatorChanged != null)
+				{
+					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
+				}
+			}
+		}
+
+		public string Skin
     {
       get
       {
@@ -83,9 +104,9 @@ namespace WinAuth
       set
       {
         _skin = value;
-        if (OnChanged != null)
+        if (OnWinAuthAuthenticatorChanged != null)
         {
-          OnChanged(this, new WinAuthAuthenticatorChangedEventArgs());
+					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
         }
       }
     }
@@ -102,9 +123,9 @@ namespace WinAuth
       set
       {
         _autoRefresh = value;
-        if (OnChanged != null)
+				if (OnWinAuthAuthenticatorChanged != null)
         {
-          OnChanged(this, new WinAuthAuthenticatorChangedEventArgs());
+					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
         }
       }
     }
@@ -121,9 +142,9 @@ namespace WinAuth
       set
       {
         _allowCopy = value;
-        if (OnChanged != null)
+				if (OnWinAuthAuthenticatorChanged != null)
         {
-          OnChanged(this, new WinAuthAuthenticatorChangedEventArgs());
+					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
         }
       }
     }
@@ -140,9 +161,9 @@ namespace WinAuth
       set
       {
         _copyOnCode = value;
-        if (OnChanged != null)
+				if (OnWinAuthAuthenticatorChanged != null)
         {
-          OnChanged(this, new WinAuthAuthenticatorChangedEventArgs());
+					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
         }
       }
     }
@@ -159,9 +180,9 @@ namespace WinAuth
       set
       {
         _hideSerial = value;
-        if (OnChanged != null)
+				if (OnWinAuthAuthenticatorChanged != null)
         {
-          OnChanged(this, new WinAuthAuthenticatorChangedEventArgs());
+					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
         }
       }
     }
@@ -175,9 +196,9 @@ namespace WinAuth
       set
       {
         _autoLogin = value;
-        if (OnChanged != null)
+				if (OnWinAuthAuthenticatorChanged != null)
         {
-          OnChanged(this, new WinAuthAuthenticatorChangedEventArgs());
+					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
         }
       }
     }
@@ -468,7 +489,7 @@ namespace WinAuth
   /// </summary>
   /// <param name="source"></param>
   /// <param name="args"></param>
-  public delegate void WinAuthAuthenticatorChangedHandler(object source, WinAuthAuthenticatorChangedEventArgs args);
+	public delegate void WinAuthAuthenticatorChangedHandler(WinAuthAuthenticator source, WinAuthAuthenticatorChangedEventArgs args);
 
   /// <summary>
   /// Change event arguments

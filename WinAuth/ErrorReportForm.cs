@@ -99,7 +99,7 @@ namespace WinAuth
 			{
 				// clone the authenticator so we can extract key in case machine/user encrypted
 				WinAuthConfig clone = this.Config.Clone() as WinAuthConfig;
-				foreach (var auth in clone.Authenticators)
+				foreach (var auth in clone)
 				{
 					auth.PasswordType = Authenticator.PasswordTypes.None;
 					auth.AuthenticatorData.PasswordType = Authenticator.PasswordTypes.None;

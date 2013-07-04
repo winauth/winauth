@@ -30,7 +30,9 @@ namespace WinAuth
 			None = 0,
 			BattleNet,
 			Google,
+			GuildWars,
 			Trion,
+			Microsoft,
 			RFC6238_TIME,
 			RFC6238_COUNTER
 		}

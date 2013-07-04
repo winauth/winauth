@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2010 Colin Mackie.
+ * Copyright (C) 2013 Colin Mackie.
  * This software is distributed under the terms of the GNU General Public License.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,6 +26,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace WinAuth
 {
@@ -64,19 +65,175 @@ namespace WinAuth
 
   public class AuthenticatorListBox : ListBox
   {
+		private const int WM_HSCROLL = 0x114;
+		private const int WM_VSCROLL = 0x115;
+
+		private const int SB_LINELEFT = 0;
+		private const int SB_LINERIGHT = 1;
+		private const int SB_PAGELEFT = 2;
+		private const int SB_PAGERIGHT = 3;
+		private const int SB_THUMBPOSITION = 4;
+		private const int SB_THUMBTRACK = 5;
+		private const int SB_LEFT = 6;
+		private const int SB_RIGHT = 7;
+		private const int SB_ENDSCROLL = 8;
+
+		private const int SIF_TRACKPOS = 0x10;
+		private const int SIF_RANGE = 0x1;
+		private const int SIF_POS = 0x4;
+		private const int SIF_PAGE = 0x2;
+		private const int SIF_ALL = SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS;
+
+		[DllImport("user32.dll", SetLastError = true)]
+		private static extern int GetScrollInfo( IntPtr hWnd, int n, ref ScrollInfoStruct lpScrollInfo);
+
+		private struct ScrollInfoStruct
+		{
+			public int cbSize;
+			public int fMask;
+			public int nMin;
+			public int nMax;
+			public int nPage;
+			public int nPos;
+			public int nTrackPos;
+		}
+
 		public AuthenticatorListBox()
     {
       this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.ResizeRedraw | ControlStyles.UserPaint, true);
 			this.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
 			this.ReadOnly = true;
 
+			this.Scrolled += AuthenticatorListBox_Scrolled;
+
 			this.ContextMenuStrip = new ContextMenuStrip();
 			this.ContextMenuStrip.Opening += ContextMenuStrip_Opening;
-			//this.ContextMenuStrip.Closed += ContextMenuStrip_Closed;
+
 			loadContextMenuStrip();
     }
 
+		protected override void OnResize(EventArgs e)
+		{
+			base.OnResize(e);
+
+			setRenameTextboxLocation();
+		}
+
+		void AuthenticatorListBox_Scrolled(object sender, ScrollEventArgs e)
+		{
+			if (e.Type == ScrollEventType.EndScroll || e.Type == ScrollEventType.ThumbPosition)
+			{
+				setRenameTextboxLocation();
+			}
+		}
+
+		private void setRenameTextboxLocation()
+		{
+			if (_renameTextbox != null && _renameTextbox.Visible == true)
+			{
+				AuthenticatorListitem item = _renameTextbox.Tag as AuthenticatorListitem;
+				if (item != null)
+				{
+					int y = (this.ItemHeight * item.Index) - (this.TopIndex * this.ItemHeight) + 8;
+					if (RenameTextbox.Location.Y != y)
+					{
+						RenameTextbox.Location = new Point(RenameTextbox.Location.X, y);
+					}
+					Refresh();
+				}
+			}
+		}
+
 		public event AuthenticatorListItemRemovedHandler ItemRemoved;
+
+		[Category("Action")]
+		public event ScrollEventHandler Scrolled = null;
+
+		private TextBox _renameTextbox;
+
+		public TextBox RenameTextbox
+		{
+			get
+			{
+				if (_renameTextbox == null)
+				{
+					_renameTextbox = new TextBox();
+					_renameTextbox.Name = "renameTextBox";
+					_renameTextbox.AllowDrop = true;
+					_renameTextbox.CausesValidation = false;
+					_renameTextbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+					_renameTextbox.Location = new System.Drawing.Point(0, 0);
+					_renameTextbox.Multiline = false;
+					_renameTextbox.Name = "secretCodeField";
+					_renameTextbox.Size = new System.Drawing.Size(250, 22);
+					_renameTextbox.TabIndex = 0;
+					_renameTextbox.Visible = false;
+					_renameTextbox.Leave += RenameTextbox_Leave;
+					_renameTextbox.KeyPress += _renameTextbox_KeyPress;
+
+					this.Controls.Add(_renameTextbox);
+				}
+
+				return _renameTextbox;
+			}
+		}
+
+		void _renameTextbox_KeyPress(object sender, KeyPressEventArgs e)
+		{
+			if (e.KeyChar == 27)
+			{
+				RenameTextbox.Tag = null;
+				RenameTextbox.Visible = false;
+				e.Handled = true;
+			}
+			else if (e.KeyChar == 13 || e.KeyChar == 9)
+			{
+				RenameTextbox.Visible = false;
+				e.Handled = true;
+			}
+		}
+
+		void RenameTextbox_Leave(object sender, EventArgs e)
+		{
+			RenameTextbox.Visible = false;
+			AuthenticatorListitem item = RenameTextbox.Tag as AuthenticatorListitem;
+			if (item != null)
+			{
+				string newname = RenameTextbox.Text.Trim();
+				if (newname.Length != 0)
+				{
+					item.Authenticator.Name = newname;
+					RefreshItem(item.Index);
+				}
+			}
+		}
+
+		protected override void WndProc(ref System.Windows.Forms.Message msg)
+		{
+			if (msg.Msg == WM_VSCROLL)
+			{
+				if (Scrolled != null)
+				{
+					ScrollInfoStruct si = new ScrollInfoStruct();
+					si.fMask = SIF_ALL;
+					si.cbSize = Marshal.SizeOf(si);
+					GetScrollInfo(msg.HWnd, 0, ref si);
+
+					if (msg.WParam.ToInt32() == SB_ENDSCROLL)
+					{
+						ScrollEventArgs sargs = new ScrollEventArgs(ScrollEventType.EndScroll, si.nPos);
+						Scrolled(this, sargs);
+					}
+					else if (msg.WParam.ToInt32() == SB_THUMBTRACK)
+					{
+						ScrollEventArgs sargs = new ScrollEventArgs(ScrollEventType.ThumbTrack, si.nPos);
+						Scrolled(this, sargs);
+					}
+				}
+			}
+
+			base.WndProc(ref msg);
+		}
 
 		private AuthenticatorListitem _currentItem;
 
@@ -95,7 +252,16 @@ namespace WinAuth
 		private void SetCurrentItem(Point mouseLocation)
 		{
 			int index = this.IndexFromPoint(mouseLocation);
-			if (index < 0 || index >= this.Items.Count)
+			if (index < 0)
+			{
+				index = 0;
+			}
+			else if (index >= this.Items.Count)
+			{
+				index = this.Items.Count - 1;
+			}
+
+			if (index >= this.Items.Count)
 			{
 				CurrentItem = null;
 			}
@@ -165,6 +331,13 @@ namespace WinAuth
 					{
 						item.LastUpdate = DateTime.Now;
 						item.DisplayUntil = DateTime.Now.AddSeconds(10);
+
+						if (item.Authenticator.CopyOnCode == true)
+						{
+							// copy to clipboard
+							item.Authenticator.CopyCodeToClipboard(this.Parent as Form);
+						}
+
 						RefreshCurrentItem();
 					}
 				}
@@ -227,6 +400,11 @@ namespace WinAuth
 			menuitem.Click += ContextMenu_Click;
 			this.ContextMenuStrip.Items.Add(menuitem);
 			//
+			menuitem = new ToolStripMenuItem("Rename");
+			menuitem.Name = "renameMenuItem";
+			menuitem.Click += ContextMenu_Click;
+			this.ContextMenuStrip.Items.Add(menuitem);
+			//
 			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
 			//
 			menuitem = new ToolStripMenuItem("Copy On New Code");
@@ -248,21 +426,28 @@ namespace WinAuth
 			foreach (string icon in WinAuthMain.AUTHENTICATOR_ICONS.Keys)
 			{
 				string iconfile = WinAuthMain.AUTHENTICATOR_ICONS[icon];
-				subitem = new ToolStripMenuItem();
-				subitem.Text = icon;
-				subitem.Name = "iconMenuItem_" + iconindex++;
-				subitem.Tag = iconfile;
-				subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("WinAuth.Resources." + iconfile));
-				subitem.ImageAlign = ContentAlignment.MiddleLeft;
-				subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
-				subitem.Click += ContextMenu_Click;
-				menuitem.DropDownItems.Add(subitem);
+				if (iconfile.Length == 0)
+				{
+					menuitem.DropDownItems.Add(new ToolStripSeparator());
+				}
+				else
+				{
+					subitem = new ToolStripMenuItem();
+					subitem.Text = icon;
+					subitem.Name = "iconMenuItem_" + iconindex++;
+					subitem.Tag = iconfile;
+					subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("WinAuth.Resources." + iconfile));
+					subitem.ImageAlign = ContentAlignment.MiddleLeft;
+					subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
+					subitem.Click += ContextMenu_Click;
+					menuitem.DropDownItems.Add(subitem);
+				}
 			}
 			menuitem.DropDownItems.Add("-");
 			subitem = new ToolStripMenuItem();
 			subitem.Text = "Other...";
 			subitem.Name = "iconMenuItem_0";
-			subitem.Tag = null;
+			subitem.Tag = "OTHER";
 			subitem.Click += ContextMenu_Click;
 			menuitem.DropDownItems.Add(subitem);
 			this.ContextMenuStrip.Items.Add(menuitem);
@@ -310,23 +495,24 @@ namespace WinAuth
 			menuitem.CheckState = (auth.CopyOnCode == true ? CheckState.Checked : CheckState.Unchecked);
 			//
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "iconMenuItem").FirstOrDefault() as ToolStripMenuItem;
-			if (string.IsNullOrEmpty(auth.Skin) == true)
+			ToolStripMenuItem subitem = menuitem.DropDownItems.Cast<ToolStripItem>().Where(i => i.Name == "iconMenuItem_default").FirstOrDefault() as ToolStripMenuItem;
+			subitem.CheckState = CheckState.Checked;
+			foreach (ToolStripItem iconitem in menuitem.DropDownItems)
 			{
-				ToolStripMenuItem subitem = menuitem.DropDownItems.Cast<ToolStripItem>().Where(i => i.Name == "iconMenuItem_default").FirstOrDefault() as ToolStripMenuItem;
-				subitem.CheckState = CheckState.Checked;
-				foreach (ToolStripItem iconitem in menuitem.DropDownItems)
+				if (iconitem is ToolStripMenuItem)
 				{
-					if (iconitem is ToolStripMenuItem)
+					ToolStripMenuItem iconmenuitem = (ToolStripMenuItem)iconitem;
+					if (string.IsNullOrEmpty((string)iconmenuitem.Tag) && string.IsNullOrEmpty(auth.Skin) == true)
 					{
-						ToolStripMenuItem iconmenuitem = (ToolStripMenuItem)iconitem;
-						if (string.Compare((string)iconmenuitem.Tag, auth.Skin) == 0)
-						{
-							iconmenuitem.CheckState = CheckState.Checked;
-						}
-						else
-						{
-							iconmenuitem.CheckState = CheckState.Unchecked;
-						}
+						iconmenuitem.CheckState = CheckState.Checked;
+					}
+					else if (string.Compare((string)iconmenuitem.Tag, auth.Skin) == 0)
+					{
+						iconmenuitem.CheckState = CheckState.Checked;
+					}
+					else
+					{
+						iconmenuitem.CheckState = CheckState.Unchecked;
 					}
 				}
 			}
@@ -419,14 +605,18 @@ namespace WinAuth
 					this.CurrentItem = (this.Items.Count != 0 ? this.Items[index] as AuthenticatorListitem : null);
 				}
 			}
+			else if (menuitem.Name == "renameMenuItem")
+			{
+				int y = (this.ItemHeight * item.Index) - (this.TopIndex * this.ItemHeight) + 8;
+				RenameTextbox.Location = new Point(64, y);
+				RenameTextbox.Text = auth.Name;
+				RenameTextbox.Tag = item;
+				RenameTextbox.Visible = true;
+				RenameTextbox.Focus();
+			}
 			else if (menuitem.Name.StartsWith("iconMenuItem_") == true)
 			{
-				if (menuitem.Tag != null)
-				{
-					auth.Skin = (((string)menuitem.Tag).Length != 0 ? (string)menuitem.Tag : null);
-					RefreshCurrentItem();
-				}
-				else
+				if (menuitem.Tag is string && string.Compare((string)menuitem.Tag, "OTHER") == 0)
 				{
 					do
 					{
@@ -477,6 +667,11 @@ namespace WinAuth
 						}
 						break;
 					} while (true);
+				}
+				else 
+				{
+					auth.Skin = (((string)menuitem.Tag).Length != 0 ? (string)menuitem.Tag : null);
+					RefreshCurrentItem();
 				}
 			}
 		}
@@ -579,6 +774,8 @@ namespace WinAuth
 
 					bool showCode = (auth.AutoRefresh == true || item.DisplayUntil > DateTime.Now);
 
+					e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
 					Rectangle rect = new Rectangle(e.Bounds.X + 4, e.Bounds.Y + 8, 48, 48);
 					if (cliprect.IntersectsWith(rect) == true)
 					{
@@ -590,12 +787,23 @@ namespace WinAuth
 
 					using (var font = new Font(e.Font.FontFamily, 12, FontStyle.Regular))
 					{
-						string label = (e.Index + 1) + ". " + auth.Name + ":" + auth.AuthenticatorData.CodeInterval;
-						SizeF labelsize = e.Graphics.MeasureString(label, font);
+						string label = (e.Index + 1) + ". " + auth.Name;
+						SizeF labelsize = e.Graphics.MeasureString(label.ToString(), font);
+						// if too big, adjust
+						if (labelsize.Width > 255)
+						{
+							StringBuilder newlabel = new StringBuilder(label + "...");
+							while ((labelsize = e.Graphics.MeasureString(newlabel.ToString(), font)).Width > 255)
+							{
+								newlabel.Remove(newlabel.Length - 4, 1);
+							}
+							label = newlabel.ToString();
+						}
 						rect = new Rectangle(e.Bounds.X + 64, e.Bounds.Y + 8, (int)labelsize.Height, (int)labelsize.Width);
 						if (cliprect.IntersectsWith(rect) == true)
 						{
-							e.Graphics.DrawString(label, font, brush, new PointF(e.Bounds.X + 64, e.Bounds.Y + 8));
+							//e.Graphics.DrawString(label, font, brush, new PointF(e.Bounds.X + 64, e.Bounds.Y + 8));
+							e.Graphics.DrawString(label, font, brush, new RectangleF(e.Bounds.X + 64, e.Bounds.Y + 8, 250, labelsize.Height));
 						}
 
 						string code;

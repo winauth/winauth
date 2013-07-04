@@ -55,20 +55,31 @@ namespace WinAuth
 			{"Battle.Net", "BattleNetAuthenticatorIcon.png"},
 			{"World of Warcraft", "WarcraftIcon.png"},
 			{"Diablo III", "DiabloIcon.png"},
+			{"s1", string.Empty},
+			{"ArenaNet", "ArenaNetIcon.png"},
 			{"Guild Wars 2", "GuildWarsAuthenticatorIcon.png"},
+			{"s2", string.Empty},
 			{"Trion", "TrionAuthenticatorIcon.png"},
 			{"Rift", "RiftIcon.png"},
-			{"Google", "GoogleAuthenticatorIcon.png"},
-			{"Microsoft", "MicrosoftAuthenticatorIcon.png"}
+			{"Defiance", "DefianceIcon.png"},
+			{"End Of Nations", "EndOfNationsIcon.png"},
+			{"s3", string.Empty},
+			{"Google Authenticator", "GoogleAuthenticatorIcon.png"},
+			{"Google", "GoogleIcon.png"},
+			{"Chrome", "ChromeIcon.png"},
+			{"s4", string.Empty},
+			{"Microsoft", "MicrosoftAuthenticatorIcon.png"},
+			{"Windows 8", "Windows8Icon.png"},
+			{"Windows 7", "Windows7Icon.png"}
 		};
 
 		public static List<RegisteredAuthenticator> REGISTERED_AUTHENTICATORS = new List<RegisteredAuthenticator>
 		{
 			new RegisteredAuthenticator {Name="Battle.Net", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.BattleNet, Icon="BattleNetAuthenticatorIcon.png"},
-			new RegisteredAuthenticator {Name="Guild Wars 2", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.RFC6238_TIME, Icon="GuildWarsAuthenticatorIcon.png"},
+			new RegisteredAuthenticator {Name="Guild Wars 2", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.GuildWars, Icon="GuildWarsAuthenticatorIcon.png"},
 			new RegisteredAuthenticator {Name="Trion / Rift", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Trion, Icon="TrionAuthenticatorIcon.png"},
 			new RegisteredAuthenticator {Name="Google", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Google, Icon="GoogleAuthenticatorIcon.png"},
-			new RegisteredAuthenticator {Name="Microsoft", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.RFC6238_TIME, Icon="MicrosoftAuthenticatorIcon.png"}
+			new RegisteredAuthenticator {Name="Microsoft", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Microsoft, Icon="MicrosoftAuthenticatorIcon.png"}
 		};
 
     /// <summary>

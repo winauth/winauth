@@ -198,7 +198,7 @@ namespace WinAuth
 				if (config.Version < WinAuthConfig.CURRENTVERSION)
 				{
 					FileInfo fi = new FileInfo(configFile);
-					foreach (WinAuthAuthenticator wa in config.Authenticators)
+					foreach (WinAuthAuthenticator wa in config)
 					{
 						wa.Created = fi.CreationTime;
 					}
@@ -624,7 +624,7 @@ namespace WinAuth
         {
           using (SHA256 sha = new SHA256Managed())
           {
-            foreach (WinAuthAuthenticator wa in config.Authenticators)
+            foreach (WinAuthAuthenticator wa in config)
             {
 							Authenticator auth = wa.AuthenticatorData;
 							if (auth.PasswordType != Authenticator.PasswordTypes.None)

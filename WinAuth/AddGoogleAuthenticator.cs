@@ -50,7 +50,7 @@ namespace WinAuth
 		/// <summary>
 		/// Current authenticator
 		/// </summary>
-		public WinAuthAuthenticator Authenticator { get; protected set; }
+		public WinAuthAuthenticator Authenticator { get; set; }
 
 #region Form Events
 
@@ -61,6 +61,7 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void AddGoogleAuthenticator_Load(object sender, EventArgs e)
 		{
+			nameField.Text = this.Authenticator.Name;
 		}
 
 
@@ -99,6 +100,49 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// Select one of the icons
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void iconRadioButton_CheckedChanged(object sender, EventArgs e)
+		{
+			if (((RadioButton)sender).Checked == true)
+			{
+				this.Authenticator.Skin = (string)((RadioButton)sender).Tag;
+			}
+		}
+
+		/// <summary>
+		/// Click the icon1
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void icon1_Click(object sender, EventArgs e)
+		{
+			icon1RadioButton.Checked = true;
+		}
+
+		/// <summary>
+		/// Click the icon2
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void icon2_Click(object sender, EventArgs e)
+		{
+			icon2RadioButton.Checked = true;
+		}
+
+		/// <summary>
+		/// Click the icon3
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void icon3_Click(object sender, EventArgs e)
+		{
+			icon3RadioButton.Checked = true;
+		}
+
 #endregion
 
 #region Private methods
@@ -132,7 +176,8 @@ namespace WinAuth
 				return false;
 			}
 
-			WinAuthAuthenticator authenticator = new WinAuthAuthenticator();
+			this.Authenticator.Name = nameField.Text;
+
 			string authtype = "totp";
 
 			// if this is a URL, pull it down
@@ -206,7 +251,7 @@ namespace WinAuth
 				string label = match.Groups[2].Value;
 				if (string.IsNullOrEmpty(label) == false)
 				{
-					authenticator.Name = label;
+					this.Authenticator.Name = this.nameField.Text = label;
 				}
 
 				NameValueCollection qs = HttpUtility.ParseQueryString(match.Groups[3].Value);
@@ -226,19 +271,18 @@ namespace WinAuth
 				GoogleAuthenticator auth = new GoogleAuthenticator();
 				auth.Enroll(privatekey);
 				auth.Sync();
-				authenticator.AuthenticatorData = auth;
-				this.Authenticator = authenticator;
+				this.Authenticator.AuthenticatorData = auth;
 
-				string url = "otpauth://" + authtype + "/" + authenticator.Name + "?secret=" + privatekey;
+				string url = "otpauth://" + authtype + "/" + this.Authenticator.Name + "?secret=" + privatekey;
 				BarcodeWriter writer = new BarcodeWriter();
 				writer.Format = BarcodeFormat.QR_CODE;
 				writer.Options = new ZXing.Common.EncodingOptions { Width = qrImage.Width, Height = qrImage.Height, Margin = 0 };
 				qrImage.Image = writer.Write(url);
 
 				string summary = string.Empty;
-				if (string.IsNullOrEmpty(authenticator.Name) == false)
+				if (string.IsNullOrEmpty(this.Authenticator.Name) == false)
 				{
-					summary += authenticator.Name + Environment.NewLine;
+					summary += this.Authenticator.Name + Environment.NewLine;
 				}
 				summaryInfoLabel.Text = summary;
 			}
@@ -252,6 +296,8 @@ namespace WinAuth
 		}
 
 #endregion
+
+
 
 	}
 }

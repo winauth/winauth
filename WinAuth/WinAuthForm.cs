@@ -185,7 +185,7 @@ namespace WinAuth
 			// initialize UI
 			LoadAddAuthenticatorTypes();
 			loadOptionsMenu();
-			introLabel.Visible = (this.Config.Authenticators.Count == 0);
+			introLabel.Visible = (this.Config.Count == 0);
 
 			// set title
 			notifyIcon.Visible = this.Config.UseTrayIcon;
@@ -206,8 +206,9 @@ namespace WinAuth
 		{
 			// set up list
 			authenticatorList.Items.Clear();
+
 			int index = 0;
-			foreach (var auth in Config.Authenticators)
+			foreach (var auth in Config)
 			{
 				var ali = new AuthenticatorListitem(auth, index);
 				if (added != null && added == auth && auth.AutoRefresh == false)
@@ -218,6 +219,10 @@ namespace WinAuth
 				authenticatorList.Items.Add(ali);
 				index++;
 			}
+		}
+
+		void OnWinAuthAuthenticatorChanged(object sender, WinAuthAuthenticatorChangedEventArgs e)
+		{
 		}
 
 		/// <summary>
@@ -413,7 +418,7 @@ namespace WinAuth
 
 			// hook hotkey
 			Dictionary<Tuple<Keys, WinAPI.KeyModifiers>, WinAuthAuthenticator> keys = new Dictionary<Tuple<Keys, WinAPI.KeyModifiers>, WinAuthAuthenticator>();
-			foreach (var auth in Config.Authenticators)
+			foreach (var auth in Config)
 			{
 				if (auth.AutoLogin != null)
 				{
@@ -519,7 +524,7 @@ namespace WinAuth
 			if (Config.AutoSize == true)
 			{
 				int height = this.Height - authenticatorList.Height;
-				height += (this.Config.Authenticators.Count * authenticatorList.ItemHeight);
+				height += (this.Config.Count * authenticatorList.ItemHeight);
 				this.Height = height;
 
 				//this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -587,11 +592,12 @@ namespace WinAuth
 			RegisteredAuthenticator registeredauth = menuitem.Tag as RegisteredAuthenticator;
 			if (registeredauth != null)
 			{
+				// add the new authenticator
+				WinAuthAuthenticator winauthauthenticator = new WinAuthAuthenticator();
+				bool added = false;
+
 				if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.BattleNet)
 				{
-					// add the new authenticator
-					WinAuthAuthenticator winauthauthenticator = new WinAuthAuthenticator();
-
 					int existing = 0;
 					string name;
 					do
@@ -606,14 +612,7 @@ namespace WinAuth
 					// create the Battle.net authenticator
 					AddBattleNetAuthenticator form = new AddBattleNetAuthenticator();
 					form.Authenticator = winauthauthenticator;
-					if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-					{
-						this.Config.Authenticators.Add(winauthauthenticator);
-
-						SaveConfig();
-
-						loadAuthenticatorList(winauthauthenticator);
-					}
+					added = (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK);
 				}
 				else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Trion)
 				{
@@ -626,63 +625,83 @@ namespace WinAuth
 						existing++;
 					} while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name).Count() != 0);
 
-					WinAuthAuthenticator winauthauthenticator = new WinAuthAuthenticator();
 					winauthauthenticator.Name = name;
 					winauthauthenticator.AutoRefresh = false;
 
 					AddTrionAuthenticator form = new AddTrionAuthenticator();
 					form.Authenticator = winauthauthenticator;
-					if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-					{
-						this.Config.Authenticators.Add(winauthauthenticator);
-
-						SaveConfig();
-
-						loadAuthenticatorList(winauthauthenticator);
-					}
+					added = (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK);
 				}
 				else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Google)
 				{
 					// create the Google authenticator
-					AddGoogleAuthenticator form = new AddGoogleAuthenticator();
-					if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+					// add the new authenticator
+					int existing = 0;
+					string name;
+					do
 					{
-						// add the new authenticator
-						WinAuthAuthenticator winauthauthenticator = form.Authenticator;
-						if (string.IsNullOrEmpty(winauthauthenticator.Name) == true)
-						{
-							int existing = 0;
-							string name;
-							do
-							{
-								name = "Google" + (existing != 0 ? " (" + existing + ")" : string.Empty);
-								existing++;
-							} while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name).Count() != 0);
-							winauthauthenticator.Name = name;
-						}
-						winauthauthenticator.AutoRefresh = false;
-						this.Config.Authenticators.Add(winauthauthenticator);
+						name = "Google" + (existing != 0 ? " (" + existing + ")" : string.Empty);
+						existing++;
+					} while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name).Count() != 0);
+					winauthauthenticator.Name = name;
+					winauthauthenticator.AutoRefresh = false;
 
-						SaveConfig();
-
-						loadAuthenticatorList(winauthauthenticator);
-					}
+					AddGoogleAuthenticator form = new AddGoogleAuthenticator();
+					form.Authenticator = winauthauthenticator;
+					added = (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK);
 				}
-				else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.RFC6238_TIME)
+				else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.GuildWars)
 				{
-					// create the RFC6238 time based authenticator
+					// create the GW2 authenticator
+					int existing = 0;
+					string name;
+					do
+					{
+						name = "GuildWars" + (existing != 0 ? " (" + existing + ")" : string.Empty);
+						existing++;
+					} while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name).Count() != 0);
+					winauthauthenticator.Name = name;
+					winauthauthenticator.AutoRefresh = false;
+
+					AddGuildWarsAuthenticator form = new AddGuildWarsAuthenticator();
+					form.Authenticator = winauthauthenticator;
+					added = (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK);
+				}
+				else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Microsoft)
+				{
+					// create the Microsoft authenticator
+					int existing = 0;
+					string name;
+					do
+					{
+						name = "Microsoft" + (existing != 0 ? " (" + existing + ")" : string.Empty);
+						existing++;
+					} while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name).Count() != 0);
+					winauthauthenticator.Name = name;
+					winauthauthenticator.AutoRefresh = false;
+
+					AddMicrosoftAuthenticator form = new AddMicrosoftAuthenticator();
+					form.Authenticator = winauthauthenticator;
+					added = (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK);
 				}
 				else
 				{
 					throw new NotImplementedException("TRAP: New authenticator not implemented for " + registeredauth.AuthenticatorType.ToString());
 				}
 
-				// reset UI
-				setAutoSize();
-				introLabel.Visible = (this.Config.Authenticators.Count == 0);
+				if (added == true)
+				{
+					this.Config.Add(winauthauthenticator);
+					SaveConfig();
+					loadAuthenticatorList(winauthauthenticator);
 
-				// reset hotkeeys
-				HookHotkeys();
+					// reset UI
+					setAutoSize();
+					introLabel.Visible = (this.Config.Count == 0);
+
+					// reset hotkeeys
+					HookHotkeys();
+				}
 			}
 		}
 
@@ -736,11 +755,11 @@ namespace WinAuth
 		/// <param name="args"></param>
 		private void authenticatorList_ItemRemoved(object source, AuthenticatorListItemRemovedEventArgs args)
 		{
-			foreach (var auth in Config.Authenticators)
+			foreach (var auth in Config)
 			{
 				if (auth == args.Item.Authenticator)
 				{
-					Config.Authenticators.Remove(auth);
+					Config.Remove(auth);
 					break;
 				}
 			}
@@ -749,7 +768,7 @@ namespace WinAuth
 
 			// update UI
 			setAutoSize();
-			introLabel.Visible = (this.Config.Authenticators.Count == 0);
+			introLabel.Visible = (this.Config.Count == 0);
 		}
 
 #endregion

@@ -201,6 +201,8 @@ namespace WinAuth
 		/// <returns>true is successful</returns>
 		private bool verifyAuthenticator()
 		{
+			this.Authenticator.Name = nameField.Text;
+
 			if (this.tabControl1.SelectedIndex == 0)
 			{
 				if (this.Authenticator.AuthenticatorData == null)

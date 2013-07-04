@@ -17,6 +17,7 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace WinAuth
   /// Class holding configuration data for application
   /// </summary>
   [Serializable()]
-  public class WinAuthConfig : ICloneable
+	public class WinAuthConfig : IList<WinAuthAuthenticator>, ICloneable, IWinAuthAuthenticatorChangedListener
   {
     public static decimal CURRENTVERSION = decimal.Parse(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(2));
 
@@ -262,18 +263,107 @@ namespace WinAuth
 
     #endregion
 
-    #region Authenticator Settings
+		#region IList
 
-    /// <summary>
+		public void Add(WinAuthAuthenticator authenticator)
+		{
+			authenticator.OnWinAuthAuthenticatorChanged += new WinAuthAuthenticatorChangedHandler(this.OnWinAuthAuthenticatorChanged);
+			_authenticators.Add(authenticator);
+		}
+
+		public void Clear()
+		{
+			_authenticators.Clear();
+		}
+
+		public bool Contains(WinAuthAuthenticator authenticator)
+		{
+			return _authenticators.Contains(authenticator);
+		}
+
+		public void CopyTo(int index, WinAuthAuthenticator[] array, int arrayIndex, int count)
+		{
+			_authenticators.CopyTo(index, array, arrayIndex, count);
+		}
+
+		public void CopyTo(WinAuthAuthenticator[] array, int index)
+		{
+			_authenticators.CopyTo(array, index);
+		}
+
+		public int Count
+		{
+			get
+			{
+				return _authenticators.Count;
+			}
+		}
+
+		public int IndexOf(WinAuthAuthenticator authenticator)
+		{
+			return _authenticators.IndexOf(authenticator);
+		}
+
+		public void Insert(int index, WinAuthAuthenticator authenticator)
+		{
+			authenticator.OnWinAuthAuthenticatorChanged += new WinAuthAuthenticatorChangedHandler(this.OnWinAuthAuthenticatorChanged);
+			_authenticators.Insert(index, authenticator);
+		}
+
+		public bool IsReadOnly
+		{
+			get
+			{
+				return false;
+			}
+		}
+
+		public bool Remove(WinAuthAuthenticator authenticator)
+		{
+			return _authenticators.Remove(authenticator);
+		}
+
+		public void RemoveAt(int index)
+		{
+			_authenticators.RemoveAt(index);
+		}
+
+		public IEnumerator<WinAuthAuthenticator> GetEnumerator()
+		{
+			return _authenticators.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+
+		public WinAuthAuthenticator this[int index]
+		{
+			get
+			{
+				return _authenticators[index];
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		#endregion
+
+		#region Authenticator Settings
+
+		/// <summary>
     /// Current authenticator
     /// </summary>
-    public List<WinAuthAuthenticator> Authenticators
-    {
-      get
-      {
-        return _authenticators;
-      }
-    }
+		//public List<WinAuthAuthenticator> Authenticators
+		//{
+		//	get
+		//	{
+		//		return _authenticators;
+		//	}
+		//}
 
     /// <summary>
     /// Current authenticator
@@ -397,6 +487,14 @@ namespace WinAuth
 			AutoSize = true;
     }
 
+		public void OnWinAuthAuthenticatorChanged(WinAuthAuthenticator sender, WinAuthAuthenticatorChangedEventArgs e)
+		{
+			if (OnConfigChanged != null)
+			{
+				OnConfigChanged(this, new ConfigChangedEventArgs("Authenticator", sender));
+			}
+		}
+
     #region ICloneable
 
     /// <summary>
@@ -409,11 +507,11 @@ namespace WinAuth
       // close the internal authenticator so the data is kept separate
       clone.OnConfigChanged = null;
       clone._authenticators = new List<WinAuthAuthenticator>();
-      foreach (var wa in this.Authenticators)
+      foreach (var wa in _authenticators)
       {
-        clone.Authenticators.Add(wa.Clone() as WinAuthAuthenticator);
+        clone._authenticators.Add(wa.Clone() as WinAuthAuthenticator);
       }
-      clone.CurrentAuthenticator = (this.CurrentAuthenticator != null ? clone.Authenticators[this.Authenticators.IndexOf(this.CurrentAuthenticator)] : null);
+      clone.CurrentAuthenticator = (this.CurrentAuthenticator != null ? clone._authenticators[this._authenticators.IndexOf(this.CurrentAuthenticator)] : null);
       return clone;
     }
 
@@ -531,9 +629,9 @@ namespace WinAuth
               break;
 
             case "WinAuthAuthenticator":
-              var wa = new WinAuthAuthenticator();
+							var wa = new WinAuthAuthenticator();
               wa.ReadXml(reader, password);
-              this.Authenticators.Add(wa);
+              this.Add(wa);
 							if (this.CurrentAuthenticator == null)
 							{
 								this.CurrentAuthenticator = wa;
@@ -542,7 +640,7 @@ namespace WinAuth
 
             // for old 2.x configs
             case "authenticator":
-              var waold = new WinAuthAuthenticator();
+							var waold = new WinAuthAuthenticator();
               waold.AuthenticatorData = Authenticator.ReadXml(reader, password);
               if (waold.AuthenticatorData is BattleNetAuthenticator)
               {
@@ -556,7 +654,7 @@ namespace WinAuth
               {
                 waold.Name = "Authenticator";
               }
-              this.Authenticators.Add(waold);
+              this.Add(waold);
               this.CurrentAuthenticator = waold;
               waold.AutoRefresh = defaultAutoRefresh;
               waold.AllowCopy = defaultAllowCopy;
@@ -649,7 +747,7 @@ namespace WinAuth
 			writer.WriteValue(this.AutoSize);
 			writer.WriteEndElement();
 
-      foreach (WinAuthAuthenticator wa in this.Authenticators)
+      foreach (WinAuthAuthenticator wa in this)
       {
         wa.WriteXmlString(writer);
       }
@@ -671,13 +769,16 @@ namespace WinAuth
   {
 		public string PropertyName { get; private set; }
 
+		public WinAuthAuthenticator Authenticator { get; private set; }
+
     /// <summary>
     /// Default constructor
     /// </summary>
-		public ConfigChangedEventArgs(string propertyName)
+		public ConfigChangedEventArgs(string propertyName, WinAuthAuthenticator authenticator = null)
 			: base()
 		{
 			PropertyName = propertyName;
+			Authenticator = authenticator;
 		}
 	}
 
