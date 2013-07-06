@@ -33,6 +33,7 @@ namespace WinAuth
 			this.newAuthenticatorGroup = new System.Windows.Forms.GroupBox();
 			this.newAuthenticatorProgress = new System.Windows.Forms.ProgressBar();
 			this.allowCopyButton = new System.Windows.Forms.CheckBox();
+			this.codeField = new WinAuth.SecretTextBox();
 			this.label5 = new System.Windows.Forms.Label();
 			this.verifyAuthenticatorButton = new System.Windows.Forms.Button();
 			this.secretCodeField = new System.Windows.Forms.TextBox();
@@ -43,22 +44,21 @@ namespace WinAuth
 			this.okButton = new System.Windows.Forms.Button();
 			this.cancelButton = new System.Windows.Forms.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.icon3RadioButton = new WinAuth.GroupRadioButton();
+			this.icon2RadioButton = new WinAuth.GroupRadioButton();
+			this.icon1RadioButton = new WinAuth.GroupRadioButton();
+			this.icon3 = new System.Windows.Forms.PictureBox();
+			this.icon2 = new System.Windows.Forms.PictureBox();
+			this.icon1 = new System.Windows.Forms.PictureBox();
 			this.label10 = new System.Windows.Forms.Label();
 			this.label12 = new System.Windows.Forms.Label();
 			this.nameField = new System.Windows.Forms.TextBox();
 			this.newAuthenticatorTimer = new System.Windows.Forms.Timer(this.components);
-			this.icon2RadioButton = new WinAuth.GroupRadioButton();
-			this.icon1RadioButton = new WinAuth.GroupRadioButton();
-			this.codeField = new WinAuth.SecretTextBox();
-			this.icon2 = new System.Windows.Forms.PictureBox();
-			this.icon1 = new System.Windows.Forms.PictureBox();
-			this.icon3 = new System.Windows.Forms.PictureBox();
-			this.icon3RadioButton = new WinAuth.GroupRadioButton();
 			this.newAuthenticatorGroup.SuspendLayout();
 			this.groupBox1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.icon3)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.icon2)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.icon1)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.icon3)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// newAuthenticatorGroup
@@ -103,6 +103,17 @@ namespace WinAuth
 			this.allowCopyButton.Text = "Allow copy?";
 			this.allowCopyButton.UseVisualStyleBackColor = true;
 			this.allowCopyButton.CheckedChanged += new System.EventHandler(this.allowCopyButton_CheckedChanged);
+			// 
+			// codeField
+			// 
+			this.codeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
+			this.codeField.Location = new System.Drawing.Point(126, 274);
+			this.codeField.Multiline = true;
+			this.codeField.Name = "codeField";
+			this.codeField.SecretMode = false;
+			this.codeField.Size = new System.Drawing.Size(158, 26);
+			this.codeField.SpaceOut = 3;
+			this.codeField.TabIndex = 8;
 			// 
 			// label5
 			// 
@@ -225,6 +236,77 @@ namespace WinAuth
 			this.groupBox1.TabIndex = 0;
 			this.groupBox1.TabStop = false;
 			// 
+			// icon3RadioButton
+			// 
+			this.icon3RadioButton.AutoSize = true;
+			this.icon3RadioButton.Group = "ICON";
+			this.icon3RadioButton.Location = new System.Drawing.Point(217, 59);
+			this.icon3RadioButton.Name = "icon3RadioButton";
+			this.icon3RadioButton.Size = new System.Drawing.Size(14, 13);
+			this.icon3RadioButton.TabIndex = 2;
+			this.icon3RadioButton.Tag = "Windows7Icon.png";
+			this.icon3RadioButton.UseVisualStyleBackColor = true;
+			this.icon3RadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
+			// 
+			// icon2RadioButton
+			// 
+			this.icon2RadioButton.AutoSize = true;
+			this.icon2RadioButton.Group = "ICON";
+			this.icon2RadioButton.Location = new System.Drawing.Point(144, 59);
+			this.icon2RadioButton.Name = "icon2RadioButton";
+			this.icon2RadioButton.Size = new System.Drawing.Size(14, 13);
+			this.icon2RadioButton.TabIndex = 2;
+			this.icon2RadioButton.Tag = "Windows8Icon.png";
+			this.icon2RadioButton.UseVisualStyleBackColor = true;
+			this.icon2RadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
+			// 
+			// icon1RadioButton
+			// 
+			this.icon1RadioButton.AutoSize = true;
+			this.icon1RadioButton.Checked = true;
+			this.icon1RadioButton.Group = "ICON";
+			this.icon1RadioButton.Location = new System.Drawing.Point(68, 59);
+			this.icon1RadioButton.Name = "icon1RadioButton";
+			this.icon1RadioButton.Size = new System.Drawing.Size(14, 13);
+			this.icon1RadioButton.TabIndex = 1;
+			this.icon1RadioButton.TabStop = true;
+			this.icon1RadioButton.Tag = "MicrosoftAuthenticatorIcon.png";
+			this.icon1RadioButton.UseVisualStyleBackColor = true;
+			this.icon1RadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
+			// 
+			// icon3
+			// 
+			this.icon3.Image = global::WinAuth.Properties.Resources.Windows7Icon;
+			this.icon3.Location = new System.Drawing.Point(237, 44);
+			this.icon3.Name = "icon3";
+			this.icon3.Size = new System.Drawing.Size(48, 48);
+			this.icon3.TabIndex = 4;
+			this.icon3.TabStop = false;
+			this.icon3.Tag = "";
+			this.icon3.Click += new System.EventHandler(this.icon3_Click);
+			// 
+			// icon2
+			// 
+			this.icon2.Image = global::WinAuth.Properties.Resources.Windows8Icon;
+			this.icon2.Location = new System.Drawing.Point(164, 44);
+			this.icon2.Name = "icon2";
+			this.icon2.Size = new System.Drawing.Size(48, 48);
+			this.icon2.TabIndex = 4;
+			this.icon2.TabStop = false;
+			this.icon2.Tag = "";
+			this.icon2.Click += new System.EventHandler(this.icon2_Click);
+			// 
+			// icon1
+			// 
+			this.icon1.Image = global::WinAuth.Properties.Resources.MicrosoftAuthenticatorIcon;
+			this.icon1.Location = new System.Drawing.Point(88, 44);
+			this.icon1.Name = "icon1";
+			this.icon1.Size = new System.Drawing.Size(48, 48);
+			this.icon1.TabIndex = 4;
+			this.icon1.TabStop = false;
+			this.icon1.Tag = "";
+			this.icon1.Click += new System.EventHandler(this.icon1_Click);
+			// 
 			// label10
 			// 
 			this.label10.AutoSize = true;
@@ -257,88 +339,6 @@ namespace WinAuth
 			// 
 			this.newAuthenticatorTimer.Tick += new System.EventHandler(this.newAuthenticatorTimer_Tick);
 			// 
-			// icon2RadioButton
-			// 
-			this.icon2RadioButton.AutoSize = true;
-			this.icon2RadioButton.Group = "ICON";
-			this.icon2RadioButton.Location = new System.Drawing.Point(144, 59);
-			this.icon2RadioButton.Name = "icon2RadioButton";
-			this.icon2RadioButton.Size = new System.Drawing.Size(14, 13);
-			this.icon2RadioButton.TabIndex = 2;
-			this.icon2RadioButton.Tag = "Windows8Icon.png";
-			this.icon2RadioButton.UseVisualStyleBackColor = true;
-			this.icon2RadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
-			// 
-			// icon1RadioButton
-			// 
-			this.icon1RadioButton.AutoSize = true;
-			this.icon1RadioButton.Checked = true;
-			this.icon1RadioButton.Group = "ICON";
-			this.icon1RadioButton.Location = new System.Drawing.Point(68, 59);
-			this.icon1RadioButton.Name = "icon1RadioButton";
-			this.icon1RadioButton.Size = new System.Drawing.Size(14, 13);
-			this.icon1RadioButton.TabIndex = 1;
-			this.icon1RadioButton.TabStop = true;
-			this.icon1RadioButton.Tag = "MicrosoftAuthenticatorIcon.png";
-			this.icon1RadioButton.UseVisualStyleBackColor = true;
-			this.icon1RadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
-			// 
-			// codeField
-			// 
-			this.codeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-			this.codeField.Location = new System.Drawing.Point(126, 274);
-			this.codeField.Multiline = true;
-			this.codeField.Name = "codeField";
-			this.codeField.SecretMode = false;
-			this.codeField.Size = new System.Drawing.Size(158, 26);
-			this.codeField.SpaceOut = 3;
-			this.codeField.TabIndex = 8;
-			// 
-			// icon2
-			// 
-			this.icon2.Image = global::WinAuth.Properties.Resources.Windows8Icon;
-			this.icon2.Location = new System.Drawing.Point(164, 44);
-			this.icon2.Name = "icon2";
-			this.icon2.Size = new System.Drawing.Size(48, 48);
-			this.icon2.TabIndex = 4;
-			this.icon2.TabStop = false;
-			this.icon2.Tag = "";
-			this.icon2.Click += new System.EventHandler(this.icon2_Click);
-			// 
-			// icon1
-			// 
-			this.icon1.Image = global::WinAuth.Properties.Resources.MicrosoftAuthenticatorIcon;
-			this.icon1.Location = new System.Drawing.Point(88, 44);
-			this.icon1.Name = "icon1";
-			this.icon1.Size = new System.Drawing.Size(48, 48);
-			this.icon1.TabIndex = 4;
-			this.icon1.TabStop = false;
-			this.icon1.Tag = "";
-			this.icon1.Click += new System.EventHandler(this.icon1_Click);
-			// 
-			// icon3
-			// 
-			this.icon3.Image = global::WinAuth.Properties.Resources.Windows7Icon;
-			this.icon3.Location = new System.Drawing.Point(237, 44);
-			this.icon3.Name = "icon3";
-			this.icon3.Size = new System.Drawing.Size(48, 48);
-			this.icon3.TabIndex = 4;
-			this.icon3.TabStop = false;
-			this.icon3.Tag = "";
-			this.icon3.Click += new System.EventHandler(this.icon2_Click);
-			// 
-			// icon3RadioButton
-			// 
-			this.icon3RadioButton.AutoSize = true;
-			this.icon3RadioButton.Group = "ICON";
-			this.icon3RadioButton.Location = new System.Drawing.Point(217, 59);
-			this.icon3RadioButton.Name = "icon3RadioButton";
-			this.icon3RadioButton.Size = new System.Drawing.Size(14, 13);
-			this.icon3RadioButton.TabIndex = 2;
-			this.icon3RadioButton.Tag = "Windows7Icon.png";
-			this.icon3RadioButton.UseVisualStyleBackColor = true;
-			this.icon3RadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
-			// 
 			// AddMicrosoftAuthenticator
 			// 
 			this.AcceptButton = this.okButton;
@@ -360,9 +360,9 @@ namespace WinAuth
 			this.newAuthenticatorGroup.PerformLayout();
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.icon3)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.icon2)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.icon1)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.icon3)).EndInit();
 			this.ResumeLayout(false);
 
 		}

@@ -165,6 +165,16 @@ namespace WinAuth
 			icon2RadioButton.Checked = true;
 		}
 
+		/// <summary>
+		/// Click the icon3
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void icon3_Click(object sender, EventArgs e)
+		{
+			icon3RadioButton.Checked = true;
+		}
+
 #endregion
 
 #region Private methods
