@@ -178,6 +178,23 @@ namespace WinAuth
 			}
 		}
 
+		public bool IsRenaming
+		{
+			get
+			{
+				return (RenameTextbox.Visible == true);
+			}
+		}
+
+		public void EndRenaming(bool save = true)
+		{
+			if (save == false)
+			{
+				RenameTextbox.Tag = null;
+			}
+			RenameTextbox.Visible = false;
+		}
+
 		void _renameTextbox_KeyPress(object sender, KeyPressEventArgs e)
 		{
 			if (e.KeyChar == 27)

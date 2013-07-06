@@ -78,6 +78,11 @@ namespace WinAuth
 		public delegate void SetClipboardDataDelegate(object data);
 		public delegate object GetClipboardDataDelegate(Type format);
 
+		/// <summary>
+		/// Save the position of the list within the form for starting as minimized
+		/// </summary>
+		private Rectangle _listoffset;
+
     #endregion
 
 		/// <summary>
@@ -91,6 +96,7 @@ namespace WinAuth
       string configFile = null;
       string password = null;
       string skin = null;
+			bool minimize = false;
       //
       string[] args = Environment.GetCommandLineArgs();
       for (int i = 1; i < args.Length; i++)
@@ -103,7 +109,7 @@ namespace WinAuth
             case "-min":
             case "--minimize":
               // set initial state as minimized
-              this.WindowState = FormWindowState.Minimized;
+							minimize = true;
               break;
             case "-p":
             case "--password":
@@ -193,6 +199,16 @@ namespace WinAuth
 
 			// hook hotkeys
 			HookHotkeys();
+
+			// save the position of the list within the form else starting as minimized breaks the size
+			_listoffset = new Rectangle(authenticatorList.Left, authenticatorList.Top, (this.Width - authenticatorList.Width), (this.Height - authenticatorList.Height));
+
+			// if we passed "-min" flag
+			if (minimize == true)
+			{
+				this.WindowState = FormWindowState.Minimized;
+				this.ShowInTaskbar = true;
+			}
 		}
 
 
@@ -537,6 +553,18 @@ namespace WinAuth
 		}
 
 		/// <summary>
+		/// Can the renaming of an authenticator
+		/// </summary>
+		private void EndRenaming()
+		{
+			// set focus to form, so that the edit field will disappear if it is visble
+			if (authenticatorList.IsRenaming == true)
+			{
+				authenticatorList.EndRenaming();
+			}
+		}
+
+		/// <summary>
 		/// Set up the notify icon when the main form is shown
 		/// </summary>
 		/// <param name="sender"></param>
@@ -771,6 +799,42 @@ namespace WinAuth
 			introLabel.Visible = (this.Config.Count == 0);
 		}
 
+		/// <summary>
+		/// Click in the main form
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void WinAuthForm_MouseDown(object sender, MouseEventArgs e)
+		{
+			EndRenaming();
+		}
+
+		/// <summary>
+		/// Click in the command panel
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void commandPanel_MouseDown(object sender, MouseEventArgs e)
+		{
+			EndRenaming();
+		}
+
+		/// <summary>
+		/// Resizing the form, we have to manually adjust the width and height of list else starting as minimized borks
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void WinAuthForm_Resize(object sender, EventArgs e)
+		{
+			this.SuspendLayout();
+			if (_listoffset.Bottom != 0)
+			{
+				authenticatorList.Height = this.Height - _listoffset.Height;
+				authenticatorList.Width = this.Width - _listoffset.Width;
+			}
+			this.ResumeLayout(true);
+		}
+
 #endregion
 
 #region Options menu
@@ -962,6 +1026,10 @@ namespace WinAuth
 				//this.FormBorderStyle = (this.Config.AutoSize ? System.Windows.Forms.FormBorderStyle.FixedSingle : System.Windows.Forms.FormBorderStyle.Sizable);
 				setAutoSize();
 				this.Invalidate();
+			}
+			else if (args.PropertyName == "StartWithWindows")
+			{
+				WinAuthHelper.SetStartWithWindows(this.Config.StartWithWindows);
 			}
 
 			SaveConfig();

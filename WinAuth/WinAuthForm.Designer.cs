@@ -85,6 +85,7 @@
 			this.commandPanel.VerticalScrollbarBarColor = true;
 			this.commandPanel.VerticalScrollbarHighlightOnWheel = false;
 			this.commandPanel.VerticalScrollbarSize = 10;
+			this.commandPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.commandPanel_MouseDown);
 			// 
 			// optionsButton
 			// 
@@ -182,6 +183,8 @@
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.WinAuthForm_FormClosing);
 			this.Load += new System.EventHandler(this.WinAuthForm_Load);
 			this.Shown += new System.EventHandler(this.WinAuthForm_Shown);
+			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WinAuthForm_MouseDown);
+			this.Resize += new System.EventHandler(this.WinAuthForm_Resize);
 			this.authenticatorMenu.ResumeLayout(false);
 			this.commandPanel.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.metroStyleManager)).EndInit();
