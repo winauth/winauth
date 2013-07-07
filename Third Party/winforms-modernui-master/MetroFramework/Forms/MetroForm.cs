@@ -233,14 +233,19 @@ namespace MetroFramework.Forms
             StartPosition = FormStartPosition.CenterScreen;
         }
 
+				private bool _disposing;
+
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+						if (disposing && !_disposing)
             {
-                RemoveShadow();
+							_disposing = true;
+               RemoveShadow();
             }
 
             base.Dispose(disposing);
+
+						_disposing = false;
         }
 
         #endregion
@@ -924,10 +929,12 @@ namespace MetroFramework.Forms
             if (shadowForm == null || shadowForm.IsDisposed) return;
 
             shadowForm.Visible = false;
-            Owner = shadowForm.Owner;
+            Form owner = shadowForm.Owner;
             shadowForm.Owner = null;
             shadowForm.Dispose();
             shadowForm = null;
+
+						this.Owner = owner;
         }
 
         #region MetroShadowBase

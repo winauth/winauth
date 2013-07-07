@@ -35,6 +35,8 @@ using System.Windows.Forms;
 using MetroFramework;
 using MetroFramework.Forms;
 
+using WinAuth.Resources;
+
 namespace WinAuth
 {
 	public partial class WinAuthForm : MetroForm
@@ -83,6 +85,13 @@ namespace WinAuth
 		/// </summary>
 		private Rectangle _listoffset;
 
+		/// <summary>
+		/// If we were passed command line arg to minimise
+		/// </summary>
+		private bool _initiallyMinimised;
+
+		private string _configFile;
+
     #endregion
 
 		/// <summary>
@@ -93,11 +102,7 @@ namespace WinAuth
     private void WinAuthForm_Load(object sender, EventArgs e)
     {
       // get any command arguments
-      string configFile = null;
-      string password = null;
-      string skin = null;
-			bool minimize = false;
-      //
+			string password = null;
       string[] args = Environment.GetCommandLineArgs();
       for (int i = 1; i < args.Length; i++)
       {
@@ -109,19 +114,13 @@ namespace WinAuth
             case "-min":
             case "--minimize":
               // set initial state as minimized
-							minimize = true;
+							_initiallyMinimised = true;
               break;
             case "-p":
             case "--password":
               // set explicit password to use
               i++;
-              password = args[i];
-              break;
-            case "-s":
-            case "--skin":
-              // set skin name
-              i++;
-              skin = args[i];
+							password = args[i];
               break;
             default:
               break;
@@ -129,7 +128,7 @@ namespace WinAuth
         }
         else
         {
-          configFile = arg;
+					_configFile = arg;
         }
       }
 
@@ -141,12 +140,21 @@ namespace WinAuth
 			}
 #endif
 
-      // load config data
+			loadConfig(password);
+		}
+
+
+#region Private Methods
+
+		private void loadConfig(string password)
+		{
+			// load config data
+			bool retry = false;
 			do
 			{
 				try
 				{
-					WinAuthConfig config = WinAuthHelper.LoadConfig(this, configFile, password);
+					WinAuthConfig config = WinAuthHelper.LoadConfig(this, _configFile, password);
 					if (config == null)
 					{
 						System.Diagnostics.Process.GetCurrentProcess().Kill();
@@ -156,26 +164,33 @@ namespace WinAuth
 					this.Config = config;
 					this.Config.OnConfigChanged += new ConfigChangedHandler(OnConfigChanged);
 
-					break;
+					InitializeForm();
 				}
-				catch (EncrpytedSecretDataException )
+				catch (EncrpytedSecretDataException)
 				{
-					PasswordForm form = new PasswordForm();
-					if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-					{
-						password = form.Password;
-					}
+					passwordPanel.Visible = true;
 				}
-				catch (BadPasswordException )
+				catch (BadPasswordException)
 				{
-					PasswordForm form = new PasswordForm();
-					if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-					{
-						password = form.Password;
-					}
+					passwordPanel.Visible = true;
+					this.passwordErrorLabel.Text = strings.InvalidPassword;
+					this.passwordErrorLabel.Tag = DateTime.Now.AddSeconds(3);
+					this.passwordTimer.Enabled = true;
 				}
-			} while (true);
+				catch (Exception ex)
+				{
+					if (ErrorDialog(this, strings.UnknownError + ex.Message, ex, MessageBoxButtons.RetryCancel) == System.Windows.Forms.DialogResult.Cancel)
+					{
+						this.Close();
+						return;
+					}
+					retry = true;
+				}
+			} while (retry == true);
+		}
 
+		private void InitializeForm()
+		{
 			// set up list
 			loadAuthenticatorList();
 
@@ -191,7 +206,10 @@ namespace WinAuth
 			// initialize UI
 			LoadAddAuthenticatorTypes();
 			loadOptionsMenu();
+			passwordPanel.Visible = false;
+			commandPanel.Visible = true;
 			introLabel.Visible = (this.Config.Count == 0);
+			authenticatorList.Visible = (this.Config.Count != 0);
 
 			// set title
 			notifyIcon.Visible = this.Config.UseTrayIcon;
@@ -204,15 +222,23 @@ namespace WinAuth
 			_listoffset = new Rectangle(authenticatorList.Left, authenticatorList.Top, (this.Width - authenticatorList.Width), (this.Height - authenticatorList.Height));
 
 			// if we passed "-min" flag
-			if (minimize == true)
+			if (_initiallyMinimised == true)
 			{
 				this.WindowState = FormWindowState.Minimized;
 				this.ShowInTaskbar = true;
 			}
+			if (this.Config.UseTrayIcon == true)
+			{
+				notifyIcon.Visible = true;
+				notifyIcon.Text = this.Text;
+
+				// if initially minizied, we need to hide
+				if (WindowState == FormWindowState.Minimized)
+				{
+					Hide();
+				}
+			}
 		}
-
-
-#region Private Methods
 
 		/// <summary>
 		/// Load the authenticators into the display list
@@ -249,98 +275,6 @@ namespace WinAuth
 			WinAuthHelper.SaveConfig(this.Config);
 		}
 
-/*
-    /// <summary>
-    /// Load a new authenticator by prompting for a file
-    /// </summary>
-    private void LoadAuthenticator(string configFile = null)
-    {
-      if (string.IsNullOrEmpty(configFile) == true)
-      {
-        // use default or the path of the current authenticator
-        string configDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuthMain.APPLICATION_NAME);
-        configFile = WinAuthHelper.DEFAULT_AUTHENTICATOR_FILE_NAME;
-        if (string.IsNullOrEmpty(Config.Filename) == false)
-        {
-          configFile = Path.GetFileName(Config.Filename);
-          configDirectory = Path.GetDirectoryName(Config.Filename);
-        }
-
-        OpenFileDialog ofd = new OpenFileDialog();
-        ofd.AddExtension = true;
-        ofd.CheckFileExists = true;
-        ofd.DefaultExt = "xml";
-        ofd.InitialDirectory = configDirectory;
-        ofd.FileName = configFile;
-        ofd.Filter = "WinAuth (*.xml)|All Files (*.*)|*.*";
-        ofd.RestoreDirectory = true;
-        ofd.ShowReadOnly = false;
-        ofd.Title = "Load Authenticator";
-        DialogResult result = ofd.ShowDialog(this);
-        if (result != System.Windows.Forms.DialogResult.OK)
-        {
-          return;
-        }
-        configFile = ofd.FileName;
-      }
-      if (File.Exists(configFile) == false)
-      {
-        return;
-      }
-
-      // if the file is xml, could be our 1.4 config, 1.3 authenticator or android. Otherwise is an import
-      WinAuthConfig config = WinAuthHelper.LoadConfig(this, configFile, null);
-      Authenticator auth = (config != null && config.Authenticator != null ? config.Authenticator : null);
-      if (config != null && auth != null)
-      {
-        bool save = false;
-
-        // if there is no filename, we imported a different authenticator, so clone some of the current config
-        if (string.IsNullOrEmpty(config.Filename) == true)
-        {
-          // set specific authenticator settings
-          config.AllowCopy = Config.AllowCopy;
-          config.AlwaysOnTop = Config.AlwaysOnTop;
-          config.AutoRefresh = Config.AutoRefresh;
-          config.CopyOnCode = Config.CopyOnCode;
-          config.HideSerial = Config.HideSerial;
-          config.UseTrayIcon = Config.UseTrayIcon;
-
-          // set the filename
-          config.Filename = configFile;
-
-          save = true;
-        }
-
-        // set up the Authenticator
-        Config = config;
-
-        // unhook and rehook hotkey
-        //HookHotkey(this.Config);
-
-        // set skin
-        if (string.IsNullOrEmpty(Config.CurrentSkin) == false)
-        {
-          //LoadSkin(Config.CurrentSkin);
-        }
-        // show the new code
-        //ShowCode();
-
-        // re-save
-        //if (save == true)
-        //{
-        //  SaveAuthenticator(Config.Filename);
-        //}
-
-        // set title
-        //notifyIcon.Text = this.Text = WinAuthMain.APPLICATION_TITLE + " - " + Path.GetFileNameWithoutExtension(Config.Filename);
-
-        // hook event for config changes
-        this.Config.OnConfigChanged += new ConfigChangedHandler(OnConfigChanged);
-      }
-    }
-*/
-
 		/// <summary>
 		/// Show an error message dialog
 		/// </summary>
@@ -353,7 +287,7 @@ namespace WinAuth
 		{
 			if (message == null)
 			{
-				message = "An error has occurred" + (ex != null ? ": " + ex.Message : string.Empty);
+				message = strings.ErrorOccured + (ex != null ? ": " + ex.Message : string.Empty);
 			}
 			if (ex != null && string.IsNullOrEmpty(ex.Message) == false)
 			{
@@ -496,7 +430,7 @@ namespace WinAuth
 				catch (ExternalException)
 				{
 					// only show an error the first time
-					clipRetry = (MessageBox.Show(this, "Unable to copy to the clipboard. Another application is probably using it.\n\nTry again?",
+					clipRetry = (MessageBox.Show(this, strings.ClipboardInUse,
 						WinAuthMain.APPLICATION_NAME,
 						MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
 				}
@@ -522,7 +456,7 @@ namespace WinAuth
 				catch (ExternalException)
 				{
 					// only show an error the first time
-					clipRetry = (MessageBox.Show(this, "Unable to copy to the clipboard. Another application is probably using it.\n\nTry again?",
+					clipRetry = (MessageBox.Show(this, strings.ClipboardInUse,
 						WinAuthMain.APPLICATION_NAME,
 						MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
 				}
@@ -572,7 +506,7 @@ namespace WinAuth
 		private void WinAuthForm_Shown(object sender, EventArgs e)
 		{
 			// if we use tray icon make sure it is set
-			if (this.Config.UseTrayIcon == true)
+			if (this.Config != null && this.Config.UseTrayIcon == true)
 			{
 				notifyIcon.Visible = true;
 				notifyIcon.Text = this.Text;
@@ -593,7 +527,7 @@ namespace WinAuth
 		private void WinAuthForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			// keep in the tray when closing Form 
-			if (Config.UseTrayIcon == true && this.Visible == true && m_explictClose == false)
+			if (Config != null && Config.UseTrayIcon == true && this.Visible == true && m_explictClose == false)
 			{
 				e.Cancel = true;
 				notifyIcon.Visible = true;
@@ -714,7 +648,7 @@ namespace WinAuth
 				}
 				else
 				{
-					throw new NotImplementedException("TRAP: New authenticator not implemented for " + registeredauth.AuthenticatorType.ToString());
+					throw new NotImplementedException(strings.AuthenticatorNotImplemented + ": " + registeredauth.AuthenticatorType.ToString());
 				}
 
 				if (added == true)
@@ -835,6 +769,57 @@ namespace WinAuth
 			this.ResumeLayout(true);
 		}
 
+		/// <summary>
+		/// CLick the button to enter a password
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void passwordButton_Click(object sender, EventArgs e)
+		{
+			if (this.passwordField.Text.Trim().Length == 0)
+			{
+				this.passwordErrorLabel.Text = strings.EnterPassword;
+				this.passwordErrorLabel.Tag = DateTime.Now.AddSeconds(3);
+				this.passwordTimer.Enabled = true;
+				return;
+			}
+
+			loadConfig(this.passwordField.Text);
+		}
+
+		/// <summary>
+		/// Remove the password error message after a few seconds
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void passwordTimer_Tick(object sender, EventArgs e)
+		{
+			if (this.passwordErrorLabel.Tag != null && (DateTime)this.passwordErrorLabel.Tag <= DateTime.Now)
+			{
+				this.passwordTimer.Enabled = false;
+				this.passwordErrorLabel.Tag = null;
+				this.passwordErrorLabel.Text = string.Empty;
+
+				// oddity with MetroFrame controls in have to set focus away and back to field to make it stick
+				this.Invoke((MethodInvoker)delegate { this.passwordButton.Focus(); this.passwordField.Focus(); });
+			}
+
+		}
+
+		/// <summary>
+		/// Catch pressing Enter in the password field
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void passwordField_KeyPress(object sender, KeyPressEventArgs e)
+		{
+			if (e.KeyChar == (char)Keys.Return)
+			{
+				e.Handled = true;
+				passwordButton_Click(sender, null);
+			}
+		}
+
 #endregion
 
 #region Options menu
@@ -848,42 +833,48 @@ namespace WinAuth
 
 			this.optionsMenu.Items.Clear();
 
-			menuitem = new ToolStripMenuItem("Open");
+			menuitem = new ToolStripMenuItem(strings.MenuChangePassword);
+			menuitem.Name = "changePasswordOptionsMenuItem";
+			menuitem.Click += changePasswordOptionsMenuItem_Click;
+			this.optionsMenu.Items.Add(menuitem);
+			this.optionsMenu.Items.Add(new ToolStripSeparator());
+
+			menuitem = new ToolStripMenuItem(strings.MenuOpen);
 			menuitem.Name = "openOptionsMenuItem";
 			menuitem.Click += openOptionsMenuItem_Click;
 			this.optionsMenu.Items.Add(menuitem);
 			this.optionsMenu.Items.Add(new ToolStripSeparator() { Name = "openOptionsSeparatorItem" });
 
-			menuitem = new ToolStripMenuItem("Start With Windows");
+			menuitem = new ToolStripMenuItem(strings.MenuStartWithWindows);
 			menuitem.Name = "startWithWindowsOptionsMenuItem";
 			menuitem.Click += startWithWindowsOptionsMenuItem_Click;
 			this.optionsMenu.Items.Add(menuitem);
 
-			menuitem = new ToolStripMenuItem("Always on Top");
+			menuitem = new ToolStripMenuItem(strings.MenuAlwaysOnTop);
 			menuitem.Name = "alwaysOnTopOptionsMenuItem";
 			menuitem.Click += alwaysOnTopOptionsMenuItem_Click;
 			this.optionsMenu.Items.Add(menuitem);
 
-			menuitem = new ToolStripMenuItem("Use System Tray Icon");
+			menuitem = new ToolStripMenuItem(strings.MenuUseSystemTrayIcon);
 			menuitem.Name = "useSystemTrayIconOptionsMenuItem";
 			menuitem.Click += useSystemTrayIconOptionsMenuItem_Click;
 			this.optionsMenu.Items.Add(menuitem);
 
-			menuitem = new ToolStripMenuItem("Auto Size");
+			menuitem = new ToolStripMenuItem(strings.MenuAutoSize);
 			menuitem.Name = "autoSizeOptionsMenuItem";
 			menuitem.Click += autoSizeOptionsMenuItem_Click;
 			this.optionsMenu.Items.Add(menuitem);
 
 			this.optionsMenu.Items.Add(new ToolStripSeparator());
 
-			menuitem = new ToolStripMenuItem("About...");
+			menuitem = new ToolStripMenuItem(strings.MenuAbout + "...");
 			menuitem.Name = "aboutOptionsMenuItem";
 			menuitem.Click += aboutOptionMenuItem_Click;
 			this.optionsMenu.Items.Add(menuitem);
 
 			this.optionsMenu.Items.Add(new ToolStripSeparator());
 
-			menuitem = new ToolStripMenuItem("Exit");
+			menuitem = new ToolStripMenuItem(strings.MenuExit);
 			menuitem.Name = "exitOptionsMenuItem";
 			menuitem.ShortcutKeys = Keys.F4 | Keys.Alt;
 			menuitem.Click += exitOptionMenuItem_Click;
@@ -915,6 +906,17 @@ namespace WinAuth
 
 			menuitem = optionsMenu.Items.Cast<ToolStripItem>().Where(t => t.Name == "autoSizeOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Checked = this.Config.AutoSize;
+		}
+
+		/// <summary>
+		/// Click the Change Password item of the Options menu
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void changePasswordOptionsMenuItem_Click(object sender, EventArgs e)
+		{
+			ChangePasswordForm form = new ChangePasswordForm();
+			form.ShowDialog(this);
 		}
 
 		/// <summary>
@@ -1035,6 +1037,7 @@ namespace WinAuth
 			SaveConfig();
     }
 #endregion
+
 
   }
 }

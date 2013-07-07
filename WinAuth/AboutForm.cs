@@ -26,12 +26,17 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 
+using MetroFramework;
+using MetroFramework.Forms;
+
+using WinAuth.Resources;
+
 namespace WinAuth
 {
 	/// <summary>
 	/// General about form
 	/// </summary>
-	public partial class AboutForm : Form
+	public partial class AboutForm : MetroForm
 	{
 		/// <summary>
 		/// Create the about Form
@@ -53,6 +58,9 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void AboutForm_Load(object sender, EventArgs e)
 		{
+			// load resources
+			aboutLabel.Text = strings.Copyright;
+
 			// get the version of the application
 			Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 			string debug = string.Empty;
@@ -80,7 +88,7 @@ namespace WinAuth
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void btnReport_Click(object sender, EventArgs e)
+		private void reportButton_Click(object sender, EventArgs e)
 		{
 			// display the error form, loading it with current authenticator data
 			ErrorReportForm errorreport = new ErrorReportForm();

@@ -909,7 +909,7 @@ namespace MetroFramework.Drawing
 
         public static TextFormatFlags GetTextFormatFlags(ContentAlignment textAlign)
         {
-            TextFormatFlags controlFlags = TextFormatFlags.EndEllipsis;
+					TextFormatFlags controlFlags = TextFormatFlags.EndEllipsis;
 
             switch (textAlign)
             {

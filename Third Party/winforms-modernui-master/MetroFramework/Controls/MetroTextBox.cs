@@ -564,6 +564,15 @@ namespace MetroFramework.Controls
             UpdateBaseTextBox();
         }
 
+				protected override void OnEnter(EventArgs e)
+				{
+					base.OnEnter(e);
+					if (baseTextBox != null)
+					{
+						baseTextBox.Focus();
+					}
+				}
+
         #endregion
 
         #region Private Methods

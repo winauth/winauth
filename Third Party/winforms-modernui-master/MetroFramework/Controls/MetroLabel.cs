@@ -340,6 +340,12 @@ namespace MetroFramework.Controls
                 }
             }
 
+					TextFormatFlags format = MetroPaint.GetTextFormatFlags(TextAlign);
+					if (this.AutoSize == false)
+					{
+						format |= TextFormatFlags.WordBreak;
+					}
+
             if (LabelMode == MetroLabelMode.Selectable)
             {
                 CreateBaseTextBox();
@@ -347,13 +353,13 @@ namespace MetroFramework.Controls
 
                 if (!baseTextBox.Visible)
                 {
-                    TextRenderer.DrawText(e.Graphics, Text, MetroFonts.Label(metroLabelSize, metroLabelWeight), ClientRectangle, foreColor, MetroPaint.GetTextFormatFlags(TextAlign));
+                    TextRenderer.DrawText(e.Graphics, Text, MetroFonts.Label(metroLabelSize, metroLabelWeight), ClientRectangle, foreColor, format);
                 }
             }
             else
             {
                 DestroyBaseTextbox();
-                TextRenderer.DrawText(e.Graphics, Text, MetroFonts.Label(metroLabelSize, metroLabelWeight), ClientRectangle, foreColor, MetroPaint.GetTextFormatFlags(TextAlign));
+								TextRenderer.DrawText(e.Graphics, Text, MetroFonts.Label(metroLabelSize, metroLabelWeight), ClientRectangle, foreColor, format);
                 OnCustomPaintForeground(new MetroPaintEventArgs(Color.Empty, foreColor, e.Graphics));
             }
         }

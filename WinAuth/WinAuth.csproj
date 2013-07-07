@@ -58,14 +58,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
-    <Reference Include="MetroFramework, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Third Party\winforms-modernui-master\bin\MetroFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="MetroFramework.Design">
-      <HintPath>..\Third Party\winforms-modernui-master\bin\MetroFramework.Design.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Security" />
@@ -125,6 +117,12 @@
     <Compile Include="BetaForm.designer.cs">
       <DependentUpon>BetaForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ChangePasswordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ChangePasswordForm.Designer.cs">
+      <DependentUpon>ChangePasswordForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ErrorReportForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -143,18 +141,17 @@
       <DependentUpon>AddBattleNetAuthenticator.cs</DependentUpon>
     </Compile>
     <Compile Include="Keyboard.cs" />
-    <Compile Include="PasswordForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PasswordForm.designer.cs">
-      <DependentUpon>PasswordForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="RegisteredAuthenticator.cs" />
+    <Compile Include="Resources\strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>strings.resx</DependentUpon>
+    </Compile>
     <Compile Include="SecretTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -209,11 +206,15 @@
     <EmbeddedResource Include="BetaForm.resx">
       <DependentUpon>BetaForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ChangePasswordForm.resx">
+      <DependentUpon>ChangePasswordForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ErrorReportForm.resx">
       <DependentUpon>ErrorReportForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="PasswordForm.resx">
-      <DependentUpon>PasswordForm.cs</DependentUpon>
+    <EmbeddedResource Include="Resources\strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="ShowRestoreCodeForm.resx">
       <DependentUpon>ShowRestoreCodeForm.cs</DependentUpon>
@@ -266,6 +267,8 @@
     <EmbeddedResource Include="Resources\ArenaNetIcon.png" />
     <EmbeddedResource Include="Resources\Windows8Icon.png" />
     <EmbeddedResource Include="Resources\Windows7Icon.png" />
+    <None Include="Resources\padlock-open.png" />
+    <None Include="Resources\padlock-closed.png" />
     <Content Include="winauth.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -297,6 +300,14 @@
     <ProjectReference Include="..\Authenticator\Authenticator.csproj">
       <Project>{eaf2d5ce-d817-453a-8a32-3d531570ae04}</Project>
       <Name>Authenticator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Third Party\winforms-modernui-master\MetroFramework.Design\MetroFramework.Design.csproj">
+      <Project>{7316584d-9a16-4280-a8ab-6d45198c6e4d}</Project>
+      <Name>MetroFramework.Design</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Third Party\winforms-modernui-master\MetroFramework\MetroFramework.csproj">
+      <Project>{bb41ac8b-cbed-4387-a7e0-4567edb3f57f}</Project>
+      <Name>MetroFramework</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -28,6 +28,8 @@ using System.Xml;
 using System.Windows;
 using System.Windows.Forms;
 
+using WinAuth.Resources;
+
 namespace WinAuth
 {
 	public interface IWinAuthAuthenticatorChangedListener
@@ -269,7 +271,7 @@ namespace WinAuth
 				catch (ExternalException)
 				{
 					// only show an error the first time
-					clipRetry = (MessageBox.Show(form, "Cannot copy code to the clipboard. Another application is probably using it.\n\nTry again?",
+					clipRetry = (MessageBox.Show(form, strings.ClipboardInUse,
 						WinAuthMain.APPLICATION_NAME,
 						MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
 					if (clipRetry == false)

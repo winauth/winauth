@@ -39,6 +39,8 @@ using Org.BouncyCastle.Bcpg.OpenPgp;
 
 using Microsoft.Win32;
 
+using WinAuth.Resources;
+
 namespace WinAuth
 {
   /// <summary>
@@ -180,7 +182,7 @@ namespace WinAuth
       if (File.Exists(configFile) == false)
       {
         MessageBox.Show(form,
-          "Unable to find your configuration file \"" + configFile + "\"",
+          strings.CannotFindConfigurationFile + ": " + configFile,
           form.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
         return config;
       }
@@ -223,297 +225,13 @@ namespace WinAuth
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show(form, "Unable to load authenticator from " + configFile + ": " + ex.Message, "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(form, string.Format(strings.CannotLoadAuthenticator, configFile) + ": " + ex.Message, "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 
-/*
-      DialogResult configloaded;
-      do
-      {
-        configloaded = DialogResult.OK;
-
-        try
-        {
-          XmlDocument doc = null;
-          XmlNode node = null;
-          try
-          {
-            doc = new XmlDocument();
-            doc.Load(configFile);
-
-            // check and load older versions
-            node = doc.SelectSingleNode("WinAuth");
-          }
-          catch (XmlException ex)
-          {
-            // cause by invalid format, so we try and load other type of authenticator
-            throw new WinAuthInvalidConfigException("Invalid configuration file " + configFile, ex);
-          }
-          if (node == null)
-          {
-            return config;
-          }
-
-          XmlAttribute versionAttr;
-          decimal version = Authenticator.DEAFULT_CONFIG_VERSION;
-          if ((versionAttr = node.Attributes["version"]) != null && (version = decimal.Parse(versionAttr.InnerText, System.Globalization.CultureInfo.InvariantCulture)) < (decimal)1.4)
-          {
-            throw new ApplicationException("This version of WinAuth only supports 1.4 and higher");
-          }
-
-          // set the filename as itself
-          config.Filename = configFile;
-
-          bool boolVal = false;
-          node = doc.DocumentElement.SelectSingleNode("alwaysontop");
-          if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
-          {
-            config.AlwaysOnTop = boolVal;
-          }
-          node = doc.DocumentElement.SelectSingleNode("usetrayicon");
-          if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
-          {
-            config.UseTrayIcon = boolVal;
-          }
-          node = doc.DocumentElement.SelectSingleNode("startwithwindows");
-          if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
-          {
-            config.StartWithWindows = boolVal;
-          }
-
-          node = doc.DocumentElement.SelectSingleNode("autorefresh");
-          if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
-          {
-            config.AutoRefresh = boolVal;
-          }
-          node = doc.DocumentElement.SelectSingleNode("allowcopy");
-          if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
-          {
-            config.AllowCopy = boolVal;
-          }
-          node = doc.DocumentElement.SelectSingleNode("copyoncode");
-          if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
-          {
-            config.CopyOnCode = boolVal;
-          }
-          node = doc.DocumentElement.SelectSingleNode("hideserial");
-          if (node != null && bool.TryParse(node.InnerText, out boolVal) == true)
-          {
-            config.HideSerial = boolVal;
-          }
-          node = doc.DocumentElement.SelectSingleNode("skin");
-          if (node != null && string.IsNullOrEmpty(node.InnerText) == false)
-          {
-            config.CurrentSkin = node.InnerText;
-          }
-
-          // load the authenticator(s)
-          XmlNodeList nodes = doc.DocumentElement.SelectNodes("authenticator");
-          if (nodes != null)
-          {
-            // get the local machine time diff
-            long machineTimeDiff = GetMachineTimeDiff();
-
-            foreach (XmlNode authenticatorNode in nodes)
-            {
-              // load the data
-              Authenticator auth = null;
-              try
-              {
-                try
-                {
-                  using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(authenticatorNode.OuterXml)))
-                  {
-                    config.Authenticator = Authenticator.ReadFromStream(ms, password, version);
-                  }
-                }
-                catch (EncrpytedSecretDataException)
-                {
-                  throw new WinAuthConfigRequirePasswordException();
-                  //PasswordForm passwordForm = new PasswordForm();
-                  //int retries = 0;
-                  //do
-                  //{
-                  //  passwordForm.Password = string.Empty;
-                  //  DialogResult result = passwordForm.ShowDialog(form);
-                  //  if (result != System.Windows.Forms.DialogResult.OK)
-                  //  {
-                  //    return config;
-                  //  }
-                  //  password = passwordForm.Password;
-
-                  //  try
-                  //  {
-                  //    using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(authenticatorNode.OuterXml)))
-                  //    {
-                  //      config.Authenticator = Authenticator.ReadFromStream(ms, password, version);
-                  //    }
-                  //    break;
-                  //  }
-                  //  catch (BadPasswordException)
-                  //  {
-                  //    MessageBox.Show(form, "Invalid password", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                  //    if (retries++ >= MAX_PASSWORD_RETRIES - 1)
-                  //    {
-                  //      return config;
-                  //    }
-                  //  }
-                  //} while (true);
-                }
-
-                // adjust the time diff from the local machine
-                if (auth != null && machineTimeDiff != 0)
-                {
-                  auth.ServerTimeDiff = machineTimeDiff;
-                }
-              }
-              catch (InvalidUserDecryptionException)
-              {
-                MessageBox.Show(form, "The authenticator was encrypted using a different Windows User account.", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
-              }
-              catch (InvalidMachineDecryptionException)
-              {
-                MessageBox.Show(form, "The authenticator was encrypted using a different Windows computer.", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
-              }
-              catch (InvalidConfigDataException)
-              {
-                MessageBox.Show(form, "The authenticator data in " + configFile + " is not valid", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
-              }
-              catch (AuthenticatorException ae)
-              {
-                // detect invalid encryption data
-                DialogResult r = MessageBox.Show(form,
-                  "An unexpected error occurred whilst load your authenticator: " + ae.Message + ".\n\nPlease try again or restart WinAuth.\n\nWould you like to send an error report to help try and fix this problem?",
-                  WinAuthMain.APPLICATION_NAME,
-                  MessageBoxButtons.YesNo,
-                  MessageBoxIcon.Error);
-                if (r == System.Windows.Forms.DialogResult.Yes)
-                {
-                  //ErrorReportForm errorreport = new ErrorReportForm();
-                  //errorreport.Config = config;
-                  //errorreport.ConfigFileContents = File.ReadAllText(configFile);
-                  //errorreport.ErrorException = ae;
-                  //errorreport.ShowDialog(form);
-                }
-              }
-              catch (Exception ex)
-              {
-                MessageBox.Show(form, "Unable to load authenticator from " + configFile + ": " + ex.Message, "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
-              }
-            }
-          }
-
-          // get the autologin node after we have gotten the pasword
-          node = doc.DocumentElement.SelectSingleNode("autologin");
-          if (node != null && node.InnerText.Length != 0 && config.Authenticator != null)
-          {
-            config.AutoLogin = new HoyKeySequence(node, config.Authenticator.Password, version);
-          }
-        }
-        catch (Exception ex)
-        {
-          configloaded = MessageBox.Show(form,
-            "An error occured while loading your configuration file \"" + configFile + "\": " + ex.Message + "\n\nIt may be corrupted or in use by another application.",
-            form.Text, MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error);
-          if (configloaded == DialogResult.Abort)
-          {
-            return null;
-          }
-        }
-      } while (configloaded == DialogResult.Retry);
-
-*/
-
-      //SetLastFile(configFile); // set this as the new last opened file
       SetLastGood(config);
 
       return config;
     }
-
-/*
-    /// <summary>
-    /// Load an old or 3rd party authenticator file
-    /// </summary>
-    /// <param name="form">parent winform</param>
-    /// <param name="configFile">filename to load</param>
-    /// <returns>new Authenticator object</returns>
-    public static Authenticator LoadAuthenticator(Form form, string configFile)
-    {
-      // load the data
-      Authenticator data = null;
-      try
-      {
-        try
-        {
-          // import the file
-          data = ImportAuthenticator(configFile, null);
-        }
-        catch (EncrpytedSecretDataException)
-        {
-          PasswordForm passwordForm = new PasswordForm();
-
-          int retries = 0;
-          do
-          {
-            passwordForm.Password = string.Empty;
-            DialogResult result = passwordForm.ShowDialog(form);
-            if (result != System.Windows.Forms.DialogResult.OK)
-            {
-              return null;
-            }
-
-            try
-            {
-              data = ImportAuthenticator(configFile, passwordForm.Password);
-              break;
-            }
-            catch (BadPasswordException)
-            {
-              MessageBox.Show(form, "Invalid password", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
-              if (retries++ >= MAX_PASSWORD_RETRIES - 1)
-              {
-                return null;
-              }
-            }
-          } while (true);
-        }
-      }
-      catch (InvalidConfigDataException)
-      {
-        MessageBox.Show(form, "The authenticator file " + configFile + " is not valid", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        return data;
-      }
-      catch (Exception ex)
-      {
-        MessageBox.Show(form, "Unable to load authenticator file " + configFile + ": " + ex.Message, "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        return data;
-      }
-      if (data == null)
-      {
-        MessageBox.Show(form, "The file does not contain valid authenticator data.", "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        return data;
-      }
-
-      return data;
-    }
-
-    /// <summary>
-    /// Import and authenticator file of different formats
-    /// </summary>
-    /// <param name="configFile">filename to load</param>
-    /// <param name="password">optional password</param>
-    /// <returns>new Authenticator</returns>
-    public static Authenticator ImportAuthenticator(string configFile, string password)
-    {
-      using (FileStream fs = new FileStream(configFile, FileMode.Open))
-      {
-        // load ours or the Android XML file
-        Authenticator auth = Authenticator.ReadFromStream(fs, password);
-
-        return auth;
-      }
-    }
-*/
 
     /// <summary>
     /// Save the authenticator
@@ -551,61 +269,7 @@ namespace WinAuth
           fs.Write(data, 0, data.Length);
         }
       }
-
-      // use this as the last file
-      //SetLastFile(config.Filename);
     }
-
-/*
-    /// <summary>
-    /// Get the last authenticator file name from the registry
-    /// </summary>
-    /// <param name="index">index of last entry to load</param>
-    /// <returns>name of last file or null</returns>
-    public static string GetLastFile(int index)
-    {
-      using (RegistryKey key = Registry.CurrentUser.OpenSubKey(WINAUTHREGKEY, false))
-      {
-        return (key == null ? null : key.GetValue(string.Format(CultureInfo.InvariantCulture, WINAUTHREGKEY_LASTFILE, index), null) as string);
-      }
-    }
-
-    /// <summary>
-    /// Set the last file name in the registry
-    /// </summary>
-    /// <param name="filename">filename to save</param>
-    public static void SetLastFile(string filename)
-    {
-      using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WINAUTHREGKEY))
-      {
-        // read all the last files
-        List<string> lastfiles = new List<string>();
-        for (int index = 1; index <= MAX_SAVED_FILES; index++)
-        {
-          lastfiles.Add(GetLastFile(index));
-        }
-        // make sure current one is at the start
-        if (string.IsNullOrEmpty(filename) == false)
-        {
-          lastfiles.Remove(filename);
-          lastfiles.Insert(0, filename);
-        }
-        // write all the entries back to registry
-        for (int index = 1; index <= MAX_SAVED_FILES; index++)
-        {
-          string lastfile = lastfiles[index - 1];
-          if (string.IsNullOrEmpty(lastfile) == true)
-          {
-            key.DeleteValue(string.Format(CultureInfo.InvariantCulture, WINAUTHREGKEY_LASTFILE, index), false);
-          }
-          else
-          {
-            key.SetValue(string.Format(CultureInfo.InvariantCulture, WINAUTHREGKEY_LASTFILE, index), lastfile);
-          }
-        }
-      }
-    }
-*/
 
     /// <summary>
     /// Save a PGP encrpyted version of the config into the registry for recovery
