@@ -59,7 +59,11 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void ChangePasswordForm_Load(object sender, EventArgs e)
 		{
-			if ((PasswordType & Authenticator.PasswordTypes.Machine) != 0)
+			if (PasswordType == Authenticator.PasswordTypes.None)
+			{
+				noneCheckbox.Checked = true;
+			}
+			else if ((PasswordType & Authenticator.PasswordTypes.Machine) != 0)
 			{
 				machineCheckbox.Checked = true;
 			}
@@ -67,7 +71,7 @@ namespace WinAuth
 			{
 				userCheckbox.Checked = true;
 			}
-			if ((PasswordType & Authenticator.PasswordTypes.Explicit) != 0 || PasswordType == Authenticator.PasswordTypes.None)
+			if ((PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
 			{
 				passwordCheckbox.Checked = true;
 			}

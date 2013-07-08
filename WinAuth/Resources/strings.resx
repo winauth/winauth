@@ -233,4 +233,16 @@ All other trademarks are the property of their respective owners.</value>
   <data name="_ChangePasswordForm_verifyFieldLabel_" xml:space="preserve">
     <value>Verify</value>
   </data>
+  <data name="_WinAuthForm_addAuthenticatorButton_" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="_WinAuthForm_introLabel_" xml:space="preserve">
+    <value>Click the "Add" button to create or import your authenticator</value>
+  </data>
+  <data name="_WinAuthForm_passwordButton_" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="_WinAuthForm_passwordLabel_" xml:space="preserve">
+    <value>Password</value>
+  </data>
 </root>

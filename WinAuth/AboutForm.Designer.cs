@@ -111,7 +111,6 @@
 			this.Controls.Add(this.aboutLabel);
 			this.Name = "AboutForm";
 			this.Resizable = false;
-			this.StartPosition = System.Windows.Forms.FormStartPosition.WindowsDefaultLocation;
 			this.Text = "About WinAuth";
 			this.Load += new System.EventHandler(this.AboutForm_Load);
 			this.ResumeLayout(false);

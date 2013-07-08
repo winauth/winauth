@@ -246,6 +246,42 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add.
+        /// </summary>
+        internal static string _WinAuthForm_addAuthenticatorButton_ {
+            get {
+                return ResourceManager.GetString("_WinAuthForm_addAuthenticatorButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Click the &quot;Add&quot; button to create or import your authenticator.
+        /// </summary>
+        internal static string _WinAuthForm_introLabel_ {
+            get {
+                return ResourceManager.GetString("_WinAuthForm_introLabel_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        internal static string _WinAuthForm_passwordButton_ {
+            get {
+                return ResourceManager.GetString("_WinAuthForm_passwordButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password.
+        /// </summary>
+        internal static string _WinAuthForm_passwordLabel_ {
+            get {
+                return ResourceManager.GetString("_WinAuthForm_passwordLabel_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Authenticator not implemented.
         /// </summary>
         internal static string AuthenticatorNotImplemented {

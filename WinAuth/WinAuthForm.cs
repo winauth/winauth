@@ -40,7 +40,7 @@ using System.Security;
 
 namespace WinAuth
 {
-	public partial class WinAuthForm : MetroForm
+	public partial class WinAuthForm : ResourceForm
   {
     public WinAuthForm()
     {
@@ -262,6 +262,8 @@ namespace WinAuth
 				authenticatorList.Items.Add(ali);
 				index++;
 			}
+
+			authenticatorList.Visible = (authenticatorList.Items.Count != 0);
 		}
 
 		void OnWinAuthAuthenticatorChanged(object sender, WinAuthAuthenticatorChangedEventArgs e)
@@ -654,6 +656,25 @@ namespace WinAuth
 
 				if (added == true)
 				{
+					// first time we prompt for protection
+					if (this.Config.Count == 0)
+					{
+						ChangePasswordForm form = new ChangePasswordForm();
+						form.PasswordType = Authenticator.PasswordTypes.Explicit;
+						if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+						{
+							this.Config.PasswordType = form.PasswordType;
+							if ((this.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
+							{
+								this.Config.Password = form.Password;
+							}
+							else
+							{
+								this.Config.Password = null;
+							}
+						}
+					}
+
 					this.Config.Add(winauthauthenticator);
 					SaveConfig();
 					loadAuthenticatorList(winauthauthenticator);
@@ -727,11 +748,20 @@ namespace WinAuth
 				}
 			}
 
-			SaveConfig();
-
 			// update UI
 			setAutoSize();
-			introLabel.Visible = (this.Config.Count == 0);
+
+			// if no authenticators, show intro text and remove any encryption
+			if (this.Config.Count == 0)
+			{
+				introLabel.Visible = true;
+				authenticatorList.Visible = false;
+				this.Config.PasswordType = Authenticator.PasswordTypes.None;
+				this.Config.Password = null;
+			}
+
+			// save the current config
+			SaveConfig();
 		}
 
 		/// <summary>
@@ -838,7 +868,7 @@ namespace WinAuth
 			menuitem.Name = "changePasswordOptionsMenuItem";
 			menuitem.Click += changePasswordOptionsMenuItem_Click;
 			this.optionsMenu.Items.Add(menuitem);
-			this.optionsMenu.Items.Add(new ToolStripSeparator());
+			this.optionsMenu.Items.Add(new ToolStripSeparator() { Name = "changePasswordOptionsSeparatorItem" });
 
 			menuitem = new ToolStripMenuItem(strings.MenuOpen);
 			menuitem.Name = "openOptionsMenuItem";
@@ -891,6 +921,10 @@ namespace WinAuth
 		{
 			ToolStripItem item;
 			ToolStripMenuItem menuitem;
+
+			menuitem = optionsMenu.Items.Cast<ToolStripItem>().Where(t => t.Name == "changePasswordOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem.Enabled = (this.Config != null && this.Config.Count != 0);
+
 			menuitem = optionsMenu.Items.Cast<ToolStripItem>().Where(t => t.Name == "openOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Visible = (this.Config.UseTrayIcon == true && this.Visible == false);
 			item = optionsMenu.Items.Cast<ToolStripItem>().Where(t => t.Name == "openOptionsSeparatorItem").FirstOrDefault();
