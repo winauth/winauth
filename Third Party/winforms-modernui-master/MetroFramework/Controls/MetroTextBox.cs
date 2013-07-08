@@ -567,9 +567,22 @@ namespace MetroFramework.Controls
 				protected override void OnEnter(EventArgs e)
 				{
 					base.OnEnter(e);
+					Focus();
+					//if (baseTextBox != null)
+					//{
+					//	baseTextBox.Focus();
+					//}
+				}
+
+				public new bool Focus()
+				{
 					if (baseTextBox != null)
 					{
-						baseTextBox.Focus();
+						return baseTextBox.Focus();
+					}
+					else
+					{
+						return base.Focus();
 					}
 				}
 
@@ -591,6 +604,7 @@ namespace MetroFramework.Controls
             Size = new Size(baseTextBox.Width + 6, baseTextBox.Height + 6);
 
             baseTextBox.TabStop = true;
+						baseTextBox.TabIndex = this.TabIndex;
             //baseTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Right;
 
             Controls.Add(baseTextBox);
