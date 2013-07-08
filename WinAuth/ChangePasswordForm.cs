@@ -32,7 +32,7 @@ namespace WinAuth
 	/// <summary>
 	/// Form for setting the password and encryption for the current authenticators
 	/// </summary>
-	public partial class ChangePasswordForm : MetroFramework.Forms.MetroForm
+	public partial class ChangePasswordForm : WinAuth.ResourceForm
 	{
 		/// <summary>
 		/// Create the form

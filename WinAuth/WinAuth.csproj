@@ -141,6 +141,9 @@
       <DependentUpon>AddBattleNetAuthenticator.cs</DependentUpon>
     </Compile>
     <Compile Include="Keyboard.cs" />
+    <Compile Include="ResourceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

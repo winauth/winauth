@@ -63,9 +63,185 @@ namespace WinAuth.Resources {
         /// <summary>
         ///   Looks up a localized string similar to About WinAuth.
         /// </summary>
-        internal static string AboutWinAuth {
+        internal static string _AboutForm_ {
             get {
-                return ResourceManager.GetString("AboutWinAuth", resourceCulture);
+                return ResourceManager.GetString("_AboutForm_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WinAuth {0}
+        ///Copyright (C) {1}. Colin Mackie. All rights reserved..
+        /// </summary>
+        internal static string _AboutForm_aboutLabel_ {
+            get {
+                return ResourceManager.GetString("_AboutForm_aboutLabel_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        internal static string _AboutForm_closeButton {
+            get {
+                return ResourceManager.GetString("_AboutForm_closeButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to License.
+        /// </summary>
+        internal static string _AboutForm_licenseLabel_ {
+            get {
+                return ResourceManager.GetString("_AboutForm_licenseLabel_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error Report....
+        /// </summary>
+        internal static string _AboutForm_reportButton {
+            get {
+                return ResourceManager.GetString("_AboutForm_reportButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Battle.net, World of Warcraft, StarCraft, Diablo, Mists of Pandaria, and all associated logos and designs are trademarks or registered trademarks of Blizzard Entertainment.
+        ///
+        ///NCsoft, the interlocking NC logo, ArenaNet, Guild Wars, Guild Wars Factions, Guild Wars Nightfall, Guild Wars: Eye of the North, Guild Wars 2, and all associated logos and designs are trademarks or registered trademarks of NCsoft Corporation.
+        ///
+        ///All other trademarks are the property of their respective owners..
+        /// </summary>
+        internal static string _AboutForm_trademarkLabel_ {
+            get {
+                return ResourceManager.GetString("_AboutForm_trademarkLabel_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Protection.
+        /// </summary>
+        internal static string _ChangePasswordForm_ {
+            get {
+                return ResourceManager.GetString("_ChangePasswordForm_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        internal static string _ChangePasswordForm_cancelButton_ {
+            get {
+                return ResourceManager.GetString("_ChangePasswordForm_cancelButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select how you would like to protect your authenticators. A combination of user protection and your own password is recommended..
+        /// </summary>
+        internal static string _ChangePasswordForm_introLabel_ {
+            get {
+                return ResourceManager.GetString("_ChangePasswordForm_introLabel_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only useable on this computer.
+        /// </summary>
+        internal static string _ChangePasswordForm_machineCheckbox_ {
+            get {
+                return ResourceManager.GetString("_ChangePasswordForm_machineCheckbox_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your authenticators will be protected by encrypting them using your built-in Windows machine key. Your data can only be read by someone or an application on this computer. You must remove this setting to copy it to another computer or if you will be reinstalling Windows..
+        /// </summary>
+        internal static string _ChangePasswordForm_machineLabel_ {
+            get {
+                return ResourceManager.GetString("_ChangePasswordForm_machineLabel_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to I do NOT want to use any protection.
+        /// </summary>
+        internal static string _ChangePasswordForm_noneCheckbox_ {
+            get {
+                return ResourceManager.GetString("_ChangePasswordForm_noneCheckbox_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your authenticators will not be protected by a password and will not be encrypted. This is very insecure and should only be used if you are copying your authenticators between different computers..
+        /// </summary>
+        internal static string _ChangePasswordForm_noneLabel_ {
+            get {
+                return ResourceManager.GetString("_ChangePasswordForm_noneLabel_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        internal static string _ChangePasswordForm_okButton_ {
+            get {
+                return ResourceManager.GetString("_ChangePasswordForm_okButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Protect with my own password.
+        /// </summary>
+        internal static string _ChangePasswordForm_passwordCheckbox_ {
+            get {
+                return ResourceManager.GetString("_ChangePasswordForm_passwordCheckbox_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password.
+        /// </summary>
+        internal static string _ChangePasswordForm_passwordFieldLabel_ {
+            get {
+                return ResourceManager.GetString("_ChangePasswordForm_passwordFieldLabel_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your authenticators will be encrypted using your own password. You will need to enter your password to open WinAuth but can copy it between different computers. Your authenticators will be inaccessible if you forget your password and do not have a backup..
+        /// </summary>
+        internal static string _ChangePasswordForm_passwordLabel_ {
+            get {
+                return ResourceManager.GetString("_ChangePasswordForm_passwordLabel_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only useable by this user on this computer.
+        /// </summary>
+        internal static string _ChangePasswordForm_userCheckbox_ {
+            get {
+                return ResourceManager.GetString("_ChangePasswordForm_userCheckbox_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your authenticators will be protected by encrypting them using the current Windows user account. Your data can only be read by this user on this computer. You must remove this setting to copy it to another computer or if you will be reinstalling Windows..
+        /// </summary>
+        internal static string _ChangePasswordForm_userLabel_ {
+            get {
+                return ResourceManager.GetString("_ChangePasswordForm_userLabel_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Verify.
+        /// </summary>
+        internal static string _ChangePasswordForm_verifyFieldLabel_ {
+            get {
+                return ResourceManager.GetString("_ChangePasswordForm_verifyFieldLabel_", resourceCulture);
             }
         }
         
@@ -88,7 +264,7 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to load authenticator from %1.
+        ///   Looks up a localized string similar to Unable to load authenticator from {0}.
         /// </summary>
         internal static string CannotLoadAuthenticator {
             get {
@@ -102,16 +278,6 @@ namespace WinAuth.Resources {
         internal static string ClipboardInUse {
             get {
                 return ResourceManager.GetString("ClipboardInUse", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to WinAuth {0}
-        ///Copyright (C) {1}. Colin Mackie. All rights reserved..
-        /// </summary>
-        internal static string Copyright {
-            get {
-                return ResourceManager.GetString("Copyright", resourceCulture);
             }
         }
         
@@ -220,19 +386,6 @@ namespace WinAuth.Resources {
         internal static string PasswordsDontMatch {
             get {
                 return ResourceManager.GetString("PasswordsDontMatch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Battle.net, World of Warcraft, StarCraft, Diablo, Mists of Pandaria, and all associated logos and designs are trademarks or registered trademarks of Blizzard Entertainment.
-        ///
-        ///NCsoft, the interlocking NC logo, ArenaNet, Guild Wars, Guild Wars Factions, Guild Wars Nightfall, Guild Wars: Eye of the North, Guild Wars 2, and all associated logos and designs are trademarks or registered trademarks of NCsoft Corporation.
-        ///
-        ///All other trademarks are the property of their respective owners..
-        /// </summary>
-        internal static string TrademarkInfo {
-            get {
-                return ResourceManager.GetString("TrademarkInfo", resourceCulture);
             }
         }
         

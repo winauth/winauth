@@ -24,6 +24,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Resources;
 
 namespace WinAuth
 {
@@ -82,6 +83,8 @@ namespace WinAuth
 			new RegisteredAuthenticator {Name="Microsoft", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Microsoft, Icon="MicrosoftAuthenticatorIcon.png"}
 		};
 
+		public static ResourceManager StringResources = new ResourceManager(typeof(WinAuth.Resources.strings).FullName, typeof(WinAuth.Resources.strings).Assembly);
+
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
@@ -121,7 +124,7 @@ namespace WinAuth
 		private static void main()
 		{
 			// Issue #53: set a default culture
-			CultureInfo ci = new CultureInfo("en-US");
+			CultureInfo ci = new CultureInfo("en"); // or en-US, en-GB
 			System.Threading.Thread.CurrentThread.CurrentCulture = ci;
 			System.Threading.Thread.CurrentThread.CurrentUICulture = ci;
 

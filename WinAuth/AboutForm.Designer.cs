@@ -30,7 +30,7 @@
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutForm));
 			this.aboutLabel = new MetroFramework.Controls.MetroLabel();
-			this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
+			this.licenseLabel = new MetroFramework.Controls.MetroLabel();
 			this.richTextBox1 = new System.Windows.Forms.RichTextBox();
 			this.trademarkLabel = new MetroFramework.Controls.MetroLabel();
 			this.reportButton = new MetroFramework.Controls.MetroButton();
@@ -47,14 +47,14 @@
 			this.aboutLabel.TabIndex = 2;
 			this.aboutLabel.Text = "WinAuth {0}\r\nCopyright (C) {1}. Colin Mackie. All rights reserved.\r\n";
 			// 
-			// metroLabel1
+			// licenseLabel
 			// 
-			this.metroLabel1.AutoSize = true;
-			this.metroLabel1.Location = new System.Drawing.Point(23, 128);
-			this.metroLabel1.Name = "metroLabel1";
-			this.metroLabel1.Size = new System.Drawing.Size(50, 19);
-			this.metroLabel1.TabIndex = 3;
-			this.metroLabel1.Text = "License";
+			this.licenseLabel.AutoSize = true;
+			this.licenseLabel.Location = new System.Drawing.Point(23, 128);
+			this.licenseLabel.Name = "licenseLabel";
+			this.licenseLabel.Size = new System.Drawing.Size(50, 19);
+			this.licenseLabel.TabIndex = 3;
+			this.licenseLabel.Text = "License";
 			// 
 			// richTextBox1
 			// 
@@ -107,7 +107,7 @@
 			this.Controls.Add(this.closeButton);
 			this.Controls.Add(this.trademarkLabel);
 			this.Controls.Add(this.richTextBox1);
-			this.Controls.Add(this.metroLabel1);
+			this.Controls.Add(this.licenseLabel);
 			this.Controls.Add(this.aboutLabel);
 			this.Name = "AboutForm";
 			this.Resizable = false;
@@ -122,7 +122,7 @@
 		#endregion
 
 		private MetroFramework.Controls.MetroLabel aboutLabel;
-		private MetroFramework.Controls.MetroLabel metroLabel1;
+		private MetroFramework.Controls.MetroLabel licenseLabel;
 		private System.Windows.Forms.RichTextBox richTextBox1;
 		private MetroFramework.Controls.MetroLabel trademarkLabel;
 		private MetroFramework.Controls.MetroButton reportButton;

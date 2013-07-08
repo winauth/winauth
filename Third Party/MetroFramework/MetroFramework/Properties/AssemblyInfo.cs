@@ -56,17 +56,17 @@ internal static class MetroFrameworkAssembly
 
 namespace MetroFramework
 {
-    internal static class AssemblyRef
+    public static class AssemblyRef
     {
 
         // Design
 
-        internal const string MetroFrameworkDesign_ = "MetroFramework.Design";
+        public const string MetroFrameworkDesign_ = "MetroFramework.Design";
 
-        internal const string MetroFrameworkDesignSN = "MetroFramework.Design, Version=" + MetroFrameworkAssembly.Version
+				public const string MetroFrameworkDesignSN = "MetroFramework.Design, Version=" + MetroFrameworkAssembly.Version
                                                        + ", Culture=neutral, PublicKeyToken=" + MetroFrameworkKeyToken;
 
-        internal const string MetroFrameworkDesignIVT = "MetroFramework.Design, PublicKey=" + MetroFrameworkKeyFull;
+				public const string MetroFrameworkDesignIVT = "MetroFramework.Design, PublicKey=" + MetroFrameworkKeyFull;
 
         // Fonts
 

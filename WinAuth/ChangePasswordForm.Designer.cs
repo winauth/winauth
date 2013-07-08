@@ -30,22 +30,22 @@
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChangePasswordForm));
 			this.noneCheckbox = new MetroFramework.Controls.MetroCheckBox();
-			this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
-			this.metroLabel2 = new MetroFramework.Controls.MetroLabel();
+			this.introLabel = new MetroFramework.Controls.MetroLabel();
+			this.noneLabel = new MetroFramework.Controls.MetroLabel();
 			this.machineCheckbox = new MetroFramework.Controls.MetroCheckBox();
-			this.metroLabel3 = new MetroFramework.Controls.MetroLabel();
+			this.machineLabel = new MetroFramework.Controls.MetroLabel();
 			this.userCheckbox = new MetroFramework.Controls.MetroCheckBox();
-			this.metroLabel4 = new MetroFramework.Controls.MetroLabel();
+			this.userLabel = new MetroFramework.Controls.MetroLabel();
 			this.passwordCheckbox = new MetroFramework.Controls.MetroCheckBox();
-			this.metroLabel5 = new MetroFramework.Controls.MetroLabel();
+			this.passwordLabel = new MetroFramework.Controls.MetroLabel();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this.pictureBox2 = new System.Windows.Forms.PictureBox();
 			this.cancelButton = new MetroFramework.Controls.MetroButton();
 			this.okButton = new MetroFramework.Controls.MetroButton();
 			this.passwordField = new MetroFramework.Controls.MetroTextBox();
 			this.verifyField = new MetroFramework.Controls.MetroTextBox();
-			this.metroLabel7 = new MetroFramework.Controls.MetroLabel();
-			this.metroLabel6 = new MetroFramework.Controls.MetroLabel();
+			this.verifyFieldLabel = new MetroFramework.Controls.MetroLabel();
+			this.passwordFieldLabel = new MetroFramework.Controls.MetroLabel();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
 			this.SuspendLayout();
@@ -62,22 +62,22 @@
 			this.noneCheckbox.UseSelectable = true;
 			this.noneCheckbox.CheckedChanged += new System.EventHandler(this.noneCheckbox_CheckedChanged);
 			// 
-			// metroLabel1
+			// introLabel
 			// 
-			this.metroLabel1.Location = new System.Drawing.Point(23, 60);
-			this.metroLabel1.Name = "metroLabel1";
-			this.metroLabel1.Size = new System.Drawing.Size(628, 42);
-			this.metroLabel1.TabIndex = 1;
-			this.metroLabel1.Text = "Select how you would like to protect your authenticators. A combination of user p" +
+			this.introLabel.Location = new System.Drawing.Point(23, 60);
+			this.introLabel.Name = "introLabel";
+			this.introLabel.Size = new System.Drawing.Size(628, 42);
+			this.introLabel.TabIndex = 1;
+			this.introLabel.Text = "Select how you would like to protect your authenticators. A combination of user p" +
     "rotection and your own password is recommended.";
 			// 
-			// metroLabel2
+			// noneLabel
 			// 
-			this.metroLabel2.Location = new System.Drawing.Point(23, 137);
-			this.metroLabel2.Name = "metroLabel2";
-			this.metroLabel2.Size = new System.Drawing.Size(628, 49);
-			this.metroLabel2.TabIndex = 1;
-			this.metroLabel2.Text = "Your authenticators will not be protected by a password and will not be encrypted" +
+			this.noneLabel.Location = new System.Drawing.Point(23, 137);
+			this.noneLabel.Name = "noneLabel";
+			this.noneLabel.Size = new System.Drawing.Size(628, 49);
+			this.noneLabel.TabIndex = 1;
+			this.noneLabel.Text = "Your authenticators will not be protected by a password and will not be encrypted" +
     ". This is very insecure and should only be used if you are copying your authenti" +
     "cators between different computers.";
 			// 
@@ -93,13 +93,13 @@
 			this.machineCheckbox.UseSelectable = true;
 			this.machineCheckbox.CheckedChanged += new System.EventHandler(this.machineCheckbox_CheckedChanged);
 			// 
-			// metroLabel3
+			// machineLabel
 			// 
-			this.metroLabel3.Location = new System.Drawing.Point(23, 314);
-			this.metroLabel3.Name = "metroLabel3";
-			this.metroLabel3.Size = new System.Drawing.Size(628, 63);
-			this.metroLabel3.TabIndex = 1;
-			this.metroLabel3.Text = resources.GetString("metroLabel3.Text");
+			this.machineLabel.Location = new System.Drawing.Point(23, 314);
+			this.machineLabel.Name = "machineLabel";
+			this.machineLabel.Size = new System.Drawing.Size(628, 63);
+			this.machineLabel.TabIndex = 1;
+			this.machineLabel.Text = resources.GetString("machineLabel.Text");
 			// 
 			// userCheckbox
 			// 
@@ -113,13 +113,13 @@
 			this.userCheckbox.UseSelectable = true;
 			this.userCheckbox.CheckedChanged += new System.EventHandler(this.userCheckbox_CheckedChanged);
 			// 
-			// metroLabel4
+			// userLabel
 			// 
-			this.metroLabel4.Location = new System.Drawing.Point(23, 223);
-			this.metroLabel4.Name = "metroLabel4";
-			this.metroLabel4.Size = new System.Drawing.Size(628, 69);
-			this.metroLabel4.TabIndex = 1;
-			this.metroLabel4.Text = resources.GetString("metroLabel4.Text");
+			this.userLabel.Location = new System.Drawing.Point(23, 223);
+			this.userLabel.Name = "userLabel";
+			this.userLabel.Size = new System.Drawing.Size(628, 69);
+			this.userLabel.TabIndex = 1;
+			this.userLabel.Text = resources.GetString("userLabel.Text");
 			// 
 			// passwordCheckbox
 			// 
@@ -133,17 +133,18 @@
 			this.passwordCheckbox.UseSelectable = true;
 			this.passwordCheckbox.CheckedChanged += new System.EventHandler(this.passwordCheckbox_CheckedChanged);
 			// 
-			// metroLabel5
+			// passwordLabel
 			// 
-			this.metroLabel5.Location = new System.Drawing.Point(23, 422);
-			this.metroLabel5.Name = "metroLabel5";
-			this.metroLabel5.Size = new System.Drawing.Size(628, 65);
-			this.metroLabel5.TabIndex = 1;
-			this.metroLabel5.Text = resources.GetString("metroLabel5.Text");
+			this.passwordLabel.Location = new System.Drawing.Point(23, 422);
+			this.passwordLabel.Name = "passwordLabel";
+			this.passwordLabel.Size = new System.Drawing.Size(628, 65);
+			this.passwordLabel.TabIndex = 1;
+			this.passwordLabel.Text = resources.GetString("passwordLabel.Text");
 			// 
 			// pictureBox1
 			// 
 			this.pictureBox1.Image = global::WinAuth.Properties.Resources.BluePixel;
+			this.pictureBox1.ImeMode = System.Windows.Forms.ImeMode.NoControl;
 			this.pictureBox1.Location = new System.Drawing.Point(23, 187);
 			this.pictureBox1.Name = "pictureBox1";
 			this.pictureBox1.Size = new System.Drawing.Size(620, 1);
@@ -154,6 +155,7 @@
 			// pictureBox2
 			// 
 			this.pictureBox2.Image = global::WinAuth.Properties.Resources.BluePixel;
+			this.pictureBox2.ImeMode = System.Windows.Forms.ImeMode.NoControl;
 			this.pictureBox2.Location = new System.Drawing.Point(24, 383);
 			this.pictureBox2.Name = "pictureBox2";
 			this.pictureBox2.Size = new System.Drawing.Size(620, 1);
@@ -212,23 +214,23 @@
 			this.verifyField.UseSelectable = true;
 			this.verifyField.UseSystemPasswordChar = true;
 			// 
-			// metroLabel7
+			// verifyFieldLabel
 			// 
-			this.metroLabel7.AutoSize = true;
-			this.metroLabel7.Location = new System.Drawing.Point(40, 520);
-			this.metroLabel7.Name = "metroLabel7";
-			this.metroLabel7.Size = new System.Drawing.Size(41, 19);
-			this.metroLabel7.TabIndex = 5;
-			this.metroLabel7.Text = "Verify";
+			this.verifyFieldLabel.AutoSize = true;
+			this.verifyFieldLabel.Location = new System.Drawing.Point(40, 520);
+			this.verifyFieldLabel.Name = "verifyFieldLabel";
+			this.verifyFieldLabel.Size = new System.Drawing.Size(41, 19);
+			this.verifyFieldLabel.TabIndex = 5;
+			this.verifyFieldLabel.Text = "Verify";
 			// 
-			// metroLabel6
+			// passwordFieldLabel
 			// 
-			this.metroLabel6.AutoSize = true;
-			this.metroLabel6.Location = new System.Drawing.Point(40, 491);
-			this.metroLabel6.Name = "metroLabel6";
-			this.metroLabel6.Size = new System.Drawing.Size(63, 19);
-			this.metroLabel6.TabIndex = 5;
-			this.metroLabel6.Text = "Password";
+			this.passwordFieldLabel.AutoSize = true;
+			this.passwordFieldLabel.Location = new System.Drawing.Point(40, 491);
+			this.passwordFieldLabel.Name = "passwordFieldLabel";
+			this.passwordFieldLabel.Size = new System.Drawing.Size(63, 19);
+			this.passwordFieldLabel.TabIndex = 5;
+			this.passwordFieldLabel.Text = "Password";
 			// 
 			// ChangePasswordForm
 			// 
@@ -239,20 +241,20 @@
 			this.ClientSize = new System.Drawing.Size(674, 603);
 			this.Controls.Add(this.verifyField);
 			this.Controls.Add(this.passwordField);
-			this.Controls.Add(this.metroLabel7);
-			this.Controls.Add(this.metroLabel6);
+			this.Controls.Add(this.verifyFieldLabel);
+			this.Controls.Add(this.passwordFieldLabel);
 			this.Controls.Add(this.okButton);
 			this.Controls.Add(this.cancelButton);
 			this.Controls.Add(this.pictureBox2);
 			this.Controls.Add(this.pictureBox1);
-			this.Controls.Add(this.metroLabel5);
-			this.Controls.Add(this.metroLabel4);
+			this.Controls.Add(this.passwordLabel);
+			this.Controls.Add(this.userLabel);
 			this.Controls.Add(this.passwordCheckbox);
-			this.Controls.Add(this.metroLabel3);
+			this.Controls.Add(this.machineLabel);
 			this.Controls.Add(this.userCheckbox);
-			this.Controls.Add(this.metroLabel2);
+			this.Controls.Add(this.noneLabel);
 			this.Controls.Add(this.machineCheckbox);
-			this.Controls.Add(this.metroLabel1);
+			this.Controls.Add(this.introLabel);
 			this.Controls.Add(this.noneCheckbox);
 			this.Name = "ChangePasswordForm";
 			this.Resizable = false;
@@ -269,22 +271,22 @@
 		#endregion
 
 		private MetroFramework.Controls.MetroCheckBox noneCheckbox;
-		private MetroFramework.Controls.MetroLabel metroLabel1;
-		private MetroFramework.Controls.MetroLabel metroLabel2;
+		private MetroFramework.Controls.MetroLabel introLabel;
+		private MetroFramework.Controls.MetroLabel noneLabel;
 		private MetroFramework.Controls.MetroCheckBox machineCheckbox;
-		private MetroFramework.Controls.MetroLabel metroLabel3;
+		private MetroFramework.Controls.MetroLabel machineLabel;
 		private MetroFramework.Controls.MetroCheckBox userCheckbox;
-		private MetroFramework.Controls.MetroLabel metroLabel4;
+		private MetroFramework.Controls.MetroLabel userLabel;
 		private MetroFramework.Controls.MetroCheckBox passwordCheckbox;
-		private MetroFramework.Controls.MetroLabel metroLabel5;
+		private MetroFramework.Controls.MetroLabel passwordLabel;
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private System.Windows.Forms.PictureBox pictureBox2;
 		private MetroFramework.Controls.MetroButton cancelButton;
 		private MetroFramework.Controls.MetroButton okButton;
 		private MetroFramework.Controls.MetroTextBox passwordField;
 		private MetroFramework.Controls.MetroTextBox verifyField;
-		private MetroFramework.Controls.MetroLabel metroLabel7;
-		private MetroFramework.Controls.MetroLabel metroLabel6;
+		private MetroFramework.Controls.MetroLabel verifyFieldLabel;
+		private MetroFramework.Controls.MetroLabel passwordFieldLabel;
 
 	}
 }

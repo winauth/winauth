@@ -117,9 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AboutWinAuth" xml:space="preserve">
-    <value>About WinAuth</value>
-  </data>
   <data name="AuthenticatorNotImplemented" xml:space="preserve">
     <value>Authenticator not implemented</value>
   </data>
@@ -127,14 +124,10 @@
     <value>Unable to find your configuration file</value>
   </data>
   <data name="CannotLoadAuthenticator" xml:space="preserve">
-    <value>Unable to load authenticator from %1</value>
+    <value>Unable to load authenticator from {0}</value>
   </data>
   <data name="ClipboardInUse" xml:space="preserve">
     <value>Unable to copy to the clipboard. Another application is probably using it.\n\nTry again?</value>
-  </data>
-  <data name="Copyright" xml:space="preserve">
-    <value>WinAuth {0}
-Copyright (C) {1}. Colin Mackie. All rights reserved.</value>
   </data>
   <data name="EnterPassword" xml:space="preserve">
     <value>Please enter a password</value>
@@ -172,14 +165,72 @@ Copyright (C) {1}. Colin Mackie. All rights reserved.</value>
   <data name="PasswordsDontMatch" xml:space="preserve">
     <value>Passwords do not match</value>
   </data>
-  <data name="TrademarkInfo" xml:space="preserve">
+  <data name="UnknownError" xml:space="preserve">
+    <value>An unknown error occured</value>
+  </data>
+  <data name="_AboutForm_" xml:space="preserve">
+    <value>About WinAuth</value>
+  </data>
+  <data name="_AboutForm_aboutLabel_" xml:space="preserve">
+    <value>WinAuth {0}
+Copyright (C) {1}. Colin Mackie. All rights reserved.</value>
+  </data>
+  <data name="_AboutForm_closeButton" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="_AboutForm_licenseLabel_" xml:space="preserve">
+    <value>License</value>
+  </data>
+  <data name="_AboutForm_reportButton" xml:space="preserve">
+    <value>Error Report...</value>
+  </data>
+  <data name="_AboutForm_trademarkLabel_" xml:space="preserve">
     <value>Battle.net, World of Warcraft, StarCraft, Diablo, Mists of Pandaria, and all associated logos and designs are trademarks or registered trademarks of Blizzard Entertainment.
 
 NCsoft, the interlocking NC logo, ArenaNet, Guild Wars, Guild Wars Factions, Guild Wars Nightfall, Guild Wars: Eye of the North, Guild Wars 2, and all associated logos and designs are trademarks or registered trademarks of NCsoft Corporation.
 
 All other trademarks are the property of their respective owners.</value>
   </data>
-  <data name="UnknownError" xml:space="preserve">
-    <value>An unknown error occured</value>
+  <data name="_ChangePasswordForm_" xml:space="preserve">
+    <value>Protection</value>
+  </data>
+  <data name="_ChangePasswordForm_cancelButton_" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="_ChangePasswordForm_introLabel_" xml:space="preserve">
+    <value>Select how you would like to protect your authenticators. A combination of user protection and your own password is recommended.</value>
+  </data>
+  <data name="_ChangePasswordForm_machineCheckbox_" xml:space="preserve">
+    <value>Only useable on this computer</value>
+  </data>
+  <data name="_ChangePasswordForm_machineLabel_" xml:space="preserve">
+    <value>Your authenticators will be protected by encrypting them using your built-in Windows machine key. Your data can only be read by someone or an application on this computer. You must remove this setting to copy it to another computer or if you will be reinstalling Windows.</value>
+  </data>
+  <data name="_ChangePasswordForm_noneCheckbox_" xml:space="preserve">
+    <value>I do NOT want to use any protection</value>
+  </data>
+  <data name="_ChangePasswordForm_noneLabel_" xml:space="preserve">
+    <value>Your authenticators will not be protected by a password and will not be encrypted. This is very insecure and should only be used if you are copying your authenticators between different computers.</value>
+  </data>
+  <data name="_ChangePasswordForm_okButton_" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="_ChangePasswordForm_passwordCheckbox_" xml:space="preserve">
+    <value>Protect with my own password</value>
+  </data>
+  <data name="_ChangePasswordForm_passwordFieldLabel_" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="_ChangePasswordForm_passwordLabel_" xml:space="preserve">
+    <value>Your authenticators will be encrypted using your own password. You will need to enter your password to open WinAuth but can copy it between different computers. Your authenticators will be inaccessible if you forget your password and do not have a backup.</value>
+  </data>
+  <data name="_ChangePasswordForm_userCheckbox_" xml:space="preserve">
+    <value>Only useable by this user on this computer</value>
+  </data>
+  <data name="_ChangePasswordForm_userLabel_" xml:space="preserve">
+    <value>Your authenticators will be protected by encrypting them using the current Windows user account. Your data can only be read by this user on this computer. You must remove this setting to copy it to another computer or if you will be reinstalling Windows.</value>
+  </data>
+  <data name="_ChangePasswordForm_verifyFieldLabel_" xml:space="preserve">
+    <value>Verify</value>
   </data>
 </root>

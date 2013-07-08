@@ -35,7 +35,7 @@ namespace WinAuth
 	/// <summary>
 	/// Show the About form
 	/// </summary>
-	public partial class AboutForm : MetroFramework.Forms.MetroForm
+	public partial class AboutForm : ResourceForm
 	{
 		/// <summary>
 		/// Current config object
@@ -57,11 +57,6 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void AboutForm_Load(object sender, EventArgs e)
 		{
-			// load resources
-			this.Text = strings.AboutWinAuth;
-			this.aboutLabel.Text = strings.Copyright;
-			this.trademarkLabel.Text = strings.TrademarkInfo;
-
 			// get the version of the application
 			Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
 			string debug = string.Empty;
