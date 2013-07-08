@@ -557,6 +557,7 @@ namespace MetroFramework.Forms
             newButton.Tag = button;
             newButton.Size = new Size(25, 20);
             newButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+						newButton.TabStop = false;
             newButton.Click += WindowButton_Click;
             Controls.Add(newButton);
 
@@ -884,11 +885,13 @@ namespace MetroFramework.Forms
         #region Shadows
 
         private const int CS_DROPSHADOW = 0x20000;
-        protected override CreateParams CreateParams
+				private const int  WS_MINIMIZEBOX = 0x20000;
+				protected override CreateParams CreateParams
         {
             get
             {
                 CreateParams cp = base.CreateParams;
+								cp.Style |= WS_MINIMIZEBOX;
                 if (ShadowType == MetroFormShadowType.SystemShadow)
                     cp.ClassStyle |= CS_DROPSHADOW;
                 return cp;
@@ -961,8 +964,11 @@ namespace MetroFramework.Forms
                 TargetForm.Move += OnTargetFormMove;
                 TargetForm.Resize += OnTargetFormResize;
 
-                if (TargetForm.Owner != null)
-                    Owner = TargetForm.Owner;
+								Form prevowner = TargetForm.Owner;
+								if (TargetForm.Owner != null)
+								{
+									Owner = TargetForm.Owner;
+								}
 
                 TargetForm.Owner = this;
 
@@ -971,6 +977,12 @@ namespace MetroFramework.Forms
                 ShowInTaskbar = false;
                 ShowIcon = false;
                 FormBorderStyle = FormBorderStyle.None;
+
+								if (prevowner != null)
+								{
+									TargetForm.TopMost = prevowner.TopMost;
+									this.TopMost = prevowner.TopMost;
+								}
 
                 Bounds = GetShadowBounds();
             }
