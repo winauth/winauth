@@ -50,11 +50,11 @@
 			this.introLabel = new MetroFramework.Controls.MetroLabel();
 			this.passwordPanel = new MetroFramework.Controls.MetroPanel();
 			this.passwordButton = new MetroFramework.Controls.MetroButton();
-			this.passwordLabel = new MetroFramework.Controls.MetroLabel();
-			this.passwordField = new MetroFramework.Controls.MetroTextBox();
 			this.passwordErrorLabel = new MetroFramework.Controls.MetroLabel();
+			this.passwordField = new MetroFramework.Controls.MetroTextBox();
 			this.passwordTimer = new System.Windows.Forms.Timer(this.components);
 			this.authenticatorList = new WinAuth.AuthenticatorListBox();
+			this.passwordLabel = new MetroFramework.Controls.MetroLabel();
 			this.authenticatorMenu.SuspendLayout();
 			this.commandPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
@@ -215,14 +215,14 @@
 			this.passwordButton.UseSelectable = true;
 			this.passwordButton.Click += new System.EventHandler(this.passwordButton_Click);
 			// 
-			// passwordLabel
+			// passwordErrorLabel
 			// 
-			this.passwordLabel.AutoSize = true;
-			this.passwordLabel.Location = new System.Drawing.Point(24, 16);
-			this.passwordLabel.Name = "passwordLabel";
-			this.passwordLabel.Size = new System.Drawing.Size(63, 19);
-			this.passwordLabel.TabIndex = 3;
-			this.passwordLabel.Text = "Password";
+			this.passwordErrorLabel.ForeColor = System.Drawing.Color.Red;
+			this.passwordErrorLabel.Location = new System.Drawing.Point(27, 68);
+			this.passwordErrorLabel.Name = "passwordErrorLabel";
+			this.passwordErrorLabel.Size = new System.Drawing.Size(326, 19);
+			this.passwordErrorLabel.TabIndex = 3;
+			this.passwordErrorLabel.UseCustomForeColor = true;
 			// 
 			// passwordField
 			// 
@@ -237,15 +237,6 @@
 			this.passwordField.UseSelectable = true;
 			this.passwordField.UseSystemPasswordChar = true;
 			this.passwordField.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.passwordField_KeyPress);
-			// 
-			// passwordErrorLabel
-			// 
-			this.passwordErrorLabel.ForeColor = System.Drawing.Color.Red;
-			this.passwordErrorLabel.Location = new System.Drawing.Point(27, 68);
-			this.passwordErrorLabel.Name = "passwordErrorLabel";
-			this.passwordErrorLabel.Size = new System.Drawing.Size(326, 19);
-			this.passwordErrorLabel.TabIndex = 3;
-			this.passwordErrorLabel.UseCustomForeColor = true;
 			// 
 			// passwordTimer
 			// 
@@ -272,6 +263,15 @@
 			this.authenticatorList.TabStop = false;
 			this.authenticatorList.Visible = false;
 			this.authenticatorList.ItemRemoved += new WinAuth.AuthenticatorListItemRemovedHandler(this.authenticatorList_ItemRemoved);
+			// 
+			// passwordLabel
+			// 
+			this.passwordLabel.AutoSize = true;
+			this.passwordLabel.Location = new System.Drawing.Point(24, 16);
+			this.passwordLabel.Name = "passwordLabel";
+			this.passwordLabel.Size = new System.Drawing.Size(63, 19);
+			this.passwordLabel.TabIndex = 3;
+			this.passwordLabel.Text = "Password";
 			// 
 			// WinAuthForm
 			// 
@@ -329,10 +329,10 @@
 		private System.Windows.Forms.PictureBox pictureBox2;
 		private MetroFramework.Controls.MetroPanel passwordPanel;
 		private MetroFramework.Controls.MetroTextBox passwordField;
-		private MetroFramework.Controls.MetroLabel passwordLabel;
 		private MetroFramework.Controls.MetroButton passwordButton;
 		private MetroFramework.Controls.MetroLabel passwordErrorLabel;
 		private System.Windows.Forms.Timer passwordTimer;
+		private MetroFramework.Controls.MetroLabel passwordLabel;
 
   }
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2013 Colin Mackie.
  * This software is distributed under the terms of the GNU General Public License.
  *
@@ -22,34 +22,33 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-
-using MetroFramework;
-using MetroFramework.Forms;
 
 using WinAuth.Resources;
 
 namespace WinAuth
 {
 	/// <summary>
-	/// General about form
+	/// Show the About form
 	/// </summary>
-	public partial class AboutForm : MetroForm
+	public partial class AboutForm : MetroFramework.Forms.MetroForm
 	{
 		/// <summary>
-		/// Create the about Form
+		/// Current config object
+		/// </summary>
+		public WinAuthConfig Config { get; set; }
+
+		/// <summary>
+		/// Create the form
 		/// </summary>
 		public AboutForm()
 		{
 			InitializeComponent();
 		}
-
-		/// <summary>
-		/// Current config object
-		/// </summary>
-		public WinAuthConfig Config { get; set; }
 
 		/// <summary>
 		/// Load the about form
@@ -59,7 +58,9 @@ namespace WinAuth
 		private void AboutForm_Load(object sender, EventArgs e)
 		{
 			// load resources
-			aboutLabel.Text = strings.Copyright;
+			this.Text = strings.AboutWinAuth;
+			this.aboutLabel.Text = strings.Copyright;
+			this.trademarkLabel.Text = strings.TrademarkInfo;
 
 			// get the version of the application
 			Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
@@ -74,17 +75,17 @@ namespace WinAuth
 		}
 
 		/// <summary>
-		/// Click the OK button
+		/// Click the close button
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void btnOK_Click(object sender, EventArgs e)
+		private void closeButton_Click(object sender, EventArgs e)
 		{
 			this.Close();
 		}
 
 		/// <summary>
-		/// Click the Diagnostics button
+		/// Click the report button
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
@@ -113,6 +114,5 @@ namespace WinAuth
 			}
 			errorreport.ShowDialog(this);
 		}
-
 	}
 }

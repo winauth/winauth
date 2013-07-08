@@ -36,6 +36,7 @@ using MetroFramework;
 using MetroFramework.Forms;
 
 using WinAuth.Resources;
+using System.Security;
 
 namespace WinAuth
 {
@@ -833,7 +834,7 @@ namespace WinAuth
 
 			this.optionsMenu.Items.Clear();
 
-			menuitem = new ToolStripMenuItem(strings.MenuChangePassword);
+			menuitem = new ToolStripMenuItem(strings.MenuChangeProtection + "...");
 			menuitem.Name = "changePasswordOptionsMenuItem";
 			menuitem.Click += changePasswordOptionsMenuItem_Click;
 			this.optionsMenu.Items.Add(menuitem);
@@ -916,7 +917,21 @@ namespace WinAuth
 		private void changePasswordOptionsMenuItem_Click(object sender, EventArgs e)
 		{
 			ChangePasswordForm form = new ChangePasswordForm();
-			form.ShowDialog(this);
+			form.PasswordType = this.Config.PasswordType;
+			if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+			{
+				this.Config.PasswordType = form.PasswordType;
+				if ((this.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
+				{
+					this.Config.Password = form.Password;
+				}
+				else
+				{
+					this.Config.Password = null;
+				}
+
+				SaveConfig();
+			}
 		}
 
 		/// <summary>

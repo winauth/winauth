@@ -93,6 +93,16 @@ namespace WinAuth.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap BluePixel {
+            get {
+                object obj = ResourceManager.GetObject("BluePixel", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap ChromeIcon {
             get {
                 object obj = ResourceManager.GetObject("ChromeIcon", resourceCulture);

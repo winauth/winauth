@@ -55,9 +55,9 @@ namespace WinAuth
 
     public decimal Version { get; private set; }
 
-    public Authenticator.PasswordTypes PasswordType = Authenticator.PasswordTypes.None;
+		public string Password { private get; set; }
 
-    public string Password {private get; set;}
+		public Authenticator.PasswordTypes PasswordType = Authenticator.PasswordTypes.None;
 
     /// <summary>
     /// All authenticators
@@ -722,11 +722,11 @@ namespace WinAuth
           data = Authenticator.ByteArrayToString(ms.ToArray());
         }
 
-        string encryptedTypes;
-        data = Authenticator.EncryptSequence(data, PasswordType, Password, out encryptedTypes);
-        writer.WriteAttributeString("encrypted", encryptedTypes);
-        writer.WriteString(data);
-        writer.WriteEndElement();
+				string encryptedTypes;
+				data = Authenticator.EncryptSequence(data, PasswordType, Password, out encryptedTypes);
+				writer.WriteAttributeString("encrypted", encryptedTypes);
+				writer.WriteString(data);
+				writer.WriteEndElement();
 
         return;
       }
@@ -760,7 +760,57 @@ namespace WinAuth
     }
 
     #endregion
-  }
+	}
+
+/*
+	public static class SecureStringExtension
+	{
+		/// <summary>
+		/// Create a SecureString from a string
+		/// </summary>
+		/// <param name="current">normal string</param>
+		/// <returns>new SecureString instance</returns>
+		public static SecureString ToSecure(this string current, bool makeReadOnly = true)
+		{
+			if (current == null)
+			{
+				return null;
+			}
+
+			var secure = new SecureString();
+			foreach (var c in current.ToCharArray()) secure.AppendChar(c);
+			if (makeReadOnly == true)
+			{
+				secure.MakeReadOnly();
+			}
+			return secure;
+		}
+
+		/// <summary>
+		/// Get the contexts of a SecureString as a normal string
+		/// </summary>
+		/// <param name="secure">SecureString instance</param>
+		/// <returns>normal string</returns>
+		public static string ToUnsecureString(this SecureString secure)
+		{
+			if (secure == null)
+			{
+				throw new ArgumentNullException("securePassword");
+			}
+
+			IntPtr unmanagedString = IntPtr.Zero;
+			try
+			{
+				unmanagedString = Marshal.SecureStringToGlobalAllocUnicode(secure);
+				return Marshal.PtrToStringUni(unmanagedString);
+			}
+			finally
+			{
+				Marshal.ZeroFreeGlobalAllocUnicode(unmanagedString);
+			}
+		}
+	}
+*/
 
   /// <summary>
   /// Config change event arguments

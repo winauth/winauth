@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AboutWinAuth" xml:space="preserve">
+    <value>About WinAuth</value>
+  </data>
   <data name="AuthenticatorNotImplemented" xml:space="preserve">
     <value>Authenticator not implemented</value>
   </data>
@@ -151,8 +154,8 @@ Copyright (C) {1}. Colin Mackie. All rights reserved.</value>
   <data name="MenuAutoSize" xml:space="preserve">
     <value>Auto Size</value>
   </data>
-  <data name="MenuChangePassword" xml:space="preserve">
-    <value>Change Password</value>
+  <data name="MenuChangeProtection" xml:space="preserve">
+    <value>Change Protection</value>
   </data>
   <data name="MenuExit" xml:space="preserve">
     <value>Exit</value>
@@ -165,6 +168,16 @@ Copyright (C) {1}. Colin Mackie. All rights reserved.</value>
   </data>
   <data name="MenuUseSystemTrayIcon" xml:space="preserve">
     <value>Use System Tray Icon</value>
+  </data>
+  <data name="PasswordsDontMatch" xml:space="preserve">
+    <value>Passwords do not match</value>
+  </data>
+  <data name="TrademarkInfo" xml:space="preserve">
+    <value>Battle.net, World of Warcraft, StarCraft, Diablo, Mists of Pandaria, and all associated logos and designs are trademarks or registered trademarks of Blizzard Entertainment.
+
+NCsoft, the interlocking NC logo, ArenaNet, Guild Wars, Guild Wars Factions, Guild Wars Nightfall, Guild Wars: Eye of the North, Guild Wars 2, and all associated logos and designs are trademarks or registered trademarks of NCsoft Corporation.
+
+All other trademarks are the property of their respective owners.</value>
   </data>
   <data name="UnknownError" xml:space="preserve">
     <value>An unknown error occured</value>

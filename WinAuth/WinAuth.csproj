@@ -81,7 +81,7 @@
     <Compile Include="AboutForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AboutForm.designer.cs">
+    <Compile Include="AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
     <Compile Include="AddGoogleAuthenticator.cs">
@@ -269,6 +269,7 @@
     <EmbeddedResource Include="Resources\Windows7Icon.png" />
     <None Include="Resources\padlock-open.png" />
     <None Include="Resources\padlock-closed.png" />
+    <None Include="Resources\BluePixel.png" />
     <Content Include="winauth.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -301,11 +302,11 @@
       <Project>{eaf2d5ce-d817-453a-8a32-3d531570ae04}</Project>
       <Name>Authenticator</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Third Party\winforms-modernui-master\MetroFramework.Design\MetroFramework.Design.csproj">
+    <ProjectReference Include="..\Third Party\MetroFramework\MetroFramework.Design\MetroFramework.Design.csproj">
       <Project>{7316584d-9a16-4280-a8ab-6d45198c6e4d}</Project>
       <Name>MetroFramework.Design</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Third Party\winforms-modernui-master\MetroFramework\MetroFramework.csproj">
+    <ProjectReference Include="..\Third Party\MetroFramework\MetroFramework\MetroFramework.csproj">
       <Project>{bb41ac8b-cbed-4387-a7e0-4567edb3f57f}</Project>
       <Name>MetroFramework</Name>
     </ProjectReference>

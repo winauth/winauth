@@ -117,19 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="metroStyleManager.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
-  <metadata name="metroStyleExtender.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>176, 17</value>
-  </metadata>
-  <data name="richTextBox2.Text" xml:space="preserve">
-    <value>Battle.net, World of Warcraft, StarCraft, Diablo, Mists of Pandaria, and all associated logos and designs are trademarks or registered trademarks of Blizzard Entertainment.
-
-NCsoft, the interlocking NC logo, ArenaNet, Guild Wars, Guild Wars Factions, Guild Wars Nightfall, Guild Wars: Eye of the North, Guild Wars 2, and all associated logos and designs are trademarks or registered trademarks of NCsoft Corporation.
-
-All other trademarks are the property of their respective owners.</value>
-  </data>
   <data name="richTextBox1.Text" xml:space="preserve">
     <value>                    GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
@@ -763,7 +750,13 @@ for more details.
 
   You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses/.
-
 </value>
+  </data>
+  <data name="trademarkLabel.Text" xml:space="preserve">
+    <value>[string.TrademarkInfo] Battle.net, World of Warcraft, StarCraft, Diablo, Mists of Pandaria, and all associated logos and designs are trademarks or registered trademarks of Blizzard Entertainment.
+
+NCsoft, the interlocking NC logo, ArenaNet, Guild Wars, Guild Wars Factions, Guild Wars Nightfall, Guild Wars: Eye of the North, Guild Wars 2, and all associated logos and designs are trademarks or registered trademarks of NCsoft Corporation.
+
+All other trademarks are the property of their respective owners.</value>
   </data>
 </root>

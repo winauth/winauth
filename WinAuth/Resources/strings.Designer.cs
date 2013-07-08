@@ -61,6 +61,15 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to About WinAuth.
+        /// </summary>
+        internal static string AboutWinAuth {
+            get {
+                return ResourceManager.GetString("AboutWinAuth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Authenticator not implemented.
         /// </summary>
         internal static string AuthenticatorNotImplemented {
@@ -161,11 +170,11 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change Password.
+        ///   Looks up a localized string similar to Change Protection.
         /// </summary>
-        internal static string MenuChangePassword {
+        internal static string MenuChangeProtection {
             get {
-                return ResourceManager.GetString("MenuChangePassword", resourceCulture);
+                return ResourceManager.GetString("MenuChangeProtection", resourceCulture);
             }
         }
         
@@ -202,6 +211,28 @@ namespace WinAuth.Resources {
         internal static string MenuUseSystemTrayIcon {
             get {
                 return ResourceManager.GetString("MenuUseSystemTrayIcon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Passwords do not match.
+        /// </summary>
+        internal static string PasswordsDontMatch {
+            get {
+                return ResourceManager.GetString("PasswordsDontMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Battle.net, World of Warcraft, StarCraft, Diablo, Mists of Pandaria, and all associated logos and designs are trademarks or registered trademarks of Blizzard Entertainment.
+        ///
+        ///NCsoft, the interlocking NC logo, ArenaNet, Guild Wars, Guild Wars Factions, Guild Wars Nightfall, Guild Wars: Eye of the North, Guild Wars 2, and all associated logos and designs are trademarks or registered trademarks of NCsoft Corporation.
+        ///
+        ///All other trademarks are the property of their respective owners..
+        /// </summary>
+        internal static string TrademarkInfo {
+            get {
+                return ResourceManager.GetString("TrademarkInfo", resourceCulture);
             }
         }
         
