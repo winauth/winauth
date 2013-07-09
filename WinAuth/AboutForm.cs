@@ -87,7 +87,7 @@ namespace WinAuth
 		private void reportButton_Click(object sender, EventArgs e)
 		{
 			// display the error form, loading it with current authenticator data
-			ErrorReportForm errorreport = new ErrorReportForm();
+			DiagnosticForm errorreport = new DiagnosticForm();
 			errorreport.Config = Config;
 			if (string.IsNullOrEmpty(errorreport.Config.Filename) == false)
 			{

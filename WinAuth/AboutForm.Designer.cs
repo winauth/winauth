@@ -82,7 +82,7 @@
 			this.reportButton.Name = "reportButton";
 			this.reportButton.Size = new System.Drawing.Size(112, 23);
 			this.reportButton.TabIndex = 7;
-			this.reportButton.Text = "Error Report...";
+			this.reportButton.Text = "Diagnostics...";
 			this.reportButton.UseSelectable = true;
 			this.reportButton.Click += new System.EventHandler(this.reportButton_Click);
 			// 

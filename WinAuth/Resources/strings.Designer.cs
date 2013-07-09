@@ -98,7 +98,7 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error Report....
+        ///   Looks up a localized string similar to Diagnostics....
         /// </summary>
         internal static string _AboutForm_reportButton {
             get {
