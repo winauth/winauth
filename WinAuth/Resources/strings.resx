@@ -135,6 +135,15 @@
   <data name="ErrorOccured" xml:space="preserve">
     <value>An error has occurred</value>
   </data>
+  <data name="ErrorReportSubmitted" xml:space="preserve">
+    <value>Thank you. Your error report has been submitted.</value>
+  </data>
+  <data name="ErrorSendingErrorReport" xml:space="preserve">
+    <value>Unable to send your error report</value>
+  </data>
+  <data name="HideDetails" xml:space="preserve">
+    <value>Hide Details</value>
+  </data>
   <data name="InvalidPassword" xml:space="preserve">
     <value>Invalid password</value>
   </data>
@@ -232,6 +241,32 @@ All other trademarks are the property of their respective owners.</value>
   </data>
   <data name="_ChangePasswordForm_verifyFieldLabel_" xml:space="preserve">
     <value>Verify</value>
+  </data>
+  <data name="_ExceptionForm_" xml:space="preserve">
+    <value>WinAuth Error</value>
+  </data>
+  <data name="_ExceptionForm_continueButton_" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="_ExceptionForm_detailsButton_" xml:space="preserve">
+    <value>Show Details</value>
+  </data>
+  <data name="_ExceptionForm_errorLabel_" xml:space="preserve">
+    <value>An error has occured in WinAuth.
+
+{0}
+
+Some diagnostic information has been recorded and saved that might help track down issues in WinAuth.
+
+It would help if you can submit this information so we can investigate the crash and try and fix the issue. This information does include information about your authenticators but is only used by the WinAuth developers solely for the purpose of investigating bugs and error reports. It does not include any personal or identifying information. Any information sent has been encrypted using PGP and cannot be read by anyone else.
+
+If you are happy to send this information please either click Send Error Report or you can click Show Details and manually copy the text and file a bug report at http://www.winauth.com/bug.</value>
+  </data>
+  <data name="_ExceptionForm_quitButton_" xml:space="preserve">
+    <value>Quit</value>
+  </data>
+  <data name="_ExceptionForm_reportButton_" xml:space="preserve">
+    <value>Send Error Report</value>
   </data>
   <data name="_WinAuthForm_addAuthenticatorButton_" xml:space="preserve">
     <value>Add</value>

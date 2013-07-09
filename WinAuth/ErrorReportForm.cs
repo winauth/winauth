@@ -97,8 +97,9 @@ namespace WinAuth
 
 			if (this.Config != null)
 			{
-				// clone the authenticator so we can extract key in case machine/user encrypted
+				// clone the current config so we can extract key in case machine/user encrypted
 				WinAuthConfig clone = this.Config.Clone() as WinAuthConfig;
+				clone.PasswordType = Authenticator.PasswordTypes.None;
 				foreach (var auth in clone)
 				{
 					auth.PasswordType = Authenticator.PasswordTypes.None;
@@ -115,6 +116,7 @@ namespace WinAuth
 					{
 						clone.WriteXmlString(writer);
 					}
+					diag.Append("--CURRENT CONFIG--").Append(Environment.NewLine);
 					diag.Append(xml.ToString()).Append(Environment.NewLine).Append(Environment.NewLine);
 				}
 				catch (Exception ex)
@@ -123,14 +125,31 @@ namespace WinAuth
 				}
 			}
 
+			// add each of the entries from the registry
+			diag.Append("--REGISTRY--").Append(Environment.NewLine);
+			diag.Append(WinAuthHelper.ReadBackupFromRegistry()).Append(Environment.NewLine).Append(Environment.NewLine);
+
+			// add current config file
 			if (string.IsNullOrEmpty(ConfigFileContents) == false)
 			{
+				diag.Append("--CONFIGFILE--").Append(Environment.NewLine);
 				diag.Append(ConfigFileContents).Append(Environment.NewLine).Append(Environment.NewLine);
+			}
+
+			// add winauth log
+			string dir = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuthMain.APPLICATION_NAME);
+			string winauthlog = Path.Combine(dir, "winauth.log");
+			if (File.Exists(winauthlog) == true)
+			{
+				diag.Append("--WINAUTH.LOG--").Append(Environment.NewLine);
+				diag.Append(File.ReadAllText(winauthlog)).Append(Environment.NewLine).Append(Environment.NewLine);
 			}
 
 			// add the exception
 			if (ErrorException != null)
 			{
+				diag.Append("--EXCEPTION--").Append(Environment.NewLine);
+
 				Exception ex = ErrorException;
 				while (ex != null)
 				{

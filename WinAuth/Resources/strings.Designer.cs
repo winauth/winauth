@@ -246,6 +246,66 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to WinAuth Error.
+        /// </summary>
+        internal static string _ExceptionForm_ {
+            get {
+                return ResourceManager.GetString("_ExceptionForm_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Continue.
+        /// </summary>
+        internal static string _ExceptionForm_continueButton_ {
+            get {
+                return ResourceManager.GetString("_ExceptionForm_continueButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Details.
+        /// </summary>
+        internal static string _ExceptionForm_detailsButton_ {
+            get {
+                return ResourceManager.GetString("_ExceptionForm_detailsButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error has occured in WinAuth.
+        ///
+        ///{0}
+        ///
+        ///Some diagnostic information has been recorded and saved that might help track down issues in WinAuth.
+        ///
+        ///It would help if you can submit this information so we can investigate the crash and try and fix the issue. This information does include information about your authenticators but is only used by the WinAuth developers solely for the purpose of investigating bugs and error reports. It does not include any personal or identifying information. Any information sent [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string _ExceptionForm_errorLabel_ {
+            get {
+                return ResourceManager.GetString("_ExceptionForm_errorLabel_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quit.
+        /// </summary>
+        internal static string _ExceptionForm_quitButton_ {
+            get {
+                return ResourceManager.GetString("_ExceptionForm_quitButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send Error Report.
+        /// </summary>
+        internal static string _ExceptionForm_reportButton_ {
+            get {
+                return ResourceManager.GetString("_ExceptionForm_reportButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add.
         /// </summary>
         internal static string _WinAuthForm_addAuthenticatorButton_ {
@@ -332,6 +392,33 @@ namespace WinAuth.Resources {
         internal static string ErrorOccured {
             get {
                 return ResourceManager.GetString("ErrorOccured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Thank you. Your error report has been submitted..
+        /// </summary>
+        internal static string ErrorReportSubmitted {
+            get {
+                return ResourceManager.GetString("ErrorReportSubmitted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to send your error report.
+        /// </summary>
+        internal static string ErrorSendingErrorReport {
+            get {
+                return ResourceManager.GetString("ErrorSendingErrorReport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hide Details.
+        /// </summary>
+        internal static string HideDetails {
+            get {
+                return ResourceManager.GetString("HideDetails", resourceCulture);
             }
         }
         

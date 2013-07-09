@@ -656,6 +656,9 @@ namespace WinAuth
 
 				if (added == true)
 				{
+					// save off any new authenticators into the registry for restore
+					WinAuthHelper.SaveToRegistry(winauthauthenticator);
+
 					// first time we prompt for protection
 					if (this.Config.Count == 0)
 					{

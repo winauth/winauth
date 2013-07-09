@@ -61,7 +61,12 @@ namespace WinAuth
     /// <summary>
     /// Registry data name for last good
     /// </summary>
-    private const string WINAUTHREGKEY_LASTGOOD = @"LastGood";
+    private const string WINAUTHREGKEY_BACKUP = @"Backup";
+
+		/// <summary>
+		/// Registry data name for errors
+		/// </summary>
+		private const string WINAUTHREGKEY_ERROR = @"Error";
 
     /// <summary>
     /// Registry data name for saved skin
@@ -228,7 +233,7 @@ namespace WinAuth
 				MessageBox.Show(form, string.Format(strings.CannotLoadAuthenticator, configFile) + ": " + ex.Message, "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 
-      SetLastGood(config);
+      SaveToRegistry(config);
 
       return config;
     }
@@ -275,49 +280,128 @@ namespace WinAuth
     /// Save a PGP encrpyted version of the config into the registry for recovery
     /// </summary>
     /// <param name="config"></param>
-    public static void SetLastGood(WinAuthConfig config)
+		public static void SaveToRegistry(WinAuthConfig config)
     {
-      if (config == null || config.CurrentAuthenticator == null)
+      if (config == null)
       {
         return;
       }
 
       using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WINAUTHREGKEY))
       {
-        using (RegistryKey subkey = key.CreateSubKey(WINAUTHREGKEY_LASTGOOD))
+        using (RegistryKey subkey = key.CreateSubKey(WINAUTHREGKEY_BACKUP))
         {
-          using (SHA256 sha = new SHA256Managed())
+					// create an unencrypted clone
+					config = config.Clone() as WinAuthConfig;
+					config.PasswordType = Authenticator.PasswordTypes.None;
+					foreach (var wa in config)
           {
-            foreach (WinAuthAuthenticator wa in config)
+						wa.PasswordType = Authenticator.PasswordTypes.None;
+						wa.AuthenticatorData.PasswordType = Authenticator.PasswordTypes.None;
+					}
+
+					// save the whole config
+          using (StringWriter sw = new StringWriter())
+          {
+            XmlWriterSettings xmlsettings = new XmlWriterSettings();
+            xmlsettings.Indent = true;
+            using (XmlWriter xw = XmlWriter.Create(sw, xmlsettings))
             {
-							Authenticator auth = wa.AuthenticatorData;
-							if (auth.PasswordType != Authenticator.PasswordTypes.None)
-							{
-								auth = wa.AuthenticatorData.Clone() as Authenticator;
-								auth.PasswordType = Authenticator.PasswordTypes.None;
-							}
-
-              // get a hash based on the authenticator key
-              string authkey = Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(auth.SecretData)));
-
-              // save the PGP encrypted key
-              using (StringWriter sw = new StringWriter())
-              {
-                XmlWriterSettings xmlsettings = new XmlWriterSettings();
-                xmlsettings.Indent = true;
-                using (XmlWriter xw = XmlWriter.Create(sw, xmlsettings))
-                {
-                  auth.WriteToWriter(xw);
-                }
-                subkey.SetValue(authkey, PGPEncrypt(sw.ToString(), WinAuthHelper.WINAUTH_PGP_PUBLICKEY));
-              }
+							config.WriteXmlString(xw, true);
             }
+            subkey.SetValue("Config", PGPEncrypt(sw.ToString(), WinAuthHelper.WINAUTH_PGP_PUBLICKEY));
           }
         }
       }
     }
 
-    /// <summary>
+		/// <summary>
+		/// Save a PGP encrpyted version of an authenticator into the registry for recovery
+		/// </summary>
+		/// <param name="wa">WinAuthAuthenticator instance</param>
+		public static void SaveToRegistry(WinAuthAuthenticator wa)
+		{
+			if (wa == null || wa.AuthenticatorData == null)
+			{
+				return;
+			}
+
+			using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WINAUTHREGKEY))
+			{
+				using (RegistryKey subkey = key.CreateSubKey(WINAUTHREGKEY_BACKUP))
+				{
+					using (SHA256 sha = new SHA256Managed())
+					{
+						// get a hash based on the authenticator key
+						string authkey = Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(wa.AuthenticatorData.SecretData)));
+
+						// save the PGP encrypted key
+						using (StringWriter sw = new StringWriter())
+						{
+							XmlWriterSettings xmlsettings = new XmlWriterSettings();
+							xmlsettings.Indent = true;
+							using (XmlWriter xw = XmlWriter.Create(sw, xmlsettings))
+							{
+								wa.WriteXmlString(xw);
+							}
+							subkey.SetValue(authkey, PGPEncrypt(sw.ToString(), WinAuthHelper.WINAUTH_PGP_PUBLICKEY));
+						}
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Save a PGP encrpyted version of an error into the registry for diagnostics
+		/// </summary>
+		public static void SaveLastErrorToRegistry(string error)
+		{
+			if (error == null)
+			{
+				return;
+			}
+
+			using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WINAUTHREGKEY))
+			{
+				using (RegistryKey subkey = key.CreateSubKey(WINAUTHREGKEY_BACKUP))
+				{
+					// save the PGP encrypted key
+					subkey.SetValue(WINAUTHREGKEY_ERROR, PGPEncrypt(error, WinAuthHelper.WINAUTH_PGP_PUBLICKEY));
+				}
+			}
+		}
+
+		/// <summary>
+		/// Read the encrpyted backup registry entries to be sent within the diagnostics report
+		/// </summary>
+		public static string ReadBackupFromRegistry()
+		{
+			StringBuilder buffer = new StringBuilder();
+			using (RegistryKey key = Registry.CurrentUser.OpenSubKey(WINAUTHREGKEY))
+			{
+				if (key != null)
+				{
+					using (RegistryKey subkey = key.OpenSubKey(WINAUTHREGKEY_BACKUP))
+					{
+						if (subkey != null)
+						{
+							foreach (string name in subkey.GetValueNames())
+							{
+								object val = subkey.GetValue(name);
+								if (val != null)
+								{
+									buffer.Append(name + "=" + Convert.ToString(val)).Append(Environment.NewLine);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			return buffer.ToString();
+		}
+
+		/// <summary>
     /// Set up winauth so it will start with Windows by adding entry into registry
     /// </summary>
     /// <param name="enabled">enable or disable start with windows</param>

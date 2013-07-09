@@ -25,6 +25,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Resources;
+using System.Runtime.CompilerServices;
 
 namespace WinAuth
 {
@@ -47,6 +48,11 @@ namespace WinAuth
     /// Winuath email address used as sender to backup emails
     /// </summary>
     public const string WINAUTHBACKUP_EMAIL = "winauth@gmail.com";
+
+		/// <summary>
+		/// URL to post error reports
+		/// </summary>
+		public const string WINAUTH_BUG_URL = "http://www.winauth.com/bug";
 
 		/// <summary>
 		/// Set of inbuilt icons and authenticator types
@@ -93,25 +99,17 @@ namespace WinAuth
     {
 			if (!System.Diagnostics.Debugger.IsAttached)
 			{
+				AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+				Application.ThreadException += OnThreadException;
+				Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+
 				try
 				{
 					main();
 				}
 				catch (Exception ex)
 				{
-					// add catch for unknown application exceptions to try and get closer to bug
-					StringBuilder capture = new StringBuilder();
-					//
-					Exception e = ex;
-					while (e != null)
-					{
-						capture.Append(new StackTrace(e).ToString()).Append(Environment.NewLine);
-						e = e.InnerException;
-					}
-					//
-					string dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-					File.WriteAllText(Path.Combine(dir, "winauth.log"), capture.ToString());
-
+					LogException(ex);
 					throw;
 				}
 			}
@@ -120,6 +118,56 @@ namespace WinAuth
 				main();
 			}
     }
+
+		static void OnThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
+		{
+			LogException(e.Exception as Exception);
+		}
+
+		static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			LogException(e.ExceptionObject as Exception);
+		}
+
+		private static void LogException(Exception ex)
+		{
+			// add catch for unknown application exceptions to try and get closer to bug
+			StringBuilder capture = new StringBuilder();
+			//
+			try
+			{
+				Exception e = ex;
+				while (e != null)
+				{
+					capture.Append(new StackTrace(e).ToString()).Append(Environment.NewLine);
+					e = e.InnerException;
+				}
+				//
+				string dir = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuthMain.APPLICATION_NAME);
+				Directory.CreateDirectory(dir);
+				File.WriteAllText(Path.Combine(dir, "winauth.log"), capture.ToString());
+			}
+			catch (Exception) { }
+
+			// save last error into registry for diagnosticss
+			try
+			{
+				WinAuthHelper.SaveLastErrorToRegistry(capture.ToString());
+			}
+			catch (Exception) { }
+
+			try
+			{
+				ExceptionForm report = new ExceptionForm();
+				report.ErrorException = ex;
+				report.TopMost = true;
+				if (report.ShowDialog() == DialogResult.Cancel)
+				{
+					Process.GetCurrentProcess().Kill();
+				}
+			}
+			catch (Exception) { }
+		}
 
 		private static void main()
 		{
