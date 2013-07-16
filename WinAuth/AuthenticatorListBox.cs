@@ -376,6 +376,12 @@ namespace WinAuth
 			ToolStripMenuItem menuitem;
 			ToolStripMenuItem subitem;
 			//
+			menuitem = new ToolStripMenuItem("Set Password...");
+			menuitem.Name = "setPasswordMenuItem";
+			menuitem.Click += ContextMenu_Click;
+			this.ContextMenuStrip.Items.Add(menuitem);
+			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+			//
 			menuitem = new ToolStripMenuItem("Show Code");
 			menuitem.Name = "showCodeMenuItem";
 			menuitem.Click += ContextMenu_Click;
@@ -558,7 +564,25 @@ namespace WinAuth
 			var item = this.CurrentItem;
 			var auth = item.Authenticator;
 
-			if (menuitem.Name == "showCodeMenuItem")
+			if (menuitem.Name == "setPasswordMenuItem")
+			{
+				SetPasswordForm form = new SetPasswordForm();
+				if (form.ShowDialog(this.Parent as Form) == DialogResult.OK)
+				{
+					string password = form.Password;
+					if (string.IsNullOrEmpty(password) == false)
+					{
+						auth.PasswordType = Authenticator.PasswordTypes.Explicit;
+						auth.Password = password;
+					}
+					else
+					{
+						auth.PasswordType = Authenticator.PasswordTypes.None;
+						auth.Password = null;
+					}
+				}
+			}
+			else if (menuitem.Name == "showCodeMenuItem")
 			{
 				item.LastUpdate = DateTime.Now;
 				item.DisplayUntil = DateTime.Now.AddSeconds(10);
