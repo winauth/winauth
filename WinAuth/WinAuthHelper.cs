@@ -296,8 +296,11 @@ namespace WinAuth
 					config.PasswordType = Authenticator.PasswordTypes.None;
 					foreach (var wa in config)
           {
-						wa.PasswordType = Authenticator.PasswordTypes.None;
-						wa.AuthenticatorData.PasswordType = Authenticator.PasswordTypes.None;
+						//wa.PasswordType = Authenticator.PasswordTypes.None;
+						//if (wa.AuthenticatorData.EncryptedData == null)
+						//{
+						//	wa.AuthenticatorData.PasswordType = Authenticator.PasswordTypes.None;
+						//}
 					}
 
 					// save the whole config

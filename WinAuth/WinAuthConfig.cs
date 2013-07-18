@@ -555,13 +555,13 @@ namespace WinAuth
       }
 
       string encrypted = reader.GetAttribute("encrypted");
-      if (string.IsNullOrEmpty(encrypted) == false)
+			this.PasswordType = Authenticator.DecodePasswordTypes(encrypted);
+      if (this.PasswordType != Authenticator.PasswordTypes.None)
       {
         // read the encrypted text from the node
         string data = reader.ReadElementContentAsString();
         // decrypt
-        Authenticator.PasswordTypes passwordType;
-        data = Authenticator.DecryptSequence(data, encrypted, password, out passwordType);
+				data = Authenticator.DecryptSequence(data, this.PasswordType, password);
 
 				using (MemoryStream ms = new MemoryStream(Authenticator.StringToByteArray(data)))
 				{
@@ -569,7 +569,7 @@ namespace WinAuth
           ReadXml(reader, password);
         }
 
-				this.PasswordType = passwordType;
+				//this.PasswordType = passwordType;
 				this.Password = password;
 
         return;
@@ -641,7 +641,7 @@ namespace WinAuth
             // for old 2.x configs
             case "authenticator":
 							var waold = new WinAuthAuthenticator();
-              waold.AuthenticatorData = Authenticator.ReadXml(reader, password);
+              waold.AuthenticatorData = Authenticator.ReadXmlv2(reader, password);
               if (waold.AuthenticatorData is BattleNetAuthenticator)
               {
                 waold.Name = "Battle.net";
@@ -664,15 +664,21 @@ namespace WinAuth
               {
                 waold.Skin = defaultSkin;
               }
-              waold.PasswordType = waold.AuthenticatorData.PasswordType;
-              waold.Password = waold.AuthenticatorData.Password;
-              waold.AuthenticatorData.PasswordType = Authenticator.PasswordTypes.None;
-              waold.AuthenticatorData.Password = null;
+              //waold.PasswordType = waold.AuthenticatorData.PasswordType;
+              //waold.Password = waold.AuthenticatorData.Password;
+              //waold.AuthenticatorData.PasswordType = Authenticator.PasswordTypes.None;
+              //waold.AuthenticatorData.Password = null;
               break;
-            case "autologin":
+
+						case "autologin":
               var hks = new HoyKeySequence();
               hks.ReadXml(reader, password);
-              this.CurrentAuthenticator.AutoLogin = hks;
+							StringBuilder script = new StringBuilder();
+							using (XmlWriter xw = XmlWriter.Create(script))
+							{
+								hks.WriteXmlString(xw);
+							}
+							this.CurrentAuthenticator.AuthenticatorData.Script = (script.Length != 0 ? script.ToString() : null);
               break;
 
             default:
@@ -705,8 +711,22 @@ namespace WinAuth
       writer.WriteAttributeString("version", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(2));
       if (PasswordType != Authenticator.PasswordTypes.None)
       {
-        string data;
-
+				StringBuilder encryptedTypes = new StringBuilder();
+				if ((PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
+				{
+					encryptedTypes.Append("y");
+				}
+				if ((PasswordType & Authenticator.PasswordTypes.User) != 0)
+				{
+					encryptedTypes.Append("u");
+				}
+				if ((PasswordType & Authenticator.PasswordTypes.Machine) != 0)
+				{
+					encryptedTypes.Append("m");
+				}
+				writer.WriteAttributeString("encrypted", encryptedTypes.ToString());
+				
+				string data;
         using (MemoryStream ms = new MemoryStream())
         {
           XmlWriterSettings settings = new XmlWriterSettings();
@@ -722,9 +742,7 @@ namespace WinAuth
           data = Authenticator.ByteArrayToString(ms.ToArray());
         }
 
-				string encryptedTypes;
-				data = Authenticator.EncryptSequence(data, PasswordType, Password, out encryptedTypes);
-				writer.WriteAttributeString("encrypted", encryptedTypes);
+				data = Authenticator.EncryptSequence(data, PasswordType, Password);
 				writer.WriteString(data);
 				writer.WriteEndElement();
 

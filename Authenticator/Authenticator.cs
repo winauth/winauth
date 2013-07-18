@@ -118,7 +118,7 @@ namespace WinAuth
 		/// <summary>
 		/// Serial number of authenticator
 		/// </summary>
-		public virtual string Serial { get; set; }
+		//public virtual string Serial { get; set; }
 
 		/// <summary>
 		/// Secret key used for Authenticator
@@ -133,12 +133,19 @@ namespace WinAuth
 		/// <summary>
 		/// Type of password used to encrypt secretdata
 		/// </summary>
-		public PasswordTypes PasswordType { get; set; }
+		public PasswordTypes PasswordType { get; private set; }
 
 		/// <summary>
 		/// Password used to encrypt secretdata (if PasswordType == Explict)
 		/// </summary>
-		public string Password { get; set; }
+		//protected string Password { get; set; }
+
+		public bool RequiresPassword { get; private set; }
+
+		/// <summary>
+		/// The data current saved with the current encryption and/or password (might be none)
+		/// </summary>
+		protected string EncryptedData { get; private set; }
 
 		/// <summary>
 		/// Number of digits returned in code (default is 6)
@@ -152,20 +159,27 @@ namespace WinAuth
 		{
 			get
 			{
-				return Authenticator.ByteArrayToString(SecretKey);
+				// this is the secretkey | script
+				return Authenticator.ByteArrayToString(SecretKey) + "|" + (string.IsNullOrEmpty(Script) == false ? Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(Script)) : string.Empty);
 			}
 			set
 			{
 				if (string.IsNullOrEmpty(value) == false)
 				{
-					SecretKey = Authenticator.StringToByteArray(value);
+					//SecretKey = Authenticator.StringToByteArray(value);
+					string[] parts = value.Split('|');
+					SecretKey = Authenticator.StringToByteArray(parts[0]);
+					Script = (parts.Length > 1 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[1])) : null);
 				}
 				else
 				{
 					SecretKey = null;
+					Script = null;
 				}
 			}
 		}
+
+		public string Script {get; set;}
 
 		/// <summary>
 		/// Get the server time since 1/1/70
@@ -198,6 +212,11 @@ namespace WinAuth
 		{
 			get
 			{
+				if (this.SecretKey == null && this.EncryptedData != null)
+				{
+					throw new EncrpytedSecretDataException();
+				}
+
 				return CalculateCode(false);
 			}
 		}
@@ -282,7 +301,7 @@ namespace WinAuth
 
 		#region Load / Save
 
-    public static Authenticator ReadXml(XmlReader reader, string password = null)
+		public static Authenticator ReadXmlv2(XmlReader reader, string password = null)
     {
       Authenticator authenticator = null;
       string authenticatorType = reader.GetAttribute("type");
@@ -323,12 +342,12 @@ namespace WinAuth
               string encrypted = reader.GetAttribute("encrypted");
               string data = reader.ReadElementContentAsString();
 
-              PasswordTypes passwordType = PasswordTypes.None;
+							PasswordTypes passwordType = DecodePasswordTypes(encrypted);
 
-              if (string.IsNullOrEmpty(encrypted) == false)
+              if (passwordType != PasswordTypes.None)
               {
 								// this is an old version so there is no hash
-                data = DecryptSequence(data, encrypted, password, out passwordType);
+								data = DecryptSequence(data, passwordType, password);
               }
 
               authenticator.PasswordType = passwordType;
@@ -359,8 +378,179 @@ namespace WinAuth
 			return false;
 		}
 
-		public void ReadXml(XmlReader reader)
+		public static PasswordTypes DecodePasswordTypes(string passwordTypes)
 		{
+			PasswordTypes passwordType = PasswordTypes.None;
+			if (string.IsNullOrEmpty(passwordTypes) == true)
+			{
+				return passwordType;
+			}
+
+			char[] types = passwordTypes.ToCharArray();
+			for (int i = types.Length - 1; i >= 0; i--)
+			{
+				char type = types[i];
+				switch (type)
+				{
+					case 'u':
+						passwordType |= PasswordTypes.User;
+						break;
+					case 'm':
+						passwordType |= PasswordTypes.Machine;
+						break;
+					case 'y':
+						passwordType |= PasswordTypes.Explicit;
+						break;
+					default:
+						break;
+				}
+			}
+
+			return passwordType;
+		}
+
+		public static string EncodePasswordTypes(PasswordTypes passwordType)
+		{
+			StringBuilder encryptedTypes = new StringBuilder();
+			if ((passwordType & PasswordTypes.Explicit) != 0)
+			{
+				encryptedTypes.Append("y");
+			}
+			if ((passwordType & PasswordTypes.User) != 0)
+			{
+				encryptedTypes.Append("u");
+			}
+			if ((passwordType & PasswordTypes.Machine) != 0)
+			{
+				encryptedTypes.Append("m");
+			}
+
+			return encryptedTypes.ToString();
+		}
+
+		public void SetEncryption(PasswordTypes passwordType, string password = null)
+		{
+			// check if still encrpyted
+			if (this.RequiresPassword == true)
+			{
+				// have to decrypt to be able to re-encrypt
+				throw new EncrpytedSecretDataException();
+			}
+
+			if (passwordType == PasswordTypes.None)
+			{
+				this.RequiresPassword = false;
+				this.EncryptedData = null;
+				this.PasswordType = passwordType;
+			}
+			else
+			{
+				using (MemoryStream ms = new MemoryStream())
+				{
+					// get the plain version
+					XmlWriterSettings settings = new XmlWriterSettings();
+					settings.Indent = true;
+					settings.Encoding = Encoding.UTF8;
+					using (XmlWriter encryptedwriter = XmlWriter.Create(ms, settings))
+					{
+						string encrpytedData = this.EncryptedData;
+						Authenticator.PasswordTypes savedpasswordType = PasswordType;
+						try
+						{
+							PasswordType = Authenticator.PasswordTypes.None;
+							EncryptedData = null;
+							WriteToWriter(encryptedwriter);
+						}
+						finally
+						{
+							this.PasswordType = savedpasswordType;
+							this.EncryptedData = encrpytedData;
+						}
+					}
+					string data = Authenticator.ByteArrayToString(ms.ToArray());
+
+					// encrypt
+					this.EncryptedData = Authenticator.EncryptSequence(data, passwordType, password);
+					this.PasswordType = passwordType;
+				}
+			}
+		}
+
+		public void Protect()
+		{
+			if (this.PasswordType == PasswordTypes.Explicit)
+			{
+				this.SecretData = null;
+				this.RequiresPassword = true;
+			}
+		}
+
+		public void Unprotect(string password)
+		{
+			PasswordTypes passwordType = this.PasswordType;
+			if (passwordType == PasswordTypes.None)
+			{
+				throw new InvalidOperationException("Cannot Unprotect a non-encrypted authenticator");
+			}
+
+			// decrypt
+			try
+			{
+				string data = Authenticator.DecryptSequence(this.EncryptedData, this.PasswordType, password);
+				using (MemoryStream ms = new MemoryStream(Authenticator.StringToByteArray(data)))
+				{
+					XmlReader reader = XmlReader.Create(ms);
+					this.ReadXml(reader, password);
+				}
+				this.RequiresPassword = false;
+			}
+			catch (EncrpytedSecretDataException)
+			{
+				this.RequiresPassword = true;
+				throw;
+			}
+			finally
+			{
+				this.PasswordType = passwordType;
+			}
+		}
+
+		public void ReadXml(XmlReader reader, string password = null)
+		{
+			// decode the password type
+			string encrypted = reader.GetAttribute("encrypted");
+			PasswordTypes passwordType = DecodePasswordTypes(encrypted);
+			this.PasswordType = passwordType;
+
+			if (passwordType != PasswordTypes.None)
+			{
+				// read the encrypted text from the node
+				this.EncryptedData = reader.ReadElementContentAsString();
+				Unprotect(password);
+
+				//// decrypt
+				//try
+				//{
+				//	string data = Authenticator.DecryptSequence(this.EncryptedData, passwordType, password);
+				//	using (MemoryStream ms = new MemoryStream(Authenticator.StringToByteArray(data)))
+				//	{
+				//		reader = XmlReader.Create(ms);
+				//		this.ReadXml(reader, password);
+				//	}
+				//}
+				//catch (EncrpytedSecretDataException)
+				//{
+				//	this.RequiresPassword = true;
+				//	throw;
+				//}
+				//finally
+				//{
+				//	this.PasswordType = passwordType;
+				//}
+
+				return;
+			}
+
 			reader.MoveToContent();
 			if (reader.IsEmptyElement)
 			{
@@ -378,10 +568,6 @@ namespace WinAuth
 						case "servertimediff":
 							ServerTimeDiff = reader.ReadElementContentAsLong();
 							break;
-
-						//case "restorecodeverified":
-						//	RestoreCodeVerified = reader.ReadElementContentAsBoolean();
-						//	break;
 
 						case "secretdata":
 							SecretData = reader.ReadElementContentAsString();
@@ -410,7 +596,60 @@ namespace WinAuth
     public void WriteToWriter(XmlWriter writer)
 		{
       writer.WriteStartElement("authenticatordata");
-      writer.WriteAttributeString("type", this.GetType().FullName);
+      //writer.WriteAttributeString("type", this.GetType().FullName);
+			string encrypted = EncodePasswordTypes(this.PasswordType);
+			if (string.IsNullOrEmpty(encrypted) == false)
+			{
+				writer.WriteAttributeString("encrypted", encrypted);
+			}
+
+			if (this.PasswordType != PasswordTypes.None)
+			{
+				writer.WriteRaw(this.EncryptedData);
+			}
+			else
+			{
+				writer.WriteStartElement("servertimediff");
+				writer.WriteString(ServerTimeDiff.ToString());
+				writer.WriteEndElement();
+				//
+				writer.WriteStartElement("secretdata");
+				writer.WriteString(SecretData);
+				writer.WriteEndElement();
+
+				WriteExtraXml(writer);
+			}
+
+/*
+			if (passwordType != Authenticator.PasswordTypes.None)
+			{
+				//string data = this.EncryptedData;
+				//if (data == null)
+				//{
+				//	using (MemoryStream ms = new MemoryStream())
+				//	{
+				//		XmlWriterSettings settings = new XmlWriterSettings();
+				//		settings.Indent = true;
+				//		settings.Encoding = Encoding.UTF8;
+				//		using (XmlWriter encryptedwriter = XmlWriter.Create(ms, settings))
+				//		{
+				//			Authenticator.PasswordTypes savedpasswordType = PasswordType;
+				//			PasswordType = Authenticator.PasswordTypes.None;
+				//			WriteToWriter(encryptedwriter);
+				//			PasswordType = savedpasswordType;
+				//		}
+				//		data = Authenticator.ByteArrayToString(ms.ToArray());
+				//	}
+
+				//	data = Authenticator.EncryptSequence(data, PasswordType, Password);
+				//}
+
+				writer.WriteString(this.EncryptedData);
+				writer.WriteEndElement();
+
+				return;
+			}
+
 			//
 			writer.WriteStartElement("servertimediff");
 			writer.WriteString(ServerTimeDiff.ToString());
@@ -421,9 +660,39 @@ namespace WinAuth
       writer.WriteEndElement();
 
 			WriteExtraXml(writer);
+*/
 
 			writer.WriteEndElement();
 		}
+
+/*
+		/// <summary>
+		/// Write this authenticator into an XmlWriter
+		/// </summary>
+		/// <param name="writer">XmlWriter to receive authenticator</param>
+		protected void WriteToWriter(XmlWriter writer, PasswordTypes passwordType)
+		{
+			if (passwordType != Authenticator.PasswordTypes.None)
+			{
+				writer.WriteStartElement("authenticatordata");
+				writer.WriteAttributeString("encrypted", EncodePasswordTypes(this.PasswordType));
+				writer.WriteString(this.EncryptedData);
+				writer.WriteEndElement();
+			}
+			else
+			{
+				writer.WriteStartElement("servertimediff");
+				writer.WriteString(ServerTimeDiff.ToString());
+				writer.WriteEndElement();
+				//
+				writer.WriteStartElement("secretdata");
+				writer.WriteString(SecretData);
+				writer.WriteEndElement();
+
+				WriteExtraXml(writer);
+			}
+		}
+*/
 
 		/// <summary>
 		/// Virtual function to write any class specific xml nodes into the writer
@@ -511,12 +780,12 @@ namespace WinAuth
 			return BitConverter.ToString(bytes).Replace("-", string.Empty);
 		}
 
-    public static string DecryptSequence(string data, string encryptedTypes, string password, out PasswordTypes passwordType)
+		public static string DecryptSequence(string data, PasswordTypes encryptedTypes, string password)
     {
 			// check for encrpytion header
 			if (data.Length < ENCRYPTION_HEADER.Length || data.IndexOf(ENCRYPTION_HEADER) != 0)
 			{
-				return DecryptSequenceNoHash(data, encryptedTypes, password, out passwordType);
+				return DecryptSequenceNoHash(data, encryptedTypes, password);
 			}
 
 			// extract salt and hash
@@ -531,10 +800,9 @@ namespace WinAuth
 				data = data.Substring(datastart);
 
 				// decrypt encrypt content and try again
-				char[] encTypes = encryptedTypes.ToCharArray();
-				passwordType = PasswordTypes.None;
+				//char[] encTypes = encryptedTypes.ToCharArray();
 
-				data = DecryptSequenceNoHash(data, encryptedTypes, password, out passwordType);
+				data = DecryptSequenceNoHash(data, encryptedTypes, password);
 
 				// check the hash
 				byte[] compareplain = StringToByteArray(salt + data);
@@ -548,58 +816,45 @@ namespace WinAuth
       return data;
     }
 
-		private static string DecryptSequenceNoHash(string data, string encryptedTypes, string password, out PasswordTypes passwordType)
+		private static string DecryptSequenceNoHash(string data, PasswordTypes encryptedTypes, string password)
 		{
 			// decrypt encrypt content and try again
-			char[] encTypes = encryptedTypes.ToCharArray();
-			passwordType = PasswordTypes.None;
+			//char[] encTypes = encryptedTypes.ToCharArray();
+			//passwordType = PasswordTypes.None;
 
 			try
 			{
-				// we read the string in reverse order (the order they were encrypted)
-				for (int i = encTypes.Length - 1; i >= 0; i--)
+				// reverse order they were encrypted
+				if ((encryptedTypes & PasswordTypes.Machine) != 0)
 				{
-					char encryptedType = encTypes[i];
-					switch (encryptedType)
+					// we are going to decrypt with the Windows local machine key
+					//passwordType |= PasswordTypes.Machine;
+					byte[] cipher = Authenticator.StringToByteArray(data);
+					//byte[] cipher = Encoding.UTF8.GetBytes(data);
+					byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
+					data = ByteArrayToString(plain);
+				}
+				if ((encryptedTypes & PasswordTypes.User) != 0)
+				{
+					// we are going to decrypt with the Windows User account key
+					//passwordType |= PasswordTypes.User;
+					byte[] cipher = StringToByteArray(data);
+					byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.CurrentUser);
+					data = ByteArrayToString(plain);
+					//data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+				}
+				if ((encryptedTypes & PasswordTypes.Explicit) != 0)
+				{
+					// we use an explicit password to encrypt data
+					if (string.IsNullOrEmpty(password) == true)
 					{
-						case 'u':
-							{
-								// we are going to decrypt with the Windows User account key
-								passwordType |= PasswordTypes.User;
-								byte[] cipher = StringToByteArray(data);
-								byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.CurrentUser);
-								data = ByteArrayToString(plain);
-								//data = Encoding.UTF8.GetString(plain, 0, plain.Length);
-								break;
-							}
-						case 'm':
-							{
-								// we are going to decrypt with the Windows local machine key
-								passwordType |= PasswordTypes.Machine;
-								byte[] cipher = Authenticator.StringToByteArray(data);
-								//byte[] cipher = Encoding.UTF8.GetBytes(data);
-								byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
-								data = ByteArrayToString(plain);
-								//data = Encoding.UTF8.GetString(plain, 0, plain.Length);
-								break;
-							}
-						case 'y':
-							{
-								// we use an explicit password to encrypt data
-								if (string.IsNullOrEmpty(password) == true)
-								{
-									throw new EncrpytedSecretDataException();
-								}
-								passwordType |= PasswordTypes.Explicit;
-								data = Authenticator.Decrypt(data, password, true);
-								//byte[] plain = Authenticator.StringToByteArray(data);
-								//data = ByteArrayToString(plain);
-								//data = Encoding.UTF8.GetString(plain, 0, plain.Length);
-								break;
-							}
-						default:
-							break;
+						throw new EncrpytedSecretDataException();
 					}
+					//passwordType |= PasswordTypes.Explicit;
+					data = Authenticator.Decrypt(data, password, true);
+					//byte[] plain = Authenticator.StringToByteArray(data);
+					//data = ByteArrayToString(plain);
+					//data = Encoding.UTF8.GetString(plain, 0, plain.Length);
 				}
 			}
 			catch (EncrpytedSecretDataException)
@@ -614,7 +869,7 @@ namespace WinAuth
 			return data;
 		}
 
-		public static string EncryptSequence(string data, PasswordTypes passwordType, string password, out string encryptedTypes)
+		public static string EncryptSequence(string data, PasswordTypes passwordType, string password)
     {
 			// get hash of original
 			string salt;
@@ -631,7 +886,6 @@ namespace WinAuth
 				hash = ByteArrayToString(sha.ComputeHash(plain));
 			}
 
-      StringBuilder encryptionTypes = new StringBuilder();
       if ((passwordType & PasswordTypes.Explicit) != 0)
       {
         string encrypted = Encrypt(data, password);
@@ -643,8 +897,6 @@ namespace WinAuth
           throw new InvalidEncryptionException(data, password, encrypted, decrypted);
         }
         data = encrypted;
-
-        encryptionTypes.Append("y");
       }
       if ((passwordType & PasswordTypes.User) != 0)
       {
@@ -652,7 +904,6 @@ namespace WinAuth
         byte[] plain = StringToByteArray(data);
         byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.CurrentUser);
         data = ByteArrayToString(cipher);
-        encryptionTypes.Append("u");
       }
       if ((passwordType & PasswordTypes.Machine) != 0)
       {
@@ -660,10 +911,7 @@ namespace WinAuth
         byte[] plain = StringToByteArray(data);
         byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.LocalMachine);
         data = ByteArrayToString(cipher);
-        encryptionTypes.Append("m");
       }
-
-      encryptedTypes = encryptionTypes.ToString();
 
 			// prepend the salt + hash
 			return ENCRYPTION_HEADER + salt + hash + data;

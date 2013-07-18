@@ -185,7 +185,7 @@ namespace WinAuth
 			}
 		}
 
-    public void ReadXml(XmlReader reader, string password)
+    public void ReadXml(XmlReader reader, string password = null)
     {
       reader.MoveToContent();
 
@@ -232,8 +232,8 @@ namespace WinAuth
 
               if (string.IsNullOrEmpty(encrypted) == false)
               {
-                Authenticator.PasswordTypes passwordType;
-                data = Authenticator.DecryptSequence(data, encrypted, password, out passwordType);
+                Authenticator.PasswordTypes passwordType = Authenticator.DecodePasswordTypes(encrypted);
+								data = Authenticator.DecryptSequence(data, passwordType, password);
                 byte[] plain = Authenticator.StringToByteArray(data);
                 data = Encoding.UTF8.GetString(plain, 0, plain.Length);
 
@@ -301,7 +301,7 @@ namespace WinAuth
 		/// Write data into the XmlWriter
 		/// </summary>
 		/// <param name="writer">XmlWriter to write to</param>
-		public void WriteXmlString(XmlWriter writer, Authenticator.PasswordTypes passwordType, string password)
+		public void WriteXmlString(XmlWriter writer)
 		{
 			writer.WriteStartElement("autologin");
 
@@ -331,32 +331,6 @@ namespace WinAuth
 			//
 			writer.WriteStartElement("script");
 			string script = AdvancedScript.Replace("\n", string.Empty);
-/*
-			StringBuilder passwordTypeAttribue = new StringBuilder();
-			if ((passwordType & Authenticator.PasswordTypes.Explicit) != 0)
-			{
-				byte[] plain = Encoding.UTF8.GetBytes(script);
-				script = Authenticator.ByteArrayToString(plain);
-				script = Authenticator.Encrypt(script, password);
-				passwordTypeAttribue.Append("y");
-			}
-			if ((passwordType & Authenticator.PasswordTypes.User) != 0)
-			{
-				byte[] plain = Encoding.UTF8.GetBytes(script);
-				byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.CurrentUser);
-				script = Authenticator.ByteArrayToString(cipher);
-				passwordTypeAttribue.Append("u");
-			}
-			if ((passwordType & Authenticator.PasswordTypes.Machine) != 0)
-			{
-				// we encrypt the data using the Local Machine account key
-				byte[] plain = Encoding.UTF8.GetBytes(script);
-				byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.LocalMachine);
-				script = Authenticator.ByteArrayToString(cipher);
-				passwordTypeAttribue.Append("m");
-			}
-			writer.WriteAttributeString("encrypted", passwordTypeAttribue.ToString());
- */
 			writer.WriteCData(script);
 			writer.WriteEndElement();
 
@@ -367,19 +341,19 @@ namespace WinAuth
 		/// Get an xml string representation of the HotKeySequence
 		/// </summary>
 		/// <returns>string representation</returns>
-		public override string ToString()
-		{
-			StringBuilder sb = new StringBuilder();
-			sb.Append("<modifiers>").Append(Authenticator.ByteArrayToString(BitConverter.GetBytes((int)Modifiers))).Append("</modifiers>");
-			sb.Append("<hotkey>").Append(Authenticator.ByteArrayToString(BitConverter.GetBytes((ushort)HotKey))).Append("</hotkey>");
-			sb.Append("<windowtitle><![CDATA[").Append(WindowTitle ?? string.Empty).Append("]]></windowtitle>");
-			sb.Append("<processname><![CDATA[").Append(ProcessName ?? string.Empty).Append("]]></processname>");
-			sb.Append("<windowtitleregex>").Append(WindowTitleRegex.ToString()).Append("</windowtitleregex>");
-			sb.Append("<advanced>").Append(Advanced.ToString()).Append("</advanced>");
-			sb.Append("<script><![CDATA[").Append(AdvancedScript.Replace("\n", string.Empty)).Append("]]></script>");
+		//public override string ToString()
+		//{
+		//	StringBuilder sb = new StringBuilder();
+		//	sb.Append("<modifiers>").Append(Authenticator.ByteArrayToString(BitConverter.GetBytes((int)Modifiers))).Append("</modifiers>");
+		//	sb.Append("<hotkey>").Append(Authenticator.ByteArrayToString(BitConverter.GetBytes((ushort)HotKey))).Append("</hotkey>");
+		//	sb.Append("<windowtitle><![CDATA[").Append(WindowTitle ?? string.Empty).Append("]]></windowtitle>");
+		//	sb.Append("<processname><![CDATA[").Append(ProcessName ?? string.Empty).Append("]]></processname>");
+		//	sb.Append("<windowtitleregex>").Append(WindowTitleRegex.ToString()).Append("</windowtitleregex>");
+		//	sb.Append("<advanced>").Append(Advanced.ToString()).Append("</advanced>");
+		//	sb.Append("<script><![CDATA[").Append(AdvancedScript.Replace("\n", string.Empty)).Append("]]></script>");
 
-			return sb.ToString();
-		}
+		//	return sb.ToString();
+		//}
 	}
 
 }

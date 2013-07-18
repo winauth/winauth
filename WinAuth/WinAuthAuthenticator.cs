@@ -56,12 +56,12 @@ namespace WinAuth
     private bool _allowCopy;
     private bool _copyOnCode;
     private bool _hideSerial;
-    private HoyKeySequence _autoLogin;
+    //private HoyKeySequence _autoLogin;
 
 		private bool m_ignoreClipboard;
 
-    public Authenticator.PasswordTypes PasswordType { get; set; }
-    public string Password { get; set; }
+		//public Authenticator.PasswordTypes PasswordType { get; set; }
+		//public string Password { get; set; }
 
     public WinAuthAuthenticator()
     {
@@ -80,6 +80,14 @@ namespace WinAuth
 
       return clone;
     }
+
+		public void MarkChanged()
+		{
+			if (OnWinAuthAuthenticatorChanged != null)
+			{
+				OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
+			}
+		}
 
 		public string Name
 		{
@@ -189,21 +197,45 @@ namespace WinAuth
       }
     }
 
-    public HoyKeySequence AutoLogin
-    {
-      get
-      {
-        return _autoLogin;
-      }
-      set
-      {
-        _autoLogin = value;
+		public HoyKeySequence AutoLogin
+		{
+			get
+			{
+				//return _autoLogin;
+
+				string script = this.AuthenticatorData.Script;
+				if (string.IsNullOrEmpty(script) == true)
+				{
+					return null;
+				}
+
+				HoyKeySequence hks = new HoyKeySequence();
+				using (XmlReader xr = XmlReader.Create(new StringReader(script)))
+				{
+					hks.ReadXml(xr);
+				}
+				return hks;
+			}
+			set
+			{
+				//_autoLogin = value;
+
+				StringBuilder script = new StringBuilder();
+				if (value != null)
+				{
+					using (XmlWriter xw = XmlWriter.Create(script))
+					{
+						value.WriteXmlString(xw);
+					}
+				}
+				this.AuthenticatorData.Script = (script.Length != 0 ? script.ToString() : null);
+
 				if (OnWinAuthAuthenticatorChanged != null)
-        {
+				{
 					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
-        }
-      }
-    }
+				}
+			}
+		}
 
 		public Bitmap Icon
 		{
@@ -299,25 +331,25 @@ namespace WinAuth
         this.AuthenticatorData = Activator.CreateInstance(type) as Authenticator;
       }
 
-      string encrypted = reader.GetAttribute("encrypted");
-      if (string.IsNullOrEmpty(encrypted) == false)
-      {
-        // read the encrypted text from the node
-        string data = reader.ReadElementContentAsString();
-        // decrypt
-        Authenticator.PasswordTypes passwordType;
-        data = Authenticator.DecryptSequence(data, encrypted, password, out passwordType);
+			//string encrypted = reader.GetAttribute("encrypted");
+			//if (string.IsNullOrEmpty(encrypted) == false)
+			//{
+			//	// read the encrypted text from the node
+			//	string data = reader.ReadElementContentAsString();
+			//	// decrypt
+			//	Authenticator.PasswordTypes passwordType;
+			//	data = Authenticator.DecryptSequence(data, encrypted, password, out passwordType);
 
-        using (MemoryStream ms = new MemoryStream(Authenticator.StringToByteArray(data)))
-        {
-          reader = XmlReader.Create(ms);
-          ReadXml(reader, password);
-        }
-				this.PasswordType = passwordType;
-				this.Password = password;
+			//	using (MemoryStream ms = new MemoryStream(Authenticator.StringToByteArray(data)))
+			//	{
+			//		reader = XmlReader.Create(ms);
+			//		ReadXml(reader, password);
+			//	}
+			//	this.PasswordType = passwordType;
+			//	this.Password = password;
 
-        return;
-      }
+			//	return;
+			//}
 
       reader.MoveToContent();
 
@@ -366,15 +398,26 @@ namespace WinAuth
               break;
 
             case "authenticator":
-              this.AuthenticatorData = Authenticator.ReadXml(reader, password);
-              this.PasswordType = this.AuthenticatorData.PasswordType;
-              this.Password = this.AuthenticatorData.Password;
-              this.AuthenticatorData.PasswordType = Authenticator.PasswordTypes.None;
-              this.AuthenticatorData.Password = null;
+              this.AuthenticatorData = Authenticator.ReadXmlv2(reader, password);
+              //this.PasswordType = this.AuthenticatorData.PasswordType;
+              //this.Password = this.AuthenticatorData.Password;
+              //this.AuthenticatorData.PasswordType = Authenticator.PasswordTypes.None;
+              //this.AuthenticatorData.Password = null;
               break;
 
 						case "authenticatordata":
-							this.AuthenticatorData.ReadXml(reader);
+							try
+							{
+								this.AuthenticatorData.ReadXml(reader, password);
+							}
+							catch (EncrpytedSecretDataException esde)
+							{
+								// ignore
+							}
+							catch (BadPasswordException bpex)
+							{
+								// ignore
+							}
               break;
 
             case "servertimediff":
@@ -412,34 +455,34 @@ namespace WinAuth
         writer.WriteAttributeString("type", this.AuthenticatorData.GetType().FullName);
       }
 
-      if (this.PasswordType != Authenticator.PasswordTypes.None)
-      {
-        string data;
+			//if (this.PasswordType != Authenticator.PasswordTypes.None)
+			//{
+			//	string data;
 
-        using (MemoryStream ms = new MemoryStream())
-        {
-          XmlWriterSettings settings = new XmlWriterSettings();
-          settings.Indent = true;
-          settings.Encoding = Encoding.UTF8;
-          using (XmlWriter encryptedwriter = XmlWriter.Create(ms, settings))
-          {
-            Authenticator.PasswordTypes savedpasswordType = PasswordType;
-            PasswordType = Authenticator.PasswordTypes.None;
-            WriteXmlString(encryptedwriter);
-            PasswordType = savedpasswordType;
-          }
-          //data = Encoding.UTF8.GetString(ms.ToArray());
-          data = Authenticator.ByteArrayToString(ms.ToArray());
-        }
+			//	using (MemoryStream ms = new MemoryStream())
+			//	{
+			//		XmlWriterSettings settings = new XmlWriterSettings();
+			//		settings.Indent = true;
+			//		settings.Encoding = Encoding.UTF8;
+			//		using (XmlWriter encryptedwriter = XmlWriter.Create(ms, settings))
+			//		{
+			//			Authenticator.PasswordTypes savedpasswordType = PasswordType;
+			//			PasswordType = Authenticator.PasswordTypes.None;
+			//			WriteXmlString(encryptedwriter);
+			//			PasswordType = savedpasswordType;
+			//		}
+			//		//data = Encoding.UTF8.GetString(ms.ToArray());
+			//		data = Authenticator.ByteArrayToString(ms.ToArray());
+			//	}
 
-        string encryptedTypes;
-        data = Authenticator.EncryptSequence(data, PasswordType, Password, out encryptedTypes);
-        writer.WriteAttributeString("encrypted", encryptedTypes);
-        writer.WriteString(data);
-        writer.WriteEndElement();
+			//	string encryptedTypes;
+			//	data = Authenticator.EncryptSequence(data, PasswordType, Password, out encryptedTypes);
+			//	writer.WriteAttributeString("encrypted", encryptedTypes);
+			//	writer.WriteString(data);
+			//	writer.WriteEndElement();
 
-        return;
-      }
+			//	return;
+			//}
 
       writer.WriteStartElement("name");
       writer.WriteValue(this.Name ?? string.Empty);
@@ -475,10 +518,10 @@ namespace WinAuth
         this.AuthenticatorData.WriteToWriter(writer);
 
         // save script with password and generated salt
-        if (this.AutoLogin != null)
-        {
-          this.AutoLogin.WriteXmlString(writer, this.AuthenticatorData.PasswordType, this.AuthenticatorData.Password);
-        }
+				//if (this.AutoLogin != null)
+				//{
+				//	this.AutoLogin.WriteXmlString(writer, this.AuthenticatorData.PasswordType, this.AuthenticatorData.Password);
+				//}
       }
 
       writer.WriteEndElement();

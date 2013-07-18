@@ -62,38 +62,35 @@ namespace WinAuth
 
     #region Authenticator data
 
-    public override string Serial
+    public string Serial
     {
       get
       {
         return Base32.getInstance().Encode(SecretKey);
-      }
-      set
-      {
       }
     }
 
     /// <summary>
     /// Get/set the combined secret data value as hex coded string arrays
     /// </summary>
-    public override string SecretData
-    {
-      get
-      {
-        return Authenticator.ByteArrayToString(SecretKey);
-      }
-      set
-      {
-        if (string.IsNullOrEmpty(value) == false)
-        {
-					SecretKey = Authenticator.StringToByteArray(value);
-        }
-        else
-        {
-          SecretKey = null;
-        }
-      }
-    }
+		//public override string SecretData
+		//{
+		//	get
+		//	{
+		//		return Authenticator.ByteArrayToString(SecretKey);
+		//	}
+		//	set
+		//	{
+		//		if (string.IsNullOrEmpty(value) == false)
+		//		{
+		//			SecretKey = Authenticator.StringToByteArray(value);
+		//		}
+		//		else
+		//		{
+		//			SecretKey = null;
+		//		}
+		//	}
+		//}
 
     #endregion
 

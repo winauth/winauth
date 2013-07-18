@@ -135,6 +135,12 @@
     <Compile Include="ExceptionForm.designer.cs">
       <DependentUpon>ExceptionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UnprotectPasswordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UnprotectPasswordForm.designer.cs">
+      <DependentUpon>UnprotectPasswordForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="GroupRadioButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -147,13 +153,13 @@
       <DependentUpon>AddBattleNetAuthenticator.cs</DependentUpon>
     </Compile>
     <Compile Include="Keyboard.cs" />
-    <Compile Include="ResourceForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ResourceForm.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="RegisteredAuthenticator.cs" />
     <Compile Include="Resources\strings.Designer.cs">
@@ -230,9 +236,15 @@
     <EmbeddedResource Include="ExceptionForm.resx">
       <DependentUpon>ExceptionForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UnprotectPasswordForm.resx">
+      <DependentUpon>UnprotectPasswordForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SetPasswordForm.resx">
+      <DependentUpon>SetPasswordForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ShowRestoreCodeForm.resx">
       <DependentUpon>ShowRestoreCodeForm.cs</DependentUpon>
@@ -288,6 +300,7 @@
     <None Include="Resources\padlock-open.png" />
     <None Include="Resources\padlock-closed.png" />
     <None Include="Resources\BluePixel.png" />
+    <EmbeddedResource Include="Resources\RefreshIconWithLock.png" />
     <Content Include="winauth.ico" />
   </ItemGroup>
   <ItemGroup>

@@ -28,6 +28,8 @@ using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 
+using WinAuth.Resources;
+
 namespace WinAuth
 {
 	public class AuthenticatorListitem
@@ -346,6 +348,12 @@ namespace WinAuth
 					if (item.Authenticator.AutoRefresh == false && item.DisplayUntil < DateTime.Now
 						&& new Rectangle(x + this.Width - 56, y + 8, 48, 48).Contains(e.Location))
 					{
+						if (UnprotectAuthenticator(item.Authenticator) == DialogResult.Cancel)
+						{
+							return;
+						}
+						item.LastCode = item.Authenticator.AuthenticatorData.CurrentCode;
+
 						item.LastUpdate = DateTime.Now;
 						item.DisplayUntil = DateTime.Now.AddSeconds(10);
 
@@ -359,6 +367,18 @@ namespace WinAuth
 					}
 				}
 			}
+		}
+
+		private DialogResult UnprotectAuthenticator(WinAuthAuthenticator auth)
+		{
+			if (auth.AuthenticatorData.RequiresPassword == false)
+			{
+				return DialogResult.None;
+			}
+
+			UnprotectPasswordForm getPassForm = new UnprotectPasswordForm();
+			getPassForm.Authenticator = auth;
+			return getPassForm.ShowDialog(this.Parent as Form);
 		}
 
 		private void loadContextMenuStrip()
@@ -376,69 +396,69 @@ namespace WinAuth
 			ToolStripMenuItem menuitem;
 			ToolStripMenuItem subitem;
 			//
-			menuitem = new ToolStripMenuItem("Set Password...");
+			menuitem = new ToolStripMenuItem(strings.SetPassword + "...");
 			menuitem.Name = "setPasswordMenuItem";
 			menuitem.Click += ContextMenu_Click;
 			this.ContextMenuStrip.Items.Add(menuitem);
 			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
 			//
-			menuitem = new ToolStripMenuItem("Show Code");
+			menuitem = new ToolStripMenuItem(strings.ShowCode);
 			menuitem.Name = "showCodeMenuItem";
 			menuitem.Click += ContextMenu_Click;
 			this.ContextMenuStrip.Items.Add(menuitem);
 			//
-			menuitem = new ToolStripMenuItem("Copy Code");
+			menuitem = new ToolStripMenuItem(strings.CopyCode);
 			menuitem.Name = "copyCodeMenuItem";
 			menuitem.Click += ContextMenu_Click;
 			this.ContextMenuStrip.Items.Add(menuitem);
 			//
 			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
 			//
-			menuitem = new ToolStripMenuItem("Show Serial && Restore Code...");
+			menuitem = new ToolStripMenuItem(strings.ShowSerialAndRestoreCode + "...");
 			menuitem.Name = "showRestoreCodeMenuItem";
 			menuitem.Click += ContextMenu_Click;
 			this.ContextMenuStrip.Items.Add(menuitem);
 			//
-			menuitem = new ToolStripMenuItem("Show Secret Key...");
+			menuitem = new ToolStripMenuItem(strings.ShowSecretKey + "...");
 			menuitem.Name = "showGoogleSecretMenuItem";
 			menuitem.Click += ContextMenu_Click;
 			this.ContextMenuStrip.Items.Add(menuitem);
 			//
-			menuitem = new ToolStripMenuItem("Show Serial Key and Device ID...");
+			menuitem = new ToolStripMenuItem(strings.ShowSerialKeyAndDeviceId + "...");
 			menuitem.Name = "showTrionSecretMenuItem";
 			menuitem.Click += ContextMenu_Click;
 			this.ContextMenuStrip.Items.Add(menuitem);
 			//
 			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
 			//
-			menuitem = new ToolStripMenuItem("Auto Refresh");
+			menuitem = new ToolStripMenuItem(strings.AutoRefresh);
 			menuitem.Name = "autoRefreshMenuItem";
 			menuitem.Click += ContextMenu_Click;
 			this.ContextMenuStrip.Items.Add(menuitem);
 			//
 			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
 			//
-			menuitem = new ToolStripMenuItem("Delete");
+			menuitem = new ToolStripMenuItem(strings.Delete);
 			menuitem.Name = "deleteMenuItem";
 			menuitem.Click += ContextMenu_Click;
 			this.ContextMenuStrip.Items.Add(menuitem);
 			//
-			menuitem = new ToolStripMenuItem("Rename");
+			menuitem = new ToolStripMenuItem(strings.Rename);
 			menuitem.Name = "renameMenuItem";
 			menuitem.Click += ContextMenu_Click;
 			this.ContextMenuStrip.Items.Add(menuitem);
 			//
 			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
 			//
-			menuitem = new ToolStripMenuItem("Copy On New Code");
+			menuitem = new ToolStripMenuItem(strings.CopyOnNewCode);
 			menuitem.Name = "copyOnCodeMenuItem";
 			menuitem.Click += ContextMenu_Click;
 			this.ContextMenuStrip.Items.Add(menuitem);
 			//
-			menuitem = new ToolStripMenuItem("Icon");
+			menuitem = new ToolStripMenuItem(strings.Icon);
 			menuitem.Name = "iconMenuItem";
 			subitem = new ToolStripMenuItem();
-			subitem.Text = "Auto";
+			subitem.Text = strings.IconAuto;
 			subitem.Name = "iconMenuItem_default";
 			subitem.Tag = string.Empty;
 			subitem.Click += ContextMenu_Click;
@@ -468,7 +488,7 @@ namespace WinAuth
 			}
 			menuitem.DropDownItems.Add("-");
 			subitem = new ToolStripMenuItem();
-			subitem.Text = "Other...";
+			subitem.Text = strings.Other + "...";
 			subitem.Name = "iconMenuItem_0";
 			subitem.Tag = "OTHER";
 			subitem.Click += ContextMenu_Click;
@@ -477,7 +497,7 @@ namespace WinAuth
 			//
 			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
 			//
-			menuitem = new ToolStripMenuItem("Sync Time");
+			menuitem = new ToolStripMenuItem(strings.SyncTime);
 			menuitem.Name = "syncMenuItem";
 			menuitem.Click += ContextMenu_Click;
 			this.ContextMenuStrip.Items.Add(menuitem);
@@ -496,7 +516,10 @@ namespace WinAuth
 			ToolStripLabel labelitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "contextMenuItemName").FirstOrDefault() as ToolStripLabel;
 			labelitem.Text = item.Authenticator.Name;
 
-			ToolStripMenuItem menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showCodeMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			ToolStripMenuItem menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "setPasswordMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem.Text = (item.Authenticator.AuthenticatorData.PasswordType == Authenticator.PasswordTypes.Explicit ? strings.ChangeOrRemovePassword + "..." : strings.SetPassword + "...");
+
+			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showCodeMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Visible = !auth.AutoRefresh;
 			//
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "copyCodeMenuItem").FirstOrDefault() as ToolStripMenuItem;
@@ -513,6 +536,7 @@ namespace WinAuth
 			//
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "autoRefreshMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.CheckState = (auth.AutoRefresh == true ? CheckState.Checked : CheckState.Unchecked);
+			menuitem.Enabled = (auth.AuthenticatorData.RequiresPassword == false && auth.AuthenticatorData.PasswordType != Authenticator.PasswordTypes.Explicit);
 			//
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "copyOnCodeMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.CheckState = (auth.CopyOnCode == true ? CheckState.Checked : CheckState.Unchecked);
@@ -566,37 +590,98 @@ namespace WinAuth
 
 			if (menuitem.Name == "setPasswordMenuItem")
 			{
-				SetPasswordForm form = new SetPasswordForm();
-				if (form.ShowDialog(this.Parent as Form) == DialogResult.OK)
+				// check if the authentcated is still protected
+				DialogResult wasprotected = UnprotectAuthenticator(auth);
+				if (wasprotected == DialogResult.Cancel)
 				{
+					return;
+				}
+				try
+				{
+					// show the new password form
+					SetPasswordForm form = new SetPasswordForm();
+					if (form.ShowDialog(this.Parent as Form) != DialogResult.OK)
+					{
+						return;
+					}
+
+					// set the encrpytion
 					string password = form.Password;
 					if (string.IsNullOrEmpty(password) == false)
 					{
-						auth.PasswordType = Authenticator.PasswordTypes.Explicit;
-						auth.Password = password;
+						auth.AuthenticatorData.SetEncryption(Authenticator.PasswordTypes.Explicit, password);
+						// can't have autorefresh on
+						auth.AutoRefresh = false;
 					}
 					else
 					{
-						auth.PasswordType = Authenticator.PasswordTypes.None;
-						auth.Password = null;
+						auth.AuthenticatorData.SetEncryption(Authenticator.PasswordTypes.None);
+					}
+					// make sure authenticator is saved
+					auth.MarkChanged();
+				}
+				finally
+				{
+					if (wasprotected == DialogResult.OK)
+					{
+						auth.AuthenticatorData.Protect();
 					}
 				}
 			}
 			else if (menuitem.Name == "showCodeMenuItem")
 			{
+				// check if the authentcated is still protected
+				if (UnprotectAuthenticator(auth) == DialogResult.Cancel)
+				{
+					return;
+				}
+
+				item.LastCode = auth.AuthenticatorData.CurrentCode;
 				item.LastUpdate = DateTime.Now;
 				item.DisplayUntil = DateTime.Now.AddSeconds(10);
 				RefreshCurrentItem();
 			}
 			else if (menuitem.Name == "syncMenuItem")
 			{
-				item.Authenticator.AuthenticatorData.Sync();
-				item.LastUpdate = DateTime.MinValue;
-				RefreshCurrentItem();
+				// check if the authentcated is still protected
+				DialogResult wasprotected = UnprotectAuthenticator(auth);
+				if (wasprotected == DialogResult.Cancel)
+				{
+					return;
+				}
+				try
+				{
+					item.Authenticator.AuthenticatorData.Sync();
+					item.LastUpdate = DateTime.MinValue;
+					RefreshCurrentItem();
+				}
+				finally
+				{
+					if (wasprotected == DialogResult.OK)
+					{
+						auth.AuthenticatorData.Protect();
+					}
+				}
 			}
 			else if (menuitem.Name == "copyCodeMenuItem")
 			{
-				auth.CopyCodeToClipboard(this.Parent as Form, item.LastCode);
+				// check if the authentcated is still protected
+				DialogResult wasprotected = UnprotectAuthenticator(auth);
+				if (wasprotected == DialogResult.Cancel)
+				{
+					return;
+				}
+				try
+				{
+					auth.CopyCodeToClipboard(this.Parent as Form, item.LastCode);
+				}
+				finally
+				{
+					if (wasprotected == DialogResult.OK)
+					{
+						auth.AuthenticatorData.Protect();
+					}
+				}
 			}
 			else if (menuitem.Name == "autoRefreshMenuItem")
 			{
@@ -611,30 +696,76 @@ namespace WinAuth
 			}
 			else if (menuitem.Name == "showRestoreCodeMenuItem")
 			{
-				// show the serial and restore code for Battle.net authenticator				
-				ShowRestoreCodeForm form = new ShowRestoreCodeForm();
-				form.CurrentAuthenticator = auth;
-				form.ShowDialog(this.Parent as Form);
+				// check if the authentcated is still protected
+				DialogResult wasprotected = UnprotectAuthenticator(auth);
+				if (wasprotected == DialogResult.Cancel)
+				{
+					return;
+				}
+				try
+				{
+					// show the serial and restore code for Battle.net authenticator				
+					ShowRestoreCodeForm form = new ShowRestoreCodeForm();
+					form.CurrentAuthenticator = auth;
+					form.ShowDialog(this.Parent as Form);
+				}
+				finally
+				{
+					if (wasprotected == DialogResult.OK)
+					{
+						auth.AuthenticatorData.Protect();
+					}
+				}
 			}
 			else if (menuitem.Name == "showGoogleSecretMenuItem")
 			{
-				// show the secret key for Google authenticator				
-				ShowSecretKeyForm form = new ShowSecretKeyForm();
-				form.CurrentAuthenticator = auth;
-				form.ShowDialog(this.Parent as Form);
+				// check if the authentcated is still protected
+				DialogResult wasprotected = UnprotectAuthenticator(auth);
+				if (wasprotected == DialogResult.Cancel)
+				{
+					return;
+				}
+				try
+				{
+					// show the secret key for Google authenticator				
+					ShowSecretKeyForm form = new ShowSecretKeyForm();
+					form.CurrentAuthenticator = auth;
+					form.ShowDialog(this.Parent as Form);
+				}
+				finally
+				{
+					if (wasprotected == DialogResult.OK)
+					{
+						auth.AuthenticatorData.Protect();
+					}
+				}
 			}
 			else if (menuitem.Name == "showTrionSecretMenuItem")
 			{
-				// show the secret key for Trion authenticator				
-				ShowTrionSecretForm form = new ShowTrionSecretForm();
-				form.CurrentAuthenticator = auth;
-				form.ShowDialog(this.Parent as Form);
+				// check if the authentcated is still protected
+				DialogResult wasprotected = UnprotectAuthenticator(auth);
+				if (wasprotected == DialogResult.Cancel)
+				{
+					return;
+				}
+				try
+				{
+					// show the secret key for Trion authenticator				
+					ShowTrionSecretForm form = new ShowTrionSecretForm();
+					form.CurrentAuthenticator = auth;
+					form.ShowDialog(this.Parent as Form);
+				}
+				finally
+				{
+					if (wasprotected == DialogResult.OK)
+					{
+						auth.AuthenticatorData.Protect();
+					}
+				}
 			}
 			else if (menuitem.Name == "deleteMenuItem")
 			{
-				if (WinAuthForm.ConfirmDialog(this.Parent as Form,
-					"Are you sure you want to delete this authenticator?" + Environment.NewLine + Environment.NewLine
-					+ "This will permanently remove it and you may no longer be able to access you account.", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+				if (WinAuthForm.ConfirmDialog(this.Parent as Form, strings.DeleteAuthenticatorWarning, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
 				{
 					int index = item.Index;
 					this.Items.Remove(item);
@@ -671,7 +802,7 @@ namespace WinAuth
 						ofd.Filter = "PNG Image Files (*.png)|*.png|GIF Image Files (*.gif)|*.gif|All Files (*.*)|*.*";
 						ofd.RestoreDirectory = true;
 						ofd.ShowReadOnly = false;
-						ofd.Title = "Load Icon Image (png or gif @ 48x48)";
+						ofd.Title = strings.LoadIconImage + " (png or gif @ 48x48)";
 						DialogResult result = ofd.ShowDialog(this);
 						if (result != System.Windows.Forms.DialogResult.OK)
 						{
@@ -699,7 +830,7 @@ namespace WinAuth
 						catch (Exception ex)
 						{
 							if (MessageBox.Show(this.Parent as Form,
-								"Error loading image file: " + ex.Message + Environment.NewLine + Environment.NewLine + "Do you want to try again?",
+								string.Format(strings.ErrorLoadingIconFile, ex.Message),
 								WinAuthMain.APPLICATION_NAME,
 								MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
 							{
@@ -783,6 +914,11 @@ namespace WinAuth
 							item.LastUpdate = DateTime.MinValue;
 							item.LastCode = null;
 
+							if (item.Authenticator.AuthenticatorData.PasswordType == Authenticator.PasswordTypes.Explicit)
+							{
+								item.Authenticator.AuthenticatorData.Protect();
+							}
+
 							SetCursor(this.PointToClient(Control.MousePosition));
 						}
 						this.Invalidate(new Rectangle(0, y, this.Width, this.ItemHeight), false);
@@ -850,29 +986,36 @@ namespace WinAuth
 						string code;
 						if (showCode == true)
 						{
-							// we we aren't autorefresh we just keep the same code up for the 10 seconds so it doesn't change even crossing the 30s boundary
-							if (auth.AutoRefresh == false)
+							try
 							{
-								if (item.LastCode == null)
+								// we we aren't autorefresh we just keep the same code up for the 10 seconds so it doesn't change even crossing the 30s boundary
+								if (auth.AutoRefresh == false)
 								{
-									code = auth.AuthenticatorData.CurrentCode;
+									if (item.LastCode == null)
+									{
+										code = auth.AuthenticatorData.CurrentCode;
+									}
+									else
+									{
+										code = item.LastCode;
+									}
 								}
 								else
 								{
-									code = item.LastCode;
+									code = auth.AuthenticatorData.CurrentCode;
+									if (code != item.LastCode && auth.CopyOnCode == true)
+									{
+										// code has changed - copy to clipboard
+										auth.CopyCodeToClipboard(this.Parent as Form);
+									}
 								}
+								item.LastCode = code;
+								code = code.Insert(code.Length / 2, " ");
 							}
-							else
+							catch (EncrpytedSecretDataException )
 							{
-								code = auth.AuthenticatorData.CurrentCode;
-								if (code != item.LastCode && auth.CopyOnCode == true)
-								{
-									// code has changed - copy to clipboard
-									auth.CopyCodeToClipboard(this.Parent as Form);
-								}
+								code = "- - - - - -";
 							}
-							item.LastCode = code;
-							code = code.Insert(code.Length / 2, " ");
 						}
 						else
 						{
@@ -914,6 +1057,10 @@ namespace WinAuth
 										e.Graphics.FillPie(piebrush, e.Bounds.X + e.Bounds.Width - 54, e.Bounds.Y + 10, 46, 46, 270, tillUpdate);
 									}
 								}
+							}
+							else if (auth.AuthenticatorData.RequiresPassword == true)
+							{
+								e.Graphics.DrawImage(WinAuth.Properties.Resources.RefreshIconWithLock, rect);
 							}
 							else
 							{

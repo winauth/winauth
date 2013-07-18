@@ -161,6 +161,8 @@ namespace WinAuth
 			}
 		}
 
+		public string Serial { get; set; }
+
 		/// <summary>
 		/// Get/set the combined secret data value
 		/// </summary>
@@ -169,15 +171,26 @@ namespace WinAuth
 			get
 			{
 				// for Battle.net, this is the key + serial
-				return Authenticator.ByteArrayToString(SecretKey) + Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(Serial));
+				return base.SecretData + "|" + Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(Serial));
 			}
 			set
 			{
 				// for Battle.net, extract key + serial
 				if (string.IsNullOrEmpty(value) == false)
 				{
-					SecretKey = Authenticator.StringToByteArray(value.Substring(0, 40));
-					Serial = Encoding.UTF8.GetString(Authenticator.StringToByteArray(value.Substring(40)));
+					string[] parts = value.Split('|');
+					if (parts.Length <= 1)
+					{
+						// old WinAuth2 version with secretdata + serial
+						SecretKey = Authenticator.StringToByteArray(value.Substring(0, 40));
+						Serial = Encoding.UTF8.GetString(Authenticator.StringToByteArray(value.Substring(40)));
+					}
+					else
+					{
+						// secret|script|serial
+						base.SecretData = value;
+						Serial = (parts.Length > 2 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[2])) : null);
+					}
 				}
 				else
 				{

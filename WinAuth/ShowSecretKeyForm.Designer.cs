@@ -48,7 +48,6 @@ namespace WinAuth
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShowSecretKeyForm));
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.allowCopyCheckBox = new System.Windows.Forms.CheckBox();
-			this.showKeyButton = new System.Windows.Forms.Button();
 			this.secretKeyField = new WinAuth.SecretTextBox();
 			this.qrImage = new System.Windows.Forms.PictureBox();
 			this.label4 = new System.Windows.Forms.Label();
@@ -62,7 +61,6 @@ namespace WinAuth
 			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox1.Controls.Add(this.allowCopyCheckBox);
-			this.groupBox1.Controls.Add(this.showKeyButton);
 			this.groupBox1.Controls.Add(this.secretKeyField);
 			this.groupBox1.Controls.Add(this.qrImage);
 			this.groupBox1.Controls.Add(this.label4);
@@ -82,16 +80,6 @@ namespace WinAuth
 			this.allowCopyCheckBox.Text = "Allow copy";
 			this.allowCopyCheckBox.UseVisualStyleBackColor = true;
 			this.allowCopyCheckBox.CheckedChanged += new System.EventHandler(this.allowCopyCheckBox_CheckedChanged);
-			// 
-			// showKeyButton
-			// 
-			this.showKeyButton.Location = new System.Drawing.Point(131, 177);
-			this.showKeyButton.Name = "showKeyButton";
-			this.showKeyButton.Size = new System.Drawing.Size(145, 23);
-			this.showKeyButton.TabIndex = 4;
-			this.showKeyButton.Text = "Show Secret Key";
-			this.showKeyButton.UseVisualStyleBackColor = true;
-			this.showKeyButton.Click += new System.EventHandler(this.showKeyButton_Click);
 			// 
 			// secretKeyField
 			// 
@@ -165,7 +153,6 @@ namespace WinAuth
 		private System.Windows.Forms.Label label4;
 		private SecretTextBox secretKeyField;
 		private System.Windows.Forms.PictureBox qrImage;
-		private System.Windows.Forms.Button showKeyButton;
 		private System.Windows.Forms.CheckBox allowCopyCheckBox;
 	}
 }

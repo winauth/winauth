@@ -64,15 +64,7 @@ namespace WinAuth
 		{
 			this.serialNumberField.SecretMode = true;
 			this.deviceIdField.SecretMode = true;
-		}
 
-		/// <summary>
-		/// Show the codes
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void showCodeButton_Click(object sender, EventArgs e)
-		{
 			TrionAuthenticator authenticator = CurrentAuthenticator.AuthenticatorData as TrionAuthenticator;
 			this.serialNumberField.Text = authenticator.Serial;
 			this.deviceIdField.Text = authenticator.DeviceId;

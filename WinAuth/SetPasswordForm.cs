@@ -20,8 +20,20 @@ namespace WinAuth
 
 		private void showCheckbox_CheckedChanged(object sender, EventArgs e)
 		{
-			this.passwordField.UseSystemPasswordChar = !this.showCheckbox.Checked;
-			this.verifyField.UseSystemPasswordChar = !this.showCheckbox.Checked;
+			if (this.showCheckbox.Checked == true)
+			{
+				this.passwordField.UseSystemPasswordChar = false;
+				this.passwordField.PasswordChar = (char)0;
+				this.verifyField.UseSystemPasswordChar = false;
+				this.verifyField.PasswordChar = (char)0;
+			}
+			else
+			{
+				this.passwordField.UseSystemPasswordChar = true;
+				this.passwordField.PasswordChar = '*';
+				this.verifyField.UseSystemPasswordChar = true;
+				this.verifyField.PasswordChar = '*';
+			}
 		}
 
 		private void okButton_Click(object sender, EventArgs e)

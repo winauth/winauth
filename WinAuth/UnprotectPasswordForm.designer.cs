@@ -1,6 +1,6 @@
 ﻿namespace WinAuth
 {
-	partial class SetPasswordForm
+	partial class UnprotectPasswordForm
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -28,58 +28,35 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.setPasswordLabel = new MetroFramework.Controls.MetroLabel();
+			this.components = new System.ComponentModel.Container();
 			this.passwordField = new MetroFramework.Controls.MetroTextBox();
-			this.verifyField = new MetroFramework.Controls.MetroTextBox();
 			this.cancelButton = new MetroFramework.Controls.MetroButton();
 			this.okButton = new MetroFramework.Controls.MetroButton();
-			this.showCheckbox = new MetroFramework.Controls.MetroCheckBox();
+			this.invalidPasswordLabel = new MetroFramework.Controls.MetroLabel();
+			this.invalidPasswordTimer = new System.Windows.Forms.Timer(this.components);
 			this.SuspendLayout();
-			// 
-			// setPasswordLabel
-			// 
-			this.setPasswordLabel.Location = new System.Drawing.Point(23, 60);
-			this.setPasswordLabel.Name = "setPasswordLabel";
-			this.setPasswordLabel.Size = new System.Drawing.Size(275, 42);
-			this.setPasswordLabel.TabIndex = 0;
-			this.setPasswordLabel.Text = "strings.setPasswordLabel";
 			// 
 			// passwordField
 			// 
-			this.passwordField.Location = new System.Drawing.Point(23, 105);
+			this.passwordField.Location = new System.Drawing.Point(23, 63);
 			this.passwordField.MaxLength = 32767;
 			this.passwordField.Name = "passwordField";
 			this.passwordField.PasswordChar = '●';
-			this.passwordField.PromptText = "strings.passwordField";
 			this.passwordField.ScrollBars = System.Windows.Forms.ScrollBars.None;
 			this.passwordField.SelectedText = "";
 			this.passwordField.Size = new System.Drawing.Size(277, 23);
-			this.passwordField.TabIndex = 0;
+			this.passwordField.TabIndex = 1;
 			this.passwordField.UseSelectable = true;
 			this.passwordField.UseSystemPasswordChar = true;
-			// 
-			// verifyField
-			// 
-			this.verifyField.Location = new System.Drawing.Point(23, 134);
-			this.verifyField.MaxLength = 32767;
-			this.verifyField.Name = "verifyField";
-			this.verifyField.PasswordChar = '●';
-			this.verifyField.PromptText = "strings.verifyField";
-			this.verifyField.ScrollBars = System.Windows.Forms.ScrollBars.None;
-			this.verifyField.SelectedText = "";
-			this.verifyField.Size = new System.Drawing.Size(277, 23);
-			this.verifyField.TabIndex = 1;
-			this.verifyField.UseSelectable = true;
-			this.verifyField.UseSystemPasswordChar = true;
 			// 
 			// cancelButton
 			// 
 			this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancelButton.Location = new System.Drawing.Point(225, 187);
+			this.cancelButton.Location = new System.Drawing.Point(225, 116);
 			this.cancelButton.Name = "cancelButton";
 			this.cancelButton.Size = new System.Drawing.Size(75, 23);
-			this.cancelButton.TabIndex = 4;
+			this.cancelButton.TabIndex = 2;
 			this.cancelButton.Text = "strings.Cancel";
 			this.cancelButton.UseSelectable = true;
 			// 
@@ -87,42 +64,46 @@
 			// 
 			this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.okButton.Location = new System.Drawing.Point(144, 187);
+			this.okButton.Location = new System.Drawing.Point(144, 116);
 			this.okButton.Name = "okButton";
 			this.okButton.Size = new System.Drawing.Size(75, 23);
-			this.okButton.TabIndex = 3;
+			this.okButton.TabIndex = 2;
 			this.okButton.Text = "strings.OK";
 			this.okButton.UseSelectable = true;
 			this.okButton.Click += new System.EventHandler(this.okButton_Click);
 			// 
-			// showCheckbox
+			// invalidPasswordLabel
 			// 
-			this.showCheckbox.AutoSize = true;
-			this.showCheckbox.Location = new System.Drawing.Point(23, 163);
-			this.showCheckbox.Name = "showCheckbox";
-			this.showCheckbox.Size = new System.Drawing.Size(141, 15);
-			this.showCheckbox.TabIndex = 2;
-			this.showCheckbox.Text = "strings.showCheckbox";
-			this.showCheckbox.UseSelectable = true;
-			this.showCheckbox.CheckedChanged += new System.EventHandler(this.showCheckbox_CheckedChanged);
+			this.invalidPasswordLabel.AutoSize = true;
+			this.invalidPasswordLabel.ForeColor = System.Drawing.Color.Red;
+			this.invalidPasswordLabel.Location = new System.Drawing.Point(23, 89);
+			this.invalidPasswordLabel.Name = "invalidPasswordLabel";
+			this.invalidPasswordLabel.Size = new System.Drawing.Size(140, 19);
+			this.invalidPasswordLabel.TabIndex = 3;
+			this.invalidPasswordLabel.Text = "strings.InvalidPassword";
+			this.invalidPasswordLabel.UseCustomForeColor = true;
+			this.invalidPasswordLabel.Visible = false;
 			// 
-			// SetPasswordForm
+			// invalidPasswordTimer
+			// 
+			this.invalidPasswordTimer.Interval = 2000;
+			this.invalidPasswordTimer.Tick += new System.EventHandler(this.invalidPasswordTimer_Tick);
+			// 
+			// UnprotectPasswordForm
 			// 
 			this.AcceptButton = this.okButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BorderStyle = MetroFramework.Forms.MetroFormBorderStyle.FixedSingle;
 			this.CancelButton = this.cancelButton;
-			this.ClientSize = new System.Drawing.Size(331, 233);
-			this.Controls.Add(this.showCheckbox);
+			this.ClientSize = new System.Drawing.Size(331, 162);
+			this.Controls.Add(this.invalidPasswordLabel);
 			this.Controls.Add(this.okButton);
 			this.Controls.Add(this.cancelButton);
-			this.Controls.Add(this.verifyField);
 			this.Controls.Add(this.passwordField);
-			this.Controls.Add(this.setPasswordLabel);
-			this.Name = "SetPasswordForm";
+			this.Name = "UnprotectPasswordForm";
 			this.Resizable = false;
-			this.Text = "SetPasswordForm";
+			this.Text = "_UnprotectPasswordForm_";
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -130,11 +111,10 @@
 
 		#endregion
 
-		private MetroFramework.Controls.MetroLabel setPasswordLabel;
 		private MetroFramework.Controls.MetroTextBox passwordField;
-		private MetroFramework.Controls.MetroTextBox verifyField;
 		private MetroFramework.Controls.MetroButton cancelButton;
 		private MetroFramework.Controls.MetroButton okButton;
-		private MetroFramework.Controls.MetroCheckBox showCheckbox;
+		private MetroFramework.Controls.MetroLabel invalidPasswordLabel;
+		private System.Windows.Forms.Timer invalidPasswordTimer;
 	}
 }

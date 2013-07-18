@@ -120,17 +120,42 @@
   <data name="AuthenticatorNotImplemented" xml:space="preserve">
     <value>Authenticator not implemented</value>
   </data>
+  <data name="AutoRefresh" xml:space="preserve">
+    <value>Auto Refresh</value>
+  </data>
   <data name="CannotFindConfigurationFile" xml:space="preserve">
     <value>Unable to find your configuration file</value>
   </data>
   <data name="CannotLoadAuthenticator" xml:space="preserve">
     <value>Unable to load authenticator from {0}</value>
   </data>
+  <data name="ChangeOrRemovePassword" xml:space="preserve">
+    <value>Change or Remove Password</value>
+  </data>
   <data name="ClipboardInUse" xml:space="preserve">
     <value>Unable to copy to the clipboard. Another application is probably using it.\n\nTry again?</value>
   </data>
+  <data name="CopyCode" xml:space="preserve">
+    <value>Copy Code</value>
+  </data>
+  <data name="CopyOnNewCode" xml:space="preserve">
+    <value>Copy on New Code</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="DeleteAuthenticatorWarning" xml:space="preserve">
+    <value>Are you sure you want to delete this authenticator?
+
+This will permanently remove it and you may no longer be able to access you account.</value>
+  </data>
   <data name="EnterPassword" xml:space="preserve">
     <value>Please enter a password</value>
+  </data>
+  <data name="ErrorLoadingIconFile" xml:space="preserve">
+    <value>Error loading image file: {0}
+
+Do you want to try again?</value>
   </data>
   <data name="ErrorOccured" xml:space="preserve">
     <value>An error has occurred</value>
@@ -144,8 +169,17 @@
   <data name="HideDetails" xml:space="preserve">
     <value>Hide Details</value>
   </data>
+  <data name="Icon" xml:space="preserve">
+    <value>Icon</value>
+  </data>
+  <data name="IconAuto" xml:space="preserve">
+    <value>Auto</value>
+  </data>
   <data name="InvalidPassword" xml:space="preserve">
     <value>Invalid password</value>
+  </data>
+  <data name="LoadIconImage" xml:space="preserve">
+    <value>Load Icon Image</value>
   </data>
   <data name="MenuAbout" xml:space="preserve">
     <value>About</value>
@@ -171,8 +205,32 @@
   <data name="MenuUseSystemTrayIcon" xml:space="preserve">
     <value>Use System Tray Icon</value>
   </data>
+  <data name="Other" xml:space="preserve">
+    <value>Other</value>
+  </data>
   <data name="PasswordsDontMatch" xml:space="preserve">
     <value>Passwords do not match</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="SetPassword" xml:space="preserve">
+    <value>Set Password</value>
+  </data>
+  <data name="ShowCode" xml:space="preserve">
+    <value>Show Code</value>
+  </data>
+  <data name="ShowSecretKey" xml:space="preserve">
+    <value>Show Secret Key</value>
+  </data>
+  <data name="ShowSerialAndRestoreCode" xml:space="preserve">
+    <value>Show Serial &amp;&amp; Restore Code</value>
+  </data>
+  <data name="ShowSerialKeyAndDeviceId" xml:space="preserve">
+    <value>Show Serial Key and Device ID</value>
+  </data>
+  <data name="SyncTime" xml:space="preserve">
+    <value>Sync Time</value>
   </data>
   <data name="UnknownError" xml:space="preserve">
     <value>An unknown error occured</value>
@@ -267,6 +325,36 @@ If you are happy to send this information please either click Send Error Report 
   </data>
   <data name="_ExceptionForm_reportButton_" xml:space="preserve">
     <value>Send Error Report</value>
+  </data>
+  <data name="_SetPasswordForm_" xml:space="preserve">
+    <value>Set Password</value>
+  </data>
+  <data name="_SetPasswordForm_cancelButton_" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="_SetPasswordForm_okButton_" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="_SetPasswordForm_passwordField_" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="_SetPasswordForm_setPasswordLabel_" xml:space="preserve">
+    <value>Enter a password to protect this authenticator or leave blank to remove it</value>
+  </data>
+  <data name="_SetPasswordForm_showCheckbox_" xml:space="preserve">
+    <value>Show</value>
+  </data>
+  <data name="_SetPasswordForm_verifyField_" xml:space="preserve">
+    <value>Verify</value>
+  </data>
+  <data name="_UnprotectPasswordForm_" xml:space="preserve">
+    <value>Enter Password</value>
+  </data>
+  <data name="_UnprotectPasswordForm_cancelButton_" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="_UnprotectPasswordForm_okButton_" xml:space="preserve">
+    <value>OK</value>
   </data>
   <data name="_WinAuthForm_addAuthenticatorButton_" xml:space="preserve">
     <value>Add</value>

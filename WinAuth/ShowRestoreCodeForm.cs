@@ -62,11 +62,15 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void ShowRestoreCodeForm_Load(object sender, EventArgs e)
 		{
+			BattleNetAuthenticator authenticator = CurrentAuthenticator.AuthenticatorData as BattleNetAuthenticator;
+
 			this.serialNumberField.SecretMode = true;
 			this.restoreCodeField.SecretMode = true;
 
+			this.serialNumberField.Text = authenticator.Serial;
+			this.restoreCodeField.Text = authenticator.RestoreCode;
+
 			// if needed start a background thread to verify the restore code
-			BattleNetAuthenticator authenticator = CurrentAuthenticator.AuthenticatorData as BattleNetAuthenticator;
 			if (authenticator.RestoreCodeVerified == false)
 			{
 				BackgroundWorker verify = new BackgroundWorker();
@@ -121,18 +125,6 @@ namespace WinAuth
 				e.Result = "Oops. An error (" + ex2.Message + ") occured whilst validating your restore code."
 						+ "Please log a ticket at http://code.google.com/p/winauth so we can fix this.";
 			}
-		}
-
-		/// <summary>
-		/// Show the codes
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void showCodeButton_Click(object sender, EventArgs e)
-		{
-			BattleNetAuthenticator authenticator = CurrentAuthenticator.AuthenticatorData as BattleNetAuthenticator;
-			this.serialNumberField.Text = authenticator.Serial;
-			this.restoreCodeField.Text = authenticator.RestoreCode;
 		}
 
 		/// <summary>

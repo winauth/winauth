@@ -91,8 +91,9 @@ namespace WinAuth
 				clone.PasswordType = Authenticator.PasswordTypes.None;
 				foreach (var auth in clone)
 				{
-					auth.PasswordType = Authenticator.PasswordTypes.None;
-					auth.AuthenticatorData.PasswordType = Authenticator.PasswordTypes.None;
+					//auth.PasswordType = Authenticator.PasswordTypes.None;
+					//auth.AuthenticatorData.PasswordType = Authenticator.PasswordTypes.None;
+					auth.AuthenticatorData.SetEncryption(Authenticator.PasswordTypes.None);
 				}
 
 				// add the config and authenticator

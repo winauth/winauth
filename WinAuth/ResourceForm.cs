@@ -96,7 +96,14 @@ namespace WinAuth
 				text = WinAuthMain.StringResources.GetString(controlname, System.Threading.Thread.CurrentThread.CurrentCulture);
 				if (text != null)
 				{
-					c.Text = text;
+					if (c is MetroFramework.Controls.MetroTextBox)
+					{
+						((MetroFramework.Controls.MetroTextBox)c).PromptText = text;
+					}
+					else
+					{
+						c.Text = text;
+					}
 				}
 			}
 

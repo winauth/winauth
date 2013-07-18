@@ -66,18 +66,11 @@ namespace WinAuth
 		private void ShowSecretKeyForm_Load(object sender, EventArgs e)
 		{
 			this.secretKeyField.SecretMode = true;
-		}
 
-		/// <summary>
-		/// Click to show the key
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void showKeyButton_Click(object sender, EventArgs e)
-		{
-			this.secretKeyField.Text = Regex.Replace(CurrentAuthenticator.AuthenticatorData.Serial, ".{3}", "$0 ").Trim();
+			string key = Base32.getInstance().Encode(CurrentAuthenticator.AuthenticatorData.SecretKey);
+			this.secretKeyField.Text = Regex.Replace(key, ".{3}", "$0 ").Trim();
 
-			string url = "otpauth://totp/" + HttpUtility.HtmlEncode(CurrentAuthenticator.Name) + "?secret=" + CurrentAuthenticator.AuthenticatorData.Serial;
+			string url = "otpauth://totp/" + HttpUtility.HtmlEncode(CurrentAuthenticator.Name) + "?secret=" + key;
 
 			BarcodeWriter writer = new BarcodeWriter();
 			writer.Format = BarcodeFormat.QR_CODE;
@@ -93,13 +86,15 @@ namespace WinAuth
 		private void allowCopyCheckBox_CheckedChanged(object sender, EventArgs e)
 		{
 			this.secretKeyField.SecretMode = !allowCopyCheckBox.Checked;
+
+			string key = Base32.getInstance().Encode(CurrentAuthenticator.AuthenticatorData.SecretKey);
 			if (this.secretKeyField.SecretMode == true)
 			{
-				this.secretKeyField.Text = Regex.Replace(CurrentAuthenticator.AuthenticatorData.Serial, ".{3}", "$0 ").Trim();
+				this.secretKeyField.Text = Regex.Replace(key, ".{3}", "$0 ").Trim();
 			}
 			else
 			{
-				this.secretKeyField.Text = CurrentAuthenticator.AuthenticatorData.Serial;
+				this.secretKeyField.Text = key;
 			}
 		}
 
