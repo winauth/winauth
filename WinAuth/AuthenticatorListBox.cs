@@ -32,8 +32,16 @@ using WinAuth.Resources;
 
 namespace WinAuth
 {
+	/// <summary>
+	/// An item within the OwnerDraw list that represents an authenticator
+	/// </summary>
 	public class AuthenticatorListitem
 	{
+		/// <summary>
+		/// Create a new AuthenticatorListitem
+		/// </summary>
+		/// <param name="auth">authenticator</param>
+		/// <param name="index">index of item</param>
 		public AuthenticatorListitem(WinAuthAuthenticator auth, int index)
 		{
 			Authenticator = auth;
@@ -42,17 +50,52 @@ namespace WinAuth
 			DisplayUntil = DateTime.MinValue;
 		}
 
+		/// <summary>
+		/// Index of item in list
+		/// </summary>
 		public int Index { get; set; }
+
+		/// <summary>
+		/// Authenticator wrapper
+		/// </summary>
 		public WinAuthAuthenticator Authenticator { get; set; }
+
+		/// <summary>
+		/// When the item was last updated
+		/// </summary>
 		public DateTime LastUpdate { get; set;}
+
+		/// <summary>
+		/// When the code should be displayed to if not AutoRefresh
+		/// </summary>
 		public DateTime DisplayUntil { get; set; }
+
+		/// <summary>
+		/// The last code to be displayed
+		/// </summary>
 		public string LastCode { get; set; }
+
+		/// <summary>
+		/// A count for password protected to allow multipel unprotect operations
+		/// </summary>
+		public int UnprotectCount { get; set; }
 	}
 
+	/// <summary>
+	/// Delegate for event when item is removed
+	/// </summary>
+	/// <param name="source"></param>
+	/// <param name="args"></param>
 	public delegate void AuthenticatorListItemRemovedHandler(object source, AuthenticatorListItemRemovedEventArgs args);
 
+	/// <summary>
+	/// Event arguments for removing an item
+	/// </summary>
 	public class AuthenticatorListItemRemovedEventArgs : EventArgs
 	{
+		/// <summary>
+		/// The item that was removed
+		/// </summary>
 		public AuthenticatorListitem Item { get; private set; }
 
 		/// <summary>
@@ -65,62 +108,70 @@ namespace WinAuth
 		}
 	}
 
+	/// <summary>
+	/// An owner draw listbox that displays wrapped authenticators
+	/// </summary>
   public class AuthenticatorListBox : ListBox
   {
-		private const int WM_HSCROLL = 0x114;
-		private const int WM_VSCROLL = 0x115;
+		/// <summary>
+		/// Event handler for ItemRemoved
+		/// </summary>
+		public event AuthenticatorListItemRemovedHandler ItemRemoved;
 
-		private const int SB_LINELEFT = 0;
-		private const int SB_LINERIGHT = 1;
-		private const int SB_PAGELEFT = 2;
-		private const int SB_PAGERIGHT = 3;
-		private const int SB_THUMBPOSITION = 4;
-		private const int SB_THUMBTRACK = 5;
-		private const int SB_LEFT = 6;
-		private const int SB_RIGHT = 7;
-		private const int SB_ENDSCROLL = 8;
+		/// <summary>
+		/// Scrolled event handler
+		/// </summary>
+		[Category("Action")]
+		public event ScrollEventHandler Scrolled = null;
 
-		private const int SIF_TRACKPOS = 0x10;
-		private const int SIF_RANGE = 0x1;
-		private const int SIF_POS = 0x4;
-		private const int SIF_PAGE = 0x2;
-		private const int SIF_ALL = SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS;
+		/// <summary>
+		/// Rename textbox
+		/// </summary>
+		private TextBox _renameTextbox;
 
-		[DllImport("user32.dll", SetLastError = true)]
-		private static extern int GetScrollInfo( IntPtr hWnd, int n, ref ScrollInfoStruct lpScrollInfo);
+		/// <summary>
+		/// Current item
+		/// </summary>
+		private AuthenticatorListitem _currentItem;
 
-		private struct ScrollInfoStruct
-		{
-			public int cbSize;
-			public int fMask;
-			public int nMin;
-			public int nMax;
-			public int nPage;
-			public int nPos;
-			public int nTrackPos;
-		}
-
+		/// <summary>
+		/// Default constructor for our authenticator list box
+		/// </summary>
 		public AuthenticatorListBox()
     {
+			// set owner draw stlying
       this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.ResizeRedraw | ControlStyles.UserPaint, true);
 			this.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
 			this.ReadOnly = true;
 
+			// hook the scroll event
 			this.Scrolled += AuthenticatorListBox_Scrolled;
 
+			// hook the context menu
 			this.ContextMenuStrip = new ContextMenuStrip();
 			this.ContextMenuStrip.Opening += ContextMenuStrip_Opening;
 
+			// preload the content menu
 			loadContextMenuStrip();
     }
 
+		#region Control Events
+
+		/// <summary>
+		/// Resize event to resize base and fix rename box location
+		/// </summary>
+		/// <param name="e"></param>
 		protected override void OnResize(EventArgs e)
 		{
 			base.OnResize(e);
-
 			setRenameTextboxLocation();
 		}
 
+		/// <summary>
+		/// Fix position of rename box when scrolling
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		void AuthenticatorListBox_Scrolled(object sender, ScrollEventArgs e)
 		{
 			if (e.Type == ScrollEventType.EndScroll || e.Type == ScrollEventType.ThumbPosition)
@@ -129,6 +180,184 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// Click an item in the context menu
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		void ContextMenu_Click(object sender, EventArgs e)
+		{
+			ProcessMenu((ToolStripItem)sender);
+		}
+
+		/// <summary>
+		/// Click to open the contxet menu and set the state
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		void ContextMenuStrip_Opening(object sender, CancelEventArgs e)
+		{
+			SetContextMenuItems();
+		}
+
+		/// <summary>
+		/// Tick event used to update the pie, codes and relock authenticators
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		public void Tick(object sender, EventArgs e)
+		{
+			for (int index = 0; index < this.Items.Count; index++)
+			{
+				// get the item
+				AuthenticatorListitem item = this.Items[index] as AuthenticatorListitem;
+				WinAuthAuthenticator auth = item.Authenticator;
+
+				int y = this.ItemHeight * index;
+				if (auth.AutoRefresh == true)
+				{
+					// for autorefresh we repaint the pie or the code too
+					int tillUpdate = (int)((auth.AuthenticatorData.ServerTime % 30000) / 1000L);
+					if (item.LastUpdate == DateTime.MinValue || tillUpdate == 0)
+					{
+						this.Invalidate(new Rectangle(0, y, this.Width, this.ItemHeight), false);
+						item.LastUpdate = DateTime.Now;
+					}
+					else
+					{
+						Rectangle rect = new Rectangle(this.Width - 56, y + 8, 48, 48);
+						this.Invalidate(rect, false);
+						item.LastUpdate = DateTime.Now;
+					}
+				}
+				else
+				{
+					// check if we need to redraw
+					if (item.DisplayUntil != DateTime.MinValue)
+					{
+						// clear the item
+						if (item.DisplayUntil <= DateTime.Now)
+						{
+							item.DisplayUntil = DateTime.MinValue;
+							item.LastUpdate = DateTime.MinValue;
+							item.LastCode = null;
+
+							if (item.Authenticator.AuthenticatorData.PasswordType == Authenticator.PasswordTypes.Explicit)
+							{
+								ProtectAuthenticator(item);
+							}
+
+							SetCursor(this.PointToClient(Control.MousePosition));
+						}
+						this.Invalidate(new Rectangle(0, y, this.Width, this.ItemHeight), false);
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Handle the mouse move event to capture cursor position
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			SetCursor(e.Location);
+
+			base.OnMouseMove(e);
+		}
+
+		/// <summary>
+		/// Handle mouse down event
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnMouseDown(MouseEventArgs e)
+		{
+			// set the currnet item based on position
+			SetCurrentItem(e.Location);
+			SetCursor(e.Location);
+
+			base.OnMouseDown(e);
+		}
+
+		/// <summary>
+		/// Handle the mouse up and check for click in the refresh icon
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnMouseUp(MouseEventArgs e)
+		{
+			base.OnMouseUp(e);
+
+			if ((e.Button & System.Windows.Forms.MouseButtons.Left) != 0)
+			{
+				// if this was in a refresh icon, we do a refresh
+				int index = this.IndexFromPoint(e.Location);
+				if (index >= 0 && index < this.Items.Count)
+				{
+					var item = this.Items[index] as AuthenticatorListitem;
+					int x = 0;
+					int y = this.ItemHeight * index;
+					if (item.Authenticator.AutoRefresh == false && item.DisplayUntil < DateTime.Now
+						&& new Rectangle(x + this.Width - 56, y + 8, 48, 48).Contains(e.Location))
+					{
+						if (UnprotectAuthenticator(item) == DialogResult.Cancel)
+						{
+							return;
+						}
+
+						item.LastCode = item.Authenticator.AuthenticatorData.CurrentCode;
+						item.LastUpdate = DateTime.Now;
+						item.DisplayUntil = DateTime.Now.AddSeconds(10);
+
+						if (item.Authenticator.CopyOnCode == true)
+						{
+							// copy to clipboard
+							item.Authenticator.CopyCodeToClipboard(this.Parent as Form);
+						}
+
+						RefreshCurrentItem();
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Main WndProc handler to capture scroll events
+		/// </summary>
+		/// <param name="msg"></param>
+		protected override void WndProc(ref System.Windows.Forms.Message msg)
+		{
+			if (msg.Msg == WinAPI.WM_VSCROLL)
+			{
+				if (Scrolled != null)
+				{
+					WinAPI.ScrollInfoStruct si = new WinAPI.ScrollInfoStruct();
+					si.fMask = WinAPI.SIF_ALL;
+					si.cbSize = Marshal.SizeOf(si);
+					WinAPI.GetScrollInfo(msg.HWnd, 0, ref si);
+
+					if (msg.WParam.ToInt32() == WinAPI.SB_ENDSCROLL)
+					{
+						ScrollEventArgs sargs = new ScrollEventArgs(ScrollEventType.EndScroll, si.nPos);
+						Scrolled(this, sargs);
+					}
+					else if (msg.WParam.ToInt32() == WinAPI.SB_THUMBTRACK)
+					{
+						ScrollEventArgs sargs = new ScrollEventArgs(ScrollEventType.ThumbTrack, si.nPos);
+						Scrolled(this, sargs);
+					}
+				}
+			}
+
+			base.WndProc(ref msg);
+		}
+
+		#endregion
+
+		#region Item renaming
+
+		/// <summary>
+		/// Set the position of the rename textbox
+		/// </summary>
 		private void setRenameTextboxLocation()
 		{
 			if (_renameTextbox != null && _renameTextbox.Visible == true)
@@ -146,13 +375,9 @@ namespace WinAuth
 			}
 		}
 
-		public event AuthenticatorListItemRemovedHandler ItemRemoved;
-
-		[Category("Action")]
-		public event ScrollEventHandler Scrolled = null;
-
-		private TextBox _renameTextbox;
-
+		/// <summary>
+		/// Get or create the rename textbox
+		/// </summary>
 		public TextBox RenameTextbox
 		{
 			get
@@ -180,6 +405,9 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// Get flag is we are renaming
+		/// </summary>
 		public bool IsRenaming
 		{
 			get
@@ -188,6 +416,10 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// End the renaming and decide to save
+		/// </summary>
+		/// <param name="save"></param>
 		public void EndRenaming(bool save = true)
 		{
 			if (save == false)
@@ -197,6 +429,11 @@ namespace WinAuth
 			RenameTextbox.Visible = false;
 		}
 
+		/// <summary>
+		/// Keypress event to cancel or commit renaming
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		void _renameTextbox_KeyPress(object sender, KeyPressEventArgs e)
 		{
 			if (e.KeyChar == 27)
@@ -212,6 +449,11 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// Handle the focus leave for rename box
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		void RenameTextbox_Leave(object sender, EventArgs e)
 		{
 			RenameTextbox.Visible = false;
@@ -227,35 +469,18 @@ namespace WinAuth
 			}
 		}
 
-		protected override void WndProc(ref System.Windows.Forms.Message msg)
-		{
-			if (msg.Msg == WM_VSCROLL)
-			{
-				if (Scrolled != null)
-				{
-					ScrollInfoStruct si = new ScrollInfoStruct();
-					si.fMask = SIF_ALL;
-					si.cbSize = Marshal.SizeOf(si);
-					GetScrollInfo(msg.HWnd, 0, ref si);
+		#endregion
 
-					if (msg.WParam.ToInt32() == SB_ENDSCROLL)
-					{
-						ScrollEventArgs sargs = new ScrollEventArgs(ScrollEventType.EndScroll, si.nPos);
-						Scrolled(this, sargs);
-					}
-					else if (msg.WParam.ToInt32() == SB_THUMBTRACK)
-					{
-						ScrollEventArgs sargs = new ScrollEventArgs(ScrollEventType.ThumbTrack, si.nPos);
-						Scrolled(this, sargs);
-					}
-				}
-			}
+		#region Public Properties
 
-			base.WndProc(ref msg);
-		}
+		/// <summary>
+		/// Readonly flag
+		/// </summary>
+		public bool ReadOnly { get; set; }
 
-		private AuthenticatorListitem _currentItem;
-
+		/// <summary>
+		/// The current (selected) authenticator
+		/// </summary>
 		public AuthenticatorListitem CurrentItem
 		{
 			get
@@ -268,6 +493,14 @@ namespace WinAuth
 			}
 		}
 
+		#endregion
+
+		#region Private methods
+
+		/// <summary>
+		/// Set the current item based on the mouse position
+		/// </summary>
+		/// <param name="mouseLocation">mouse position</param>
 		private void SetCurrentItem(Point mouseLocation)
 		{
 			int index = this.IndexFromPoint(mouseLocation);
@@ -290,6 +523,10 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// Set the current cursor based on position
+		/// </summary>
+		/// <param name="mouseLocation">current mouse position</param>
 		private void SetCursor(Point mouseLocation)
 		{
 			// set cursor if we are over a refresh icon
@@ -312,75 +549,61 @@ namespace WinAuth
 			}
 		}
 
-		protected override void OnMouseMove(MouseEventArgs e)
+		/// <summary>
+		/// Unprotected an authenticator (if possible)
+		/// </summary>
+		/// <param name="item">item to unprotect</param>
+		/// <returns></returns>
+		private DialogResult UnprotectAuthenticator(AuthenticatorListitem item)
 		{
-			//if (this.ClientRectangle.Contains(this.PointToClient(Control.MousePosition)))
-			//{
-			//	return;
-			//}
-
-			SetCursor(e.Location);
-
-			base.OnMouseMove(e);
-		}
-
-		protected override void OnMouseDown(MouseEventArgs e)
-		{
-			SetCurrentItem(e.Location);
-			SetCursor(e.Location);
-
-			base.OnMouseDown(e);
-		}
-
-		protected override void OnMouseUp(MouseEventArgs e)
-		{
-			base.OnMouseUp(e);
-
-			if ((e.Button & System.Windows.Forms.MouseButtons.Left) != 0)
+			// keep a count so we can have multiples
+			if (item.UnprotectCount > 0)
 			{
-				// if this was in a refresh icon, we do a refresh
-				int index = this.IndexFromPoint(e.Location);
-				if (index >= 0 && index < this.Items.Count)
-				{
-					var item = this.Items[index] as AuthenticatorListitem;
-					int x = 0;
-					int y = this.ItemHeight * index;
-					if (item.Authenticator.AutoRefresh == false && item.DisplayUntil < DateTime.Now
-						&& new Rectangle(x + this.Width - 56, y + 8, 48, 48).Contains(e.Location))
-					{
-						if (UnprotectAuthenticator(item.Authenticator) == DialogResult.Cancel)
-						{
-							return;
-						}
-						item.LastCode = item.Authenticator.AuthenticatorData.CurrentCode;
-
-						item.LastUpdate = DateTime.Now;
-						item.DisplayUntil = DateTime.Now.AddSeconds(10);
-
-						if (item.Authenticator.CopyOnCode == true)
-						{
-							// copy to clipboard
-							item.Authenticator.CopyCodeToClipboard(this.Parent as Form);
-						}
-
-						RefreshCurrentItem();
-					}
-				}
+				item.UnprotectCount++;
+				return DialogResult.OK;
 			}
-		}
 
-		private DialogResult UnprotectAuthenticator(WinAuthAuthenticator auth)
-		{
+			// if there is no protection reutrn None
+			WinAuthAuthenticator auth = item.Authenticator;
 			if (auth.AuthenticatorData.RequiresPassword == false)
 			{
 				return DialogResult.None;
 			}
 
+			// request the password
 			UnprotectPasswordForm getPassForm = new UnprotectPasswordForm();
 			getPassForm.Authenticator = auth;
-			return getPassForm.ShowDialog(this.Parent as Form);
+			DialogResult result = getPassForm.ShowDialog(this.Parent as Form);
+			if (result == DialogResult.OK)
+			{
+				item.UnprotectCount++;
+			}
+
+			return result;
 		}
 
+		/// <summary>
+		/// Reprotect the authenticator and each action or when the 30second window has expired
+		/// </summary>
+		/// <param name="item"></param>
+		private void ProtectAuthenticator(AuthenticatorListitem item)
+		{
+			// if alrady protected just decrement counter
+			item.UnprotectCount--;
+			if (item.UnprotectCount > 0)
+			{
+				return;
+			}
+
+			// reprotect the authenticator
+			WinAuthAuthenticator auth = item.Authenticator;
+			auth.AuthenticatorData.Protect();
+			item.UnprotectCount = 0;
+		}
+
+		/// <summary>
+		/// Preload the context menu items
+		/// </summary>
 		private void loadContextMenuStrip()
 		{
 			this.ContextMenuStrip.Items.Clear();
@@ -503,7 +726,10 @@ namespace WinAuth
 			this.ContextMenuStrip.Items.Add(menuitem);
 		}
 
-		void ContextMenuStrip_Opening(object sender, CancelEventArgs e)
+		/// <summary>
+		/// Set the options for the context menu items based on the currnet authenticator and state
+		/// </summary>
+		private void SetContextMenuItems()
 		{
 			var menu = this.ContextMenuStrip;
 			var item = this.CurrentItem;
@@ -565,33 +791,20 @@ namespace WinAuth
 			}
 		}
 
-		//void ContextMenuStrip_Closed(object sender, ToolStripDropDownClosedEventArgs e)
-		//{
-		//	// display any resources
-		//	var menuitem = this.ContextMenuStrip.Items.Cast<ToolStripItem>().Where(i => i is ToolStripMenuItem && ((ToolStripMenuItem)i).Name == "iconMenuItem").FirstOrDefault() as ToolStripMenuItem;
-		//	if (menuitem != null)
-		//	{
-		//		foreach (ToolStripItem subitem in menuitem.DropDownItems)
-		//		{
-		//			if (subitem.Image != null)
-		//			{
-		//				subitem.Image.Dispose();
-		//				subitem.Image = null;
-		//			}
-		//		}
-		//	}
-		//}
-
-		void ContextMenu_Click(object sender, EventArgs e)
+		/// <summary>
+		/// Process the context menu item
+		/// </summary>
+		/// <param name="menuitem"></param>
+		private void ProcessMenu(ToolStripItem menuitem)
 		{
-			ToolStripItem menuitem = (ToolStripItem)sender;
 			var item = this.CurrentItem;
 			var auth = item.Authenticator;
 
+			// check and perform each menu
 			if (menuitem.Name == "setPasswordMenuItem")
 			{
 				// check if the authentcated is still protected
-				DialogResult wasprotected = UnprotectAuthenticator(auth);
+				DialogResult wasprotected = UnprotectAuthenticator(item);
 				if (wasprotected == DialogResult.Cancel)
 				{
 					return;
@@ -612,6 +825,11 @@ namespace WinAuth
 						auth.AuthenticatorData.SetEncryption(Authenticator.PasswordTypes.Explicit, password);
 						// can't have autorefresh on
 						auth.AutoRefresh = false;
+
+						item.UnprotectCount = 0;
+						item.DisplayUntil = DateTime.MinValue;
+						item.LastUpdate = DateTime.MinValue;
+						item.LastCode = null;
 					}
 					else
 					{
@@ -619,21 +837,28 @@ namespace WinAuth
 					}
 					// make sure authenticator is saved
 					auth.MarkChanged();
+					RefreshCurrentItem();
 				}
 				finally
 				{
 					if (wasprotected == DialogResult.OK)
 					{
-						auth.AuthenticatorData.Protect();
+						ProtectAuthenticator(item);
 					}
 				}
 			}
 			else if (menuitem.Name == "showCodeMenuItem")
 			{
 				// check if the authentcated is still protected
-				if (UnprotectAuthenticator(auth) == DialogResult.Cancel)
+				if (UnprotectAuthenticator(item) == DialogResult.Cancel)
 				{
 					return;
+				}
+
+				// reduce unprotect count if already displayed
+				if (item.DisplayUntil != DateTime.MinValue)
+				{
+					ProtectAuthenticator(item);
 				}
 
 				item.LastCode = auth.AuthenticatorData.CurrentCode;
@@ -644,7 +869,7 @@ namespace WinAuth
 			else if (menuitem.Name == "syncMenuItem")
 			{
 				// check if the authentcated is still protected
-				DialogResult wasprotected = UnprotectAuthenticator(auth);
+				DialogResult wasprotected = UnprotectAuthenticator(item);
 				if (wasprotected == DialogResult.Cancel)
 				{
 					return;
@@ -659,14 +884,14 @@ namespace WinAuth
 				{
 					if (wasprotected == DialogResult.OK)
 					{
-						auth.AuthenticatorData.Protect();
+						ProtectAuthenticator(item);
 					}
 				}
 			}
 			else if (menuitem.Name == "copyCodeMenuItem")
 			{
 				// check if the authentcated is still protected
-				DialogResult wasprotected = UnprotectAuthenticator(auth);
+				DialogResult wasprotected = UnprotectAuthenticator(item);
 				if (wasprotected == DialogResult.Cancel)
 				{
 					return;
@@ -679,7 +904,7 @@ namespace WinAuth
 				{
 					if (wasprotected == DialogResult.OK)
 					{
-						auth.AuthenticatorData.Protect();
+						ProtectAuthenticator(item);
 					}
 				}
 			}
@@ -697,7 +922,7 @@ namespace WinAuth
 			else if (menuitem.Name == "showRestoreCodeMenuItem")
 			{
 				// check if the authentcated is still protected
-				DialogResult wasprotected = UnprotectAuthenticator(auth);
+				DialogResult wasprotected = UnprotectAuthenticator(item);
 				if (wasprotected == DialogResult.Cancel)
 				{
 					return;
@@ -713,14 +938,14 @@ namespace WinAuth
 				{
 					if (wasprotected == DialogResult.OK)
 					{
-						auth.AuthenticatorData.Protect();
+						ProtectAuthenticator(item);
 					}
 				}
 			}
 			else if (menuitem.Name == "showGoogleSecretMenuItem")
 			{
 				// check if the authentcated is still protected
-				DialogResult wasprotected = UnprotectAuthenticator(auth);
+				DialogResult wasprotected = UnprotectAuthenticator(item);
 				if (wasprotected == DialogResult.Cancel)
 				{
 					return;
@@ -736,14 +961,14 @@ namespace WinAuth
 				{
 					if (wasprotected == DialogResult.OK)
 					{
-						auth.AuthenticatorData.Protect();
+						ProtectAuthenticator(item);
 					}
 				}
 			}
 			else if (menuitem.Name == "showTrionSecretMenuItem")
 			{
 				// check if the authentcated is still protected
-				DialogResult wasprotected = UnprotectAuthenticator(auth);
+				DialogResult wasprotected = UnprotectAuthenticator(item);
 				if (wasprotected == DialogResult.Cancel)
 				{
 					return;
@@ -759,7 +984,7 @@ namespace WinAuth
 				{
 					if (wasprotected == DialogResult.OK)
 					{
-						auth.AuthenticatorData.Protect();
+						ProtectAuthenticator(item);
 					}
 				}
 			}
@@ -810,6 +1035,7 @@ namespace WinAuth
 						}
 						try
 						{
+							// get the image and create an icon if not already the right size
 							using (Bitmap iconimage = (Bitmap)Image.FromFile(ofd.FileName))
 							{
 								if (iconimage.Width != 48 || iconimage.Height != 48)
@@ -848,87 +1074,34 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// Callback used for Image's thumbnail creator
+		/// </summary>
+		/// <returns></returns>
 		public bool ThumbnailCallback()
 		{
 			return false;
 		}
 
-		private Bitmap ScaleBitmap(Bitmap bitmap, int width, int height)
-		{
-			Bitmap scaled = new Bitmap(width, height, PixelFormat.Format24bppRgb);
-			float scalex = (float)width / (float)bitmap.Width;
-			float scaley = (float)Height / (float)bitmap.Height;
-
-			using (Graphics g = Graphics.FromImage((Image)scaled))
-			{
-				g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
-				g.ScaleTransform(scalex, scaley);
-
-				Rectangle destrectangle = new Rectangle(0, 0, scaled.Size.Width, scaled.Size.Height);
-				Rectangle srcrectangle = new Rectangle(0, 0, bitmap.Size.Width, bitmap.Size.Height);
-				g.DrawImage(bitmap, destrectangle, srcrectangle, GraphicsUnit.Pixel);
-			}
-
-			return scaled;
-		}
-
+		/// <summary>
+		/// Refresh the  current item by invalidating it
+		/// </summary>
 		private void RefreshCurrentItem()
 		{
 			var item = this.CurrentItem;
 			int y = this.ItemHeight * item.Index;
 			Rectangle rect = new Rectangle(0, 0, this.Width, this.Height);
-			// Rectangle rect = new Rectangle(this.Width - 56, y + 8, 48, 48);
 			this.Invalidate(rect, false);
 		}
 
-		public void Tick(object sender, EventArgs e)
-		{
-			for (int index = 0; index < this.Items.Count; index++)
-			{
-				AuthenticatorListitem item = this.Items[index] as AuthenticatorListitem;
-				WinAuthAuthenticator auth = item.Authenticator;
+		#endregion
 
-				int y = this.ItemHeight * index;
-				if (auth.AutoRefresh == true)
-				{
-					int tillUpdate = (int)((auth.AuthenticatorData.ServerTime % 30000) / 1000L);
-					if (item.LastUpdate == DateTime.MinValue || tillUpdate == 0)
-					{
-						this.Invalidate(new Rectangle(0, y, this.Width, this.ItemHeight), false);
-						item.LastUpdate = DateTime.Now;
-					}
-					else
-					{
-						Rectangle rect = new Rectangle(this.Width - 56, y + 8, 48, 48);
-						this.Invalidate(rect, false);
-						item.LastUpdate = DateTime.Now;
-					}
-				}
-				else
-				{
-					if (item.DisplayUntil != DateTime.MinValue)
-					{
-						if (item.DisplayUntil <= DateTime.Now)
-						{
-							item.DisplayUntil = DateTime.MinValue;
-							item.LastUpdate = DateTime.MinValue;
-							item.LastCode = null;
+		#region Owner Draw
 
-							if (item.Authenticator.AuthenticatorData.PasswordType == Authenticator.PasswordTypes.Explicit)
-							{
-								item.Authenticator.AuthenticatorData.Protect();
-							}
-
-							SetCursor(this.PointToClient(Control.MousePosition));
-						}
-						this.Invalidate(new Rectangle(0, y, this.Width, this.ItemHeight), false);
-					}
-				}
-			}
-		}
-
-		public bool ReadOnly { get; set; }
-
+		/// <summary>
+		/// Hook into the default WndProc to make sure we get our redraw messages
+		/// </summary>
+		/// <param name="m"></param>
 		protected override void DefWndProc(ref Message m)
 		{
 			if (ReadOnly == false || ((m.Msg <= 0x0200 || m.Msg >= 0x020E)
@@ -940,157 +1113,160 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// Event called when an item requires drawing
+		/// </summary>
+		/// <param name="e"></param>
+		/// <param name="cliprect"></param>
 		protected void OnDrawItem(DrawItemEventArgs e, Rectangle cliprect)
 		{
-			if (this.Items.Count > 0)
+			// no need to draw nothing
+			if (this.Items.Count == 0)
 			{
-				using (var brush = new SolidBrush(e.ForeColor))
+				return;
+			}
+
+			// draw the requested item
+			using (var brush = new SolidBrush(e.ForeColor))
+			{
+				AuthenticatorListitem item = this.Items[e.Index] as AuthenticatorListitem;
+				WinAuthAuthenticator auth = item.Authenticator;
+
+				bool showCode = (auth.AutoRefresh == true || item.DisplayUntil > DateTime.Now);
+
+				e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+				Rectangle rect = new Rectangle(e.Bounds.X + 4, e.Bounds.Y + 8, 48, 48);
+				if (cliprect.IntersectsWith(rect) == true)
 				{
-					AuthenticatorListitem item = this.Items[e.Index] as AuthenticatorListitem;
-					WinAuthAuthenticator auth = item.Authenticator;
+					using (var icon = auth.Icon)
+					{
+						e.Graphics.DrawImage(icon, new PointF(e.Bounds.X + 4, e.Bounds.Y + 8));
+					}
+				}
 
-					bool showCode = (auth.AutoRefresh == true || item.DisplayUntil > DateTime.Now);
-
-					e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-
-					Rectangle rect = new Rectangle(e.Bounds.X + 4, e.Bounds.Y + 8, 48, 48);
+				using (var font = new Font(e.Font.FontFamily, 12, FontStyle.Regular))
+				{
+					string label = (e.Index + 1) + ". " + auth.Name;
+					SizeF labelsize = e.Graphics.MeasureString(label.ToString(), font);
+					// if too big, adjust
+					if (labelsize.Width > 255)
+					{
+						StringBuilder newlabel = new StringBuilder(label + "...");
+						while ((labelsize = e.Graphics.MeasureString(newlabel.ToString(), font)).Width > 255)
+						{
+							newlabel.Remove(newlabel.Length - 4, 1);
+						}
+						label = newlabel.ToString();
+					}
+					rect = new Rectangle(e.Bounds.X + 64, e.Bounds.Y + 8, (int)labelsize.Height, (int)labelsize.Width);
 					if (cliprect.IntersectsWith(rect) == true)
 					{
-						using (var icon = auth.Icon)
-						{
-							e.Graphics.DrawImage(icon, new PointF(e.Bounds.X + 4, e.Bounds.Y + 8));
-						}
+						//e.Graphics.DrawString(label, font, brush, new PointF(e.Bounds.X + 64, e.Bounds.Y + 8));
+						e.Graphics.DrawString(label, font, brush, new RectangleF(e.Bounds.X + 64, e.Bounds.Y + 8, 250, labelsize.Height));
 					}
 
-					using (var font = new Font(e.Font.FontFamily, 12, FontStyle.Regular))
+					string code;
+					if (showCode == true)
 					{
-						string label = (e.Index + 1) + ". " + auth.Name;
-						SizeF labelsize = e.Graphics.MeasureString(label.ToString(), font);
-						// if too big, adjust
-						if (labelsize.Width > 255)
+						try
 						{
-							StringBuilder newlabel = new StringBuilder(label + "...");
-							while ((labelsize = e.Graphics.MeasureString(newlabel.ToString(), font)).Width > 255)
+							// we we aren't autorefresh we just keep the same code up for the 10 seconds so it doesn't change even crossing the 30s boundary
+							if (auth.AutoRefresh == false)
 							{
-								newlabel.Remove(newlabel.Length - 4, 1);
-							}
-							label = newlabel.ToString();
-						}
-						rect = new Rectangle(e.Bounds.X + 64, e.Bounds.Y + 8, (int)labelsize.Height, (int)labelsize.Width);
-						if (cliprect.IntersectsWith(rect) == true)
-						{
-							//e.Graphics.DrawString(label, font, brush, new PointF(e.Bounds.X + 64, e.Bounds.Y + 8));
-							e.Graphics.DrawString(label, font, brush, new RectangleF(e.Bounds.X + 64, e.Bounds.Y + 8, 250, labelsize.Height));
-						}
-
-						string code;
-						if (showCode == true)
-						{
-							try
-							{
-								// we we aren't autorefresh we just keep the same code up for the 10 seconds so it doesn't change even crossing the 30s boundary
-								if (auth.AutoRefresh == false)
+								if (item.LastCode == null)
 								{
-									if (item.LastCode == null)
-									{
-										code = auth.AuthenticatorData.CurrentCode;
-									}
-									else
-									{
-										code = item.LastCode;
-									}
+									code = auth.AuthenticatorData.CurrentCode;
 								}
 								else
 								{
-									code = auth.AuthenticatorData.CurrentCode;
-									if (code != item.LastCode && auth.CopyOnCode == true)
-									{
-										// code has changed - copy to clipboard
-										auth.CopyCodeToClipboard(this.Parent as Form);
-									}
+									code = item.LastCode;
 								}
-								item.LastCode = code;
-								code = code.Insert(code.Length / 2, " ");
 							}
-							catch (EncrpytedSecretDataException )
+							else
 							{
-								code = "- - - - - -";
+								code = auth.AuthenticatorData.CurrentCode;
+								if (code != item.LastCode && auth.CopyOnCode == true)
+								{
+									// code has changed - copy to clipboard
+									auth.CopyCodeToClipboard(this.Parent as Form);
+								}
 							}
+							item.LastCode = code;
+							code = code.Insert(code.Length / 2, " ");
 						}
-						else
+						catch (EncrpytedSecretDataException )
 						{
 							code = "- - - - - -";
 						}
-						SizeF codesize = e.Graphics.MeasureString(code, e.Font);
-						rect = new Rectangle(e.Bounds.X + 64, e.Bounds.Y + 8 + (int)labelsize.Height + 4, (int)codesize.Height, (int)codesize.Width);
-						if (cliprect.IntersectsWith(rect) == true)
-						{
-							e.Graphics.DrawString(code, e.Font, brush, new PointF(e.Bounds.X + 64, e.Bounds.Y + 8 + labelsize.Height + 4));
-						}
 					}
-
-					rect = new Rectangle(e.Bounds.X + e.Bounds.Width - 56, e.Bounds.Y + 8, 48, 48);
+					else
+					{
+						code = "- - - - - -";
+					}
+					SizeF codesize = e.Graphics.MeasureString(code, e.Font);
+					rect = new Rectangle(e.Bounds.X + 64, e.Bounds.Y + 8 + (int)labelsize.Height + 4, (int)codesize.Height, (int)codesize.Width);
 					if (cliprect.IntersectsWith(rect) == true)
 					{
-						if (auth.AutoRefresh == true)
+						e.Graphics.DrawString(code, e.Font, brush, new PointF(e.Bounds.X + 64, e.Bounds.Y + 8 + labelsize.Height + 4));
+					}
+				}
+
+				rect = new Rectangle(e.Bounds.X + e.Bounds.Width - 56, e.Bounds.Y + 8, 48, 48);
+				if (cliprect.IntersectsWith(rect) == true)
+				{
+					if (auth.AutoRefresh == true)
+					{
+						using (var piebrush = new SolidBrush(SystemColors.ActiveCaption))
+						{
+							using (var piepen = new Pen(SystemColors.ActiveCaption))
+							{
+								int tillUpdate = ((int)((auth.AuthenticatorData.ServerTime % 30000) / 1000L) + 1) * 12;
+								e.Graphics.DrawPie(piepen, e.Bounds.X + e.Bounds.Width - 54, e.Bounds.Y + 10, 46, 46, 270, 360);
+								e.Graphics.FillPie(piebrush, e.Bounds.X + e.Bounds.Width - 54, e.Bounds.Y + 10, 46, 46, 270, tillUpdate);
+							}
+						}
+					}
+					else
+					{
+						if (showCode == true)
 						{
 							using (var piebrush = new SolidBrush(SystemColors.ActiveCaption))
 							{
 								using (var piepen = new Pen(SystemColors.ActiveCaption))
 								{
-									int tillUpdate = ((int)((auth.AuthenticatorData.ServerTime % 30000) / 1000L) + 1) * 12;
+									int tillUpdate = (int)((item.DisplayUntil.Subtract(DateTime.Now).TotalSeconds * (double)360) / item.DisplayUntil.Subtract(item.LastUpdate).TotalSeconds);
 									e.Graphics.DrawPie(piepen, e.Bounds.X + e.Bounds.Width - 54, e.Bounds.Y + 10, 46, 46, 270, 360);
 									e.Graphics.FillPie(piebrush, e.Bounds.X + e.Bounds.Width - 54, e.Bounds.Y + 10, 46, 46, 270, tillUpdate);
 								}
 							}
 						}
+						else if (auth.AuthenticatorData.RequiresPassword == true)
+						{
+							e.Graphics.DrawImage(WinAuth.Properties.Resources.RefreshIconWithLock, rect);
+						}
 						else
 						{
-							if (showCode == true)
-							{
-								using (var piebrush = new SolidBrush(SystemColors.ActiveCaption))
-								{
-									using (var piepen = new Pen(SystemColors.ActiveCaption))
-									{
-										int tillUpdate = (int)((item.DisplayUntil.Subtract(DateTime.Now).TotalSeconds * (double)360) / item.DisplayUntil.Subtract(item.LastUpdate).TotalSeconds);
-										e.Graphics.DrawPie(piepen, e.Bounds.X + e.Bounds.Width - 54, e.Bounds.Y + 10, 46, 46, 270, 360);
-										e.Graphics.FillPie(piebrush, e.Bounds.X + e.Bounds.Width - 54, e.Bounds.Y + 10, 46, 46, 270, tillUpdate);
-									}
-								}
-							}
-							else if (auth.AuthenticatorData.RequiresPassword == true)
-							{
-								e.Graphics.DrawImage(WinAuth.Properties.Resources.RefreshIconWithLock, rect);
-							}
-							else
-							{
-								e.Graphics.DrawImage(WinAuth.Properties.Resources.RefreshIcon, rect);
-							}
+							e.Graphics.DrawImage(WinAuth.Properties.Resources.RefreshIcon, rect);
 						}
 					}
+				}
 
-					rect = new Rectangle(e.Bounds.X, e.Bounds.Y + this.ItemHeight - 1, 1, 1);
-					if (cliprect.IntersectsWith(rect) == true)
+				rect = new Rectangle(e.Bounds.X, e.Bounds.Y + this.ItemHeight - 1, 1, 1);
+				if (cliprect.IntersectsWith(rect) == true)
+				{
+					using (Pen pen = new Pen(SystemColors.Control))
 					{
-						using (Pen pen = new Pen(SystemColors.Control))
-						{
-							e.Graphics.DrawLine(pen, e.Bounds.X, e.Bounds.Y + this.ItemHeight - 1, e.Bounds.X + e.Bounds.Width, e.Bounds.Y + this.ItemHeight - 1);
-						}
+						e.Graphics.DrawLine(pen, e.Bounds.X, e.Bounds.Y + this.ItemHeight - 1, e.Bounds.X + e.Bounds.Width, e.Bounds.Y + this.ItemHeight - 1);
 					}
 				}
 			}
 		}
 
-		//protected override void OnDrawItem(DrawItemEventArgs e)
-		//{
-		//	if (this.Items.Count > 0)
-		//	{
-		//		e.DrawBackground();
-		//		OnDrawItem(e, new Rectangle(e.Bounds.X, e.Bounds.X, e.Bounds.Width, e.Bounds.Height));
-		//	}
-		//	base.OnDrawItem(e);
-		//}
-
+		/// <summary>
+		/// Handle the paint event and work out if item needs redrawing
+		/// </summary>
+		/// <param name="e"></param>
     protected override void OnPaint(PaintEventArgs e)
     {
       using (var brush = new SolidBrush(this.BackColor))
@@ -1132,6 +1308,8 @@ namespace WinAuth
       }
 
       base.OnPaint(e);
-    }
-  }
+		}
+
+		#endregion
+	}
 }

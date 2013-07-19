@@ -408,15 +408,16 @@ namespace WinAuth
 						case "authenticatordata":
 							try
 							{
-								this.AuthenticatorData.ReadXml(reader, password);
+								// we don't pass the password as they are locked till clicked
+								this.AuthenticatorData.ReadXml(reader);
 							}
-							catch (EncrpytedSecretDataException esde)
+							catch (EncrpytedSecretDataException )
 							{
-								// ignore
+								// no action needed
 							}
-							catch (BadPasswordException bpex)
+							catch (BadPasswordException )
 							{
-								// ignore
+								// no action needed
 							}
               break;
 

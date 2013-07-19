@@ -37,9 +37,6 @@
 			this.authenticatorMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.commandPanel = new MetroFramework.Controls.MetroPanel();
-			this.pictureBox2 = new System.Windows.Forms.PictureBox();
-			this.pictureBox1 = new System.Windows.Forms.PictureBox();
-			this.lockToggle = new MetroFramework.Controls.MetroToggle();
 			this.optionsButton = new MetroFramework.Controls.MetroButton();
 			this.addAuthenticatorButton = new MetroFramework.Controls.MetroButton();
 			this.metroStyleManager = new MetroFramework.Components.MetroStyleManager(this.components);
@@ -51,14 +48,12 @@
 			this.passwordPanel = new MetroFramework.Controls.MetroPanel();
 			this.passwordButton = new MetroFramework.Controls.MetroButton();
 			this.passwordErrorLabel = new MetroFramework.Controls.MetroLabel();
+			this.passwordLabel = new MetroFramework.Controls.MetroLabel();
 			this.passwordField = new MetroFramework.Controls.MetroTextBox();
 			this.passwordTimer = new System.Windows.Forms.Timer(this.components);
 			this.authenticatorList = new WinAuth.AuthenticatorListBox();
-			this.passwordLabel = new MetroFramework.Controls.MetroLabel();
 			this.authenticatorMenu.SuspendLayout();
 			this.commandPanel.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.metroStyleManager)).BeginInit();
 			this.passwordPanel.SuspendLayout();
 			this.SuspendLayout();
@@ -84,9 +79,6 @@
 			// 
 			// commandPanel
 			// 
-			this.commandPanel.Controls.Add(this.pictureBox2);
-			this.commandPanel.Controls.Add(this.pictureBox1);
-			this.commandPanel.Controls.Add(this.lockToggle);
 			this.commandPanel.Controls.Add(this.optionsButton);
 			this.commandPanel.Controls.Add(this.addAuthenticatorButton);
 			this.commandPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -102,35 +94,6 @@
 			this.commandPanel.VerticalScrollbarSize = 10;
 			this.commandPanel.Visible = false;
 			this.commandPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.commandPanel_MouseDown);
-			// 
-			// pictureBox2
-			// 
-			this.pictureBox2.Image = global::WinAuth.Properties.Resources.padlock_closed;
-			this.pictureBox2.Location = new System.Drawing.Point(238, 9);
-			this.pictureBox2.Name = "pictureBox2";
-			this.pictureBox2.Size = new System.Drawing.Size(16, 16);
-			this.pictureBox2.TabIndex = 3;
-			this.pictureBox2.TabStop = false;
-			// 
-			// pictureBox1
-			// 
-			this.pictureBox1.Image = global::WinAuth.Properties.Resources.padlock_open;
-			this.pictureBox1.Location = new System.Drawing.Point(164, 9);
-			this.pictureBox1.Name = "pictureBox1";
-			this.pictureBox1.Size = new System.Drawing.Size(16, 16);
-			this.pictureBox1.TabIndex = 3;
-			this.pictureBox1.TabStop = false;
-			// 
-			// lockToggle
-			// 
-			this.lockToggle.AutoSize = true;
-			this.lockToggle.DisplayStatus = false;
-			this.lockToggle.Location = new System.Drawing.Point(184, 9);
-			this.lockToggle.Name = "lockToggle";
-			this.lockToggle.Size = new System.Drawing.Size(50, 17);
-			this.lockToggle.TabIndex = 2;
-			this.lockToggle.Text = "Off";
-			this.lockToggle.UseSelectable = true;
 			// 
 			// optionsButton
 			// 
@@ -224,6 +187,15 @@
 			this.passwordErrorLabel.TabIndex = 3;
 			this.passwordErrorLabel.UseCustomForeColor = true;
 			// 
+			// passwordLabel
+			// 
+			this.passwordLabel.AutoSize = true;
+			this.passwordLabel.Location = new System.Drawing.Point(24, 16);
+			this.passwordLabel.Name = "passwordLabel";
+			this.passwordLabel.Size = new System.Drawing.Size(63, 19);
+			this.passwordLabel.TabIndex = 3;
+			this.passwordLabel.Text = "Password";
+			// 
 			// passwordField
 			// 
 			this.passwordField.Location = new System.Drawing.Point(27, 42);
@@ -264,15 +236,6 @@
 			this.authenticatorList.Visible = false;
 			this.authenticatorList.ItemRemoved += new WinAuth.AuthenticatorListItemRemovedHandler(this.authenticatorList_ItemRemoved);
 			// 
-			// passwordLabel
-			// 
-			this.passwordLabel.AutoSize = true;
-			this.passwordLabel.Location = new System.Drawing.Point(24, 16);
-			this.passwordLabel.Name = "passwordLabel";
-			this.passwordLabel.Size = new System.Drawing.Size(63, 19);
-			this.passwordLabel.TabIndex = 3;
-			this.passwordLabel.Text = "Password";
-			// 
 			// WinAuthForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -299,9 +262,6 @@
 			this.Resize += new System.EventHandler(this.WinAuthForm_Resize);
 			this.authenticatorMenu.ResumeLayout(false);
 			this.commandPanel.ResumeLayout(false);
-			this.commandPanel.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.metroStyleManager)).EndInit();
 			this.passwordPanel.ResumeLayout(false);
 			this.passwordPanel.PerformLayout();
@@ -324,9 +284,6 @@
 		private System.Windows.Forms.ContextMenuStrip optionsMenu;
 		private System.Windows.Forms.NotifyIcon notifyIcon;
 		private MetroFramework.Controls.MetroLabel introLabel;
-		private MetroFramework.Controls.MetroToggle lockToggle;
-		private System.Windows.Forms.PictureBox pictureBox1;
-		private System.Windows.Forms.PictureBox pictureBox2;
 		private MetroFramework.Controls.MetroPanel passwordPanel;
 		private MetroFramework.Controls.MetroTextBox passwordField;
 		private MetroFramework.Controls.MetroButton passwordButton;

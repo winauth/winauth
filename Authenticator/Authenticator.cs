@@ -472,6 +472,11 @@ namespace WinAuth
 					// encrypt
 					this.EncryptedData = Authenticator.EncryptSequence(data, passwordType, password);
 					this.PasswordType = passwordType;
+					if (this.PasswordType == PasswordTypes.Explicit)
+					{
+						this.SecretData = null;
+						this.RequiresPassword = true;
+					}
 				}
 			}
 		}

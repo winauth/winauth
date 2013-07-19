@@ -28,12 +28,15 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this.setPasswordLabel = new MetroFramework.Controls.MetroLabel();
 			this.passwordField = new MetroFramework.Controls.MetroTextBox();
 			this.verifyField = new MetroFramework.Controls.MetroTextBox();
 			this.cancelButton = new MetroFramework.Controls.MetroButton();
 			this.okButton = new MetroFramework.Controls.MetroButton();
 			this.showCheckbox = new MetroFramework.Controls.MetroCheckBox();
+			this.errorLabel = new MetroFramework.Controls.MetroLabel();
+			this.errorTimer = new System.Windows.Forms.Timer(this.components);
 			this.SuspendLayout();
 			// 
 			// setPasswordLabel
@@ -76,7 +79,7 @@
 			// 
 			this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancelButton.Location = new System.Drawing.Point(225, 187);
+			this.cancelButton.Location = new System.Drawing.Point(225, 195);
 			this.cancelButton.Name = "cancelButton";
 			this.cancelButton.Size = new System.Drawing.Size(75, 23);
 			this.cancelButton.TabIndex = 4;
@@ -87,7 +90,7 @@
 			// 
 			this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.okButton.Location = new System.Drawing.Point(144, 187);
+			this.okButton.Location = new System.Drawing.Point(144, 195);
 			this.okButton.Name = "okButton";
 			this.okButton.Size = new System.Drawing.Size(75, 23);
 			this.okButton.TabIndex = 3;
@@ -106,6 +109,23 @@
 			this.showCheckbox.UseSelectable = true;
 			this.showCheckbox.CheckedChanged += new System.EventHandler(this.showCheckbox_CheckedChanged);
 			// 
+			// errorLabel
+			// 
+			this.errorLabel.ForeColor = System.Drawing.Color.Red;
+			this.errorLabel.Location = new System.Drawing.Point(85, 163);
+			this.errorLabel.Name = "errorLabel";
+			this.errorLabel.Size = new System.Drawing.Size(215, 23);
+			this.errorLabel.TabIndex = 5;
+			this.errorLabel.Text = "strings.errorLabel";
+			this.errorLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.errorLabel.UseCustomForeColor = true;
+			this.errorLabel.Visible = false;
+			// 
+			// errorTimer
+			// 
+			this.errorTimer.Interval = 2000;
+			this.errorTimer.Tick += new System.EventHandler(this.errorTimer_Tick);
+			// 
 			// SetPasswordForm
 			// 
 			this.AcceptButton = this.okButton;
@@ -113,7 +133,8 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BorderStyle = MetroFramework.Forms.MetroFormBorderStyle.FixedSingle;
 			this.CancelButton = this.cancelButton;
-			this.ClientSize = new System.Drawing.Size(331, 233);
+			this.ClientSize = new System.Drawing.Size(331, 241);
+			this.Controls.Add(this.errorLabel);
 			this.Controls.Add(this.showCheckbox);
 			this.Controls.Add(this.okButton);
 			this.Controls.Add(this.cancelButton);
@@ -136,5 +157,7 @@
 		private MetroFramework.Controls.MetroButton cancelButton;
 		private MetroFramework.Controls.MetroButton okButton;
 		private MetroFramework.Controls.MetroCheckBox showCheckbox;
+		private MetroFramework.Controls.MetroLabel errorLabel;
+		private System.Windows.Forms.Timer errorTimer;
 	}
 }
