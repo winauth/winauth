@@ -491,7 +491,7 @@ namespace WinAuth
 		{
 			if (OnConfigChanged != null)
 			{
-				OnConfigChanged(this, new ConfigChangedEventArgs("Authenticator", sender));
+				OnConfigChanged(this, new ConfigChangedEventArgs("Authenticator", sender, e));
 			}
 		}
 
@@ -838,15 +838,17 @@ namespace WinAuth
 		public string PropertyName { get; private set; }
 
 		public WinAuthAuthenticator Authenticator { get; private set; }
+		public WinAuthAuthenticatorChangedEventArgs AuthenticatorChangedEventArgs { get; private set; }
 
     /// <summary>
     /// Default constructor
     /// </summary>
-		public ConfigChangedEventArgs(string propertyName, WinAuthAuthenticator authenticator = null)
+		public ConfigChangedEventArgs(string propertyName, WinAuthAuthenticator authenticator = null, WinAuthAuthenticatorChangedEventArgs acargs = null)
 			: base()
 		{
 			PropertyName = propertyName;
 			Authenticator = authenticator;
+			AuthenticatorChangedEventArgs = acargs;
 		}
 	}
 

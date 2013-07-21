@@ -167,10 +167,34 @@ namespace WinAuth
 			{
 				// create out async handler and call it. if we needed to return "handled" chage this to ".Invoke()"
 				KeyboardHookEventArgs kea = new KeyboardHookEventArgs((Keys)lParam.vkCode);
-				m_hookedAsync.BeginInvoke(wParam, kea, null, null);
+				if (KeyMatch(wParam, kea) == true)
+				{
+					m_hookedAsync.BeginInvoke(wParam, kea, null, null);
+					return 1;
+				}
 			}
 
 			return WinAPI.CallNextHookEx(m_hook, code, wParam, ref lParam);
+		}
+
+		/// <summary>
+		/// Check if the key matches one of our hooked keys
+		/// </summary>
+		/// <param name="code">key code</param>
+		/// <param name="kea">KeyboardHookEventArgs</param>
+		/// <returns>true if there is a match</returns>
+		private bool KeyMatch(int code, KeyboardHookEventArgs kea)
+		{
+			// key and modifers match?
+			foreach (var e in m_hookedKeys)
+			{
+				if (e.Key.Item1 == kea.Key && e.Key.Item2  == kea.Modifiers)
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		/// <summary>
@@ -224,7 +248,7 @@ namespace WinAuth
 		/// </summary>
 		/// <param name="processName"></param>
 		/// <param name="windowTitle"></param>
-		public KeyboardSender(string windowtitle, string processname, bool useregex)
+		public KeyboardSender(string windowtitle = null, string processname = null, bool useregex = false)
 		{
 			m_hWnd = FindWindow(windowtitle, processname, useregex);
 		}
@@ -238,13 +262,14 @@ namespace WinAuth
 			if (m_hWnd != IntPtr.Zero && m_hWnd != WinAPI.GetForegroundWindow())
 			{
 				WinAPI.SetForegroundWindow(m_hWnd);
-				System.Threading.Thread.Sleep(200);
+				System.Threading.Thread.Sleep(50);
 			}
 
-			// wait until the control key has been lifted
-			while (WinAPI.GetKeyState((UInt16)WinAPI.VirtualKeyCode.VK_CONTROL) < 0)
+			// wait until the control,shift,alt keys have been lifted
+			while (WinAPI.GetKeyState((UInt16)WinAPI.VirtualKeyCode.VK_CONTROL) < 0 || WinAPI.GetKeyState((UInt16)WinAPI.VirtualKeyCode.VK_SHIFT) < 0 || WinAPI.GetKeyState((UInt16)WinAPI.VirtualKeyCode.VK_MENU) < 0)
 			{
-				System.Threading.Thread.Sleep(200);
+				Application.DoEvents();
+				System.Threading.Thread.Sleep(50);
 			}
 
 			// replace any {CODE} items

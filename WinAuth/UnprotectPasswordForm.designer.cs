@@ -42,6 +42,7 @@
 			this.passwordField.MaxLength = 32767;
 			this.passwordField.Name = "passwordField";
 			this.passwordField.PasswordChar = '●';
+			this.passwordField.PromptText = "Password";
 			this.passwordField.ScrollBars = System.Windows.Forms.ScrollBars.None;
 			this.passwordField.SelectedText = "";
 			this.passwordField.Size = new System.Drawing.Size(277, 23);
@@ -101,9 +102,12 @@
 			this.Controls.Add(this.okButton);
 			this.Controls.Add(this.cancelButton);
 			this.Controls.Add(this.passwordField);
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
 			this.Name = "UnprotectPasswordForm";
 			this.Resizable = false;
 			this.Text = "_UnprotectPasswordForm_";
+			this.Load += new System.EventHandler(this.UnprotectPasswordForm_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

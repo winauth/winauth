@@ -373,9 +373,9 @@ namespace WinAuth
 			Dictionary<Tuple<Keys, WinAPI.KeyModifiers>, WinAuthAuthenticator> keys = new Dictionary<Tuple<Keys, WinAPI.KeyModifiers>, WinAuthAuthenticator>();
 			foreach (var auth in Config)
 			{
-				if (auth.AutoLogin != null)
+				if (auth.HotKey != null)
 				{
-					keys.Add(new Tuple<Keys, WinAPI.KeyModifiers>((Keys)auth.AutoLogin.HotKey, auth.AutoLogin.Modifiers), auth);
+					keys.Add(new Tuple<Keys, WinAPI.KeyModifiers>((Keys)auth.HotKey.Key, auth.HotKey.Modifiers), auth);
 				}
 			}
 			if (keys.Count != 0)
@@ -393,18 +393,11 @@ namespace WinAuth
 		void Hotkey_KeyDown(object sender, KeyboardHookEventArgs e)
 		{
 			// avoid multiple keypresses being sent
-			if (Monitor.TryEnter(m_sendingKeys) == true && e.Authenticator != null)
+			if (e.Authenticator != null && Monitor.TryEnter(m_sendingKeys) == true)
 			{
 				try
 				{
-					// get keyboard sender
-					KeyboardSender keysend = new KeyboardSender(e.Authenticator.AutoLogin.WindowTitle, e.Authenticator.AutoLogin.ProcessName, e.Authenticator.AutoLogin.WindowTitleRegex);
-
-					// get the script and execute it
-					string script = (string.IsNullOrEmpty(e.Authenticator.AutoLogin.AdvancedScript) == false ? e.Authenticator.AutoLogin.AdvancedScript : "{CODE}");
-
-					// send the whole script
-					keysend.SendKeys(this, script, e.Authenticator.AuthenticatorData.CurrentCode);
+					this.Invoke((MethodInvoker)delegate { HandleHotkey(e.Authenticator); });
 
 					// mark event as handled
 					e.Handled = true;
@@ -414,6 +407,78 @@ namespace WinAuth
 					Monitor.Exit(m_sendingKeys);
 				}
 			}
+		}
+
+		private void HandleHotkey(WinAuthAuthenticator auth)
+		{
+			// default to sending the code to the current window
+			KeyboardSender keysend = new KeyboardSender();
+
+			// get the code
+			string code = null;
+			try
+			{
+				code = auth.AuthenticatorData.CurrentCode;
+			}
+			catch (EncrpytedSecretDataException)
+			{
+				// if the authenticator is current protected we display the password window, get the code, and reprotect it
+				// with a bit of window jiggling to make sure we get focus and then put it back
+
+				// save the current window
+				var fgwindow = WinAPI.GetForegroundWindow();
+				Screen screen = Screen.FromHandle(fgwindow);
+				IntPtr activewindow = IntPtr.Zero;
+				if (this.Visible == true)
+				{
+					activewindow = WinAPI.SetActiveWindow(this.Handle);
+					BringToFront();
+				}
+
+				// show the password form
+				UnprotectPasswordForm form = new UnprotectPasswordForm();
+				form.Authenticator = auth;
+				if (screen != null)
+				{
+					// center on the current windows screen (in case of multiple monitors)
+					form.StartPosition = FormStartPosition.Manual;
+					int left = (screen.Bounds.Width / 2) - (form.Width / 2) + screen.Bounds.Left;
+					int top = (screen.Bounds.Height / 2) - (form.Height / 2) + screen.Bounds.Top;
+					form.Location = new Point(left, top);
+				}
+				else
+				{
+					form.StartPosition = FormStartPosition.CenterScreen;
+				}
+				DialogResult result = form.ShowDialog(this.Visible == true ? this : null);
+				if (result == DialogResult.OK)
+				{
+					// get code
+					code = auth.AuthenticatorData.CurrentCode;
+					// and reprotect
+					auth.AuthenticatorData.Protect();
+				}
+
+				// restore active window
+				if (activewindow != IntPtr.Zero)
+				{
+					WinAPI.SetActiveWindow(activewindow);
+				}
+				WinAPI.SetForegroundWindow(fgwindow);
+			}
+			if (code != null)
+			{
+				keysend.SendKeys(this, "{CODE}", code);
+			}
+
+			// get keyboard sender
+			//KeyboardSender keysend = new KeyboardSender(e.Authenticator.AutoLogin.WindowTitle, e.Authenticator.AutoLogin.ProcessName, e.Authenticator.AutoLogin.WindowTitleRegex);
+
+			// get the script and execute it
+			//string script = (string.IsNullOrEmpty(e.Authenticator.AutoLogin.AdvancedScript) == false ? e.Authenticator.AutoLogin.AdvancedScript : "{CODE}");
+
+			// send the whole script
+			//keysend.SendKeys(this, script, e.Authenticator.AuthenticatorData.CurrentCode);
 		}
 
 		/// <summary>
@@ -1084,6 +1149,11 @@ namespace WinAuth
 			else if (args.PropertyName == "StartWithWindows")
 			{
 				WinAuthHelper.SetStartWithWindows(this.Config.StartWithWindows);
+			}
+			else if (args.AuthenticatorChangedEventArgs != null && args.AuthenticatorChangedEventArgs.Property == "HotKey")
+			{
+				// rehook hotkeys
+				HookHotkeys();
 			}
 
 			SaveConfig();

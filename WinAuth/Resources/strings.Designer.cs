@@ -369,7 +369,7 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enter Password.
+        ///   Looks up a localized string similar to {0}.
         /// </summary>
         internal static string _UnprotectPasswordForm_ {
             get {
@@ -392,6 +392,15 @@ namespace WinAuth.Resources {
         internal static string _UnprotectPasswordForm_okButton_ {
             get {
                 return ResourceManager.GetString("_UnprotectPasswordForm_okButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password.
+        /// </summary>
+        internal static string _UnprotectPasswordForm_passwordField_ {
+            get {
+                return ResourceManager.GetString("_UnprotectPasswordForm_passwordField_", resourceCulture);
             }
         }
         
@@ -720,6 +729,15 @@ namespace WinAuth.Resources {
         internal static string SetPassword {
             get {
                 return ResourceManager.GetString("SetPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shortcut Key.
+        /// </summary>
+        internal static string ShortcutKey {
+            get {
+                return ResourceManager.GetString("ShortcutKey", resourceCulture);
             }
         }
         

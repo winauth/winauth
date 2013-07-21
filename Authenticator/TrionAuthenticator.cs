@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (C) 2013 Colin Mackie.
  * This software is distributed under the terms of the GNU General Public License.
  *
@@ -47,7 +47,7 @@ using OpenNETCF.Security.Cryptography;
 namespace WinAuth
 {
 	/// <summary>
-	/// Class that implements Battle.net Mobile Authenticator v1.1.0.
+	/// Class that implements Trion's version of the RFC6238 Authenticator
 	/// </summary>
 	public class TrionAuthenticator : Authenticator
 	{

@@ -56,7 +56,7 @@ namespace WinAuth
     private bool _allowCopy;
     private bool _copyOnCode;
     private bool _hideSerial;
-    //private HoyKeySequence _autoLogin;
+    private HotKey _hotkey;
 
 		private bool m_ignoreClipboard;
 
@@ -100,7 +100,7 @@ namespace WinAuth
 				_name = value;
 				if (OnWinAuthAuthenticatorChanged != null)
 				{
-					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
+					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("Name"));
 				}
 			}
 		}
@@ -116,7 +116,7 @@ namespace WinAuth
         _skin = value;
         if (OnWinAuthAuthenticatorChanged != null)
         {
-					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
+					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("Skin"));
         }
       }
     }
@@ -135,7 +135,7 @@ namespace WinAuth
         _autoRefresh = value;
 				if (OnWinAuthAuthenticatorChanged != null)
         {
-					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
+					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("AutoRefresh"));
         }
       }
     }
@@ -154,7 +154,7 @@ namespace WinAuth
         _allowCopy = value;
 				if (OnWinAuthAuthenticatorChanged != null)
         {
-					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
+					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("AllowCopy"));
         }
       }
     }
@@ -173,7 +173,7 @@ namespace WinAuth
         _copyOnCode = value;
 				if (OnWinAuthAuthenticatorChanged != null)
         {
-					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
+					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("CopyOnCode"));
         }
       }
     }
@@ -192,50 +192,65 @@ namespace WinAuth
         _hideSerial = value;
 				if (OnWinAuthAuthenticatorChanged != null)
         {
-					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
+					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("HideSerial"));
         }
       }
     }
 
-		public HoyKeySequence AutoLogin
+		/// <summary>
+		/// Get/set the ketkey
+		/// </summary>
+		public HotKey HotKey
 		{
 			get
 			{
-				//return _autoLogin;
-
-				string script = this.AuthenticatorData.Script;
-				if (string.IsNullOrEmpty(script) == true)
-				{
-					return null;
-				}
-
-				HoyKeySequence hks = new HoyKeySequence();
-				using (XmlReader xr = XmlReader.Create(new StringReader(script)))
-				{
-					hks.ReadXml(xr);
-				}
-				return hks;
+				return _hotkey;
 			}
 			set
 			{
-				//_autoLogin = value;
-
-				StringBuilder script = new StringBuilder();
-				if (value != null)
-				{
-					using (XmlWriter xw = XmlWriter.Create(script))
-					{
-						value.WriteXmlString(xw);
-					}
-				}
-				this.AuthenticatorData.Script = (script.Length != 0 ? script.ToString() : null);
-
+				_hotkey = value;
 				if (OnWinAuthAuthenticatorChanged != null)
 				{
-					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
+					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("HotKey"));
 				}
 			}
 		}
+
+		//public HoyKeySequence AutoLogin
+		//{
+		//	get
+		//	{
+		//		string script = this.AuthenticatorData.Script;
+		//		if (string.IsNullOrEmpty(script) == true)
+		//		{
+		//			return null;
+		//		}
+
+		//		HoyKeySequence hks = new HoyKeySequence();
+		//		using (XmlReader xr = XmlReader.Create(new StringReader(script)))
+		//		{
+		//			hks.ReadXml(xr);
+		//		}
+		//		return hks;
+		//	}
+		//	set
+		//	{
+		//		StringBuilder script = new StringBuilder();
+		//		if (value != null)
+		//		{
+		//			using (XmlWriter xw = XmlWriter.Create(script))
+		//			{
+		//				value.WriteXmlString(xw);
+		//			}
+		//		}
+		//		this.AuthenticatorData.Script = (script.Length != 0 ? script.ToString() : null);
+
+		//		if (OnWinAuthAuthenticatorChanged != null)
+		//		{
+		//			OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
+		//		}
+		//	}
+		//}
 
 		public Bitmap Icon
 		{
@@ -397,13 +412,10 @@ namespace WinAuth
               _skin = reader.ReadElementContentAsString();
               break;
 
-            case "authenticator":
-              this.AuthenticatorData = Authenticator.ReadXmlv2(reader, password);
-              //this.PasswordType = this.AuthenticatorData.PasswordType;
-              //this.Password = this.AuthenticatorData.Password;
-              //this.AuthenticatorData.PasswordType = Authenticator.PasswordTypes.None;
-              //this.AuthenticatorData.Password = null;
-              break;
+						case "hotkey":
+							_hotkey = new WinAuth.HotKey();
+							_hotkey.ReadXml(reader);
+							break;
 
 						case "authenticatordata":
 							try
@@ -421,14 +433,20 @@ namespace WinAuth
 							}
               break;
 
-            case "servertimediff":
-              this.AuthenticatorData.ServerTimeDiff = reader.ReadElementContentAsLong();
-              break;
-
-            case "autologin":
+						// v2
+						case "authenticator":
+							this.AuthenticatorData = Authenticator.ReadXmlv2(reader, password);
+							break;
+						// v2
+						case "autologin":
               var hks = new HoyKeySequence();
               hks.ReadXml(reader, password);
               break;
+						// v2
+						case "servertimediff":
+							this.AuthenticatorData.ServerTimeDiff = reader.ReadElementContentAsLong();
+							break;
+
 
             default:
               reader.Skip();
@@ -512,6 +530,11 @@ namespace WinAuth
       writer.WriteStartElement("skin");
       writer.WriteValue(this.Skin ?? string.Empty);
       writer.WriteEndElement();
+			//
+			if (this.HotKey != null)
+			{
+				this.HotKey.WriteXmlString(writer);
+			}
 
       // save the authenticator to the config file
       if (this.AuthenticatorData != null)
@@ -542,12 +565,15 @@ namespace WinAuth
   /// </summary>
   public class WinAuthAuthenticatorChangedEventArgs : EventArgs
   {
+		public string Property { get; private set; }
+
     /// <summary>
     /// Default constructor
     /// </summary>
-    public WinAuthAuthenticatorChangedEventArgs()
-      : base()
+    public WinAuthAuthenticatorChangedEventArgs(string property = null)
     {
+			Property = property;
     }
-  }
+
+	}
 }

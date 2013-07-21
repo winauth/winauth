@@ -217,6 +217,9 @@ Do you want to try again?</value>
   <data name="SetPassword" xml:space="preserve">
     <value>Set Password</value>
   </data>
+  <data name="ShortcutKey" xml:space="preserve">
+    <value>Shortcut Key</value>
+  </data>
   <data name="ShowCode" xml:space="preserve">
     <value>Show Code</value>
   </data>
@@ -348,13 +351,16 @@ If you are happy to send this information please either click Send Error Report 
     <value>Verify</value>
   </data>
   <data name="_UnprotectPasswordForm_" xml:space="preserve">
-    <value>Enter Password</value>
+    <value>{0}</value>
   </data>
   <data name="_UnprotectPasswordForm_cancelButton_" xml:space="preserve">
     <value>Cancel</value>
   </data>
   <data name="_UnprotectPasswordForm_okButton_" xml:space="preserve">
     <value>OK</value>
+  </data>
+  <data name="_UnprotectPasswordForm_passwordField_" xml:space="preserve">
+    <value>Password</value>
   </data>
   <data name="_WinAuthForm_addAuthenticatorButton_" xml:space="preserve">
     <value>Add</value>

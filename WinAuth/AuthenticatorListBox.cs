@@ -654,13 +654,6 @@ namespace WinAuth
 			//
 			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
 			//
-			menuitem = new ToolStripMenuItem(strings.AutoRefresh);
-			menuitem.Name = "autoRefreshMenuItem";
-			menuitem.Click += ContextMenu_Click;
-			this.ContextMenuStrip.Items.Add(menuitem);
-			//
-			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
-			//
 			menuitem = new ToolStripMenuItem(strings.Delete);
 			menuitem.Name = "deleteMenuItem";
 			menuitem.Click += ContextMenu_Click;
@@ -672,6 +665,16 @@ namespace WinAuth
 			this.ContextMenuStrip.Items.Add(menuitem);
 			//
 			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+			//
+			menuitem = new ToolStripMenuItem(strings.ShortcutKey + "...");
+			menuitem.Name = "shortcutKeyMenuItem";
+			menuitem.Click += ContextMenu_Click;
+			this.ContextMenuStrip.Items.Add(menuitem);
+			//
+			menuitem = new ToolStripMenuItem(strings.AutoRefresh);
+			menuitem.Name = "autoRefreshMenuItem";
+			menuitem.Click += ContextMenu_Click;
+			this.ContextMenuStrip.Items.Add(menuitem);
 			//
 			menuitem = new ToolStripMenuItem(strings.CopyOnNewCode);
 			menuitem.Name = "copyOnCodeMenuItem";
@@ -915,6 +918,16 @@ namespace WinAuth
 				item.DisplayUntil = DateTime.MinValue;
 				RefreshCurrentItem();
 			}
+			else if (menuitem.Name == "shortcutKeyMenuItem")
+			{
+				SetShortcutKeyForm form = new SetShortcutKeyForm();
+				form.Hotkey = auth.HotKey;
+				if (form.ShowDialog(this.Parent as Form) != DialogResult.OK)
+				{
+					return;
+				}
+				auth.HotKey = form.Hotkey;
+			}
 			else if (menuitem.Name == "copyOnCodeMenuItem")
 			{
 				auth.CopyOnCode = !auth.CopyOnCode;
@@ -1147,7 +1160,8 @@ namespace WinAuth
 
 				using (var font = new Font(e.Font.FontFamily, 12, FontStyle.Regular))
 				{
-					string label = (e.Index + 1) + ". " + auth.Name;
+					//string label = (e.Index + 1) + ". " + auth.Name;
+					string label = auth.Name;
 					SizeF labelsize = e.Graphics.MeasureString(label.ToString(), font);
 					// if too big, adjust
 					if (labelsize.Width > 255)

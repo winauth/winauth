@@ -48,6 +48,24 @@ namespace WinAuth
 		public WinAuthAuthenticator Authenticator { get; set; }
 
 		/// <summary>
+		/// Load the form and make it topmost
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void UnprotectPasswordForm_Load(object sender, EventArgs e)
+		{
+			// window text is "{0} Password" 
+			this.Text = string.Format(this.Text, Authenticator.Name);
+
+			// force this window to the front and topmost
+			// see: http://stackoverflow.com/questions/278237/keep-window-on-top-and-steal-focus-in-winforms
+			var oldtopmost = this.TopMost;
+			this.TopMost = true;
+			this.TopMost = oldtopmost;
+			this.Activate();
+		}
+
+		/// <summary>
 		/// Click the OK button to unprotect the authenticator with given password
 		/// </summary>
 		/// <param name="sender"></param>
@@ -90,5 +108,6 @@ namespace WinAuth
 			invalidPasswordTimer.Enabled = false;
 			invalidPasswordLabel.Visible = false;
 		}
+
 	}
 }

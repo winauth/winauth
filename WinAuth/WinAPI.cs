@@ -330,6 +330,8 @@ namespace WinAuth
 		[DllImport("kernel32.dll")]
 		internal static extern IntPtr LoadLibrary(string lpFileName);
 		[DllImport("user32.dll")]
+		internal static extern IntPtr SetActiveWindow(IntPtr hWnd);
+		[DllImport("user32.dll")]
 		internal static extern bool SetForegroundWindow(IntPtr hWnd);
 		[DllImport("user32.dll", SetLastError = true)]
 		internal static extern IntPtr GetForegroundWindow();

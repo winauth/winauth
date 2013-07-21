@@ -123,6 +123,7 @@
     <Compile Include="ChangePasswordForm.Designer.cs">
       <DependentUpon>ChangePasswordForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="HotKeySequence.cs" />
     <Compile Include="DiagnosticForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -135,6 +136,12 @@
     <Compile Include="ExceptionForm.designer.cs">
       <DependentUpon>ExceptionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="SetShortcutKeyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SetShortcutKeyForm.Designer.cs">
+      <DependentUpon>SetShortcutKeyForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UnprotectPasswordForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -144,7 +151,7 @@
     <Compile Include="GroupRadioButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="HotKeySequence.cs" />
+    <Compile Include="HotKey.cs" />
     <Compile Include="ISecretTextBox.cs" />
     <Compile Include="AddBattleNetAuthenticator.cs">
       <SubType>Form</SubType>
@@ -235,6 +242,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ExceptionForm.resx">
       <DependentUpon>ExceptionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SetShortcutKeyForm.resx">
+      <DependentUpon>SetShortcutKeyForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UnprotectPasswordForm.resx">
       <DependentUpon>UnprotectPasswordForm.cs</DependentUpon>
