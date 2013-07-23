@@ -68,9 +68,9 @@ namespace WinAuth
 			this.ckAgree.AutoSize = true;
 			this.ckAgree.Location = new System.Drawing.Point(107, 305);
 			this.ckAgree.Name = "ckAgree";
-			this.ckAgree.Size = new System.Drawing.Size(313, 17);
+			this.ckAgree.Size = new System.Drawing.Size(320, 17);
 			this.ckAgree.TabIndex = 1;
-			this.ckAgree.Text = "I understand and accept the conditions of this BETA version.";
+			this.ckAgree.Text = "I understand and accept the conditions of this ALPHA version.";
 			this.ckAgree.UseVisualStyleBackColor = true;
 			this.ckAgree.CheckedChanged += new System.EventHandler(this.ckAgree_CheckedChanged);
 			// 
@@ -111,7 +111,7 @@ namespace WinAuth
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "BetaForm";
-			this.Text = "WinAuth BETA";
+			this.Text = "WinAuth ALPHA";
 			this.Load += new System.EventHandler(this.BetaForm_Load);
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();

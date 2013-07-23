@@ -80,6 +80,7 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void SetShortcutKeyForm_Load(object sender, EventArgs e)
 		{
+			// set the tooltip
 			tooltip.SetToolTip(advancedTextbox, strings._SetShortcutKeyForm_advancedTextbox_tooltip);
 
 			// load the key list

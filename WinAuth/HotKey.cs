@@ -48,10 +48,19 @@ namespace WinAuth
 		/// </summary>
 		public WinAPI.VirtualKeyCode Key;
 
+		/// <summary>
+		/// Action to be perform on hotkey
+		/// </summary>
 		public HotKeyActions Action;
 
+		/// <summary>
+		/// Specific window title or process name
+		/// </summary>
 		public string Window;
 
+		/// <summary>
+		/// Copy of advanced script from authenticator data
+		/// </summary>
 		public string Advanced;
 
 		/// <summary>
@@ -62,6 +71,10 @@ namespace WinAuth
 			Action = HotKeyActions.Inject;
 		}
 
+		/// <summary>
+		/// Read the saved Xml to load the hotkey
+		/// </summary>
+		/// <param name="reader">XmlReader</param>
     public void ReadXml(XmlReader reader)
     {
       reader.MoveToContent();
@@ -134,28 +147,6 @@ namespace WinAuth
 				writer.WriteString(this.Window);
 				writer.WriteEndElement();
 			}
-			//
-
-			//writer.WriteStartElement("windowtitle");
-			//writer.WriteCData(WindowTitle ?? string.Empty);
-			//writer.WriteEndElement();
-			////
-			//writer.WriteStartElement("processname");
-			//writer.WriteCData(ProcessName ?? string.Empty);
-			//writer.WriteEndElement();
-			////
-			//writer.WriteStartElement("windowtitleregex");
-			//writer.WriteValue(WindowTitleRegex);
-			//writer.WriteEndElement();
-			////
-			//writer.WriteStartElement("advanced");
-			//writer.WriteValue(Advanced);
-			//writer.WriteEndElement();
-			////
-			//writer.WriteStartElement("script");
-			//string script = AdvancedScript.Replace("\n", string.Empty);
-			//writer.WriteCData(script);
-			//writer.WriteEndElement();
 
 			writer.WriteEndElement();
 		}
