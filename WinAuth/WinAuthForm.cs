@@ -370,9 +370,13 @@ namespace WinAuth
 			Dictionary<Tuple<Keys, WinAPI.KeyModifiers>, WinAuthAuthenticator> keys = new Dictionary<Tuple<Keys, WinAPI.KeyModifiers>, WinAuthAuthenticator>();
 			foreach (var auth in Config)
 			{
-				if (auth.HotKey != null)
+				if (auth.HotKey != null )
 				{
-					keys.Add(new Tuple<Keys, WinAPI.KeyModifiers>((Keys)auth.HotKey.Key, auth.HotKey.Modifiers), auth);
+					var hotkey = new Tuple<Keys, WinAPI.KeyModifiers>((Keys)auth.HotKey.Key, auth.HotKey.Modifiers);
+					if (keys.ContainsKey(hotkey) == false)
+					{
+						keys.Add(hotkey, auth);
+					}
 				}
 			}
 			if (keys.Count != 0)

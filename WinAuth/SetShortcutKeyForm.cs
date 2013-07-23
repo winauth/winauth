@@ -115,10 +115,15 @@ namespace WinAuth
 				ctrlToggle.Checked = ((this.Hotkey.Modifiers & WinAPI.KeyModifiers.Control) != 0);
 				altToggle.Checked = ((this.Hotkey.Modifiers & WinAPI.KeyModifiers.Alt) != 0);
 
+				this.injectRadioButton.Enabled = true;
 				this.injectRadioButton.Checked = (this.Hotkey.Action == HotKey.HotKeyActions.Inject);
 				this.injectTextbox.Enabled = this.injectRadioButton.Checked;
 				this.injectTextbox.Text = (this.injectRadioButton.Checked == true ? this.Hotkey.Window : string.Empty);
+				//
+				this.pasteRadioButton.Enabled = true;
 				this.pasteRadioButton.Checked = (this.Hotkey.Action == HotKey.HotKeyActions.Copy);
+				//
+				this.advancedRadioButton.Enabled = true;
 				this.advancedRadioButton.Checked = (this.Hotkey.Action == HotKey.HotKeyActions.Advanced);
 				this.advancedTextbox.Enabled = this.advancedRadioButton.Checked;
 				this.advancedTextbox.Text = (this.advancedRadioButton.Checked == true ? this.Hotkey.Advanced : string.Empty);
@@ -180,12 +185,6 @@ namespace WinAuth
 					this.Hotkey.Advanced = this.advancedTextbox.Text;
 				}
 			}
-			else
-			{
-				this.Hotkey.Action = HotKey.HotKeyActions.Inject;
-				this.Hotkey.Window = null;
-				this.Hotkey.Advanced = null;
-			}
 		}
 
 		/// <summary>
@@ -202,6 +201,16 @@ namespace WinAuth
 				shiftToggle.Checked = false;
 				ctrlToggle.Checked = false;
 				altToggle.Checked = false;
+
+				this.injectRadioButton.Enabled = false;
+				this.pasteRadioButton.Enabled = false;
+				this.advancedRadioButton.Enabled = false;
+			}
+			else
+			{
+				this.injectRadioButton.Enabled = true;
+				this.pasteRadioButton.Enabled = true;
+				this.advancedRadioButton.Enabled = true;
 			}
 		}
 

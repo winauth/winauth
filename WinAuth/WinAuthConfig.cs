@@ -236,55 +236,6 @@ namespace WinAuth
 			}
 		}
 
-    /// <summary>
-    /// Get/set the currnet skin
-    /// </summary>
-    //public string CurrentSkin
-    //{
-    //  get
-    //  {
-    //    if (RememberSkin == true)
-    //    {
-    //      _currentSkin = WinAuthHelper.GetSavedSkin();
-    //    }
-    //    return _currentSkin;
-    //  }
-    //  set
-    //  {
-    //    _currentSkin = value;
-    //    if (OnConfigChanged != null)
-    //    {
-    //      OnConfigChanged(this, new ConfigChangedEventArgs());
-    //    }
-    //  }
-    //}
-
-    /// <summary>
-    /// Flag to remember skin and put in registry
-    /// </summary>
-    //public bool RememberSkin
-    //{
-    //  get
-    //  {
-    //    return (string.IsNullOrEmpty(WinAuthHelper.GetSavedSkin()) == false);
-    //  }
-    //  set
-    //  {
-    //    if (value == true)
-    //    {
-    //      WinAuthHelper.SetSavedSkin(CurrentSkin);
-    //    }
-    //    else
-    //    {
-    //      WinAuthHelper.SetSavedSkin(null);
-    //    }
-    //    if (OnConfigChanged != null)
-    //    {
-    //      OnConfigChanged(this, new ConfigChangedEventArgs());
-    //    }
-    //  }
-    //}
-
     #endregion
 
 		#region IList
@@ -378,17 +329,6 @@ namespace WinAuth
 
 		#region Authenticator Settings
 
-		/// <summary>
-    /// Current authenticator
-    /// </summary>
-		//public List<WinAuthAuthenticator> Authenticators
-		//{
-		//	get
-		//	{
-		//		return _authenticators;
-		//	}
-		//}
-
     /// <summary>
     /// Current authenticator
     /// </summary>
@@ -403,101 +343,6 @@ namespace WinAuth
         _authenticator = value;
       }
     }
-
-    /// <summary>
-    /// Get/set auto refresh flag
-    /// </summary>
-    //public bool AutoRefresh
-    //{
-    //  get
-    //  {
-    //    return _autoRefresh;
-    //  }
-    //  set
-    //  {
-    //    _autoRefresh = value;
-    //    if (OnConfigChanged != null)
-    //    {
-    //      OnConfigChanged(this, new ConfigChangedEventArgs());
-    //    }
-    //  }
-    //}
-
-    /// <summary>
-    /// Get/set allow copy flag
-    /// </summary>
-    //public bool AllowCopy
-    //{
-    //  get
-    //  {
-    //    return _allowCopy;
-    //  }
-    //  set
-    //  {
-    //    _allowCopy = value;
-    //    if (OnConfigChanged != null)
-    //    {
-    //      OnConfigChanged(this, new ConfigChangedEventArgs());
-    //    }
-    //  }
-    //}
-
-    /// <summary>
-    /// Get/set auto copy flag
-    /// </summary>
-    //public bool CopyOnCode
-    //{
-    //  get
-    //  {
-    //    return _copyOnCode;
-    //  }
-    //  set
-    //  {
-    //    _copyOnCode = value;
-    //    if (OnConfigChanged != null)
-    //    {
-    //      OnConfigChanged(this, new ConfigChangedEventArgs());
-    //    }
-    //  }
-    //}
-
-    /// <summary>
-    /// Get/set hide serial flag
-    /// </summary>
-    //public bool HideSerial
-    //{
-    //  get
-    //  {
-    //    return _hideSerial;
-    //  }
-    //  set
-    //  {
-    //    _hideSerial = value;
-    //    if (OnConfigChanged != null)
-    //    {
-    //      OnConfigChanged(this, new ConfigChangedEventArgs());
-    //    }
-    //  }
-    //}
-
-    /// <summary>
-    /// Any auto login hotkey
-    /// </summary>
-    //public HoyKeySequence AutoLogin
-    //{
-    //  get
-    //  {
-    //    return _autoLogin;
-    //  }
-    //  set
-    //  {
-    //    _autoLogin = value;
-    //    if (OnConfigChanged != null)
-    //    {
-    //      OnConfigChanged(this, new ConfigChangedEventArgs());
-    //    }
-    //  }
-    //}
 
     #endregion
 

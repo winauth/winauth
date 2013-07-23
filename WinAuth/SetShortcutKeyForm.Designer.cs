@@ -206,6 +206,7 @@
 			// 
 			this.injectRadioButton.AutoSize = true;
 			this.injectRadioButton.Checked = true;
+			this.injectRadioButton.Enabled = false;
 			this.injectRadioButton.Group = "Action";
 			this.injectRadioButton.Location = new System.Drawing.Point(23, 189);
 			this.injectRadioButton.Name = "injectRadioButton";
@@ -219,6 +220,7 @@
 			// pasteRadioButton
 			// 
 			this.pasteRadioButton.AutoSize = true;
+			this.pasteRadioButton.Enabled = false;
 			this.pasteRadioButton.Group = "Action";
 			this.pasteRadioButton.Location = new System.Drawing.Point(23, 239);
 			this.pasteRadioButton.Name = "pasteRadioButton";
@@ -230,6 +232,7 @@
 			// advancedRadioButton
 			// 
 			this.advancedRadioButton.AutoSize = true;
+			this.advancedRadioButton.Enabled = false;
 			this.advancedRadioButton.Group = "Action";
 			this.advancedRadioButton.Location = new System.Drawing.Point(23, 260);
 			this.advancedRadioButton.Name = "advancedRadioButton";
@@ -256,6 +259,7 @@
 			// 
 			// injectTextbox
 			// 
+			this.injectTextbox.Enabled = false;
 			this.injectTextbox.Location = new System.Drawing.Point(45, 210);
 			this.injectTextbox.MaxLength = 32767;
 			this.injectTextbox.Name = "injectTextbox";
