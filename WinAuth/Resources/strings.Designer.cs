@@ -422,7 +422,7 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enter code into current window or one with....
+        ///   Looks up a localized string similar to Enter code into current window or one called....
         /// </summary>
         internal static string _SetShortcutKeyForm_injectRadioButton_ {
             get {
@@ -445,6 +445,15 @@ namespace WinAuth.Resources {
         internal static string _SetShortcutKeyForm_keyLabel_ {
             get {
                 return ResourceManager.GetString("_SetShortcutKeyForm_keyLabel_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show a notification.
+        /// </summary>
+        internal static string _SetShortcutKeyForm_notifyRadioButton_ {
+            get {
+                return ResourceManager.GetString("_SetShortcutKeyForm_notifyRadioButton_", resourceCulture);
             }
         }
         

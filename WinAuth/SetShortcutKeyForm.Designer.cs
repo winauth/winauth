@@ -46,6 +46,7 @@
 			this.injectTextbox = new MetroFramework.Controls.MetroTextBox();
 			this.tooltip = new MetroFramework.Drawing.Html.HtmlToolTip();
 			this.advancedLink = new MetroFramework.Controls.MetroLink();
+			this.notifyRadioButton = new WinAuth.GroupMetroRadioButton();
 			this.SuspendLayout();
 			// 
 			// introLabel
@@ -62,7 +63,7 @@
 			this.shiftToggle.Location = new System.Drawing.Point(72, 100);
 			this.shiftToggle.Name = "shiftToggle";
 			this.shiftToggle.Size = new System.Drawing.Size(80, 17);
-			this.shiftToggle.TabIndex = 1;
+			this.shiftToggle.TabIndex = 0;
 			this.shiftToggle.Text = "Off";
 			this.shiftToggle.UseSelectable = true;
 			// 
@@ -99,7 +100,7 @@
 			this.ctrlToggle.Location = new System.Drawing.Point(72, 123);
 			this.ctrlToggle.Name = "ctrlToggle";
 			this.ctrlToggle.Size = new System.Drawing.Size(80, 17);
-			this.ctrlToggle.TabIndex = 2;
+			this.ctrlToggle.TabIndex = 1;
 			this.ctrlToggle.Text = "Off";
 			this.ctrlToggle.UseSelectable = true;
 			// 
@@ -109,7 +110,7 @@
 			this.altToggle.Location = new System.Drawing.Point(72, 146);
 			this.altToggle.Name = "altToggle";
 			this.altToggle.Size = new System.Drawing.Size(80, 17);
-			this.altToggle.TabIndex = 3;
+			this.altToggle.TabIndex = 2;
 			this.altToggle.Text = "Off";
 			this.altToggle.UseSelectable = true;
 			// 
@@ -166,7 +167,7 @@
 			this.keyCombo.Location = new System.Drawing.Point(216, 95);
 			this.keyCombo.Name = "keyCombo";
 			this.keyCombo.Size = new System.Drawing.Size(144, 29);
-			this.keyCombo.TabIndex = 0;
+			this.keyCombo.TabIndex = 3;
 			this.keyCombo.UseSelectable = true;
 			this.keyCombo.SelectedIndexChanged += new System.EventHandler(this.keyCombo_SelectedIndexChanged);
 			// 
@@ -183,10 +184,10 @@
 			// 
 			this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancelButton.Location = new System.Drawing.Point(289, 370);
+			this.cancelButton.Location = new System.Drawing.Point(289, 394);
 			this.cancelButton.Name = "cancelButton";
 			this.cancelButton.Size = new System.Drawing.Size(75, 23);
-			this.cancelButton.TabIndex = 10;
+			this.cancelButton.TabIndex = 11;
 			this.cancelButton.Text = "Cancel";
 			this.cancelButton.UseSelectable = true;
 			// 
@@ -194,10 +195,10 @@
 			// 
 			this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.okButton.Location = new System.Drawing.Point(208, 370);
+			this.okButton.Location = new System.Drawing.Point(208, 394);
 			this.okButton.Name = "okButton";
 			this.okButton.Size = new System.Drawing.Size(75, 23);
-			this.okButton.TabIndex = 9;
+			this.okButton.TabIndex = 10;
 			this.okButton.Text = "OK";
 			this.okButton.UseSelectable = true;
 			this.okButton.Click += new System.EventHandler(this.okButton_Click);
@@ -205,15 +206,13 @@
 			// injectRadioButton
 			// 
 			this.injectRadioButton.AutoSize = true;
-			this.injectRadioButton.Checked = true;
 			this.injectRadioButton.Enabled = false;
 			this.injectRadioButton.Group = "Action";
-			this.injectRadioButton.Location = new System.Drawing.Point(23, 189);
+			this.injectRadioButton.Location = new System.Drawing.Point(23, 211);
 			this.injectRadioButton.Name = "injectRadioButton";
-			this.injectRadioButton.Size = new System.Drawing.Size(261, 15);
-			this.injectRadioButton.TabIndex = 4;
-			this.injectRadioButton.TabStop = true;
-			this.injectRadioButton.Text = "Enter code into current window or one with...";
+			this.injectRadioButton.Size = new System.Drawing.Size(269, 15);
+			this.injectRadioButton.TabIndex = 5;
+			this.injectRadioButton.Text = "Enter code into current window or one called...";
 			this.injectRadioButton.UseSelectable = true;
 			this.injectRadioButton.CheckedChanged += new System.EventHandler(this.injectRadioButton_CheckedChanged);
 			// 
@@ -222,10 +221,10 @@
 			this.pasteRadioButton.AutoSize = true;
 			this.pasteRadioButton.Enabled = false;
 			this.pasteRadioButton.Group = "Action";
-			this.pasteRadioButton.Location = new System.Drawing.Point(23, 239);
+			this.pasteRadioButton.Location = new System.Drawing.Point(23, 261);
 			this.pasteRadioButton.Name = "pasteRadioButton";
 			this.pasteRadioButton.Size = new System.Drawing.Size(167, 15);
-			this.pasteRadioButton.TabIndex = 6;
+			this.pasteRadioButton.TabIndex = 7;
 			this.pasteRadioButton.Text = "Copy code to the clipboard";
 			this.pasteRadioButton.UseSelectable = true;
 			// 
@@ -234,10 +233,10 @@
 			this.advancedRadioButton.AutoSize = true;
 			this.advancedRadioButton.Enabled = false;
 			this.advancedRadioButton.Group = "Action";
-			this.advancedRadioButton.Location = new System.Drawing.Point(23, 260);
+			this.advancedRadioButton.Location = new System.Drawing.Point(23, 282);
 			this.advancedRadioButton.Name = "advancedRadioButton";
 			this.advancedRadioButton.Size = new System.Drawing.Size(85, 15);
-			this.advancedRadioButton.TabIndex = 7;
+			this.advancedRadioButton.TabIndex = 8;
 			this.advancedRadioButton.Text = "Advanced...";
 			this.advancedRadioButton.UseSelectable = true;
 			this.advancedRadioButton.CheckedChanged += new System.EventHandler(this.advancedRadioButton_CheckedChanged);
@@ -245,7 +244,7 @@
 			// advancedTextbox
 			// 
 			this.advancedTextbox.Enabled = false;
-			this.advancedTextbox.Location = new System.Drawing.Point(45, 281);
+			this.advancedTextbox.Location = new System.Drawing.Point(45, 303);
 			this.advancedTextbox.MaxLength = 32767;
 			this.advancedTextbox.Multiline = true;
 			this.advancedTextbox.Name = "advancedTextbox";
@@ -253,14 +252,14 @@
 			this.advancedTextbox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.advancedTextbox.SelectedText = "";
 			this.advancedTextbox.Size = new System.Drawing.Size(315, 68);
-			this.advancedTextbox.TabIndex = 8;
+			this.advancedTextbox.TabIndex = 9;
 			this.tooltip.SetToolTip(this.advancedTextbox, "_SetShortcutKeyForm_advancedTextbox_tooltip");
 			this.advancedTextbox.UseSelectable = true;
 			// 
 			// injectTextbox
 			// 
 			this.injectTextbox.Enabled = false;
-			this.injectTextbox.Location = new System.Drawing.Point(45, 210);
+			this.injectTextbox.Location = new System.Drawing.Point(45, 232);
 			this.injectTextbox.MaxLength = 32767;
 			this.injectTextbox.Name = "injectTextbox";
 			this.injectTextbox.PasswordChar = '\0';
@@ -268,7 +267,7 @@
 			this.injectTextbox.ScrollBars = System.Windows.Forms.ScrollBars.None;
 			this.injectTextbox.SelectedText = "";
 			this.injectTextbox.Size = new System.Drawing.Size(315, 23);
-			this.injectTextbox.TabIndex = 5;
+			this.injectTextbox.TabIndex = 6;
 			this.injectTextbox.UseSelectable = true;
 			// 
 			// tooltip
@@ -278,7 +277,7 @@
 			// 
 			// advancedLink
 			// 
-			this.advancedLink.Location = new System.Drawing.Point(289, 260);
+			this.advancedLink.Location = new System.Drawing.Point(289, 282);
 			this.advancedLink.Name = "advancedLink";
 			this.advancedLink.Size = new System.Drawing.Size(71, 15);
 			this.advancedLink.TabIndex = 11;
@@ -287,17 +286,33 @@
 			this.advancedLink.UseSelectable = true;
 			this.advancedLink.Click += new System.EventHandler(this.advancedLink_Click);
 			// 
+			// notifyRadioButton
+			// 
+			this.notifyRadioButton.AutoSize = true;
+			this.notifyRadioButton.Checked = true;
+			this.notifyRadioButton.Enabled = false;
+			this.notifyRadioButton.Group = "Action";
+			this.notifyRadioButton.Location = new System.Drawing.Point(23, 190);
+			this.notifyRadioButton.Name = "notifyRadioButton";
+			this.notifyRadioButton.Size = new System.Drawing.Size(125, 15);
+			this.notifyRadioButton.TabIndex = 4;
+			this.notifyRadioButton.TabStop = true;
+			this.notifyRadioButton.Text = "Show a notification";
+			this.notifyRadioButton.UseSelectable = true;
+			this.notifyRadioButton.CheckedChanged += new System.EventHandler(this.injectRadioButton_CheckedChanged);
+			// 
 			// SetShortcutKeyForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancelButton;
-			this.ClientSize = new System.Drawing.Size(387, 416);
+			this.ClientSize = new System.Drawing.Size(387, 440);
 			this.Controls.Add(this.advancedLink);
 			this.Controls.Add(this.injectTextbox);
 			this.Controls.Add(this.advancedTextbox);
 			this.Controls.Add(this.advancedRadioButton);
 			this.Controls.Add(this.pasteRadioButton);
+			this.Controls.Add(this.notifyRadioButton);
 			this.Controls.Add(this.injectRadioButton);
 			this.Controls.Add(this.okButton);
 			this.Controls.Add(this.cancelButton);
@@ -339,5 +354,6 @@
 		private MetroFramework.Controls.MetroTextBox injectTextbox;
 		private MetroFramework.Drawing.Html.HtmlToolTip tooltip;
 		private MetroFramework.Controls.MetroLink advancedLink;
+		private GroupMetroRadioButton notifyRadioButton;
 	}
 }

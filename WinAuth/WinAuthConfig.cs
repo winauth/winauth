@@ -438,7 +438,7 @@ namespace WinAuth
           ReadXml(reader, password);
         }
 
-				//this.PasswordType = passwordType;
+				this.PasswordType = Authenticator.DecodePasswordTypes(encrypted);
 				this.Password = password;
 
         return;
@@ -551,7 +551,15 @@ namespace WinAuth
 							{
 								hks.WriteXmlString(xw);
 							}
-							this.CurrentAuthenticator.AuthenticatorData.Script = (script.Length != 0 ? script.ToString() : null);
+							if (script.Length != 0)
+							{
+								if (this.CurrentAuthenticator.HotKey == null)
+								{
+									this.CurrentAuthenticator.HotKey = new HotKey();
+								}
+								HotKey hotkey = this.CurrentAuthenticator.HotKey;
+								hotkey.Advanced = script.ToString();
+							}
               break;
 
             default:

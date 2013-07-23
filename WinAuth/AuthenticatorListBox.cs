@@ -485,6 +485,10 @@ namespace WinAuth
 		{
 			get
 			{
+				if (_currentItem == null && this.Items.Count != 0)
+				{
+					_currentItem = (AuthenticatorListitem)this.Items[0];
+				}
 				return _currentItem;
 			}
 			set
@@ -554,8 +558,9 @@ namespace WinAuth
 		/// Unprotected an authenticator (if possible)
 		/// </summary>
 		/// <param name="item">item to unprotect</param>
+		/// <param name="screen">screen to display dialog for multi-monitors</param>
 		/// <returns></returns>
-		private DialogResult UnprotectAuthenticator(AuthenticatorListitem item)
+		private DialogResult UnprotectAuthenticator(AuthenticatorListitem item, Screen screen = null)
 		{
 			// keep a count so we can have multiples
 			if (item.UnprotectCount > 0)
@@ -574,6 +579,18 @@ namespace WinAuth
 			// request the password
 			UnprotectPasswordForm getPassForm = new UnprotectPasswordForm();
 			getPassForm.Authenticator = auth;
+			if (screen != null)
+			{
+				// center on the current windows screen (in case of multiple monitors)
+				getPassForm.StartPosition = FormStartPosition.Manual;
+				int left = (screen.Bounds.Width / 2) - (getPassForm.Width / 2) + screen.Bounds.Left;
+				int top = (screen.Bounds.Height / 2) - (getPassForm.Height / 2) + screen.Bounds.Top;
+				getPassForm.Location = new Point(left, top);
+			}
+			else
+			{
+				getPassForm.StartPosition = FormStartPosition.CenterScreen;
+			}
 			DialogResult result = getPassForm.ShowDialog(this.Parent as Form);
 			if (result == DialogResult.OK)
 			{
@@ -747,6 +764,10 @@ namespace WinAuth
 
 			ToolStripLabel labelitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "contextMenuItemName").FirstOrDefault() as ToolStripLabel;
 			labelitem.Text = item.Authenticator.Name;
+			if (auth.HotKey != null)
+			{
+				labelitem.Text += " (" + auth.HotKey.ToString() + ")";
+			}
 
 			ToolStripMenuItem menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "setPasswordMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Text = (item.Authenticator.AuthenticatorData.PasswordType == Authenticator.PasswordTypes.Explicit ? strings.ChangeOrRemovePassword + "..." : strings.SetPassword + "...");
@@ -795,6 +816,26 @@ namespace WinAuth
 					}
 				}
 			}
+			//
+			//menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "shortcutKeyMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			//menuitem.ShortcutKeyDisplayString = null;
+			//if (auth.HotKey != null)
+			//{
+			//	string shortcut = auth.HotKey.Key.ToString().Substring(3);
+			//	if ((auth.HotKey.Modifiers & WinAPI.KeyModifiers.Alt) != 0)
+			//	{
+			//		shortcut = "Alt-" + shortcut;
+			//	}
+			//	if ((auth.HotKey.Modifiers & WinAPI.KeyModifiers.Control) != 0)
+			//	{
+			//		shortcut = "Ctrl-" + shortcut;
+			//	}
+			//	if ((auth.HotKey.Modifiers & WinAPI.KeyModifiers.Shift) != 0)
+			//	{
+			//		shortcut = "Shift-" + shortcut;
+			//	}
+			//	menuitem.ShortcutKeyDisplayString = shortcut;
+			//}
 		}
 
 		/// <summary>
@@ -871,28 +912,6 @@ namespace WinAuth
 				item.LastUpdate = DateTime.Now;
 				item.DisplayUntil = DateTime.Now.AddSeconds(10);
 				RefreshCurrentItem();
-			}
-			else if (menuitem.Name == "syncMenuItem")
-			{
-				// check if the authentcated is still protected
-				DialogResult wasprotected = UnprotectAuthenticator(item);
-				if (wasprotected == DialogResult.Cancel)
-				{
-					return;
-				}
-				try
-				{
-					item.Authenticator.AuthenticatorData.Sync();
-					item.LastUpdate = DateTime.MinValue;
-					RefreshCurrentItem();
-				}
-				finally
-				{
-					if (wasprotected == DialogResult.OK)
-					{
-						ProtectAuthenticator(item);
-					}
-				}
 			}
 			else if (menuitem.Name == "copyCodeMenuItem")
 			{
@@ -1106,6 +1125,34 @@ namespace WinAuth
 		}
 
 		/// <summary>
+		/// Get the current code for an item in the list, unprotecting and reprotecting the authenticator if necessary
+		/// </summary>
+		/// <param name="item">List item to get code</param>
+		/// <returns>code or null if failed (i.e. bad password)</returns>
+		public string GetItemCode(AuthenticatorListitem item, Screen screen = null)
+		{
+			WinAuthAuthenticator auth = item.Authenticator;
+
+			// check if the authentcated is still protected
+			DialogResult wasprotected = UnprotectAuthenticator(item, screen);
+			if (wasprotected == DialogResult.Cancel)
+			{
+				return null;
+			}
+
+			try {
+				return auth.AuthenticatorData.CurrentCode;
+			}
+			finally
+			{
+				if (wasprotected == DialogResult.OK)
+				{
+					ProtectAuthenticator(item);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Callback used for Image's thumbnail creator
 		/// </summary>
 		/// <returns></returns>
@@ -1237,7 +1284,7 @@ namespace WinAuth
 						code = "- - - - - -";
 					}
 					SizeF codesize = e.Graphics.MeasureString(code, e.Font);
-					rect = new Rectangle(e.Bounds.X + 64, e.Bounds.Y + 8 + (int)labelsize.Height + 4, (int)codesize.Height, (int)codesize.Width);
+					rect = new Rectangle(e.Bounds.X + 64, e.Bounds.Y + 8 + (int)labelsize.Height + 4, (int)codesize.Width, (int)codesize.Height);
 					if (cliprect.IntersectsWith(rect) == true)
 					{
 						e.Graphics.DrawString(code, e.Font, brush, new PointF(e.Bounds.X + 64, e.Bounds.Y + 8 + labelsize.Height + 4));

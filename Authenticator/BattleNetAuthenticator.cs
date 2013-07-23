@@ -185,11 +185,17 @@ namespace WinAuth
 						SecretKey = Authenticator.StringToByteArray(value.Substring(0, 40));
 						Serial = Encoding.UTF8.GetString(Authenticator.StringToByteArray(value.Substring(40)));
 					}
-					else
+					else if (parts.Length == 3) // alpha 3.0.6
 					{
 						// secret|script|serial
 						base.SecretData = value;
 						Serial = (parts.Length > 2 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[2])) : null);
+					}
+					else
+					{
+						// secret|serial
+						base.SecretData = value;
+						Serial = (parts.Length > 1 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[1])) : null);
 					}
 				}
 				else

@@ -44,6 +44,7 @@
 			this.addAuthenticatorMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.optionsMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
+			this.notifyMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.introLabel = new MetroFramework.Controls.MetroLabel();
 			this.passwordPanel = new MetroFramework.Controls.MetroPanel();
 			this.passwordButton = new MetroFramework.Controls.MetroButton();
@@ -136,11 +137,17 @@
 			// 
 			// notifyIcon
 			// 
-			this.notifyIcon.ContextMenuStrip = this.optionsMenu;
+			this.notifyIcon.ContextMenuStrip = this.notifyMenu;
 			this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
 			this.notifyIcon.Text = "WinAuth";
 			this.notifyIcon.Visible = true;
 			this.notifyIcon.DoubleClick += new System.EventHandler(this.notifyIcon_DoubleClick);
+			// 
+			// notifyMenu
+			// 
+			this.notifyMenu.Name = "notifyMenu";
+			this.notifyMenu.Size = new System.Drawing.Size(153, 26);
+			this.notifyMenu.Opening += new System.ComponentModel.CancelEventHandler(this.notifyMenu_Opening);
 			// 
 			// introLabel
 			// 
@@ -258,9 +265,9 @@
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.WinAuthForm_FormClosing);
 			this.Load += new System.EventHandler(this.WinAuthForm_Load);
 			this.Shown += new System.EventHandler(this.WinAuthForm_Shown);
+			this.ResizeEnd += new System.EventHandler(this.WinAuthForm_ResizeEnd);
 			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WinAuthForm_MouseDown);
 			this.Resize += new System.EventHandler(this.WinAuthForm_Resize);
-			this.ResizeEnd += new System.EventHandler(this.WinAuthForm_ResizeEnd);
 			this.authenticatorMenu.ResumeLayout(false);
 			this.commandPanel.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.metroStyleManager)).EndInit();
@@ -291,6 +298,7 @@
 		private MetroFramework.Controls.MetroLabel passwordErrorLabel;
 		private System.Windows.Forms.Timer passwordTimer;
 		private MetroFramework.Controls.MetroLabel passwordLabel;
+		private System.Windows.Forms.ContextMenuStrip notifyMenu;
 
   }
 }

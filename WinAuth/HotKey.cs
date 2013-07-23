@@ -35,6 +35,7 @@ namespace WinAuth
 		{
 			Inject,
 			Copy,
+			Notify,
 			Advanced
 		};
 
@@ -68,7 +69,7 @@ namespace WinAuth
 		/// </summary>
 		public HotKey()
 		{
-			Action = HotKeyActions.Inject;
+			Action = HotKeyActions.Notify;
 		}
 
 		/// <summary>
@@ -106,6 +107,10 @@ namespace WinAuth
 
 						case "window":
 							Window = reader.ReadElementContentAsString();
+							break;
+
+						case "advanced":
+							Advanced = reader.ReadElementContentAsString();
 							break;
 
 						default:
@@ -147,10 +152,39 @@ namespace WinAuth
 				writer.WriteString(this.Window);
 				writer.WriteEndElement();
 			}
+			//
+			if (String.IsNullOrEmpty(this.Advanced) == false)
+			{
+				writer.WriteStartElement("advanced");
+				writer.WriteString(this.Advanced);
+				writer.WriteEndElement();
+			}
 
 			writer.WriteEndElement();
 		}
 
+		/// <summary>
+		/// Get the display string for this shortcut
+		/// </summary>
+		/// <returns></returns>
+		public override string ToString()
+		{
+			string shortcut = this.Key.ToString().Substring(3);
+			if ((this.Modifiers & WinAPI.KeyModifiers.Alt) != 0)
+			{
+				shortcut = "Alt-" + shortcut;
+			}
+			if ((this.Modifiers & WinAPI.KeyModifiers.Control) != 0)
+			{
+				shortcut = "Ctrl-" + shortcut;
+			}
+			if ((this.Modifiers & WinAPI.KeyModifiers.Shift) != 0)
+			{
+				shortcut = "Shift-" + shortcut;
+			}
+
+			return shortcut;
+		}
 	}
 
 }

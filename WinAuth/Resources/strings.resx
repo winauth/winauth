@@ -375,13 +375,16 @@ If you are happy to send this information please either click Send Error Report 
     <value>Cancel</value>
   </data>
   <data name="_SetShortcutKeyForm_injectRadioButton_" xml:space="preserve">
-    <value>Enter code into current window or one with...</value>
+    <value>Enter code into current window or one called...</value>
   </data>
   <data name="_SetShortcutKeyForm_introLabel_" xml:space="preserve">
     <value>Select a shortcut key and action</value>
   </data>
   <data name="_SetShortcutKeyForm_keyLabel_" xml:space="preserve">
     <value>Key</value>
+  </data>
+  <data name="_SetShortcutKeyForm_notifyRadioButton_" xml:space="preserve">
+    <value>Show a notification</value>
   </data>
   <data name="_SetShortcutKeyForm_okButton_" xml:space="preserve">
     <value>OK</value>

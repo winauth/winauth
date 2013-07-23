@@ -115,6 +115,9 @@ namespace WinAuth
 				ctrlToggle.Checked = ((this.Hotkey.Modifiers & WinAPI.KeyModifiers.Control) != 0);
 				altToggle.Checked = ((this.Hotkey.Modifiers & WinAPI.KeyModifiers.Alt) != 0);
 
+				this.notifyRadioButton.Enabled = true;
+				this.notifyRadioButton.Checked = (this.Hotkey.Action == HotKey.HotKeyActions.Notify);
+				//
 				this.injectRadioButton.Enabled = true;
 				this.injectRadioButton.Checked = (this.Hotkey.Action == HotKey.HotKeyActions.Inject);
 				this.injectTextbox.Enabled = this.injectRadioButton.Checked;
@@ -166,7 +169,13 @@ namespace WinAuth
 				}
 				this.Hotkey.Modifiers = modifiers;
 
-				if (injectRadioButton.Checked == true)
+				if (notifyRadioButton.Checked == true)
+				{
+					this.Hotkey.Action = HotKey.HotKeyActions.Notify;
+					this.Hotkey.Window = null;
+					this.Hotkey.Advanced = null;
+				}
+				else if (injectRadioButton.Checked == true)
 				{
 					this.Hotkey.Action = HotKey.HotKeyActions.Inject;
 					this.Hotkey.Window = this.injectTextbox.Text;
@@ -202,12 +211,14 @@ namespace WinAuth
 				ctrlToggle.Checked = false;
 				altToggle.Checked = false;
 
+				this.notifyRadioButton.Enabled = false;
 				this.injectRadioButton.Enabled = false;
 				this.pasteRadioButton.Enabled = false;
 				this.advancedRadioButton.Enabled = false;
 			}
 			else
 			{
+				this.notifyRadioButton.Enabled = true;
 				this.injectRadioButton.Enabled = true;
 				this.pasteRadioButton.Enabled = true;
 				this.advancedRadioButton.Enabled = true;

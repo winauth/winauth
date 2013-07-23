@@ -83,7 +83,7 @@ namespace WinAuth
 		{
 			get
 			{
-				// this is the key | script | serial | deviceid
+				// this is the key |  serial | deviceid
 				return base.SecretData + "|" + Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(Serial)) + "|" + Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(DeviceId));
 			}
 			set
@@ -92,18 +92,25 @@ namespace WinAuth
 				if (string.IsNullOrEmpty(value) == false)
 				{
 					string[] parts = value.Split('|');
-					if (parts.Length == 3)
+					if (parts.Length == 3 && parts[1].IndexOf("-") != -1)
 					{
-						// old alpha 3.0 version
+						// alpha 3.0.2 version
 						SecretKey = Authenticator.StringToByteArray(parts[0]);
 						Serial = parts[1];
 						DeviceId = parts[2];
 					}
+					else if (parts.Length == 4)
+					{
+						// alpha 3.0.6 version
+						SecretKey = Authenticator.StringToByteArray(parts[0]);
+						Serial = (parts.Length > 2 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[2])) : null);
+						DeviceId = (parts.Length > 3 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[3])) : null);
+					}
 					else
 					{
 						base.SecretData = value;
-						Serial = (parts.Length > 2 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[2])) : null);
-						DeviceId = (parts.Length > 3 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[3])) : null);
+						Serial = (parts.Length > 1 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[1])) : null);
+						DeviceId = (parts.Length > 2 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[2])) : null);
 					}
 				}
 				else

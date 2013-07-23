@@ -166,27 +166,30 @@ namespace WinAuth
 		{
 			get
 			{
-				// this is the secretkey | script
-				return Authenticator.ByteArrayToString(SecretKey) + "|" + (string.IsNullOrEmpty(Script) == false ? Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(Script)) : string.Empty);
+				// this is the secretkey
+				//return Authenticator.ByteArrayToString(SecretKey) + "|" + (string.IsNullOrEmpty(Script) == false ? Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(Script)) : string.Empty);
+				return Authenticator.ByteArrayToString(SecretKey);
 			}
 			set
 			{
 				if (string.IsNullOrEmpty(value) == false)
 				{
-					//SecretKey = Authenticator.StringToByteArray(value);
 					string[] parts = value.Split('|');
 					SecretKey = Authenticator.StringToByteArray(parts[0]);
-					Script = (parts.Length > 1 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[1])) : null);
+					//Script = (parts.Length > 1 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[1])) : null);
 				}
 				else
 				{
 					SecretKey = null;
-					Script = null;
+					//Script = null;
 				}
 			}
 		}
 
-		public string Script {get; set;}
+		/// <summary>
+		/// Advanced script saved with authenticator so it is also encrypted
+		/// </summary>
+		//public string Script {get; set;}
 
 		/// <summary>
 		/// Get the server time since 1/1/70
