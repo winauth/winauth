@@ -199,10 +199,7 @@ namespace WinAuth
 			this.TopMost = this.Config.AlwaysOnTop;
 
 			// size the form based on the authenticators
-			if (this.Config.AutoSize == true)
-			{
-				setAutoSize();
-			}
+			setAutoSize();
 
 			// initialize UI
 			LoadAddAuthenticatorTypes();
@@ -411,9 +408,6 @@ namespace WinAuth
 
 		private void HandleHotkey(WinAuthAuthenticator auth)
 		{
-			// default to sending the code to the current window
-			KeyboardSender keysend = new KeyboardSender();
-
 			// get the code
 			string code = null;
 			try
@@ -468,7 +462,22 @@ namespace WinAuth
 			}
 			if (code != null)
 			{
-				keysend.SendKeys(this, "{CODE}", code);
+				// default to sending the code to the current window
+				KeyboardSender keysend = new KeyboardSender(auth.HotKey.Window);
+				string command;
+				if (auth.HotKey.Action == HotKey.HotKeyActions.Copy)
+				{
+					command = "{COPY}";
+				}
+				else if (auth.HotKey.Action == HotKey.HotKeyActions.Advanced)
+				{
+					command = auth.HotKey.Advanced;
+				}
+				else
+				{
+					command = "{CODE}";
+				}
+				keysend.SendKeys(this, command, code);
 			}
 
 			// get keyboard sender
@@ -551,6 +560,10 @@ namespace WinAuth
 			else
 			{
 				this.Resizable = true;
+				if (Config.Height != 0)
+				{
+					this.Height = Config.Height;
+				}
 			}
 		}
 
@@ -609,6 +622,12 @@ namespace WinAuth
 
 			// ensure the notify icon is closed
 			notifyIcon.Visible = false;
+
+			// save height if we are not autoresize
+			if (this.Config != null && this.Config.AutoSize == false && this.Config.Height != this.Height)
+			{
+				this.Config.Height = this.Height;
+			}
 		}
 
 		/// <summary>
@@ -866,6 +885,15 @@ namespace WinAuth
 				authenticatorList.Width = this.Width - _listoffset.Width;
 			}
 			this.ResumeLayout(true);
+		}
+
+		private void WinAuthForm_ResizeEnd(object sender, EventArgs e)
+		{
+			//if (this.Config != null && this.Config.AutoSize == false && this.Config.Height != this.Height)
+			//{
+			//	// on resize we migth get lots events so we only care about last one
+			//	this.Config.Height = this.Height;
+			//}
 		}
 
 		/// <summary>

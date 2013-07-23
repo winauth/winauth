@@ -248,9 +248,9 @@ namespace WinAuth
 		/// </summary>
 		/// <param name="processName"></param>
 		/// <param name="windowTitle"></param>
-		public KeyboardSender(string windowtitle = null, string processname = null, bool useregex = false)
+		public KeyboardSender(string window)
 		{
-			m_hWnd = FindWindow(windowtitle, processname, useregex);
+			m_hWnd = FindWindow(window);
 		}
 
 		/// <summary>
@@ -422,13 +422,48 @@ namespace WinAuth
 		/// Find a window for the give process and/or title
 		/// </summary>
 		/// <param name="processName">name of process</param>
-		/// <param name="windowTitle">text of window title</param>
+		/// <param name="window">text of window title or process name</param>
 		/// <returns>Window handle if we can match the process and/or title</returns>
-		private static IntPtr FindWindow(string windowTitle, string processName, bool useregex)
+		private static IntPtr FindWindow(string window)
 		{
-			// get specific processes or all
-			Process[] processes = (string.IsNullOrEmpty(processName) == false ? Process.GetProcessesByName(processName) : Process.GetProcesses());
+			// default to return current window
+			if (string.IsNullOrEmpty(window) == true)
+			{
+				return WinAPI.GetForegroundWindow();
+			}
 
+			// build regex
+			Regex reg;
+			Match match = Regex.Match(window, @"/(.*)/([a-z]*)", RegexOptions.IgnoreCase);
+			if (match.Success == true)
+			{
+				RegexOptions regoptions = RegexOptions.None;
+				if (match.Groups[2].Value.Contains("i") == true)
+				{
+					regoptions |= RegexOptions.IgnoreCase;
+				}
+				reg = new Regex(match.Groups[1].Value, regoptions);
+			}
+			else
+			{
+				reg = new Regex(Regex.Escape(window), RegexOptions.IgnoreCase);
+			}
+
+
+			// find process matches
+			List<Process> matchingProcesses = new List<Process>();
+			foreach (var process in Process.GetProcesses())
+			{
+				if (reg.IsMatch(process.ProcessName) || reg.IsMatch(process.MainWindowTitle))
+				{
+					matchingProcesses.Add(process);
+				}
+			}
+
+			// return first match or zero
+			return (matchingProcesses.Count != 0 ? matchingProcesses[0].MainWindowHandle : IntPtr.Zero);
+
+/*
 			// if we have a title match it in the window titles
 			if (string.IsNullOrEmpty(windowTitle) == false)
 			{
@@ -476,6 +511,7 @@ namespace WinAuth
 
 			// didn't find anything
 			return IntPtr.Zero;
+*/
 		}
 	}
 

@@ -31,6 +31,13 @@ namespace WinAuth
 	/// </summary>
 	public class HotKey
 	{
+		public enum HotKeyActions
+		{
+			Inject,
+			Copy,
+			Advanced
+		};
+
 		/// <summary>
 		/// Modifier for hotkey
 		/// </summary>
@@ -41,11 +48,18 @@ namespace WinAuth
 		/// </summary>
 		public WinAPI.VirtualKeyCode Key;
 
+		public HotKeyActions Action;
+
+		public string Window;
+
+		public string Advanced;
+
 		/// <summary>
 		/// Create a new HotKey
 		/// </summary>
 		public HotKey()
 		{
+			Action = HotKeyActions.Inject;
 		}
 
     public void ReadXml(XmlReader reader)
@@ -72,6 +86,14 @@ namespace WinAuth
             case "key":
               Key = (WinAPI.VirtualKeyCode)BitConverter.ToUInt16(Authenticator.StringToByteArray(reader.ReadElementContentAsString()), 0);
               break;
+
+						case "action":
+							Action = (HotKeyActions)Enum.Parse(typeof(HotKeyActions), reader.ReadElementContentAsString(), true);
+							break;
+
+						case "window":
+							Window = reader.ReadElementContentAsString();
+							break;
 
 						default:
               reader.Skip();
@@ -102,6 +124,18 @@ namespace WinAuth
 			writer.WriteString(Authenticator.ByteArrayToString(BitConverter.GetBytes((ushort)Key)));
 			writer.WriteEndElement();
 			//
+			writer.WriteStartElement("action");
+			writer.WriteString(Enum.GetName(typeof(HotKeyActions), this.Action));
+			writer.WriteEndElement();
+			//
+			if (String.IsNullOrEmpty(this.Window) == false)
+			{
+				writer.WriteStartElement("window");
+				writer.WriteString(this.Window);
+				writer.WriteEndElement();
+			}
+			//
+
 			//writer.WriteStartElement("windowtitle");
 			//writer.WriteCData(WindowTitle ?? string.Empty);
 			//writer.WriteEndElement();

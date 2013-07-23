@@ -25,6 +25,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+using WinAuth.Resources;
+
 namespace WinAuth
 {
 	public partial class SetShortcutKeyForm : ResourceForm
@@ -78,15 +80,16 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void SetShortcutKeyForm_Load(object sender, EventArgs e)
 		{
+			tooltip.SetToolTip(advancedTextbox, strings._SetShortcutKeyForm_advancedTextbox_tooltip);
+
 			// load the key list
 			keyCombo.Items.Clear();
 			KeyItem selected = null;
-			keyCombo.Items.Add(string.Empty);
+			keyCombo.Items.Add("None");
 			foreach (WinAPI.VirtualKeyCode vk in Enum.GetValues(typeof(WinAPI.VirtualKeyCode)))
 			{
 				if (vk >= WinAPI.VirtualKeyCode.VK_SPACE)
 				{
-					//keyCombo.Items.Add(vk.ToString().Substring(3));
 					var item = new KeyItem(vk);
 					keyCombo.Items.Add(item);
 					if (Hotkey != null && Hotkey.Key == vk)
@@ -110,7 +113,16 @@ namespace WinAuth
 				shiftToggle.Checked = ((this.Hotkey.Modifiers & WinAPI.KeyModifiers.Shift) != 0);
 				ctrlToggle.Checked = ((this.Hotkey.Modifiers & WinAPI.KeyModifiers.Control) != 0);
 				altToggle.Checked = ((this.Hotkey.Modifiers & WinAPI.KeyModifiers.Alt) != 0);
+
+				this.injectRadioButton.Checked = (this.Hotkey.Action == HotKey.HotKeyActions.Inject);
+				this.injectTextbox.Enabled = this.injectRadioButton.Checked;
+				this.injectTextbox.Text = (this.injectRadioButton.Checked == true ? this.Hotkey.Window : string.Empty);
+				this.pasteRadioButton.Checked = (this.Hotkey.Action == HotKey.HotKeyActions.Copy);
+				this.advancedRadioButton.Checked = (this.Hotkey.Action == HotKey.HotKeyActions.Advanced);
+				this.advancedTextbox.Enabled = this.advancedRadioButton.Checked;
+				this.advancedTextbox.Text = (this.advancedRadioButton.Checked == true ? this.Hotkey.Advanced : string.Empty);
 			}
+
 		}
 
 		/// <summary>
@@ -147,6 +159,31 @@ namespace WinAuth
 					modifiers |= WinAPI.KeyModifiers.Alt;
 				}
 				this.Hotkey.Modifiers = modifiers;
+
+				if (injectRadioButton.Checked == true)
+				{
+					this.Hotkey.Action = HotKey.HotKeyActions.Inject;
+					this.Hotkey.Window = this.injectTextbox.Text;
+					this.Hotkey.Advanced = null;
+				}
+				else if (pasteRadioButton.Checked == true)
+				{
+					this.Hotkey.Action = HotKey.HotKeyActions.Copy;
+					this.Hotkey.Window = null;
+					this.Hotkey.Advanced = null;
+				}
+				else if (advancedRadioButton.Checked == true)
+				{
+					this.Hotkey.Action = HotKey.HotKeyActions.Advanced;
+					this.Hotkey.Window = null;
+					this.Hotkey.Advanced = this.advancedTextbox.Text;
+				}
+			}
+			else
+			{
+				this.Hotkey.Action = HotKey.HotKeyActions.Inject;
+				this.Hotkey.Window = null;
+				this.Hotkey.Advanced = null;
 			}
 		}
 
@@ -165,6 +202,36 @@ namespace WinAuth
 				ctrlToggle.Checked = false;
 				altToggle.Checked = false;
 			}
+		}
+
+		/// <summary>
+		/// Click the inject radio
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void injectRadioButton_CheckedChanged(object sender, EventArgs e)
+		{
+			this.injectTextbox.Enabled = this.injectRadioButton.Checked;
+		}
+
+		/// <summary>
+		/// Click the Advanced radio
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void advancedRadioButton_CheckedChanged(object sender, EventArgs e)
+		{
+			this.advancedTextbox.Enabled = this.advancedRadioButton.Checked;
+		}
+
+		/// <summary>
+		/// Click to manually show the Advanced tooltip
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void advancedLink_Click(object sender, EventArgs e)
+		{
+			tooltip.Show(tooltip.GetToolTip(advancedTextbox), advancedTextbox);
 		}
 	}
 }

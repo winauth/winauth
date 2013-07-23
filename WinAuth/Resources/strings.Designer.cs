@@ -369,6 +369,104 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Shortcut Key.
+        /// </summary>
+        internal static string _SetShortcutKeyForm_ {
+            get {
+                return ResourceManager.GetString("_SetShortcutKeyForm_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to more info.
+        /// </summary>
+        internal static string _SetShortcutKeyForm_advancedLink_ {
+            get {
+                return ResourceManager.GetString("_SetShortcutKeyForm_advancedLink_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Advanced....
+        /// </summary>
+        internal static string _SetShortcutKeyForm_advancedRadioButton_ {
+            get {
+                return ResourceManager.GetString("_SetShortcutKeyForm_advancedRadioButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;strong&gt;Advanced&lt;/strong&gt;
+        ///&lt;p&gt;You can use a mixture of text and commands to build up your string to be sent to your application.&lt;/p&gt;
+        ///&lt;ul&gt;&lt;li&gt;{CODE} inserts the current code&lt;/li&gt;
+        ///&lt;li&gt;{ENTER delay repeat} to send the ENTER key with optional delay in seconds and repeat count&lt;/li&gt;
+        ///&lt;li&gt;{TAB  delay repeat} to send the TAB key&lt;/li&gt;
+        ///&lt;li&gt;{COPY} to copy the code into the clipboard&lt;/li&gt;
+        ///&lt;li&gt;{PASTE} to paste the clipboard contents into the active window&lt;/li&gt;
+        ///&lt;li&gt;{EXIT} to exit WinAuth.&lt;/li&gt;&lt;/ul&gt;
+        ///&lt;p&gt;For example,  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string _SetShortcutKeyForm_advancedTextbox_tooltip {
+            get {
+                return ResourceManager.GetString("_SetShortcutKeyForm_advancedTextbox_tooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        internal static string _SetShortcutKeyForm_cancelButton_ {
+            get {
+                return ResourceManager.GetString("_SetShortcutKeyForm_cancelButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enter code into current window or one with....
+        /// </summary>
+        internal static string _SetShortcutKeyForm_injectRadioButton_ {
+            get {
+                return ResourceManager.GetString("_SetShortcutKeyForm_injectRadioButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select a shortcut key and action.
+        /// </summary>
+        internal static string _SetShortcutKeyForm_introLabel_ {
+            get {
+                return ResourceManager.GetString("_SetShortcutKeyForm_introLabel_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Key.
+        /// </summary>
+        internal static string _SetShortcutKeyForm_keyLabel_ {
+            get {
+                return ResourceManager.GetString("_SetShortcutKeyForm_keyLabel_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        internal static string _SetShortcutKeyForm_okButton_ {
+            get {
+                return ResourceManager.GetString("_SetShortcutKeyForm_okButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy code to the clipboard.
+        /// </summary>
+        internal static string _SetShortcutKeyForm_pasteRadioButton_ {
+            get {
+                return ResourceManager.GetString("_SetShortcutKeyForm_pasteRadioButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0}.
         /// </summary>
         internal static string _UnprotectPasswordForm_ {

@@ -94,6 +94,11 @@ namespace WinAuth
 		/// </summary>
 		private bool _autoSize;
 
+		/// <summary>
+		/// Height if not autosize
+		/// </summary>
+		private int _height;
+
     /// <summary>
     /// Flag for auto refresh of code
     /// </summary>
@@ -208,6 +213,25 @@ namespace WinAuth
 				if (OnConfigChanged != null)
 				{
 					OnConfigChanged(this, new ConfigChangedEventArgs("AutoSize"));
+				}
+			}
+		}
+
+		/// <summary>
+		/// Get/set start with windows flag
+		/// </summary>
+		public int Height
+		{
+			get
+			{
+				return _height;
+			}
+			set
+			{
+				_height = value;
+				if (OnConfigChanged != null)
+				{
+					OnConfigChanged(this, new ConfigChangedEventArgs("Height"));
 				}
 			}
 		}
@@ -611,6 +635,10 @@ namespace WinAuth
 							_autoSize = reader.ReadElementContentAsBoolean();
 							break;
 
+						case "height":
+							_height = reader.ReadElementContentAsInt();
+							break;
+
             // previous setting used as defaults for new
             case "autorefresh":
               defaultAutoRefresh = reader.ReadElementContentAsBoolean();
@@ -763,6 +791,10 @@ namespace WinAuth
 			//
 			writer.WriteStartElement("autosize");
 			writer.WriteValue(this.AutoSize);
+			writer.WriteEndElement();
+			//
+			writer.WriteStartElement("height");
+			writer.WriteValue(this.Height);
 			writer.WriteEndElement();
 
       foreach (WinAuthAuthenticator wa in this)

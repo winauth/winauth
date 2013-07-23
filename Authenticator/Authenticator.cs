@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Reflection;
@@ -35,6 +36,7 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Paddings;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Generators;
+using System.Collections;
 
 #if NUNIT
 using NUnit.Framework;
@@ -138,7 +140,12 @@ namespace WinAuth
 		/// <summary>
 		/// Password used to encrypt secretdata (if PasswordType == Explict)
 		/// </summary>
-		//protected string Password { get; set; }
+		protected string Password { get; set; }
+
+		/// <summary>
+		/// Hash of secret data to detect changes
+		/// </summary>
+		protected byte[] SecretHash { get; private set; }
 
 		public bool RequiresPassword { get; private set; }
 
@@ -469,6 +476,12 @@ namespace WinAuth
 					}
 					string data = Authenticator.ByteArrayToString(ms.ToArray());
 
+					// update secret hash
+					using (SHA1 sha1 = SHA1.Create())
+					{
+						this.SecretHash = sha1.ComputeHash(Encoding.UTF8.GetBytes(this.SecretData));
+					}
+
 					// encrypt
 					this.EncryptedData = Authenticator.EncryptSequence(data, passwordType, password);
 					this.PasswordType = passwordType;
@@ -483,10 +496,24 @@ namespace WinAuth
 
 		public void Protect()
 		{
-			if (this.PasswordType == PasswordTypes.Explicit)
+			if (this.PasswordType != PasswordTypes.None)
 			{
+				// check if the data has changed
+				if (this.SecretData != null)
+				{
+					using (SHA1 sha1 = SHA1.Create())
+					{
+						byte[] secretHash = sha1.ComputeHash(Encoding.UTF8.GetBytes(this.SecretData));
+						if (this.SecretHash == null || secretHash.SequenceEqual(this.SecretHash) == false)
+						{
+							// we need to encrypt changed secret data
+							SetEncryption(this.PasswordType, this.Password);
+						}
+					}
+				}
 				this.SecretData = null;
 				this.RequiresPassword = true;
+				this.Password = null;
 			}
 		}
 
@@ -508,6 +535,13 @@ namespace WinAuth
 					this.ReadXml(reader, password);
 				}
 				this.RequiresPassword = false;
+				// calculate hash of current secretdata
+				using (SHA1 sha1 = SHA1.Create())
+				{
+					this.SecretHash = sha1.ComputeHash(Encoding.UTF8.GetBytes(this.SecretData));
+				}
+				// keep the password until we reprotect in case data changes
+				this.Password = password; 
 			}
 			catch (EncrpytedSecretDataException)
 			{

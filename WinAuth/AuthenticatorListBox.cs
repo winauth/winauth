@@ -213,7 +213,7 @@ namespace WinAuth
 				AuthenticatorListitem item = this.Items[index] as AuthenticatorListitem;
 				WinAuthAuthenticator auth = item.Authenticator;
 
-				int y = this.ItemHeight * index;
+				int y = (this.ItemHeight * index) - (this.TopIndex * this.ItemHeight);
 				if (auth.AutoRefresh == true)
 				{
 					// for autorefresh we repaint the pie or the code too
@@ -225,8 +225,7 @@ namespace WinAuth
 					}
 					else
 					{
-						Rectangle rect = new Rectangle(this.Width - 56, y + 8, 48, 48);
-						this.Invalidate(rect, false);
+						this.Invalidate(new Rectangle(0, y, this.Width, this.ItemHeight), false);
 						item.LastUpdate = DateTime.Now;
 					}
 				}
@@ -295,9 +294,10 @@ namespace WinAuth
 				{
 					var item = this.Items[index] as AuthenticatorListitem;
 					int x = 0;
-					int y = this.ItemHeight * index;
+					int y = (this.ItemHeight * index) - (this.ItemHeight * this.TopIndex);
+					bool hasvscroll = (this.Height < (this.Items.Count * this.ItemHeight));
 					if (item.Authenticator.AutoRefresh == false && item.DisplayUntil < DateTime.Now
-						&& new Rectangle(x + this.Width - 56, y + 8, 48, 48).Contains(e.Location))
+						&& new Rectangle(x + this.Width - 56 - (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0), y + 8, 48, 48).Contains(e.Location))
 					{
 						if (UnprotectAuthenticator(item) == DialogResult.Cancel)
 						{
@@ -536,9 +536,10 @@ namespace WinAuth
 			{
 				var item = this.Items[index] as AuthenticatorListitem;
 				int x = 0;
-				int y = this.ItemHeight * index;
+				int y = (this.ItemHeight * index) - (this.TopIndex * this.ItemHeight);
+				bool hasvscroll = (this.Height < (this.Items.Count * this.ItemHeight));
 				if (item.Authenticator.AutoRefresh == false && item.DisplayUntil < DateTime.Now
-					&& new Rectangle(x + this.Width - 56, y + 8, 48, 48).Contains(mouseLocation))
+					&& new Rectangle(x + this.Width - 56 - (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0), y + 8, 48, 48).Contains(mouseLocation))
 				{
 					cursor = Cursors.Hand;
 				}
@@ -666,11 +667,6 @@ namespace WinAuth
 			//
 			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
 			//
-			menuitem = new ToolStripMenuItem(strings.ShortcutKey + "...");
-			menuitem.Name = "shortcutKeyMenuItem";
-			menuitem.Click += ContextMenu_Click;
-			this.ContextMenuStrip.Items.Add(menuitem);
-			//
 			menuitem = new ToolStripMenuItem(strings.AutoRefresh);
 			menuitem.Name = "autoRefreshMenuItem";
 			menuitem.Click += ContextMenu_Click;
@@ -719,6 +715,13 @@ namespace WinAuth
 			subitem.Tag = "OTHER";
 			subitem.Click += ContextMenu_Click;
 			menuitem.DropDownItems.Add(subitem);
+			this.ContextMenuStrip.Items.Add(menuitem);
+			//
+			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+			//
+			menuitem = new ToolStripMenuItem(strings.ShortcutKey + "...");
+			menuitem.Name = "shortcutKeyMenuItem";
+			menuitem.Click += ContextMenu_Click;
 			this.ContextMenuStrip.Items.Add(menuitem);
 			//
 			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
@@ -920,13 +923,28 @@ namespace WinAuth
 			}
 			else if (menuitem.Name == "shortcutKeyMenuItem")
 			{
-				SetShortcutKeyForm form = new SetShortcutKeyForm();
-				form.Hotkey = auth.HotKey;
-				if (form.ShowDialog(this.Parent as Form) != DialogResult.OK)
+				DialogResult wasprotected = UnprotectAuthenticator(item);
+				if (wasprotected == DialogResult.Cancel)
 				{
 					return;
 				}
-				auth.HotKey = form.Hotkey;
+				try
+				{
+					SetShortcutKeyForm form = new SetShortcutKeyForm();
+					form.Hotkey = auth.HotKey;
+					if (form.ShowDialog(this.Parent as Form) != DialogResult.OK)
+					{
+						return;
+					}
+					auth.HotKey = form.Hotkey;
+				}
+				finally
+				{
+					if (wasprotected == DialogResult.OK)
+					{
+						ProtectAuthenticator(item);
+					}
+				}
 			}
 			else if (menuitem.Name == "copyOnCodeMenuItem")
 			{
@@ -1235,6 +1253,7 @@ namespace WinAuth
 						{
 							using (var piepen = new Pen(SystemColors.ActiveCaption))
 							{
+								//int y = (this.TopIndex * this.ItemHeight) + e.Bounds.y
 								int tillUpdate = ((int)((auth.AuthenticatorData.ServerTime % 30000) / 1000L) + 1) * 12;
 								e.Graphics.DrawPie(piepen, e.Bounds.X + e.Bounds.Width - 54, e.Bounds.Y + 10, 46, 46, 270, 360);
 								e.Graphics.FillPie(piebrush, e.Bounds.X + e.Bounds.Width - 54, e.Bounds.Y + 10, 46, 46, 270, tillUpdate);

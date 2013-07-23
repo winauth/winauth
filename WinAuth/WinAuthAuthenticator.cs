@@ -204,11 +204,19 @@ namespace WinAuth
 		{
 			get
 			{
+				if (this.AuthenticatorData != null && _hotkey != null)
+				{
+					_hotkey.Advanced = this.AuthenticatorData.Script;
+				}
 				return _hotkey;
 			}
 			set
 			{
 				_hotkey = value;
+				if (this.AuthenticatorData != null && _hotkey != null)
+				{
+					AuthenticatorData.Script = _hotkey.Advanced;
+				}
 				if (OnWinAuthAuthenticatorChanged != null)
 				{
 					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("HotKey"));
