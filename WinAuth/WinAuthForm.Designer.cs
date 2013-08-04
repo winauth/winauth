@@ -146,7 +146,7 @@
 			// notifyMenu
 			// 
 			this.notifyMenu.Name = "notifyMenu";
-			this.notifyMenu.Size = new System.Drawing.Size(153, 26);
+			this.notifyMenu.Size = new System.Drawing.Size(61, 4);
 			this.notifyMenu.Opening += new System.ComponentModel.CancelEventHandler(this.notifyMenu_Opening);
 			// 
 			// introLabel

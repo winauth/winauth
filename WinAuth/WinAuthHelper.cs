@@ -18,11 +18,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Xml;
+using System.Xml.XPath;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -51,7 +54,7 @@ namespace WinAuth
     /// <summary>
     /// Registry key for application
     /// </summary>
-    private const string WINAUTHREGKEY = @"Software\WinAuth3";
+    public const string WINAUTHREGKEY = @"Software\WinAuth3";
 
     /// <summary>
     /// Registry data name for last loaded file
