@@ -199,14 +199,20 @@ namespace WinAuth
 		/// <param name="error">any error exception</param>
 		void Updater_GetLatestVersionCompleted(WinAuthVersionInfo latestInfo, bool cancelled, Exception error)
 		{
+			if (this.IsDisposed == true || IsHandleCreated == false)
+			{
+				return;
+			}
+
 			string text = string.Empty;
 			if (cancelled == true)
 			{
-				text = "Update cancelled";
+				text = "Update was cancelled";
 			}
 			else if (error != null)
 			{
-				text = "Error: " + error.Message;
+				text = GetHtmlText("Error: " + error.Message);
+				//text = "Error: " + error.Message;
 			}
 			else
 			{

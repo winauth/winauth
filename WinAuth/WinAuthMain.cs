@@ -55,6 +55,11 @@ namespace WinAuth
 		public const string WINAUTH_BUG_URL = "http://www.winauth.com/bug";
 
 		/// <summary>
+		/// URL to get latest information
+		/// </summary>
+		public const string WINAUTH_UPDATE_URL = "http://www.winauth.com/current-version.xml";
+
+		/// <summary>
 		/// Set of inbuilt icons and authenticator types
 		/// </summary>
 		public static Dictionary<string, string> AUTHENTICATOR_ICONS = new Dictionary<string, string>

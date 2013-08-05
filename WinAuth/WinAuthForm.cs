@@ -148,8 +148,13 @@ namespace WinAuth
 
 			loadConfig(password);
 
-			// create the update and check for update if appropriate
+			// create the updater and check for update if appropriate
 			Updater = new WinAuthUpdater();
+			// the very first time, we set it to update each time
+			if (Updater.LastCheck == DateTime.MinValue)
+			{
+				Updater.SetUpdateInterval(new TimeSpan(0, 0, 0));
+			}
 			if (Updater.IsAutoCheck == true)
 			{
 				Version latest = Updater.LastKnownLatestVersion;
@@ -159,37 +164,16 @@ namespace WinAuth
 					newVersionLink.Visible = true;
 				}
 			}
+			// spin up the autocheck thread and assign callback
 			Updater.AutoCheck(NewVersionAvailable);
-		}
-
-		/// <summary>
-		/// Callback from the Updater if a newer version is available
-		/// </summary>
-		/// <param name="latest"></param>
-		private void NewVersionAvailable(Version latest)
-		{
-			if (Updater.IsAutoCheck == true && latest != null && latest > Updater.CurrentVersion)
-			{
-				this.Invoke((MethodInvoker)delegate { newVersionLink.Text = "New version " + latest.ToString(3) + " available"; newVersionLink.Visible = true; });
-			}
-			else
-			{
-				this.Invoke((MethodInvoker)delegate { newVersionLink.Visible = false; });
-			}
-		}
-
-		private void ShowUpdaterForm()
-		{
-			UpdateCheckForm form = new UpdateCheckForm();
-			form.Updater = this.Updater;
-			if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-			{
-				NewVersionAvailable(Updater.LastKnownLatestVersion);
-			}
 		}
 
 #region Private Methods
 
+		/// <summary>
+		/// Load the current config into WinAuth
+		/// </summary>
+		/// <param name="password"></param>
 		private void loadConfig(string password)
 		{
 			// load config data
@@ -233,6 +217,9 @@ namespace WinAuth
 			} while (retry == true);
 		}
 
+		/// <summary>
+		/// Initialise the current form and UI
+		/// </summary>
 		private void InitializeForm()
 		{
 			// set up list
@@ -307,6 +294,11 @@ namespace WinAuth
 			authenticatorList.Visible = (authenticatorList.Items.Count != 0);
 		}
 
+		/// <summary>
+		/// Event for an authenticator being changed
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		void OnWinAuthAuthenticatorChanged(object sender, WinAuthAuthenticatorChangedEventArgs e)
 		{
 		}
@@ -612,6 +604,35 @@ namespace WinAuth
 			if (authenticatorList.IsRenaming == true)
 			{
 				authenticatorList.EndRenaming();
+			}
+		}
+
+		/// <summary>
+		/// Callback from the Updater if a newer version is available
+		/// </summary>
+		/// <param name="latest"></param>
+		private void NewVersionAvailable(Version latest)
+		{
+			if (Updater.IsAutoCheck == true && latest != null && latest > Updater.CurrentVersion)
+			{
+				this.Invoke((MethodInvoker)delegate { newVersionLink.Text = "New version " + latest.ToString(3) + " available"; newVersionLink.Visible = true; });
+			}
+			else
+			{
+				this.Invoke((MethodInvoker)delegate { newVersionLink.Visible = false; });
+			}
+		}
+
+		/// <summary>
+		/// Show the Update form and update status if necessary
+		/// </summary>
+		private void ShowUpdaterForm()
+		{
+			UpdateCheckForm form = new UpdateCheckForm();
+			form.Updater = this.Updater;
+			if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+			{
+				NewVersionAvailable(Updater.LastKnownLatestVersion);
 			}
 		}
 
@@ -984,6 +1005,16 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// If click the new version status link
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void newVersionLink_Click(object sender, EventArgs e)
+		{
+			ShowUpdaterForm();
+		}
+
 #endregion
 
 #region Options menu
@@ -1313,11 +1344,6 @@ namespace WinAuth
 			SaveConfig();
     }
 #endregion
-
-		private void newVersionLink_Click(object sender, EventArgs e)
-		{
-			ShowUpdaterForm();
-		}
 
   }
 }

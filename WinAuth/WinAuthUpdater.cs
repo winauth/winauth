@@ -81,7 +81,7 @@ namespace WinAuth
 		/// <summary>
 		/// Period when the poller thread will check if it needs to check for a new version
 		/// </summary>
-		private const int UPDATECHECKTHREAD_SLEEP = 15 * 60 * 1000;
+		private const int UPDATECHECKTHREAD_SLEEP = 15 * 60 * 1000; // 15 minutes to check if we need to check
 
 		/// <summary>
 		/// Registry key value name for when we last checked for a new version
@@ -97,11 +97,6 @@ namespace WinAuth
 		/// Registry key value name for the last version we found when we checked
 		/// </summary>
 		private const string WINAUTHREGKEY_LATESTVERSION = @"LatestVersion";
-
-		/// <summary>
-		/// Default Url for the latest version information
-		/// </summary>
-		private const string DEFAULT_UPDATE_URL = "http://www.winauth.com/current-version.xml";
 
 		/// <summary>
 		/// The interval for checking new versions. Null is never, Zero is each time, else a period.
@@ -147,6 +142,17 @@ namespace WinAuth
 		}
 
 		#region Properties
+
+		/// <summary>
+		/// Get when the last check was done
+		/// </summary>
+		public DateTime LastCheck
+		{
+			get
+			{
+				return _lastCheck;
+			}
+		}
 
 		/// <summary>
 		/// Get the last known latest version or null
@@ -264,7 +270,7 @@ namespace WinAuth
 			string updateUrl = settings.GetValue("UpdateCheckUrl", typeof(string)) as string;
 			if (string.IsNullOrEmpty(updateUrl) == true)
 			{
-				updateUrl = DEFAULT_UPDATE_URL;
+				updateUrl = WinAuthMain.WINAUTH_UPDATE_URL;
 			}
 			using (WebClient web = new WebClient())
 			{
