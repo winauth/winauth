@@ -37,6 +37,7 @@
 			this.authenticatorMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.commandPanel = new MetroFramework.Controls.MetroPanel();
+			this.newVersionLink = new MetroFramework.Controls.MetroLink();
 			this.optionsButton = new MetroFramework.Controls.MetroButton();
 			this.addAuthenticatorButton = new MetroFramework.Controls.MetroButton();
 			this.metroStyleManager = new MetroFramework.Components.MetroStyleManager(this.components);
@@ -80,6 +81,7 @@
 			// 
 			// commandPanel
 			// 
+			this.commandPanel.Controls.Add(this.newVersionLink);
 			this.commandPanel.Controls.Add(this.optionsButton);
 			this.commandPanel.Controls.Add(this.addAuthenticatorButton);
 			this.commandPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -95,6 +97,18 @@
 			this.commandPanel.VerticalScrollbarSize = 10;
 			this.commandPanel.Visible = false;
 			this.commandPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.commandPanel_MouseDown);
+			// 
+			// newVersionLink
+			// 
+			this.newVersionLink.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.newVersionLink.Location = new System.Drawing.Point(90, 10);
+			this.newVersionLink.Name = "newVersionLink";
+			this.newVersionLink.Size = new System.Drawing.Size(241, 23);
+			this.newVersionLink.TabIndex = 2;
+			this.newVersionLink.Text = "New version is available";
+			this.newVersionLink.UseSelectable = true;
+			this.newVersionLink.Visible = false;
+			this.newVersionLink.Click += new System.EventHandler(this.newVersionLink_Click);
 			// 
 			// optionsButton
 			// 
@@ -255,8 +269,8 @@
 			this.Controls.Add(this.authenticatorList);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MaximizeBox = false;
-			this.MaximumSize = new System.Drawing.Size(420, 1080);
-			this.MinimumSize = new System.Drawing.Size(420, 180);
+			this.MaximumSize = new System.Drawing.Size(1620, 1080);
+			this.MinimumSize = new System.Drawing.Size(300, 180);
 			this.Name = "WinAuthForm";
 			this.Resizable = false;
 			this.StyleManager = this.metroStyleManager;
@@ -299,6 +313,7 @@
 		private System.Windows.Forms.Timer passwordTimer;
 		private MetroFramework.Controls.MetroLabel passwordLabel;
 		private System.Windows.Forms.ContextMenuStrip notifyMenu;
+		private MetroFramework.Controls.MetroLink newVersionLink;
 
   }
 }

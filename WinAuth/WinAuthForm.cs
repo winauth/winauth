@@ -55,6 +55,11 @@ namespace WinAuth
     public WinAuthConfig Config { get; set; }
 
 		/// <summary>
+		/// Self-updating object
+		/// </summary>
+		private WinAuthUpdater Updater { get; set; }
+
+		/// <summary>
 		/// Flag used to set AutoSizing based on authenticators
 		/// </summary>
 		public bool AutoAuthenticatorSize { get; set; }
@@ -142,8 +147,46 @@ namespace WinAuth
 #endif
 
 			loadConfig(password);
+
+			// create the update and check for update if appropriate
+			Updater = new WinAuthUpdater();
+			if (Updater.IsAutoCheck == true)
+			{
+				Version latest = Updater.LastKnownLatestVersion;
+				if (latest != null && latest > Updater.CurrentVersion)
+				{
+					newVersionLink.Text = "New version " + latest + " available";
+					newVersionLink.Visible = true;
+				}
+			}
+			Updater.AutoCheck(NewVersionAvailable);
 		}
 
+		/// <summary>
+		/// Callback from the Updater if a newer version is available
+		/// </summary>
+		/// <param name="latest"></param>
+		private void NewVersionAvailable(Version latest)
+		{
+			if (Updater.IsAutoCheck == true && latest != null && latest > Updater.CurrentVersion)
+			{
+				this.Invoke((MethodInvoker)delegate { newVersionLink.Text = "New version " + latest.ToString(3) + " available"; newVersionLink.Visible = true; });
+			}
+			else
+			{
+				this.Invoke((MethodInvoker)delegate { newVersionLink.Visible = false; });
+			}
+		}
+
+		private void ShowUpdaterForm()
+		{
+			UpdateCheckForm form = new UpdateCheckForm();
+			form.Updater = this.Updater;
+			if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+			{
+				NewVersionAvailable(Updater.LastKnownLatestVersion);
+			}
+		}
 
 #region Private Methods
 
@@ -537,6 +580,8 @@ namespace WinAuth
 		{
 			if (Config.AutoSize == true)
 			{
+				this.Width = 420; // hard code till we ajdust for best label width
+
 				int height = this.Height - authenticatorList.Height;
 				height += (this.Config.Count * authenticatorList.ItemHeight);
 				this.Height = height;
@@ -547,6 +592,10 @@ namespace WinAuth
 			else
 			{
 				this.Resizable = true;
+				if (Config.Width != 0)
+				{
+					this.Width = Config.Width;
+				}
 				if (Config.Height != 0)
 				{
 					this.Height = Config.Height;
@@ -610,9 +659,10 @@ namespace WinAuth
 			// ensure the notify icon is closed
 			notifyIcon.Visible = false;
 
-			// save height if we are not autoresize
-			if (this.Config != null && this.Config.AutoSize == false && this.Config.Height != this.Height)
+			// save size if we are not autoresize
+			if (this.Config != null && this.Config.AutoSize == false && (this.Config.Width != this.Width || this.Config.Height != this.Height))
 			{
+				this.Config.Width = this.Width;
 				this.Config.Height = this.Height;
 			}
 		}
@@ -1001,6 +1051,13 @@ namespace WinAuth
 
 			menu.Items.Add(new ToolStripSeparator());
 
+			menuitem = new ToolStripMenuItem(strings.MenuUpdates + "...");
+			menuitem.Name = "aboutUpdatesMenuItem";
+			menuitem.Click += aboutUpdatesMenuItem_Click;
+			menu.Items.Add(menuitem);
+
+			menu.Items.Add(new ToolStripSeparator());
+
 			menuitem = new ToolStripMenuItem(strings.MenuAbout + "...");
 			menuitem.Name = "aboutOptionsMenuItem";
 			menuitem.Click += aboutOptionMenuItem_Click;
@@ -1177,6 +1234,16 @@ namespace WinAuth
 		}
 
 		/// <summary>
+		/// Click the Updates menu item
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void aboutUpdatesMenuItem_Click(object sender, EventArgs e)
+		{
+			ShowUpdaterForm();
+		}
+
+		/// <summary>
 		/// Click the About menu item
 		/// </summary>
 		/// <param name="sender"></param>
@@ -1246,6 +1313,11 @@ namespace WinAuth
 			SaveConfig();
     }
 #endregion
+
+		private void newVersionLink_Click(object sender, EventArgs e)
+		{
+			ShowUpdaterForm();
+		}
 
   }
 }

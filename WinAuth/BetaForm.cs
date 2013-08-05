@@ -29,7 +29,7 @@ namespace WinAuth
 	/// <summary>
 	/// General Beta form
 	/// </summary>
-	public partial class BetaForm : Form
+	public partial class BetaForm : ResourceForm
 	{
 		/// <summary>
 		/// Create the  Form
@@ -71,7 +71,7 @@ namespace WinAuth
 		private void BetaForm_Load(object sender, EventArgs e)
 		{
 			Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-			this.betaLabel.Text = string.Format(this.betaLabel.Text, version.ToString(3), DateTime.Today.Year);
+			this.Text = string.Format(this.Text, version.ToString(3), DateTime.Today.Year);
 		}
 
 	}

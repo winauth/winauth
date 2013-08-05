@@ -71,7 +71,7 @@ namespace WinAuth.Resources {
         
         /// <summary>
         ///   Looks up a localized string similar to WinAuth {0}
-        ///Copyright (C) {1}. Colin Mackie. All rights reserved..
+        ///Copyright {1}. Colin Mackie. All rights reserved..
         /// </summary>
         internal static string _AboutForm_aboutLabel_ {
             get {
@@ -791,6 +791,15 @@ namespace WinAuth.Resources {
         internal static string MenuStartWithWindows {
             get {
                 return ResourceManager.GetString("MenuStartWithWindows", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check for updates....
+        /// </summary>
+        internal static string MenuUpdates {
+            get {
+                return ResourceManager.GetString("MenuUpdates", resourceCulture);
             }
         }
         

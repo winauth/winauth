@@ -86,7 +86,8 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>WinAuth_1_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Crypto, Version=1.7.4137.9688, Culture=neutral, PublicKeyToken=a4292a325f69b123, processorArchitecture=MSIL">
@@ -238,6 +239,12 @@
     <Compile Include="ShowTrionSecretForm.designer.cs">
       <DependentUpon>ShowTrionSecretForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UpdateCheckForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UpdateCheckForm.Designer.cs">
+      <DependentUpon>UpdateCheckForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="WinAPI.cs" />
     <Compile Include="WinAuthAuthenticator.cs" />
     <Compile Include="WinAuthConfig.cs" />
@@ -303,6 +310,9 @@
     <EmbeddedResource Include="ShowTrionSecretForm.resx">
       <DependentUpon>ShowTrionSecretForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UpdateCheckForm.resx">
+      <DependentUpon>UpdateCheckForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="WinAuthForm.resx">
       <DependentUpon>WinAuthForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -312,7 +322,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="packages.config" />
-    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -322,8 +331,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="WinAuth_1_TemporaryKey.pfx" />
-    <None Include="WinAuth_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

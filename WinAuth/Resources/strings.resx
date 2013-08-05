@@ -202,6 +202,9 @@ Do you want to try again?</value>
   <data name="MenuStartWithWindows" xml:space="preserve">
     <value>Start With Windows</value>
   </data>
+  <data name="MenuUpdates" xml:space="preserve">
+    <value>Check for updates...</value>
+  </data>
   <data name="MenuUseSystemTrayIcon" xml:space="preserve">
     <value>Use System Tray Icon</value>
   </data>
@@ -243,7 +246,7 @@ Do you want to try again?</value>
   </data>
   <data name="_AboutForm_aboutLabel_" xml:space="preserve">
     <value>WinAuth {0}
-Copyright (C) {1}. Colin Mackie. All rights reserved.</value>
+Copyright {1}. Colin Mackie. All rights reserved.</value>
   </data>
   <data name="_AboutForm_closeButton" xml:space="preserve">
     <value>Close</value>

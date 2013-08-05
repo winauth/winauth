@@ -95,6 +95,11 @@ namespace WinAuth
 		private bool _autoSize;
 
 		/// <summary>
+		/// Width if not autosize
+		/// </summary>
+		private int _width;
+
+		/// <summary>
 		/// Height if not autosize
 		/// </summary>
 		private int _height;
@@ -218,7 +223,26 @@ namespace WinAuth
 		}
 
 		/// <summary>
-		/// Get/set start with windows flag
+		/// Saved window width
+		/// </summary>
+		public int Width
+		{
+			get
+			{
+				return _width;
+			}
+			set
+			{
+				_width = value;
+				if (OnConfigChanged != null)
+				{
+					OnConfigChanged(this, new ConfigChangedEventArgs("Width"));
+				}
+			}
+		}
+
+		/// <summary>
+		/// Saved window height
 		/// </summary>
 		public int Height
 		{
@@ -480,6 +504,10 @@ namespace WinAuth
 							_autoSize = reader.ReadElementContentAsBoolean();
 							break;
 
+						case "width":
+							_width = reader.ReadElementContentAsInt();
+							break;
+
 						case "height":
 							_height = reader.ReadElementContentAsInt();
 							break;
@@ -644,6 +672,10 @@ namespace WinAuth
 			//
 			writer.WriteStartElement("autosize");
 			writer.WriteValue(this.AutoSize);
+			writer.WriteEndElement();
+			//
+			writer.WriteStartElement("width");
+			writer.WriteValue(this.Width);
 			writer.WriteEndElement();
 			//
 			writer.WriteStartElement("height");

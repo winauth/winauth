@@ -113,6 +113,25 @@ namespace WinAuth
 	/// </summary>
   public class AuthenticatorListBox : ListBox
   {
+		private const int MARGIN_LEFT = 4;
+		private const int MARGIN_TOP = 8;
+		private const int MARGIN_RIGHT = 8;
+		private const int ICON_WIDTH = 48;
+		private const int ICON_HEIGHT = 48;
+		private const int ICON_MARGIN_RIGHT = 12;
+
+		private const int LABEL_MARGIN_BOTTOM = 4;
+
+		private const int LABEL_WIDTH = 250;
+
+		private const int FONT_SIZE = 12;
+
+		private const int PIE_WIDTH = 46;
+		private const int PIE_HEIGHT = 46;
+		private const int PIE_MARGIN = 2;
+		private const int PIE_STARTANGLE = 270;
+		private const int PIE_SWEEPANGLE = 360;
+
 		/// <summary>
 		/// Event handler for ItemRemoved
 		/// </summary>
@@ -297,7 +316,7 @@ namespace WinAuth
 					int y = (this.ItemHeight * index) - (this.ItemHeight * this.TopIndex);
 					bool hasvscroll = (this.Height < (this.Items.Count * this.ItemHeight));
 					if (item.Authenticator.AutoRefresh == false && item.DisplayUntil < DateTime.Now
-						&& new Rectangle(x + this.Width - 56 - (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0), y + 8, 48, 48).Contains(e.Location))
+						&& new Rectangle(x + this.Width - (ICON_WIDTH + MARGIN_RIGHT) - (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0), y + MARGIN_TOP, ICON_WIDTH, ICON_HEIGHT).Contains(e.Location))
 					{
 						if (UnprotectAuthenticator(item) == DialogResult.Cancel)
 						{
@@ -365,7 +384,7 @@ namespace WinAuth
 				AuthenticatorListitem item = _renameTextbox.Tag as AuthenticatorListitem;
 				if (item != null)
 				{
-					int y = (this.ItemHeight * item.Index) - (this.TopIndex * this.ItemHeight) + 8;
+					int y = (this.ItemHeight * item.Index) - (this.TopIndex * this.ItemHeight) + MARGIN_TOP;
 					if (RenameTextbox.Location.Y != y)
 					{
 						RenameTextbox.Location = new Point(RenameTextbox.Location.X, y);
@@ -382,6 +401,8 @@ namespace WinAuth
 		{
 			get
 			{
+				bool hasvscroll = (this.Height < (this.Items.Count * this.ItemHeight));
+				int labelMaxWidth = GetMaxLabelWidth(this.Width - this.Margin.Horizontal - this.DefaultPadding.Horizontal - (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0));
 				if (_renameTextbox == null)
 				{
 					_renameTextbox = new TextBox();
@@ -392,13 +413,17 @@ namespace WinAuth
 					_renameTextbox.Location = new System.Drawing.Point(0, 0);
 					_renameTextbox.Multiline = false;
 					_renameTextbox.Name = "secretCodeField";
-					_renameTextbox.Size = new System.Drawing.Size(250, 22);
+					_renameTextbox.Size = new System.Drawing.Size(labelMaxWidth, 22);
 					_renameTextbox.TabIndex = 0;
 					_renameTextbox.Visible = false;
 					_renameTextbox.Leave += RenameTextbox_Leave;
 					_renameTextbox.KeyPress += _renameTextbox_KeyPress;
 
 					this.Controls.Add(_renameTextbox);
+				}
+				else
+				{
+					_renameTextbox.Width = labelMaxWidth;
 				}
 
 				return _renameTextbox;
@@ -543,7 +568,7 @@ namespace WinAuth
 				int y = (this.ItemHeight * index) - (this.TopIndex * this.ItemHeight);
 				bool hasvscroll = (this.Height < (this.Items.Count * this.ItemHeight));
 				if (item.Authenticator.AutoRefresh == false && item.DisplayUntil < DateTime.Now
-					&& new Rectangle(x + this.Width - 56 - (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0), y + 8, 48, 48).Contains(mouseLocation))
+					&& new Rectangle(x + this.Width - (ICON_WIDTH + MARGIN_RIGHT) - (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0), y + MARGIN_TOP, ICON_WIDTH, ICON_HEIGHT).Contains(mouseLocation))
 				{
 					cursor = Cursors.Hand;
 				}
@@ -816,26 +841,6 @@ namespace WinAuth
 					}
 				}
 			}
-			//
-			//menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "shortcutKeyMenuItem").FirstOrDefault() as ToolStripMenuItem;
-			//menuitem.ShortcutKeyDisplayString = null;
-			//if (auth.HotKey != null)
-			//{
-			//	string shortcut = auth.HotKey.Key.ToString().Substring(3);
-			//	if ((auth.HotKey.Modifiers & WinAPI.KeyModifiers.Alt) != 0)
-			//	{
-			//		shortcut = "Alt-" + shortcut;
-			//	}
-			//	if ((auth.HotKey.Modifiers & WinAPI.KeyModifiers.Control) != 0)
-			//	{
-			//		shortcut = "Ctrl-" + shortcut;
-			//	}
-			//	if ((auth.HotKey.Modifiers & WinAPI.KeyModifiers.Shift) != 0)
-			//	{
-			//		shortcut = "Shift-" + shortcut;
-			//	}
-			//	menuitem.ShortcutKeyDisplayString = shortcut;
-			//}
 		}
 
 		/// <summary>
@@ -1088,10 +1093,10 @@ namespace WinAuth
 							// get the image and create an icon if not already the right size
 							using (Bitmap iconimage = (Bitmap)Image.FromFile(ofd.FileName))
 							{
-								if (iconimage.Width != 48 || iconimage.Height != 48)
+								if (iconimage.Width != ICON_WIDTH || iconimage.Height != ICON_HEIGHT)
 								{
 									Image.GetThumbnailImageAbort thumbNailCallback = new Image.GetThumbnailImageAbort(ThumbnailCallback);
-									using (Bitmap scaled = iconimage.GetThumbnailImage(48, 48, thumbNailCallback, System.IntPtr.Zero) as Bitmap)
+									using (Bitmap scaled = iconimage.GetThumbnailImage(ICON_WIDTH, ICON_HEIGHT, thumbNailCallback, System.IntPtr.Zero) as Bitmap)
 									{
 										auth.Icon = scaled;
 									}
@@ -1177,6 +1182,16 @@ namespace WinAuth
 		#region Owner Draw
 
 		/// <summary>
+		/// Calculate the maximum label with based on the currnet control size
+		/// </summary>
+		/// <param name="totalWidth">control size</param>
+		/// <returns>maximum possible width for label</returns>
+		protected int GetMaxLabelWidth(int totalWidth)
+		{
+			return totalWidth - MARGIN_LEFT - ICON_WIDTH - ICON_MARGIN_RIGHT - PIE_WIDTH - MARGIN_RIGHT;
+		}
+
+		/// <summary>
 		/// Hook into the default WndProc to make sure we get our redraw messages
 		/// </summary>
 		/// <param name="m"></param>
@@ -1214,35 +1229,34 @@ namespace WinAuth
 
 				e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
-				Rectangle rect = new Rectangle(e.Bounds.X + 4, e.Bounds.Y + 8, 48, 48);
+				Rectangle rect = new Rectangle(e.Bounds.X + MARGIN_LEFT, e.Bounds.Y + MARGIN_TOP, ICON_WIDTH, ICON_HEIGHT);
 				if (cliprect.IntersectsWith(rect) == true)
 				{
 					using (var icon = auth.Icon)
 					{
-						e.Graphics.DrawImage(icon, new PointF(e.Bounds.X + 4, e.Bounds.Y + 8));
+						e.Graphics.DrawImage(icon, new PointF(e.Bounds.X + MARGIN_LEFT, e.Bounds.Y + MARGIN_TOP));
 					}
 				}
 
-				using (var font = new Font(e.Font.FontFamily, 12, FontStyle.Regular))
+				using (var font = new Font(e.Font.FontFamily, FONT_SIZE, FontStyle.Regular))
 				{
-					//string label = (e.Index + 1) + ". " + auth.Name;
 					string label = auth.Name;
 					SizeF labelsize = e.Graphics.MeasureString(label.ToString(), font);
-					// if too big, adjust
-					if (labelsize.Width > 255)
+					int labelMaxWidth = GetMaxLabelWidth(e.Bounds.Width);
+					if (labelsize.Width > labelMaxWidth)
 					{
 						StringBuilder newlabel = new StringBuilder(label + "...");
-						while ((labelsize = e.Graphics.MeasureString(newlabel.ToString(), font)).Width > 255)
+						while ((labelsize = e.Graphics.MeasureString(newlabel.ToString(), font)).Width > labelMaxWidth)
 						{
 							newlabel.Remove(newlabel.Length - 4, 1);
 						}
 						label = newlabel.ToString();
 					}
-					rect = new Rectangle(e.Bounds.X + 64, e.Bounds.Y + 8, (int)labelsize.Height, (int)labelsize.Width);
+					rect = new Rectangle(e.Bounds.X + 64, e.Bounds.Y + MARGIN_TOP, (int)labelsize.Height, (int)labelsize.Width);
 					if (cliprect.IntersectsWith(rect) == true)
 					{
 						//e.Graphics.DrawString(label, font, brush, new PointF(e.Bounds.X + 64, e.Bounds.Y + 8));
-						e.Graphics.DrawString(label, font, brush, new RectangleF(e.Bounds.X + 64, e.Bounds.Y + 8, 250, labelsize.Height));
+						e.Graphics.DrawString(label, font, brush, new RectangleF(e.Bounds.X + MARGIN_LEFT + ICON_WIDTH + ICON_MARGIN_RIGHT, e.Bounds.Y + MARGIN_TOP, labelMaxWidth, labelsize.Height));
 					}
 
 					string code;
@@ -1284,14 +1298,15 @@ namespace WinAuth
 						code = "- - - - - -";
 					}
 					SizeF codesize = e.Graphics.MeasureString(code, e.Font);
-					rect = new Rectangle(e.Bounds.X + 64, e.Bounds.Y + 8 + (int)labelsize.Height + 4, (int)codesize.Width, (int)codesize.Height);
+					rect = new Rectangle(e.Bounds.X + MARGIN_LEFT + ICON_WIDTH + ICON_MARGIN_RIGHT, e.Bounds.Y + MARGIN_TOP + (int)labelsize.Height + LABEL_MARGIN_BOTTOM, (int)codesize.Width, (int)codesize.Height);
 					if (cliprect.IntersectsWith(rect) == true)
 					{
-						e.Graphics.DrawString(code, e.Font, brush, new PointF(e.Bounds.X + 64, e.Bounds.Y + 8 + labelsize.Height + 4));
+						e.Graphics.DrawString(code, e.Font, brush, new PointF(e.Bounds.X + MARGIN_LEFT + ICON_WIDTH + ICON_MARGIN_RIGHT, e.Bounds.Y + MARGIN_TOP + labelsize.Height + LABEL_MARGIN_BOTTOM));
 					}
 				}
 
-				rect = new Rectangle(e.Bounds.X + e.Bounds.Width - 56, e.Bounds.Y + 8, 48, 48);
+				// draw the refresh image or pie
+				rect = new Rectangle(e.Bounds.X + e.Bounds.Width - (MARGIN_RIGHT + ICON_WIDTH), e.Bounds.Y + MARGIN_TOP, ICON_WIDTH, ICON_HEIGHT);
 				if (cliprect.IntersectsWith(rect) == true)
 				{
 					if (auth.AutoRefresh == true)
@@ -1302,8 +1317,8 @@ namespace WinAuth
 							{
 								//int y = (this.TopIndex * this.ItemHeight) + e.Bounds.y
 								int tillUpdate = ((int)((auth.AuthenticatorData.ServerTime % 30000) / 1000L) + 1) * 12;
-								e.Graphics.DrawPie(piepen, e.Bounds.X + e.Bounds.Width - 54, e.Bounds.Y + 10, 46, 46, 270, 360);
-								e.Graphics.FillPie(piebrush, e.Bounds.X + e.Bounds.Width - 54, e.Bounds.Y + 10, 46, 46, 270, tillUpdate);
+								e.Graphics.DrawPie(piepen, e.Bounds.X + e.Bounds.Width - (MARGIN_RIGHT + ICON_WIDTH), e.Bounds.Y + MARGIN_TOP + PIE_MARGIN, PIE_WIDTH, PIE_HEIGHT, PIE_STARTANGLE, PIE_SWEEPANGLE);
+								e.Graphics.FillPie(piebrush, e.Bounds.X + e.Bounds.Width - (MARGIN_RIGHT + ICON_WIDTH), e.Bounds.Y + MARGIN_TOP + PIE_MARGIN, PIE_WIDTH, PIE_HEIGHT, PIE_STARTANGLE, tillUpdate);
 							}
 						}
 					}
@@ -1316,8 +1331,8 @@ namespace WinAuth
 								using (var piepen = new Pen(SystemColors.ActiveCaption))
 								{
 									int tillUpdate = (int)((item.DisplayUntil.Subtract(DateTime.Now).TotalSeconds * (double)360) / item.DisplayUntil.Subtract(item.LastUpdate).TotalSeconds);
-									e.Graphics.DrawPie(piepen, e.Bounds.X + e.Bounds.Width - 54, e.Bounds.Y + 10, 46, 46, 270, 360);
-									e.Graphics.FillPie(piebrush, e.Bounds.X + e.Bounds.Width - 54, e.Bounds.Y + 10, 46, 46, 270, tillUpdate);
+									e.Graphics.DrawPie(piepen, e.Bounds.X + e.Bounds.Width - (MARGIN_RIGHT + ICON_WIDTH), e.Bounds.Y + MARGIN_TOP + PIE_MARGIN, PIE_WIDTH, PIE_HEIGHT, PIE_STARTANGLE, PIE_SWEEPANGLE);
+									e.Graphics.FillPie(piebrush, e.Bounds.X + e.Bounds.Width - (MARGIN_RIGHT + ICON_WIDTH), e.Bounds.Y + MARGIN_TOP + PIE_MARGIN, PIE_WIDTH, PIE_HEIGHT, PIE_STARTANGLE, tillUpdate);
 								}
 							}
 						}
@@ -1332,6 +1347,7 @@ namespace WinAuth
 					}
 				}
 
+				// draw the separating line
 				rect = new Rectangle(e.Bounds.X, e.Bounds.Y + this.ItemHeight - 1, 1, 1);
 				if (cliprect.IntersectsWith(rect) == true)
 				{
