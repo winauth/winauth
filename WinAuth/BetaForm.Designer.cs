@@ -52,7 +52,7 @@ namespace WinAuth
 			this.ckAgree.Name = "ckAgree";
 			this.ckAgree.Size = new System.Drawing.Size(350, 15);
 			this.ckAgree.TabIndex = 1;
-			this.ckAgree.Text = "I understand and accept the conditions of this ALPHA version.";
+			this.ckAgree.Text = "I understand and accept the conditions of this BETA version.";
 			this.ckAgree.UseSelectable = true;
 			this.ckAgree.CheckedChanged += new System.EventHandler(this.ckAgree_CheckedChanged);
 			// 
@@ -93,7 +93,7 @@ namespace WinAuth
 			this.Controls.Add(this.btnCancel);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "BetaForm";
-			this.Text = "This is an ALPHA version of WinAuth {0}";
+			this.Text = "This is an BETA version of WinAuth {0}";
 			this.Load += new System.EventHandler(this.BetaForm_Load);
 			this.ResumeLayout(false);
 			this.PerformLayout();

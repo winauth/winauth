@@ -266,12 +266,17 @@ namespace WinAuth
 		public WinAuthVersionInfo GetLatestVersion(Action<WinAuthVersionInfo, bool, Exception> callback = null)
 		{
 			// get the update URL from the config else use the default
-			var settings = new System.Configuration.AppSettingsReader();
-			string updateUrl = settings.GetValue("UpdateCheckUrl", typeof(string)) as string;
-			if (string.IsNullOrEmpty(updateUrl) == true)
+			string updateUrl = WinAuthMain.WINAUTH_UPDATE_URL;
+			try
 			{
-				updateUrl = WinAuthMain.WINAUTH_UPDATE_URL;
+				var settings = new System.Configuration.AppSettingsReader();
+				string appvalue = settings.GetValue("UpdateCheckUrl", typeof(string)) as string;
+				if (string.IsNullOrEmpty(appvalue) == false)
+				{
+					updateUrl = appvalue;
+				}
 			}
+			catch (Exception) { }
 			using (WebClient web = new WebClient())
 			{
 				if (callback == null)

@@ -176,7 +176,8 @@ namespace WinAuth
 				using (WebClient web = new WebClient())
 				{
 					var data = new System.Collections.Specialized.NameValueCollection();
-					data.Add("data", dataText.Text);
+					data.Add("bugtype", "error");
+					data.Add("bugdata", dataText.Text);
 					byte[] responsedata = web.UploadValues(WinAuthMain.WINAUTH_BUG_URL, "POST", data);
 					string response = Encoding.UTF8.GetString(responsedata);
 					MessageBox.Show(this, strings.ErrorReportSubmitted, WinAuthMain.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Information);
