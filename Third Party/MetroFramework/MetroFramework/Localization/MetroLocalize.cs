@@ -62,13 +62,17 @@ namespace MetroFramework.Localization
         {
             Assembly callingAssembly = Assembly.GetCallingAssembly();
 
-            string localizationFilename = callingAssembly.GetName().Name + ".Localization." + CurrentLanguage()  + "." + ctrlName + ".xml";
+            //string localizationFilename = callingAssembly.GetName().Name + ".Localization." + CurrentLanguage()  + "." + ctrlName + ".xml";
+						string localizationFilename = typeof(MetroLocalize).Namespace + "." + CurrentLanguage() + "." + ctrlName + ".xml";
+						MessageBox.Show(null, localizationFilename, "localize");
             Stream xmlStream = callingAssembly.GetManifestResourceStream(localizationFilename);
 
             if (xmlStream == null)
             {
-                localizationFilename = callingAssembly.GetName().Name + ".Localization." + DefaultLanguage() + "." + ctrlName + ".xml";
-                xmlStream = callingAssembly.GetManifestResourceStream(localizationFilename);
+                //localizationFilename = callingAssembly.GetName().Name + ".Localization." + DefaultLanguage() + "." + ctrlName + ".xml";
+								localizationFilename = typeof(MetroLocalize).Namespace + "." + DefaultLanguage() + "." + ctrlName + ".xml";							
+								MessageBox.Show(null, localizationFilename, "localize");
+								xmlStream = callingAssembly.GetManifestResourceStream(localizationFilename);
             }
 
 
