@@ -32,8 +32,6 @@ using System.Xml.XPath;
 using System.Windows;
 using System.Windows.Forms;
 
-using Microsoft.Win32;
-
 using WinAuth.Resources;
 
 namespace WinAuth
@@ -86,17 +84,17 @@ namespace WinAuth
 		/// <summary>
 		/// Registry key value name for when we last checked for a new version
 		/// </summary>
-		private const string WINAUTHREGKEY_LASTCHECK = @"LastUpdateCheck";
+		private const string WINAUTHREGKEY_LASTCHECK = WinAuthHelper.WINAUTHREGKEY + "\\LastUpdateCheck";
 
 		/// <summary>
 		/// Registry key value name for how often we check for a new version
 		/// </summary>
-		private const string WINAUTHREGKEY_CHECKFREQUENCY = @"UpdateCheckFrequency";
+		private const string WINAUTHREGKEY_CHECKFREQUENCY = WinAuthHelper.WINAUTHREGKEY + "\\UpdateCheckFrequency";
 
 		/// <summary>
 		/// Registry key value name for the last version we found when we checked
 		/// </summary>
-		private const string WINAUTHREGKEY_LATESTVERSION = @"LatestVersion";
+		private const string WINAUTHREGKEY_LATESTVERSION = WinAuthHelper.WINAUTHREGKEY + "\\LatestVersion";
 
 		/// <summary>
 		/// The interval for checking new versions. Null is never, Zero is each time, else a period.
@@ -114,30 +112,34 @@ namespace WinAuth
 		private DateTime _lastCheck;
 
 		/// <summary>
+		/// Current Config
+		/// </summary>
+		private WinAuthConfig Config { get; set; }
+
+		/// <summary>
 		/// Create the version checker instance
 		/// </summary>
-		public WinAuthUpdater()
+		public WinAuthUpdater(WinAuthConfig config)
 		{
+			Config = config;
+
 			// read the update interval and last known latest version from the registry
-			using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WinAuthHelper.WINAUTHREGKEY))
+			TimeSpan interval;
+			if (TimeSpan.TryParse(Config.ReadSetting(WINAUTHREGKEY_CHECKFREQUENCY, string.Empty), out interval) == true)
 			{
-				TimeSpan interval;
-				if (TimeSpan.TryParse(key.GetValue(WINAUTHREGKEY_CHECKFREQUENCY, string.Empty) as string, out interval) == true)
-				{
-					_autocheckInterval = interval;
-				}
+				_autocheckInterval = interval;
+			}
 
-				long lastCheck = 0;
-				if (long.TryParse(key.GetValue(WINAUTHREGKEY_LASTCHECK, null) as string, out lastCheck) == true)
-				{
-					_lastCheck = new DateTime(lastCheck);
-				}
+			long lastCheck = 0;
+			if (long.TryParse(Config.ReadSetting(WINAUTHREGKEY_LASTCHECK, null), out lastCheck) == true)
+			{
+				_lastCheck = new DateTime(lastCheck);
+			}
 
-				Version version;
-				if (Version.TryParse(key.GetValue(WINAUTHREGKEY_LATESTVERSION, string.Empty) as string, out version) == true)
-				{
-					_latestVersion = version;
-				}
+			Version version;
+			if (Version.TryParse(Config.ReadSetting(WINAUTHREGKEY_LATESTVERSION, string.Empty), out version) == true)
+			{
+				_latestVersion = version;
 			}
 		}
 
@@ -235,11 +237,7 @@ namespace WinAuth
 				{
 					// update the last check time
 					_lastCheck = DateTime.Now;
-					using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WinAuthHelper.WINAUTHREGKEY))
-					{
-						// update last check
-						key.SetValue(WINAUTHREGKEY_LASTCHECK, _lastCheck.Ticks.ToString());
-					}
+					Config.WriteSetting(WINAUTHREGKEY_LASTCHECK, _lastCheck.Ticks.ToString());
 
 					// check for latest version
 					try
@@ -288,10 +286,7 @@ namespace WinAuth
 					{
 						// update local values
 						_latestVersion = latestVersion.Version;
-						using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WinAuthHelper.WINAUTHREGKEY))
-						{
-							key.SetValue(WINAUTHREGKEY_LATESTVERSION, latestVersion.Version.ToString(3));
-						}
+						Config.WriteSetting(WINAUTHREGKEY_LATESTVERSION, latestVersion.Version.ToString(3));
 					}
 					return latestVersion;
 				}
@@ -334,10 +329,7 @@ namespace WinAuth
 				{
 					// update local values
 					_latestVersion = latestVersion.Version;
-					using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WinAuthHelper.WINAUTHREGKEY))
-					{
-						key.SetValue(WINAUTHREGKEY_LATESTVERSION, latestVersion.Version.ToString(3));
-					}
+					Config.WriteSetting(WINAUTHREGKEY_LATESTVERSION, latestVersion.Version.ToString(3));
 				}
 				// perform callback
 				callback(latestVersion, false, null);
@@ -396,29 +388,26 @@ namespace WinAuth
 		/// <param name="interval">new interval or null to disvble</param>
 		public void SetUpdateInterval(TimeSpan? interval)
 		{
-			// get the next check time in registry
-			using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WinAuthHelper.WINAUTHREGKEY))
+			// get the next check time
+			if (interval != null)
 			{
-				if (interval != null)
-				{
-					// write into regisry
-					key.SetValue(WINAUTHREGKEY_CHECKFREQUENCY, interval.Value.ToString("c"));
+				// write into regisry
+				Config.WriteSetting(WINAUTHREGKEY_CHECKFREQUENCY, interval.Value.ToString("c"));
 
-					// if last update not set, set to now
-					if (key.GetValue(WINAUTHREGKEY_LASTCHECK) == null)
-					{
-						key.SetValue(WINAUTHREGKEY_LASTCHECK, DateTime.Now.Ticks.ToString());
-					}
-				}
-				else
+				// if last update not set, set to now
+				if (Config.ReadSetting(WINAUTHREGKEY_LASTCHECK) == null)
 				{
-					// remove from registry
-					key.DeleteValue(WINAUTHREGKEY_CHECKFREQUENCY, false);
+					Config.WriteSetting(WINAUTHREGKEY_LASTCHECK, DateTime.Now.Ticks.ToString());
 				}
-
-				// update local values
-				_autocheckInterval = interval;
 			}
+			else
+			{
+				// remove from registry
+				Config.WriteSetting(WINAUTHREGKEY_CHECKFREQUENCY, null);
+			}
+
+			// update local values
+			_autocheckInterval = interval;
 		}
 	}
 

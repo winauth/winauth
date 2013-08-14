@@ -62,6 +62,11 @@ namespace WinAuth
 		}
 
 		/// <summary>
+		/// The current Config
+		/// </summary>
+		public WinAuthConfig Config { get; set; }
+
+		/// <summary>
 		/// The current WinAuthUpdate object set by parent
 		/// </summary>
 		public WinAuthUpdater Updater { get; set; }
@@ -93,7 +98,12 @@ namespace WinAuth
 			autoDropdown.Items.Add(new UpdateIntervalItem { Name = "Every Week", Interval = new TimeSpan(7, 0, 0, 0) });
 			autoDropdown.Items.Add(new UpdateIntervalItem { Name = "Every 2 Weeks", Interval = new TimeSpan(14, 0, 0, 0) });
 			autoDropdown.Items.Add(new UpdateIntervalItem { Name = "Every Month", Interval = new TimeSpan(30, 0, 0, 0) });
-			//
+
+			if (Updater == null)
+			{
+				Updater = new WinAuthUpdater(this.Config);
+			}
+
 			if (Updater.IsAutoCheck == false)
 			{
 				autoCheckbox.Checked = false;
@@ -216,15 +226,15 @@ namespace WinAuth
 			}
 			else
 			{
-				string latest = latestInfo.Version.ToString(3);
-				string current = Updater.CurrentVersion.ToString(3);
-				if (current == latest)
+				Version latest = new Version(latestInfo.Version.Major, latestInfo.Version.Minor, latestInfo.Version.Build);
+				Version current = new Version(Updater.CurrentVersion.Major, Updater.CurrentVersion.Minor, Updater.CurrentVersion.Build);
+				if (current >= latest)
 				{
-					text = GetHtmlText("<p>Latest Version: {0}</p><p>You are on the latest version.</p>", latest);
+					text = GetHtmlText("<p>Latest Version: {0}</p><p>You are on the latest version.</p>", latest.ToString(3));
 				}
 				else
 				{
-					string info = string.Format("<p>Latest Version: {0} (yours {1})</p><p><a href=\"{2}\">Download version {0}</a></p></body></html>", latest, current, latestInfo.Url);
+					string info = string.Format("<p>Latest Version: {0} (yours {1})</p><p><a href=\"{2}\">Download version {0}</a></p></body></html>", latest.ToString(3), current.ToString(3), latestInfo.Url);
 					text = GetHtmlText("{0}", info);
 				}
 			}

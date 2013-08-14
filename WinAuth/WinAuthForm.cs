@@ -42,7 +42,14 @@ namespace WinAuth
 {
 	public partial class WinAuthForm : ResourceForm
   {
-    public WinAuthForm()
+#if BETA
+		/// <summary>
+		/// Registry data name for beta key
+		/// </summary>
+		private const string WINAUTHREGKEY_BETAWARNING = @"Software\WinAuth3\BetaWarning";
+#endif
+		
+		public WinAuthForm()
     {
       InitializeComponent();
     }
@@ -101,6 +108,8 @@ namespace WinAuth
 		/// </summary>
 		private string _existingv2Config;
 
+		private string _startupConfigFile;
+
     #endregion
 
 		/// <summary>
@@ -112,7 +121,6 @@ namespace WinAuth
     {
       // get any command arguments
 			string password = null;
-			string configFile = null;
       string[] args = Environment.GetCommandLineArgs();
       for (int i = 1; i < args.Length; i++)
       {
@@ -132,44 +140,17 @@ namespace WinAuth
               i++;
 							password = args[i];
               break;
-            default:
+						default:
               break;
           }
         }
         else
         {
-					configFile = arg;
+					_startupConfigFile = arg;
         }
       }
 
-#if BETA
-			if (WinAuthHelper.BetaWarning(this) == false)
-			{
-				this.Close();
-				return;
-			}
-#endif
-
-			loadConfig(password, configFile);
-
-			// create the updater and check for update if appropriate
-			Updater = new WinAuthUpdater();
-			// the very first time, we set it to update each time
-			if (Updater.LastCheck == DateTime.MinValue)
-			{
-				Updater.SetUpdateInterval(new TimeSpan(0, 0, 0));
-			}
-			if (Updater.IsAutoCheck == true)
-			{
-				Version latest = Updater.LastKnownLatestVersion;
-				if (latest != null && latest > Updater.CurrentVersion)
-				{
-					newVersionLink.Text = "New version " + latest + " available";
-					newVersionLink.Visible = true;
-				}
-			}
-			// spin up the autocheck thread and assign callback
-			Updater.AutoCheck(NewVersionAvailable);
+			loadConfig(password);
 		}
 
 #region Private Methods
@@ -179,8 +160,10 @@ namespace WinAuth
 		/// </summary>
 		/// <param name="password">optional password to decrypt config</param>
 		/// <param name="configFile">optional explicit config file</param>
-		private void loadConfig(string password, string configFile = null)
+		private void loadConfig(string password)
 		{
+			string configFile = _startupConfigFile;
+
 			// load config data
 			bool retry = false;
 			do
@@ -195,7 +178,7 @@ namespace WinAuth
 					}
 
 					// check for a v2 config file if this is a new config
-					if (config.Count == 0 && string.IsNullOrEmpty(config.Filename) == true)
+					if (config.Count == 0 && string.IsNullOrEmpty(config.Filename) == true && config.Portable == false)
 					{
 						_existingv2Config = WinAuthHelper.GetLastV2Config();
 					}
@@ -262,7 +245,7 @@ namespace WinAuth
 					importedAuthenticator.Name = importedName;
 
 					// save off any new authenticators into the registry for restore
-					WinAuthHelper.SaveToRegistry(importedAuthenticator);
+					WinAuthHelper.SaveToRegistry(this.Config, importedAuthenticator);
 
 					// first time we prompt for protection and set out main settings from imported config
 					if (this.Config.Count == 0)
@@ -343,6 +326,44 @@ namespace WinAuth
 		/// </summary>
 		private void InitializeForm()
 		{
+#if BETA
+			string betaversion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(3);
+			string betaConfirmed = this.Config.ReadSetting(WINAUTHREGKEY_BETAWARNING, null) as string;
+			if (string.Compare(betaConfirmed, betaversion) != 0)
+			{
+				if (new BetaForm().ShowDialog(this) != DialogResult.OK)
+				{
+					this.Close();
+					return;
+				}
+
+				this.Config.WriteSetting(WINAUTHREGKEY_BETAWARNING, betaversion);
+			}
+#endif
+
+			// create the updater and check for update if appropriate
+			if (this.Config.Portable == false)
+			{
+				Updater = new WinAuthUpdater(this.Config);
+
+				// the very first time, we set it to update each time
+				if (Updater.LastCheck == DateTime.MinValue)
+				{
+					Updater.SetUpdateInterval(new TimeSpan(0, 0, 0));
+				}
+				if (Updater.IsAutoCheck == true)
+				{
+					Version latest = Updater.LastKnownLatestVersion;
+					if (latest != null && latest > Updater.CurrentVersion)
+					{
+						newVersionLink.Text = "New version " + latest + " available";
+						newVersionLink.Visible = true;
+					}
+				}
+				// spin up the autocheck thread and assign callback
+				Updater.AutoCheck(NewVersionAvailable);
+			}
+
 			// set up list
 			loadAuthenticatorList();
 
@@ -745,7 +766,7 @@ namespace WinAuth
 		/// <param name="latest"></param>
 		private void NewVersionAvailable(Version latest)
 		{
-			if (Updater.IsAutoCheck == true && latest != null && latest > Updater.CurrentVersion)
+			if (Updater != null && Updater.IsAutoCheck == true && latest != null && latest > Updater.CurrentVersion)
 			{
 				this.Invoke((MethodInvoker)delegate { newVersionLink.Text = "New version " + latest.ToString(3) + " available"; newVersionLink.Visible = true; });
 			}
@@ -761,6 +782,7 @@ namespace WinAuth
 		private void ShowUpdaterForm()
 		{
 			UpdateCheckForm form = new UpdateCheckForm();
+			form.Config = this.Config;
 			form.Updater = this.Updater;
 			if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 			{
@@ -946,7 +968,7 @@ namespace WinAuth
 				if (added == true)
 				{
 					// save off any new authenticators into the registry for restore
-					WinAuthHelper.SaveToRegistry(winauthauthenticator);
+					WinAuthHelper.SaveToRegistry(this.Config, winauthauthenticator);
 
 					// first time we prompt for protection
 					if (this.Config.Count == 0)
@@ -996,11 +1018,14 @@ namespace WinAuth
 			ofd.CheckPathExists = true;
 			ofd.DefaultExt = "xml";
 			ofd.FileName = "authenticator.xml";
-			string lastv2file = WinAuthHelper.GetLastV2Config();
-			if (string.IsNullOrEmpty(lastv2file) == false)
+			if (this.Config.Portable == false)
 			{
-				ofd.InitialDirectory = Path.GetDirectoryName(lastv2file);
-				ofd.FileName = Path.GetFileName(lastv2file);
+				string lastv2file = WinAuthHelper.GetLastV2Config();
+				if (string.IsNullOrEmpty(lastv2file) == false)
+				{
+					ofd.InitialDirectory = Path.GetDirectoryName(lastv2file);
+					ofd.FileName = Path.GetFileName(lastv2file);
+				}
 			}
 			ofd.Filter = "WinAuth (*.xml)|*.xml|All Files (*.*)|*.*";
 			ofd.RestoreDirectory = true;
@@ -1237,10 +1262,13 @@ namespace WinAuth
 			menu.Items.Add(menuitem);
 			menu.Items.Add(new ToolStripSeparator() { Name = "changePasswordOptionsSeparatorItem" });
 
-			menuitem = new ToolStripMenuItem(strings.MenuStartWithWindows);
-			menuitem.Name = "startWithWindowsOptionsMenuItem";
-			menuitem.Click += startWithWindowsOptionsMenuItem_Click;
-			menu.Items.Add(menuitem);
+			if (this.Config != null && this.Config.Portable == false)
+			{
+				menuitem = new ToolStripMenuItem(strings.MenuStartWithWindows);
+				menuitem.Name = "startWithWindowsOptionsMenuItem";
+				menuitem.Click += startWithWindowsOptionsMenuItem_Click;
+				menu.Items.Add(menuitem);
+			}
 
 			menuitem = new ToolStripMenuItem(strings.MenuAlwaysOnTop);
 			menuitem.Name = "alwaysOnTopOptionsMenuItem";
@@ -1255,6 +1283,13 @@ namespace WinAuth
 			menuitem = new ToolStripMenuItem(strings.MenuAutoSize);
 			menuitem.Name = "autoSizeOptionsMenuItem";
 			menuitem.Click += autoSizeOptionsMenuItem_Click;
+			menu.Items.Add(menuitem);
+
+			menu.Items.Add(new ToolStripSeparator());
+
+			menuitem = new ToolStripMenuItem(strings.MenuPortable);
+			menuitem.Name = "portableOptionsMenuItem";
+			menuitem.Click += portableOptionsMenuItem_Click;
 			menu.Items.Add(menuitem);
 
 			menu.Items.Add(new ToolStripSeparator());
@@ -1328,7 +1363,10 @@ namespace WinAuth
 			}
 
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "startWithWindowsOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
-			menuitem.Checked = this.Config.StartWithWindows;
+			if (menuitem != null)
+			{
+				menuitem.Checked = this.Config.StartWithWindows;
+			}
 
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "alwaysOnTopOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Checked = this.Config.AlwaysOnTop;
@@ -1338,6 +1376,9 @@ namespace WinAuth
 
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "autoSizeOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Checked = this.Config.AutoSize;
+
+			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "portableOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem.Checked = this.Config.Portable;
 		}
 
 		/// <summary>
@@ -1445,6 +1486,109 @@ namespace WinAuth
 		}
 
 		/// <summary>
+		/// Click the Portable option menu
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void portableOptionsMenuItem_Click(object sender, EventArgs e)
+		{
+			if (this.Config.Portable == false)
+			{
+				// convert to Portable
+				// 1. move config
+				// 2. move all registry entries
+
+				string existingconfigfile = this.Config.Filename;
+				string localconfigfile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), WinAuthHelper.DEFAULT_AUTHENTICATOR_FILE_NAME);
+				if (existingconfigfile != localconfigfile && File.Exists(localconfigfile) == true)
+				{
+					if (ConfirmDialog(this, string.Format(strings.OverwritePortableConfigFile, localconfigfile),
+						MessageBoxButtons.YesNo,
+						MessageBoxIcon.Stop,
+						MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes)
+					{
+						return;
+					}
+				}
+
+				// set the config file location and save
+				if (existingconfigfile != localconfigfile)
+				{
+					this.Config.Filename = localconfigfile;
+				}
+
+				// move all the registry entries into the Config
+				Dictionary<string, object> keys = new Dictionary<string, object>();
+				foreach (string key in WinAuthHelper.ReadRegistryKeys(WinAuthHelper.WINAUTHREGKEY))
+				{
+					keys.Add(key, WinAuthHelper.ReadRegistryValue(key));
+				}
+				WinAuthHelper.DeleteRegistryKey(WinAuthHelper.WINAUTHREGKEY);
+				// set as portable
+				this.Config.Portable = true;
+				// add all the new settings
+				foreach (var entry in keys)
+				{
+					if (entry.Value != null)
+					{
+						if (entry.Value is string)
+						{
+							this.Config.WriteSetting(entry.Key, (string)entry.Value);
+						}
+						else
+						{
+							this.Config.WriteSetting(entry.Key, Convert.ToString(entry.Value));
+						}
+					}
+				}
+				// save new config
+				SaveConfig();
+			}
+			else
+			{
+				string existingconfigfile = this.Config.Filename;
+				string romaingDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuthMain.APPLICATION_NAME);
+				string roamingconfigfile = Path.Combine(romaingDirectory, WinAuthHelper.DEFAULT_AUTHENTICATOR_FILE_NAME);
+				if (existingconfigfile != roamingconfigfile && File.Exists(roamingconfigfile) == true)
+				{
+					if (ConfirmDialog(this, string.Format(strings.OverwritePortableConfigFile, roamingconfigfile),
+						MessageBoxButtons.YesNo,
+						MessageBoxIcon.Stop,
+						MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes)
+					{
+						return;
+					}
+				}
+
+				// set the config file location and save
+				if (existingconfigfile != roamingconfigfile)
+				{
+					this.Config.Filename = roamingconfigfile;
+				}
+
+				// move all the registry entries
+				Dictionary<string, string> keys = new Dictionary<string, string>();
+				foreach (string key in this.Config.ReadSettingKeys(WinAuthHelper.WINAUTHREGKEY))
+				{
+					keys.Add(key, this.Config.ReadSetting(key) as string);
+					this.Config.WriteSetting(key, null); // delete
+				}
+				// set as not portable
+				this.Config.Portable = false;
+				// rewrite all the settings
+				foreach (var entry in keys)
+				{
+					if (entry.Value != null)
+					{
+						this.Config.WriteSetting(entry.Key, entry.Value);
+					}
+				}
+				// save new config
+				SaveConfig();
+			}
+		}
+
+		/// <summary>
 		/// Click the Updates menu item
 		/// </summary>
 		/// <param name="sender"></param>
@@ -1512,7 +1656,10 @@ namespace WinAuth
 			}
 			else if (args.PropertyName == "StartWithWindows")
 			{
-				WinAuthHelper.SetStartWithWindows(this.Config.StartWithWindows);
+				if (this.Config.Portable == false)
+				{
+					WinAuthHelper.SetStartWithWindows(this.Config.StartWithWindows);
+				}
 			}
 			else if (args.AuthenticatorChangedEventArgs != null && args.AuthenticatorChangedEventArgs.Property == "HotKey")
 			{

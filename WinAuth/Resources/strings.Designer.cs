@@ -844,6 +844,15 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Portable.
+        /// </summary>
+        internal static string MenuPortable {
+            get {
+                return ResourceManager.GetString("MenuPortable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Start With Windows.
         /// </summary>
         internal static string MenuStartWithWindows {
@@ -876,6 +885,17 @@ namespace WinAuth.Resources {
         internal static string Other {
             get {
                 return ResourceManager.GetString("Other", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} already exists.
+        ///
+        ///Do you want to overwrite it?.
+        /// </summary>
+        internal static string OverwritePortableConfigFile {
+            get {
+                return ResourceManager.GetString("OverwritePortableConfigFile", resourceCulture);
             }
         }
         

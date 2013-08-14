@@ -110,8 +110,11 @@ namespace WinAuth
 			}
 
 			// add each of the entries from the registry
-			diag.Append("--REGISTRY--").Append(Environment.NewLine);
-			diag.Append(WinAuthHelper.ReadBackupFromRegistry()).Append(Environment.NewLine).Append(Environment.NewLine);
+			if (this.Config != null)
+			{
+				diag.Append("--REGISTRY--").Append(Environment.NewLine);
+				diag.Append(WinAuthHelper.ReadBackupFromRegistry(this.Config)).Append(Environment.NewLine).Append(Environment.NewLine);
+			}
 
 			// add current config file
 			if (string.IsNullOrEmpty(ConfigFileContents) == false)

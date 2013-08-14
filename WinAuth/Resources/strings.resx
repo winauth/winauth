@@ -209,6 +209,9 @@ Would you like to import your previous authenticator now?</value>
   <data name="MenuOpen" xml:space="preserve">
     <value>Open</value>
   </data>
+  <data name="MenuPortable" xml:space="preserve">
+    <value>Portable</value>
+  </data>
   <data name="MenuStartWithWindows" xml:space="preserve">
     <value>Start With Windows</value>
   </data>
@@ -220,6 +223,11 @@ Would you like to import your previous authenticator now?</value>
   </data>
   <data name="Other" xml:space="preserve">
     <value>Other</value>
+  </data>
+  <data name="OverwritePortableConfigFile" xml:space="preserve">
+    <value>{0} already exists.
+
+Do you want to overwrite it?</value>
   </data>
   <data name="PasswordsDontMatch" xml:space="preserve">
     <value>Passwords do not match</value>

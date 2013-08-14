@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -66,30 +67,20 @@ namespace WinAuth
     /// </summary>
     private const string WINAUTHREGKEY_LASTFILE = @"File{0}";
 
-    /// <summary>
-    /// Registry data name for last good
-    /// </summary>
-    private const string WINAUTHREGKEY_BACKUP = @"Backup";
+		/// <summary>
+		/// Registry data name for last good
+		/// </summary>
+		private const string WINAUTHREGKEY_BACKUP = @"Software\WinAuth3\Backup";
+
+		/// <summary>
+		/// Encrpyted config backup
+		/// </summary>
+		private const string WINAUTHREGKEY_CONFIGBACKUP = @"Software\WinAuth3\Backup\Config";
 
 		/// <summary>
 		/// Registry data name for errors
 		/// </summary>
-		private const string WINAUTHREGKEY_ERROR = @"Error";
-
-    /// <summary>
-    /// Registry data name for saved skin
-    /// </summary>
-    private const string WINAUTHREGKEY_SKIN = @"Skin";
-
-    /// <summary>
-    /// Registry data name for machine time difference
-    /// </summary>
-    private const string WINAUTHREGKEY_TIMEDIFF = @"TimeDiff";
-
-    /// <summary>
-    /// Registry data name for beta key
-    /// </summary>
-    private const string WINAUTHREGKEY_BETAWARNING = @"BetaWarning";
+		private const string WINAUTHREGKEY_ERROR = @"Software\WinAuth3\Error";
 
     /// <summary>
     /// Registry key for starting with windows
@@ -105,16 +96,6 @@ namespace WinAuth
     /// Name of default authenticator file
     /// </summary>
     public const string DEFAULT_AUTHENTICATOR_FILE_NAME = "winauth.xml";
-
-    /// <summary>
-    /// Number of password attempts
-    /// </summary>
-    private const int MAX_PASSWORD_RETRIES = 3;
-
-    /// <summary>
-    /// Number of saved authenticators
-    /// </summary>
-    private const int MAX_SAVED_FILES = 5;
 
     /// <summary>
     /// The WinAuth PGP public key
@@ -155,10 +136,15 @@ namespace WinAuth
       {
         // check for file in current directory
         configFile = Path.Combine(Environment.CurrentDirectory, DEFAULT_AUTHENTICATOR_FILE_NAME);
-        if (File.Exists(configFile) == false)
-        {
-          configFile = null;
-        }
+				if (File.Exists(configFile) == false)
+				{
+					configFile = null;
+				}
+				else
+				{
+					// having the config in the same directory enables portable mode
+					config.Portable = true;
+				}
       }
       if (string.IsNullOrEmpty(configFile) == true)
       {
@@ -225,26 +211,37 @@ namespace WinAuth
 				MessageBox.Show(form, string.Format(strings.CannotLoadAuthenticator, configFile) + ": " + ex.Message, WinAuthMain.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 
-      SaveToRegistry(config);
+			if (config.Portable == false)
+			{
+				SaveToRegistry(config);
+			}
 
       return config;
     }
 
+		/// <summary>
+		/// Return any 2.x authenticator entry in the registry
+		/// </summary>
+		/// <returns></returns>
 		public static string GetLastV2Config()
 		{
 			// check for a v2 last file entry
-			using (RegistryKey key = Registry.CurrentUser.OpenSubKey(WINAUTH2REGKEY, false))
+			try
 			{
-				string lastfile;
-				if (key != null
-					&& (lastfile = key.GetValue(string.Format(CultureInfo.InvariantCulture, WINAUTHREGKEY_LASTFILE, 1), null) as string) != null
-					&& File.Exists(lastfile) == true)
+				using (RegistryKey key = Registry.CurrentUser.OpenSubKey(WINAUTH2REGKEY, false))
 				{
-					return lastfile;
+					string lastfile;
+					if (key != null
+						&& (lastfile = key.GetValue(string.Format(CultureInfo.InvariantCulture, WINAUTHREGKEY_LASTFILE, 1), null) as string) != null
+						&& File.Exists(lastfile) == true)
+					{
+						return lastfile;
+					}
 				}
-
-				return null;
 			}
+			catch (System.Security.SecurityException) { }
+
+			return null;
 		}
 
     /// <summary>
@@ -271,7 +268,15 @@ namespace WinAuth
 				// if no config file yet, use defaault
 				if (string.IsNullOrEmpty(config.Filename) == true)
 				{
-					string configDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuthMain.APPLICATION_NAME);
+					string configDirectory;
+					if (config.Portable == true)
+					{
+						configDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+					}
+					else
+					{
+						configDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuthMain.APPLICATION_NAME);
+					}
 					Directory.CreateDirectory(configDirectory);
 					config.Filename = Path.Combine(configDirectory, DEFAULT_AUTHENTICATOR_FILE_NAME);
 				}
@@ -289,76 +294,53 @@ namespace WinAuth
     /// Save a PGP encrpyted version of the config into the registry for recovery
     /// </summary>
     /// <param name="config"></param>
-		public static void SaveToRegistry(WinAuthConfig config)
+		private static void SaveToRegistry(WinAuthConfig config)
     {
-      if (config == null)
-      {
-        return;
-      }
+			// create an unencrypted clone
+			config = config.Clone() as WinAuthConfig;
+			config.PasswordType = Authenticator.PasswordTypes.None;
 
-      using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WINAUTHREGKEY))
-      {
-        using (RegistryKey subkey = key.CreateSubKey(WINAUTHREGKEY_BACKUP))
-        {
-					// create an unencrypted clone
-					config = config.Clone() as WinAuthConfig;
-					config.PasswordType = Authenticator.PasswordTypes.None;
-					foreach (var wa in config)
-          {
-						//wa.PasswordType = Authenticator.PasswordTypes.None;
-						//if (wa.AuthenticatorData.EncryptedData == null)
-						//{
-						//	wa.AuthenticatorData.PasswordType = Authenticator.PasswordTypes.None;
-						//}
-					}
+			// save the whole config
+			using (StringWriter sw = new StringWriter())
+			{
+				XmlWriterSettings xmlsettings = new XmlWriterSettings();
+				xmlsettings.Indent = true;
+				using (XmlWriter xw = XmlWriter.Create(sw, xmlsettings))
+				{
+					config.WriteXmlString(xw, true);
+				}
 
-					// save the whole config
-          using (StringWriter sw = new StringWriter())
-          {
-            XmlWriterSettings xmlsettings = new XmlWriterSettings();
-            xmlsettings.Indent = true;
-            using (XmlWriter xw = XmlWriter.Create(sw, xmlsettings))
-            {
-							config.WriteXmlString(xw, true);
-            }
-            subkey.SetValue("Config", PGPEncrypt(sw.ToString(), WinAuthHelper.WINAUTH_PGP_PUBLICKEY));
-          }
-        }
-      }
+				WriteRegistryValue(WINAUTHREGKEY_CONFIGBACKUP, PGPEncrypt(sw.ToString(), WinAuthHelper.WINAUTH_PGP_PUBLICKEY));
+			}
     }
 
 		/// <summary>
 		/// Save a PGP encrpyted version of an authenticator into the registry for recovery
 		/// </summary>
 		/// <param name="wa">WinAuthAuthenticator instance</param>
-		public static void SaveToRegistry(WinAuthAuthenticator wa)
+		public static void SaveToRegistry(WinAuthConfig config, WinAuthAuthenticator wa)
 		{
 			if (wa == null || wa.AuthenticatorData == null)
 			{
 				return;
 			}
 
-			using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WINAUTHREGKEY))
+			using (SHA256 sha = new SHA256Managed())
 			{
-				using (RegistryKey subkey = key.CreateSubKey(WINAUTHREGKEY_BACKUP))
-				{
-					using (SHA256 sha = new SHA256Managed())
-					{
-						// get a hash based on the authenticator key
-						string authkey = Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(wa.AuthenticatorData.SecretData)));
+				// get a hash based on the authenticator key
+				string authkey = Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(wa.AuthenticatorData.SecretData)));
 
-						// save the PGP encrypted key
-						using (StringWriter sw = new StringWriter())
-						{
-							XmlWriterSettings xmlsettings = new XmlWriterSettings();
-							xmlsettings.Indent = true;
-							using (XmlWriter xw = XmlWriter.Create(sw, xmlsettings))
-							{
-								wa.WriteXmlString(xw);
-							}
-							subkey.SetValue(authkey, PGPEncrypt(sw.ToString(), WinAuthHelper.WINAUTH_PGP_PUBLICKEY));
-						}
+				// save the PGP encrypted key
+				using (StringWriter sw = new StringWriter())
+				{
+					XmlWriterSettings xmlsettings = new XmlWriterSettings();
+					xmlsettings.Indent = true;
+					using (XmlWriter xw = XmlWriter.Create(sw, xmlsettings))
+					{
+						wa.WriteXmlString(xw);
 					}
+
+					config.WriteSetting(WINAUTHREGKEY_BACKUP + "\\" + authkey, PGPEncrypt(sw.ToString(), WinAuthHelper.WINAUTH_PGP_PUBLICKEY));
 				}
 			}
 		}
@@ -373,40 +355,21 @@ namespace WinAuth
 				return;
 			}
 
-			using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WINAUTHREGKEY))
-			{
-				using (RegistryKey subkey = key.CreateSubKey(WINAUTHREGKEY_BACKUP))
-				{
-					// save the PGP encrypted key
-					subkey.SetValue(WINAUTHREGKEY_ERROR, PGPEncrypt(error, WinAuthHelper.WINAUTH_PGP_PUBLICKEY));
-				}
-			}
+			WriteRegistryValue(WINAUTHREGKEY_ERROR, PGPEncrypt(error, WinAuthHelper.WINAUTH_PGP_PUBLICKEY));
 		}
 
 		/// <summary>
 		/// Read the encrpyted backup registry entries to be sent within the diagnostics report
 		/// </summary>
-		public static string ReadBackupFromRegistry()
+		public static string ReadBackupFromRegistry(WinAuthConfig config)
 		{
 			StringBuilder buffer = new StringBuilder();
-			using (RegistryKey key = Registry.CurrentUser.OpenSubKey(WINAUTHREGKEY))
+			foreach (string name in config.ReadSettingKeys(WINAUTHREGKEY_BACKUP))
 			{
-				if (key != null)
+				object val = config.ReadSetting(name);
+				if (val != null)
 				{
-					using (RegistryKey subkey = key.OpenSubKey(WINAUTHREGKEY_BACKUP))
-					{
-						if (subkey != null)
-						{
-							foreach (string name in subkey.GetValueNames())
-							{
-								object val = subkey.GetValue(name);
-								if (val != null)
-								{
-									buffer.Append(name + "=" + Convert.ToString(val)).Append(Environment.NewLine);
-								}
-							}
-						}
-					}
+					buffer.Append(name + "=" + Convert.ToString(val)).Append(Environment.NewLine);
 				}
 			}
 
@@ -419,104 +382,269 @@ namespace WinAuth
     /// <param name="enabled">enable or disable start with windows</param>
     public static void SetStartWithWindows(bool enabled)
     {
-      using (RegistryKey key = Registry.CurrentUser.OpenSubKey(RUNKEY, true))
+      if (enabled == true)
       {
-        if (enabled == true)
-        {
-          // get path of exe and minimize flag
-          key.SetValue(WinAuthMain.APPLICATION_NAME, Application.ExecutablePath + " -min");
-        }
-        else if (key.GetValue(WinAuthMain.APPLICATION_NAME) != null)
-        {
-          key.DeleteValue(WinAuthMain.APPLICATION_NAME);
-        }
+        // get path of exe and minimize flag
+				WriteRegistryValue(RUNKEY + "\\" + WinAuthMain.APPLICATION_NAME, Application.ExecutablePath + " -min");
       }
+      else
+      {				
+        DeleteRegistryKey(RUNKEY + "\\" + WinAuthMain.APPLICATION_NAME);
+      }			
     }
 
-    /// <summary>
-    /// Get the saved skin file name from the registry
-    /// </summary>
-    /// <returns>name of skin file or null if none</returns>
-    public static string GetSavedSkin()
-    {
-      using (RegistryKey key = Registry.CurrentUser.OpenSubKey(WINAUTHREGKEY, false))
-      {
-        return (key == null ? null : key.GetValue(WINAUTHREGKEY_SKIN, null) as string);
-      }
-    }
+		#region Registry Function
 
-    /// <summary>
-    /// Set or remove the saved skin in the registry
-    /// </summary>
-    /// <param name="skin">name of skin file or null to remove</param>
-    public static void SetSavedSkin(string skin)
-    {
-      using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WINAUTHREGKEY))
-      {
-        if (string.IsNullOrEmpty(skin) == false)
-        {
-          key.SetValue(WINAUTHREGKEY_SKIN, skin);
-        }
-        else
-        {
-          key.DeleteValue(WINAUTHREGKEY_SKIN, false);
-        }
-      }
-    }
-
-    /// <summary>
-    /// Get the difference for the time of the local machine from the servers
-    /// </summary>
-    /// <returns>name of skin file or null if none</returns>
-    public static long GetMachineTimeDiff()
-    {
-      using (RegistryKey key = Registry.CurrentUser.OpenSubKey(WINAUTHREGKEY, false))
-      {
-        return (key == null ? 0L : (long)key.GetValue(WINAUTHREGKEY_TIMEDIFF, 0L));
-      }
-    }
-
-    /// <summary>
-    /// Set the time difference in the registry
-    /// </summary>
-    /// <param name="skin">name of skin file or null to remove</param>
-    public static void SetMachineTimeDiff(long diff)
-    {
-      using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WINAUTHREGKEY))
-      {
-        key.SetValue(WINAUTHREGKEY_TIMEDIFF, diff, RegistryValueKind.QWord);
-      }
-    }
-
-#if BETA
 		/// <summary>
-		/// Display a beta warning and return if true if we accepted. Beta version set in registry so
-		/// we don't have to show again.
+		/// Read a value from a registry key, e.g. Software\WinAuth3\BetValue. Return defaultValue
+		/// if key does not exist or there is a security exception
+		/// 
+		/// The key name can conjtain the explicit root, e.g. "HKEY_LOCAL_MACHINE\Software..." otherwise
+		/// HKEY_CURRENT_USER is assumed.
 		/// </summary>
-		/// <returns>true if beta accetped</returns>
-		public static bool BetaWarning(Form form)
+		/// <param name="keyname">full key name</param>
+		/// <param name="defaultValue">default value</param>
+		/// <returns>key value or default value</returns>
+		public static object ReadRegistryValue(string keyname, object defaultValue = null)
 		{
-			// Show if BETA
-			string betaversion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(3);
-			using (RegistryKey key = Registry.CurrentUser.CreateSubKey(WINAUTHREGKEY))
+			RegistryKey basekey;
+			List<string> keyparts = keyname.Split('\\').ToList();
+			switch (keyparts[0])
 			{
-				string betaConfirmed = (key == null ? null : key.GetValue(WINAUTHREGKEY_BETAWARNING, null) as string);
-				if (string.Compare(betaConfirmed, betaversion) != 0)
-				{
-					if (new BetaForm().ShowDialog(form) != DialogResult.OK)
-					{
-						return false;
-					}
+				case "HKEY_CLASSES_ROOT":
+					basekey = Registry.ClassesRoot;
+					keyparts.RemoveAt(0);
+					break;
+				case "HKEY_CURRENT_CONFIG":
+					basekey = Registry.CurrentConfig;
+					keyparts.RemoveAt(0);
+					break;
+				case "HKEY_CURRENT_USER":
+					basekey = Registry.CurrentUser;
+					keyparts.RemoveAt(0);
+					break;
+				case "HKEY_LOCAL_MACHINE":
+					basekey = Registry.LocalMachine;
+					keyparts.RemoveAt(0);
+					break;
+				case "HKEY_PERFORMANCE_DATA":
+					basekey = Registry.PerformanceData;
+					keyparts.RemoveAt(0);
+					break;
+				default:
+					basekey = Registry.CurrentUser;
+					break;
+			}
+			string subkey = string.Join("\\", keyparts.Take(keyparts.Count - 1).ToArray());
+			string valuekey = keyparts[keyparts.Count - 1];
 
-					key.SetValue(WINAUTHREGKEY_BETAWARNING, betaversion);
+			try
+			{
+				using (RegistryKey key = basekey.OpenSubKey(subkey))
+				{
+					return (key != null ? key.GetValue(valuekey, defaultValue) : defaultValue);
 				}
 			}
-
-			return true;
+			catch (System.Security.SecurityException)
+			{
+				return defaultValue;
+			}
 		}
-#endif
 
-    /// <summary>
+		/// <summary>
+		/// Get the names of all the child value keys for a given parent.
+		/// </summary>
+		/// <param name="keyname">name of parent key</param>
+		/// <returns>string array of all child value names or empty array</returns>
+		public static string[] ReadRegistryKeys(string keyname)
+		{
+			RegistryKey basekey;
+			List<string> keyparts = keyname.Split('\\').ToList();
+			switch (keyparts[0])
+			{
+				case "HKEY_CLASSES_ROOT":
+					basekey = Registry.ClassesRoot;
+					keyparts.RemoveAt(0);
+					break;
+				case "HKEY_CURRENT_CONFIG":
+					basekey = Registry.CurrentConfig;
+					keyparts.RemoveAt(0);
+					break;
+				case "HKEY_CURRENT_USER":
+					basekey = Registry.CurrentUser;
+					keyparts.RemoveAt(0);
+					break;
+				case "HKEY_LOCAL_MACHINE":
+					basekey = Registry.LocalMachine;
+					keyparts.RemoveAt(0);
+					break;
+				case "HKEY_PERFORMANCE_DATA":
+					basekey = Registry.PerformanceData;
+					keyparts.RemoveAt(0);
+					break;
+				default:
+					basekey = Registry.CurrentUser;
+					break;
+			}
+			string subkey = string.Join("\\", keyparts.ToArray());
+
+			try
+			{
+				using (RegistryKey key = basekey.OpenSubKey(subkey))
+				{
+					if (key == null)
+					{
+						return new string[0];
+					}
+
+					// get all value names
+					List<string> keys = key.GetValueNames().ToList();
+					for (int i = 0; i < keys.Count; i++)
+					{
+						keys[i] = keyname + "\\" + keys[i];
+					}
+
+					// read any subkeys
+					if (key.SubKeyCount != 0)
+					{
+						foreach (string subkeyname in key.GetSubKeyNames())
+						{
+							keys.AddRange(ReadRegistryKeys(keyname + "\\" + subkeyname));
+						}
+					}
+
+					return keys.ToArray();
+				}
+			}
+			catch (System.Security.SecurityException)
+			{
+				return new string[0];
+			}
+		}
+
+		/// <summary>
+		/// Write a value into a registry key value.
+		/// </summary>
+		/// <param name="keyname">full name of key</param>
+		/// <param name="value">value to write</param>
+		public static void WriteRegistryValue(string keyname, object value)
+		{
+			RegistryKey basekey;
+			List<string> keyparts = keyname.Split('\\').ToList();
+			switch (keyparts[0])
+			{
+				case "HKEY_CLASSES_ROOT":
+					basekey = Registry.ClassesRoot;
+					keyparts.RemoveAt(0);
+					break;
+				case "HKEY_CURRENT_CONFIG":
+					basekey = Registry.CurrentConfig;
+					keyparts.RemoveAt(0);
+					break;
+				case "HKEY_CURRENT_USER":
+					basekey = Registry.CurrentUser;
+					keyparts.RemoveAt(0);
+					break;
+				case "HKEY_LOCAL_MACHINE":
+					basekey = Registry.LocalMachine;
+					keyparts.RemoveAt(0);
+					break;
+				case "HKEY_PERFORMANCE_DATA":
+					basekey = Registry.PerformanceData;
+					keyparts.RemoveAt(0);
+					break;
+				default:
+					basekey = Registry.CurrentUser;
+					break;
+			}
+			string subkey = string.Join("\\", keyparts.Take(keyparts.Count - 1).ToArray());
+			string valuekey = keyparts[keyparts.Count - 1];
+
+			try
+			{
+				using (RegistryKey key = basekey.CreateSubKey(subkey))
+				{
+					key.SetValue(valuekey, value);
+				}
+			}
+			catch (System.Security.SecurityException)
+			{
+				return;
+			}
+		}
+
+		/// <summary>
+		/// Delete a registry entry value or key. If it is deleted and there are no more sibling values or subkeys,
+		/// the parent is also removed.
+		/// </summary>
+		/// <param name="keyname"></param>
+		public static void DeleteRegistryKey(string keyname)
+		{
+			RegistryKey basekey;
+			List<string> keyparts = keyname.Split('\\').ToList();
+			switch (keyparts[0])
+			{
+				case "HKEY_CLASSES_ROOT":
+					basekey = Registry.ClassesRoot;
+					keyparts.RemoveAt(0);
+					break;
+				case "HKEY_CURRENT_CONFIG":
+					basekey = Registry.CurrentConfig;
+					keyparts.RemoveAt(0);
+					break;
+				case "HKEY_CURRENT_USER":
+					basekey = Registry.CurrentUser;
+					keyparts.RemoveAt(0);
+					break;
+				case "HKEY_LOCAL_MACHINE":
+					basekey = Registry.LocalMachine;
+					keyparts.RemoveAt(0);
+					break;
+				case "HKEY_PERFORMANCE_DATA":
+					basekey = Registry.PerformanceData;
+					keyparts.RemoveAt(0);
+					break;
+				default:
+					basekey = Registry.CurrentUser;
+					break;
+			}
+			string subkey = string.Join("\\", keyparts.Take(keyparts.Count - 1).ToArray());
+			string valuekey = keyparts[keyparts.Count - 1];
+
+			try
+			{
+				using (RegistryKey key = basekey.CreateSubKey(subkey))
+				{
+					if (key != null)
+					{
+						if (key.GetValueNames().Contains(valuekey) == true)
+						{
+							key.DeleteValue(valuekey, false);
+						}
+						if (key.GetSubKeyNames().Contains(valuekey) == true)
+						{
+							key.DeleteSubKeyTree(valuekey, false);
+						}
+
+						// if the parent now has no values, we can remove it too
+						if (key.SubKeyCount == 0 && key.ValueCount == 0)
+						{
+							basekey.DeleteSubKey(subkey, false);
+						}
+					}
+				}
+			}
+			catch (System.Security.SecurityException)
+			{
+				return;
+			}
+		}
+
+		#endregion
+
+		#region PGP functions
+
+		/// <summary>
     /// Build a PGP key pair
     /// </summary>
     /// <param name="bits">number of bits in key, e.g. 2048</param>
@@ -695,7 +823,9 @@ namespace WinAuth
           }
         }
       }
-    }
+		}
 
-  }
+		#endregion
+
+	}
 }

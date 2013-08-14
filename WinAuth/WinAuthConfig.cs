@@ -21,10 +21,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
+using System.Xml.Serialization;
+
+using WinAuth.Resources;
 
 namespace WinAuth
 {
@@ -53,11 +57,25 @@ namespace WinAuth
     /// </summary>
     private string _filename;
 
+		/// <summary>
+		/// Current version of this Config
+		/// </summary>
     public decimal Version { get; private set; }
 
+		/// <summary>
+		/// Save password for re-saving and encrypting file
+		/// </summary>
 		public string Password { private get; set; }
 
+		/// <summary>
+		/// Current encryption type
+		/// </summary>
 		public Authenticator.PasswordTypes PasswordType = Authenticator.PasswordTypes.None;
+
+		/// <summary>
+		/// Flag for portable mode so we don't write any registry keys or other files
+		/// </summary>
+		public bool Portable { get; set; }
 
     /// <summary>
     /// All authenticators
@@ -98,6 +116,30 @@ namespace WinAuth
 		/// Height if not autosize
 		/// </summary>
 		private int _height;
+
+		/// <summary>
+		/// Class used to serialize the settings inside the Xml config file
+		/// </summary>
+		[XmlRoot(ElementName="settings")]
+		public class setting
+		{
+			/// <summary>
+			/// Name of dictionary entry
+			/// </summary>
+			[XmlAttribute(AttributeName="key")]
+			public string Key;
+
+			/// <summary>
+			/// Value of dictionary entry
+			/// </summary>
+			[XmlAttribute(AttributeName = "value")]
+			public string Value;
+		}
+
+		/// <summary>
+		/// Inline settings for Portable mode
+		/// </summary>
+		private Dictionary<string, string> _settings = new Dictionary<string, string>();
 
 		#region System Settings
 
@@ -226,6 +268,93 @@ namespace WinAuth
 				if (OnConfigChanged != null)
 				{
 					OnConfigChanged(this, new ConfigChangedEventArgs("Height"));
+				}
+			}
+		}
+
+		/// <summary>
+		/// Read a setting value. If in Portable mode, it is taken from the Config, otherwise from the Registry.
+		/// </summary>
+		/// <param name="name">name of setting</param>
+		/// <param name="defaultValue">default value if setting doesn't exist</param>
+		/// <returns>setting value or default value</returns>
+		public string ReadSetting(string name, string defaultValue = null)
+		{
+			if (this.Portable == true)
+			{
+				// read setting from _settings
+				string value;
+				if (_settings.TryGetValue(name, out value) == true)
+				{
+					return value;
+				}
+				else
+				{
+					return defaultValue;
+				}
+			}
+			else
+			{
+				// read from registry
+				return WinAuthHelper.ReadRegistryValue(name, defaultValue) as string;
+			}
+		}
+
+		/// <summary>
+		/// Get all the settings keys beneath the specified key
+		/// </summary>
+		/// <param name="name">name of parent key</param>
+		/// <returns>string array of all child (recursively) setting names. Empty is none.</returns>
+		public string[] ReadSettingKeys(string name)
+		{
+			if (this.Portable == true)
+			{
+				List<string> keys = new List<string>();
+				foreach (var entry in _settings)
+				{
+					if (entry.Key.StartsWith(name) == true)
+					{
+						keys.Add(entry.Key);
+					}
+				}
+				return keys.ToArray();
+			}
+			else
+			{
+				return WinAuthHelper.ReadRegistryKeys(name);
+			}
+		}
+
+		/// <summary>
+		/// Write a setting value into the Config or Registry
+		/// </summary>
+		/// <param name="name">name of setting value</param>
+		/// <param name="value">setting value. If null, the setting is deleted.</param>
+		public void WriteSetting(string name, string value)
+		{
+			if (this.Portable == true)
+			{
+				if (value == null)
+				{
+					if (_settings.ContainsKey(name) == true)
+					{
+						_settings.Remove(name);
+					}
+				}
+				else
+				{
+					_settings[name] = value;
+				}
+			}
+			else
+			{
+				if (value == null)
+				{
+					WinAuthHelper.DeleteRegistryKey(name);
+				}
+				else
+				{
+					WinAuthHelper.WriteRegistryValue(name, value);
 				}
 			}
 		}
@@ -458,6 +587,10 @@ namespace WinAuth
         {
           switch (reader.Name)
           {
+						case "config":
+							ReadXmlInternal(reader, password);
+							break;
+
             case "alwaysontop":
               _alwaysOnTop = reader.ReadElementContentAsBoolean();
               break;
@@ -480,6 +613,11 @@ namespace WinAuth
 
 						case "height":
 							_height = reader.ReadElementContentAsInt();
+							break;
+
+						case "settings":
+							XmlSerializer serializer = new XmlSerializer(typeof(setting[]), new XmlRootAttribute() { ElementName = "settings" });
+							_settings = ((setting[])serializer.Deserialize(reader)).ToDictionary(e => e.Key, e => e.Value);
 							break;
 
             // previous setting used as defaults for new
@@ -531,25 +669,12 @@ namespace WinAuth
               waold.AllowCopy = defaultAllowCopy;
               waold.CopyOnCode = defaultCopyOnCode;
               waold.HideSerial = defaultHideSerial;
-							//if (string.IsNullOrEmpty(defaultSkin) == false)
-							//{
-							//	waold.Skin = defaultSkin;
-							//}
-              //waold.PasswordType = waold.AuthenticatorData.PasswordType;
-              //waold.Password = waold.AuthenticatorData.Password;
-              //waold.AuthenticatorData.PasswordType = Authenticator.PasswordTypes.None;
-              //waold.AuthenticatorData.Password = null;
               break;
 
 						// old 2.x auto login script
 						case "autologin":
               var hks = new HoyKeySequence();
               hks.ReadXml(reader, password);
-							//StringBuilder script = new StringBuilder();
-							//using (XmlWriter xw = XmlWriter.Create(script))
-							//{
-							//	hks.WriteXmlString(xw);
-							//}
 							if (hks.HotKey != 0)
 							{
 								if (this.CurrentAuthenticator.HotKey == null)
@@ -597,7 +722,7 @@ namespace WinAuth
     /// Write the data as xml into an XmlWriter
     /// </summary>
     /// <param name="writer">XmlWriter to write config</param>
-    public void WriteXmlString(XmlWriter writer, bool includeFilename = false)
+    public void WriteXmlString(XmlWriter writer, bool includeFilename = false, bool includeSettings = true)
     {
       writer.WriteStartDocument(true);
       //
@@ -610,6 +735,8 @@ namespace WinAuth
       writer.WriteAttributeString("version", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(2));
       if (PasswordType != Authenticator.PasswordTypes.None)
       {
+				writer.WriteStartElement("config");
+
 				StringBuilder encryptedTypes = new StringBuilder();
 				if ((PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
 				{
@@ -635,7 +762,7 @@ namespace WinAuth
           {
             Authenticator.PasswordTypes savedpasswordType = PasswordType;
             PasswordType = Authenticator.PasswordTypes.None;
-            WriteXmlString(encryptedwriter, includeFilename);
+            WriteXmlString(encryptedwriter, includeFilename, false);
             PasswordType = savedpasswordType;
           }
           data = Authenticator.ByteArrayToString(ms.ToArray());
@@ -643,6 +770,16 @@ namespace WinAuth
 
 				data = Authenticator.EncryptSequence(data, PasswordType, Password);
 				writer.WriteString(data);
+				writer.WriteEndElement();
+
+				if (includeSettings == true && _settings.Count != 0)
+				{
+					XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
+					ns.Add(string.Empty, string.Empty);
+					XmlSerializer serializer = new XmlSerializer(typeof(setting[]), new XmlRootAttribute() { ElementName = "settings" });
+					serializer.Serialize(writer, _settings.Select(e => new setting { Key = e.Key, Value = e.Value }).ToArray(), ns);
+				}
+
 				writer.WriteEndElement();
 
         return;
@@ -671,6 +808,14 @@ namespace WinAuth
 			writer.WriteStartElement("height");
 			writer.WriteValue(this.Height);
 			writer.WriteEndElement();
+			//
+			if (includeSettings == true && _settings.Count != 0)
+			{
+				XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
+				ns.Add(string.Empty, string.Empty);
+				XmlSerializer serializer = new XmlSerializer(typeof(setting[]), new XmlRootAttribute() { ElementName = "settings" });
+				serializer.Serialize(writer, _settings.Select(e => new setting { Key = e.Key, Value = e.Value }).ToArray(), ns);
+			}
 
       foreach (WinAuthAuthenticator wa in this)
       {
@@ -685,6 +830,7 @@ namespace WinAuth
     }
 
     #endregion
+
 	}
 
 /*
