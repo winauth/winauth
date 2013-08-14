@@ -26,6 +26,8 @@ using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 
+using WindowsInput;
+
 namespace WinAuth
 {
 	/// <summary>
@@ -266,7 +268,8 @@ namespace WinAuth
 			}
 
 			// wait until the control,shift,alt keys have been lifted
-			while (WinAPI.GetKeyState((UInt16)WinAPI.VirtualKeyCode.VK_CONTROL) < 0 || WinAPI.GetKeyState((UInt16)WinAPI.VirtualKeyCode.VK_SHIFT) < 0 || WinAPI.GetKeyState((UInt16)WinAPI.VirtualKeyCode.VK_MENU) < 0)
+			//while (WinAPI.GetKeyState((UInt16)WinAPI.VirtualKeyCode.VK_CONTROL) < 0 || WinAPI.GetKeyState((UInt16)WinAPI.VirtualKeyCode.VK_SHIFT) < 0 || WinAPI.GetKeyState((UInt16)WinAPI.VirtualKeyCode.VK_MENU) < 0)
+			while (InputSimulator.IsKeyDown(VirtualKeyCode.SHIFT) || InputSimulator.IsKeyDown(VirtualKeyCode.CONTROL) || InputSimulator.IsKeyDown(VirtualKeyCode.MENU))
 			{
 				Application.DoEvents();
 				System.Threading.Thread.Sleep(50);
@@ -342,19 +345,12 @@ namespace WinAuth
 										Application.Exit();
 										break;
 									default:
-										//Enum.Parse(typeof(WinAPI.VirtualKeyCode), "VK_" + cmd, true);
-										//SendKey('\t', delay, repeat);
 										break;
 								}
 							}
 						}
 						else
 						{
-							// plain text - send verbatim
-							//foreach (char key in single)
-							//{
-							//  SendKey(key);
-							//}
 							SendKey(single);
 						}
 					}
@@ -401,10 +397,11 @@ namespace WinAuth
 			key = Regex.Replace(key, @"([()+\^%~{}])", "{$1}", RegexOptions.Multiline);
 			for (; repeat > 0; repeat--)
 			{
-				System.Windows.Forms.SendKeys.SendWait(key);
+				InputSimulator.SimulateTextEntry(key);
+				//System.Windows.Forms.SendKeys.SendWait(key);
 				System.Threading.Thread.Sleep(delay != 0 ? delay : 50);
 			}
-			System.Windows.Forms.SendKeys.Flush();
+			//System.Windows.Forms.SendKeys.Flush();
 		}
 
 		/// <summary>

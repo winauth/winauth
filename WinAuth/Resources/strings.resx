@@ -181,6 +181,13 @@ Do you want to try again?</value>
   <data name="LoadIconImage" xml:space="preserve">
     <value>Load Icon Image</value>
   </data>
+  <data name="LoadPreviousAuthenticator" xml:space="preserve">
+    <value>You have an authenticator from a previous version of WinAuth ({0}).
+
+You can either import it now or use the 'Add' button to import it later.
+
+Would you like to import your previous authenticator now?</value>
+  </data>
   <data name="MenuAbout" xml:space="preserve">
     <value>About</value>
   </data>
@@ -195,6 +202,9 @@ Do you want to try again?</value>
   </data>
   <data name="MenuExit" xml:space="preserve">
     <value>Exit</value>
+  </data>
+  <data name="MenuImportWinauth" xml:space="preserve">
+    <value>Import WinAuth 2.x</value>
   </data>
   <data name="MenuOpen" xml:space="preserve">
     <value>Open</value>
@@ -331,6 +341,18 @@ If you are happy to send this information please either click Send Error Report 
   </data>
   <data name="_ExceptionForm_reportButton_" xml:space="preserve">
     <value>Send Error Report</value>
+  </data>
+  <data name="_GetPasswordForm_" xml:space="preserve">
+    <value>Enter Password</value>
+  </data>
+  <data name="_GetPasswordForm_cancelButton_" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="_GetPasswordForm_okButton_" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="_GetPasswordForm_passwordField_" xml:space="preserve">
+    <value>password</value>
   </data>
   <data name="_SetPasswordForm_" xml:space="preserve">
     <value>Set Password</value>

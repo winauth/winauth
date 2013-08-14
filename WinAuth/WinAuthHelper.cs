@@ -56,7 +56,12 @@ namespace WinAuth
     /// </summary>
     public const string WINAUTHREGKEY = @"Software\WinAuth3";
 
-    /// <summary>
+		/// <summary>
+		/// Registry key for application
+		/// </summary>
+		private const string WINAUTH2REGKEY = @"Software\WinAuth";
+
+		/// <summary>
     /// Registry data name for last loaded file
     /// </summary>
     private const string WINAUTHREGKEY_LASTFILE = @"File{0}";
@@ -146,15 +151,6 @@ namespace WinAuth
     {
       WinAuthConfig config = new WinAuthConfig();
 
-			//if (string.IsNullOrEmpty(configFile) == true)
-			//{
-			//	configFile = GetLastFile(1);
-			//	if (string.IsNullOrEmpty(configFile) == false && File.Exists(configFile) == false)
-			//	{
-			//		// ignore it if file does't exist
-			//		configFile = null;
-			//	}
-			//}
       if (string.IsNullOrEmpty(configFile) == true)
       {
         // check for file in current directory
@@ -212,14 +208,7 @@ namespace WinAuth
 					{
 						wa.Created = fi.CreationTime;
 					}
-					//config.PasswordType = Authenticator.PasswordTypes.Explicit;
-					//config.Password = "test";
-					SaveConfig(config);
 				}
-				//else
-				//{
-				//	SaveConfig(form, configFile, config);
-				//}
 			}
 			catch (EncrpytedSecretDataException )
 			{
@@ -233,13 +222,30 @@ namespace WinAuth
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show(form, string.Format(strings.CannotLoadAuthenticator, configFile) + ": " + ex.Message, "Load Authenticator", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				MessageBox.Show(form, string.Format(strings.CannotLoadAuthenticator, configFile) + ": " + ex.Message, WinAuthMain.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 
       SaveToRegistry(config);
 
       return config;
     }
+
+		public static string GetLastV2Config()
+		{
+			// check for a v2 last file entry
+			using (RegistryKey key = Registry.CurrentUser.OpenSubKey(WINAUTH2REGKEY, false))
+			{
+				string lastfile;
+				if (key != null
+					&& (lastfile = key.GetValue(string.Format(CultureInfo.InvariantCulture, WINAUTHREGKEY_LASTFILE, 1), null) as string) != null
+					&& File.Exists(lastfile) == true)
+				{
+					return lastfile;
+				}
+
+				return null;
+			}
+		}
 
     /// <summary>
     /// Save the authenticator

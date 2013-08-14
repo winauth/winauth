@@ -70,11 +70,6 @@ namespace WinAuth
     private WinAuthAuthenticator _authenticator;
 
     /// <summary>
-    /// Current skin
-    /// </summary>
-    //private string _currentSkin;
-
-    /// <summary>
     /// Flag for always on top
     /// </summary>
     private bool _alwaysOnTop;
@@ -104,32 +99,7 @@ namespace WinAuth
 		/// </summary>
 		private int _height;
 
-    /// <summary>
-    /// Flag for auto refresh of code
-    /// </summary>
-    //private bool _autoRefresh;
-
-    /// <summary>
-    /// Flag to allow copy of code
-    /// </summary>
-    //private bool _allowCopy;
-
-    /// <summary>
-    /// Flag to copy new code automatically
-    /// </summary>
-    //private bool _copyOnCode;
-
-    /// <summary>
-    /// Flag to hide serial number
-    /// </summary>
-    //private bool _hideSerial = true;
-
-    /// <summary>
-    /// Auto login sequence
-    /// </summary>
-    //private HoyKeySequence _autoLogin;
-
-    #region System Settings
+		#region System Settings
 
     /// <summary>
     /// Get/set file name of config data
@@ -376,7 +346,7 @@ namespace WinAuth
     public WinAuthConfig()
     {
       Version = CURRENTVERSION;
-      AlwaysOnTop = true;
+      //AlwaysOnTop = true;
 			AutoSize = true;
     }
 
@@ -561,32 +531,52 @@ namespace WinAuth
               waold.AllowCopy = defaultAllowCopy;
               waold.CopyOnCode = defaultCopyOnCode;
               waold.HideSerial = defaultHideSerial;
-              if (string.IsNullOrEmpty(defaultSkin) == false)
-              {
-                waold.Skin = defaultSkin;
-              }
+							//if (string.IsNullOrEmpty(defaultSkin) == false)
+							//{
+							//	waold.Skin = defaultSkin;
+							//}
               //waold.PasswordType = waold.AuthenticatorData.PasswordType;
               //waold.Password = waold.AuthenticatorData.Password;
               //waold.AuthenticatorData.PasswordType = Authenticator.PasswordTypes.None;
               //waold.AuthenticatorData.Password = null;
               break;
 
+						// old 2.x auto login script
 						case "autologin":
               var hks = new HoyKeySequence();
               hks.ReadXml(reader, password);
-							StringBuilder script = new StringBuilder();
-							using (XmlWriter xw = XmlWriter.Create(script))
-							{
-								hks.WriteXmlString(xw);
-							}
-							if (script.Length != 0)
+							//StringBuilder script = new StringBuilder();
+							//using (XmlWriter xw = XmlWriter.Create(script))
+							//{
+							//	hks.WriteXmlString(xw);
+							//}
+							if (hks.HotKey != 0)
 							{
 								if (this.CurrentAuthenticator.HotKey == null)
 								{
 									this.CurrentAuthenticator.HotKey = new HotKey();
 								}
 								HotKey hotkey = this.CurrentAuthenticator.HotKey;
-								hotkey.Advanced = script.ToString();
+								hotkey.Action = HotKey.HotKeyActions.Inject;
+								hotkey.Key = hks.HotKey;
+								hotkey.Modifiers = hks.Modifiers;
+								if (hks.WindowTitleRegex == true && string.IsNullOrEmpty(hks.WindowTitle) == false)
+								{
+									hotkey.Window = "/" + Regex.Escape(hks.WindowTitle);
+								}
+								else if (string.IsNullOrEmpty(hks.WindowTitle) == false)
+								{
+									hotkey.Window = hks.WindowTitle;
+								}
+								else if (string.IsNullOrEmpty(hks.ProcessName) == false)
+								{
+									hotkey.Window = hks.ProcessName;
+								}
+								if (hks.Advanced == true)
+								{
+									hotkey.Action = HotKey.HotKeyActions.Advanced;
+									hotkey.Advanced = hks.AdvancedScript;
+								}
 							}
               break;
 

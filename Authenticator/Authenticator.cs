@@ -360,7 +360,7 @@ namespace WinAuth
 								data = DecryptSequence(data, passwordType, password);
               }
 
-              authenticator.PasswordType = passwordType;
+              authenticator.PasswordType = PasswordTypes.None;
               authenticator.SecretData = data;
 
               break;
@@ -822,12 +822,12 @@ namespace WinAuth
 			return BitConverter.ToString(bytes).Replace("-", string.Empty);
 		}
 
-		public static string DecryptSequence(string data, PasswordTypes encryptedTypes, string password)
+		public static string DecryptSequence(string data, PasswordTypes encryptedTypes, string password, bool decode = false)
     {
 			// check for encrpytion header
 			if (data.Length < ENCRYPTION_HEADER.Length || data.IndexOf(ENCRYPTION_HEADER) != 0)
 			{
-				return DecryptSequenceNoHash(data, encryptedTypes, password);
+				return DecryptSequenceNoHash(data, encryptedTypes, password, decode);
 			}
 
 			// extract salt and hash
@@ -858,32 +858,38 @@ namespace WinAuth
       return data;
     }
 
-		private static string DecryptSequenceNoHash(string data, PasswordTypes encryptedTypes, string password)
+		private static string DecryptSequenceNoHash(string data, PasswordTypes encryptedTypes, string password, bool decode = false)
 		{
-			// decrypt encrypt content and try again
-			//char[] encTypes = encryptedTypes.ToCharArray();
-			//passwordType = PasswordTypes.None;
-
 			try
 			{
 				// reverse order they were encrypted
 				if ((encryptedTypes & PasswordTypes.Machine) != 0)
 				{
 					// we are going to decrypt with the Windows local machine key
-					//passwordType |= PasswordTypes.Machine;
 					byte[] cipher = Authenticator.StringToByteArray(data);
-					//byte[] cipher = Encoding.UTF8.GetBytes(data);
 					byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
-					data = ByteArrayToString(plain);
+					if (decode == true)
+					{
+						data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+					}
+					else
+					{
+						data = ByteArrayToString(plain);
+					}
 				}
 				if ((encryptedTypes & PasswordTypes.User) != 0)
 				{
 					// we are going to decrypt with the Windows User account key
-					//passwordType |= PasswordTypes.User;
 					byte[] cipher = StringToByteArray(data);
 					byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.CurrentUser);
-					data = ByteArrayToString(plain);
-					//data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+					if (decode == true)
+					{
+						data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+					}
+					else
+					{
+						data = ByteArrayToString(plain);
+					}
 				}
 				if ((encryptedTypes & PasswordTypes.Explicit) != 0)
 				{
@@ -892,11 +898,12 @@ namespace WinAuth
 					{
 						throw new EncrpytedSecretDataException();
 					}
-					//passwordType |= PasswordTypes.Explicit;
 					data = Authenticator.Decrypt(data, password, true);
-					//byte[] plain = Authenticator.StringToByteArray(data);
-					//data = ByteArrayToString(plain);
-					//data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+					if (decode == true)
+					{
+						byte[] plain = Authenticator.StringToByteArray(data);
+						data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+					}
 				}
 			}
 			catch (EncrpytedSecretDataException)

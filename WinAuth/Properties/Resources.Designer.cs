@@ -93,6 +93,36 @@ namespace WinAuth.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap BitcoinEuroIcon {
+            get {
+                object obj = ResourceManager.GetObject("BitcoinEuroIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap BitcoinGoldIcon {
+            get {
+                object obj = ResourceManager.GetObject("BitcoinGoldIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap BitcoinIcon {
+            get {
+                object obj = ResourceManager.GetObject("BitcoinIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap BluePixel {
             get {
                 object obj = ResourceManager.GetObject("BluePixel", resourceCulture);
@@ -166,6 +196,16 @@ namespace WinAuth.Properties {
         internal static System.Drawing.Bitmap GuildWarsAuthenticatorIcon {
             get {
                 object obj = ResourceManager.GetObject("GuildWarsAuthenticatorIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap LitecoinIcon {
+            get {
+                object obj = ResourceManager.GetObject("LitecoinIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -266,6 +306,16 @@ namespace WinAuth.Properties {
         internal static System.Drawing.Bitmap WarcraftIcon {
             get {
                 object obj = ResourceManager.GetObject("WarcraftIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap WinAuthIcon {
+            get {
+                object obj = ResourceManager.GetObject("WinAuthIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

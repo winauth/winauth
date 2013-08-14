@@ -82,7 +82,12 @@ namespace WinAuth
 			{"s4", string.Empty},
 			{"Microsoft", "MicrosoftAuthenticatorIcon.png"},
 			{"Windows 8", "Windows8Icon.png"},
-			{"Windows 7", "Windows7Icon.png"}
+			{"Windows 7", "Windows7Icon.png"},
+			{"s5", string.Empty},
+			{"Bitcoin", "BitcoinIcon.png"},
+			{"Bitcoin Gold Style", "BitcoinGoldIcon.png"},
+			{"Bitcoin Eruo Style", "BitcoinEuroIcon.png"},
+			{"Litecoin", "LitecoinIcon.png"}
 		};
 
 		public static List<RegisteredAuthenticator> REGISTERED_AUTHENTICATORS = new List<RegisteredAuthenticator>

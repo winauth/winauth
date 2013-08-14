@@ -94,6 +94,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
+    <Reference Include="InputSimulator">
+      <HintPath>..\Third Party\WindowsInputSimulator\bin\Release\InputSimulator.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -160,6 +163,12 @@
     </Compile>
     <Compile Include="ChangePasswordForm.Designer.cs">
       <DependentUpon>ChangePasswordForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GetPasswordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GetPasswordForm.designer.cs">
+      <DependentUpon>GetPasswordForm.cs</DependentUpon>
     </Compile>
     <Compile Include="HotKeySequence.cs" />
     <Compile Include="DiagnosticForm.cs">
@@ -282,6 +291,9 @@
     <EmbeddedResource Include="ChangePasswordForm.resx">
       <DependentUpon>ChangePasswordForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GetPasswordForm.resx">
+      <DependentUpon>GetPasswordForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="DiagnosticForm.resx">
       <DependentUpon>DiagnosticForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -362,6 +374,11 @@
     <None Include="Resources\padlock-closed.png" />
     <None Include="Resources\BluePixel.png" />
     <EmbeddedResource Include="Resources\RefreshIconWithLock.png" />
+    <EmbeddedResource Include="Resources\WinAuthIcon.png" />
+    <EmbeddedResource Include="Resources\BitcoinIcon.png" />
+    <EmbeddedResource Include="Resources\BitcoinGoldIcon.png" />
+    <EmbeddedResource Include="Resources\LitecoinIcon.png" />
+    <EmbeddedResource Include="Resources\BitcoinEuroIcon.png" />
     <Content Include="winauth.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -477,7 +494,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"$(ProjectDir)ilmerge.bat" "$(ProjectDir)" "$(TargetDir)" "$(ProjectDir)obj\$(ConfigurationName)\"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

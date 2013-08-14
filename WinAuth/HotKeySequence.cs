@@ -233,9 +233,9 @@ namespace WinAuth
               if (string.IsNullOrEmpty(encrypted) == false)
               {
                 Authenticator.PasswordTypes passwordType = Authenticator.DecodePasswordTypes(encrypted);
-								data = Authenticator.DecryptSequence(data, passwordType, password);
-                byte[] plain = Authenticator.StringToByteArray(data);
-                data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+								data = Authenticator.DecryptSequence(data, passwordType, password, true);
+                //byte[] plain = Authenticator.StringToByteArray(data);
+                //data = Encoding.UTF8.GetString(plain, 0, plain.Length);
 
 /*
                 char[] encTypes = encrypted.ToCharArray();

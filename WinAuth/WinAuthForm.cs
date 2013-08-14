@@ -96,7 +96,10 @@ namespace WinAuth
 		/// </summary>
 		private bool _initiallyMinimised;
 
-		private string _configFile;
+		/// <summary>
+		/// Existing v2 config file so we can prompt for import
+		/// </summary>
+		private string _existingv2Config;
 
     #endregion
 
@@ -109,6 +112,7 @@ namespace WinAuth
     {
       // get any command arguments
 			string password = null;
+			string configFile = null;
       string[] args = Environment.GetCommandLineArgs();
       for (int i = 1; i < args.Length; i++)
       {
@@ -134,7 +138,7 @@ namespace WinAuth
         }
         else
         {
-					_configFile = arg;
+					configFile = arg;
         }
       }
 
@@ -146,7 +150,7 @@ namespace WinAuth
 			}
 #endif
 
-			loadConfig(password);
+			loadConfig(password, configFile);
 
 			// create the updater and check for update if appropriate
 			Updater = new WinAuthUpdater();
@@ -173,8 +177,9 @@ namespace WinAuth
 		/// <summary>
 		/// Load the current config into WinAuth
 		/// </summary>
-		/// <param name="password"></param>
-		private void loadConfig(string password)
+		/// <param name="password">optional password to decrypt config</param>
+		/// <param name="configFile">optional explicit config file</param>
+		private void loadConfig(string password, string configFile = null)
 		{
 			// load config data
 			bool retry = false;
@@ -182,11 +187,17 @@ namespace WinAuth
 			{
 				try
 				{
-					WinAuthConfig config = WinAuthHelper.LoadConfig(this, _configFile, password);
+					WinAuthConfig config = WinAuthHelper.LoadConfig(this, configFile, password);
 					if (config == null)
 					{
 						System.Diagnostics.Process.GetCurrentProcess().Kill();
 						return;
+					}
+
+					// check for a v2 config file if this is a new config
+					if (config.Count == 0 && string.IsNullOrEmpty(config.Filename) == true)
+					{
+						_existingv2Config = WinAuthHelper.GetLastV2Config();
 					}
 
 					this.Config = config;
@@ -212,6 +223,116 @@ namespace WinAuth
 						this.Close();
 						return;
 					}
+					retry = true;
+				}
+			} while (retry == true);
+		}
+
+		/// <summary>
+		/// Import a v2 authenticator from an existing file name
+		/// </summary>
+		/// <param name="authenticatorFile">name of v2 xml file</param>
+		private void importAuthenticator(string authenticatorFile)
+		{
+			bool retry = false;
+			string password = null;
+			bool needPassword = false;
+			bool invalidPassword = false;
+			do
+			{
+				try
+				{
+					WinAuthConfig config = WinAuthHelper.LoadConfig(this, authenticatorFile, password);
+					if (config.Count == 0)
+					{
+						return;
+					}
+
+					// get the actual authenticator and ensure it is synced
+					WinAuthAuthenticator importedAuthenticator = config[0];
+					importedAuthenticator.AuthenticatorData.Sync();
+
+					// make sure there isn't a name clash
+					int rename = 0;
+					string importedName = importedAuthenticator.Name;
+					while (this.Config.Where(a => a.Name == importedName).Count() != 0)
+					{
+						importedName = importedAuthenticator.Name + " (" + (++rename) + ")";
+					}
+					importedAuthenticator.Name = importedName;
+
+					// save off any new authenticators into the registry for restore
+					WinAuthHelper.SaveToRegistry(importedAuthenticator);
+
+					// first time we prompt for protection and set out main settings from imported config
+					if (this.Config.Count == 0)
+					{
+						this.Config.StartWithWindows = config.StartWithWindows;
+						this.Config.UseTrayIcon = config.UseTrayIcon;
+						this.Config.AlwaysOnTop = config.AlwaysOnTop;
+
+						ChangePasswordForm form = new ChangePasswordForm();
+						form.PasswordType = Authenticator.PasswordTypes.Explicit;
+						if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+						{
+							this.Config.PasswordType = form.PasswordType;
+							if ((this.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
+							{
+								this.Config.Password = form.Password;
+							}
+							else
+							{
+								this.Config.Password = null;
+							}
+						}
+					}
+
+					// add to main list
+					this.Config.Add(importedAuthenticator);
+					SaveConfig();
+					loadAuthenticatorList(importedAuthenticator);
+
+					// reset UI
+					setAutoSize();
+					introLabel.Visible = (this.Config.Count == 0);
+
+					// reset hotkeys
+					HookHotkeys();
+
+					needPassword = false;
+					retry = false;
+				}
+				catch (EncrpytedSecretDataException)
+				{
+					needPassword = true;
+					invalidPassword = false;
+				}
+				catch (BadPasswordException)
+				{
+					needPassword = true;
+					invalidPassword = true;
+				}
+				catch (Exception ex)
+				{
+					if (ErrorDialog(this, strings.UnknownError + ex.Message, ex, MessageBoxButtons.RetryCancel) == System.Windows.Forms.DialogResult.Cancel)
+					{
+						return;
+					}
+					needPassword = false;
+					invalidPassword = false;
+					retry = true;
+				}
+
+				if (needPassword == true)
+				{
+					GetPasswordForm form = new GetPasswordForm();
+					form.InvalidPassword = invalidPassword;
+					var result = form.ShowDialog(this);
+					if (result == DialogResult.Cancel)
+					{
+						return;
+					}
+					password = form.Password;
 					retry = true;
 				}
 			} while (retry == true);
@@ -378,6 +499,17 @@ namespace WinAuth
 				subitem.Click += addAuthenticatorMenu_Click;
 				addAuthenticatorMenu.Items.Add(subitem);
 			}
+			//
+			addAuthenticatorMenu.Items.Add(new ToolStripSeparator());
+			//
+			subitem = new ToolStripMenuItem();
+			subitem.Text = strings.MenuImportWinauth;
+			subitem.Name = "importAuthenticatorMenuItem";
+			subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("WinAuth.Resources.WinAuthIcon.png"));
+			subitem.ImageAlign = ContentAlignment.MiddleLeft;
+			subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
+			subitem.Click += importAuthenticatorMenu_Click;
+			addAuthenticatorMenu.Items.Add(subitem);
 		}
 
 		/// <summary>
@@ -655,6 +787,21 @@ namespace WinAuth
 					Hide();
 				}
 			}
+
+			// prompt to import v2
+			if (string.IsNullOrEmpty(_existingv2Config) == false)
+			{
+				DialogResult importResult = MessageBox.Show(this,
+					string.Format(strings.LoadPreviousAuthenticator, _existingv2Config),
+					WinAuthMain.APPLICATION_TITLE,
+					MessageBoxButtons.YesNo,
+					MessageBoxIcon.Question);
+				if (importResult == System.Windows.Forms.DialogResult.Yes)
+				{
+					importAuthenticator(_existingv2Config);
+				}
+				_existingv2Config = null;
+			}
 		}
 
 		/// <summary>
@@ -831,6 +978,36 @@ namespace WinAuth
 					// reset hotkeeys
 					HookHotkeys();
 				}
+			}
+		}
+
+		/// <summary>
+		/// Click to import an existing WinAuth 2.x authenticator
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		void importAuthenticatorMenu_Click(object sender, EventArgs e)
+		{
+			ToolStripItem menuitem = (ToolStripItem)sender;
+
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.AddExtension = true;
+			ofd.CheckFileExists = true;
+			ofd.CheckPathExists = true;
+			ofd.DefaultExt = "xml";
+			ofd.FileName = "authenticator.xml";
+			string lastv2file = WinAuthHelper.GetLastV2Config();
+			if (string.IsNullOrEmpty(lastv2file) == false)
+			{
+				ofd.InitialDirectory = Path.GetDirectoryName(lastv2file);
+				ofd.FileName = Path.GetFileName(lastv2file);
+			}
+			ofd.Filter = "WinAuth (*.xml)|*.xml|All Files (*.*)|*.*";
+			ofd.RestoreDirectory = true;
+			ofd.Title = WinAuthMain.APPLICATION_TITLE;
+			if (ofd.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+			{
+				importAuthenticator(ofd.FileName);
 			}
 		}
 
@@ -1145,7 +1322,10 @@ namespace WinAuth
 				}
 			}
 			item = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "authenticatorOptionsSeparatorItem").FirstOrDefault();
-			item.Visible = notify;
+			if (item != null)
+			{
+				item.Visible = notify;
+			}
 
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "startWithWindowsOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Checked = this.Config.StartWithWindows;

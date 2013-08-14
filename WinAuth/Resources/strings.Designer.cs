@@ -306,6 +306,42 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enter Password.
+        /// </summary>
+        internal static string _GetPasswordForm_ {
+            get {
+                return ResourceManager.GetString("_GetPasswordForm_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        internal static string _GetPasswordForm_cancelButton_ {
+            get {
+                return ResourceManager.GetString("_GetPasswordForm_cancelButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        internal static string _GetPasswordForm_okButton_ {
+            get {
+                return ResourceManager.GetString("_GetPasswordForm_okButton_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to password.
+        /// </summary>
+        internal static string _GetPasswordForm_passwordField_ {
+            get {
+                return ResourceManager.GetString("_GetPasswordForm_passwordField_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Set Password.
         /// </summary>
         internal static string _SetPasswordForm_ {
@@ -732,6 +768,19 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to You have an authenticator from a previous version of WinAuth ({0}).
+        ///
+        ///You can either import it now or use the &apos;Add&apos; button to import it later.
+        ///
+        ///Would you like to import your previous authenticator now?.
+        /// </summary>
+        internal static string LoadPreviousAuthenticator {
+            get {
+                return ResourceManager.GetString("LoadPreviousAuthenticator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to About.
         /// </summary>
         internal static string MenuAbout {
@@ -773,6 +822,15 @@ namespace WinAuth.Resources {
         internal static string MenuExit {
             get {
                 return ResourceManager.GetString("MenuExit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import WinAuth 2.x.
+        /// </summary>
+        internal static string MenuImportWinauth {
+            get {
+                return ResourceManager.GetString("MenuImportWinauth", resourceCulture);
             }
         }
         
