@@ -397,11 +397,10 @@ namespace WinAuth
 			key = Regex.Replace(key, @"([()+\^%~{}])", "{$1}", RegexOptions.Multiline);
 			for (; repeat > 0; repeat--)
 			{
+				// Issue#100: change to use InputSimulator as SendKeys does not work for internation keyboards
 				InputSimulator.SimulateTextEntry(key);
-				//System.Windows.Forms.SendKeys.SendWait(key);
 				System.Threading.Thread.Sleep(delay != 0 ? delay : 50);
 			}
-			//System.Windows.Forms.SendKeys.Flush();
 		}
 
 		/// <summary>
