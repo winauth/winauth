@@ -138,7 +138,7 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select how you would like to protect your authenticators. A combination of user protection and your own password is recommended..
+        ///   Looks up a localized string similar to Select how you would like to protect your authenticators. Using a password is strongly recommended, otherwise your data could be read and stolen by malware running on your computer..
         /// </summary>
         internal static string _ChangePasswordForm_introLabel_ {
             get {
@@ -147,7 +147,7 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Only useable on this computer.
+        ///   Looks up a localized string similar to Encrypt to only be useable on this computer.
         /// </summary>
         internal static string _ChangePasswordForm_machineCheckbox_ {
             get {
@@ -156,29 +156,11 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Your authenticators will be protected by encrypting them using your built-in Windows machine key. Your data can only be read by an application on this computer. You must remove this setting to copy it to another computer or if you will be reinstalling Windows..
+        ///   Looks up a localized string similar to Additionally, you can protect and encrypt your data using the built-in Windows account encryption. This will lock your authenticators to this computer or user so they cannot be opened even if the files are copied. You MUST turn this off if you are going to reformat your disk, re-install Windows or delete this user account..
         /// </summary>
         internal static string _ChangePasswordForm_machineLabel_ {
             get {
                 return ResourceManager.GetString("_ChangePasswordForm_machineLabel_", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to I do NOT want to use any protection.
-        /// </summary>
-        internal static string _ChangePasswordForm_noneCheckbox_ {
-            get {
-                return ResourceManager.GetString("_ChangePasswordForm_noneCheckbox_", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Your authenticators will not be protected by a password and will not be encrypted. This is very insecure and should only be used if you are copying your authenticators between different computers..
-        /// </summary>
-        internal static string _ChangePasswordForm_noneLabel_ {
-            get {
-                return ResourceManager.GetString("_ChangePasswordForm_noneLabel_", resourceCulture);
             }
         }
         
@@ -210,7 +192,7 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Your authenticators will be encrypted using your own password. You will need to enter your password to open WinAuth but can copy it between different computers. Your authenticators will be inaccessible if you forget your password and do not have a backup..
+        ///   Looks up a localized string similar to Your authenticators will be encrypted using your own password and you will need to enter your password to open WinAuth. Your authenticators will be inaccessible if you forget your password and you do not have a backup..
         /// </summary>
         internal static string _ChangePasswordForm_passwordLabel_ {
             get {
@@ -219,20 +201,11 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Only useable by the current user on this computer.
+        ///   Looks up a localized string similar to And only by the current user on this computer.
         /// </summary>
         internal static string _ChangePasswordForm_userCheckbox_ {
             get {
                 return ResourceManager.GetString("_ChangePasswordForm_userCheckbox_", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Additonal protect and encrypted your authenticators to only allow access by the current user..
-        /// </summary>
-        internal static string _ChangePasswordForm_userLabel_ {
-            get {
-                return ResourceManager.GetString("_ChangePasswordForm_userLabel_", resourceCulture);
             }
         }
         

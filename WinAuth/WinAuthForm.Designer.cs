@@ -279,7 +279,6 @@
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.WinAuthForm_FormClosing);
 			this.Load += new System.EventHandler(this.WinAuthForm_Load);
 			this.Shown += new System.EventHandler(this.WinAuthForm_Shown);
-			this.ResizeEnd += new System.EventHandler(this.WinAuthForm_ResizeEnd);
 			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WinAuthForm_MouseDown);
 			this.Resize += new System.EventHandler(this.WinAuthForm_Resize);
 			this.authenticatorMenu.ResumeLayout(false);

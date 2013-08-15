@@ -289,19 +289,13 @@ All other trademarks are the property of their respective owners.</value>
     <value>Cancel</value>
   </data>
   <data name="_ChangePasswordForm_introLabel_" xml:space="preserve">
-    <value>Select how you would like to protect your authenticators. A combination of user protection and your own password is recommended.</value>
+    <value>Select how you would like to protect your authenticators. Using a password is strongly recommended, otherwise your data could be read and stolen by malware running on your computer.</value>
   </data>
   <data name="_ChangePasswordForm_machineCheckbox_" xml:space="preserve">
-    <value>Only useable on this computer</value>
+    <value>Encrypt to only be useable on this computer</value>
   </data>
   <data name="_ChangePasswordForm_machineLabel_" xml:space="preserve">
-    <value>Your authenticators will be protected by encrypting them using your built-in Windows machine key. Your data can only be read by an application on this computer. You must remove this setting to copy it to another computer or if you will be reinstalling Windows.</value>
-  </data>
-  <data name="_ChangePasswordForm_noneCheckbox_" xml:space="preserve">
-    <value>I do NOT want to use any protection</value>
-  </data>
-  <data name="_ChangePasswordForm_noneLabel_" xml:space="preserve">
-    <value>Your authenticators will not be protected by a password and will not be encrypted. This is very insecure and should only be used if you are copying your authenticators between different computers.</value>
+    <value>Additionally, you can protect and encrypt your data using the built-in Windows account encryption. This will lock your authenticators to this computer or user so they cannot be opened even if the files are copied. You MUST turn this off if you are going to reformat your disk, re-install Windows or delete this user account.</value>
   </data>
   <data name="_ChangePasswordForm_okButton_" xml:space="preserve">
     <value>OK</value>
@@ -313,13 +307,10 @@ All other trademarks are the property of their respective owners.</value>
     <value>Password</value>
   </data>
   <data name="_ChangePasswordForm_passwordLabel_" xml:space="preserve">
-    <value>Your authenticators will be encrypted using your own password. You will need to enter your password to open WinAuth but can copy it between different computers. Your authenticators will be inaccessible if you forget your password and do not have a backup.</value>
+    <value>Your authenticators will be encrypted using your own password and you will need to enter your password to open WinAuth. Your authenticators will be inaccessible if you forget your password and you do not have a backup.</value>
   </data>
   <data name="_ChangePasswordForm_userCheckbox_" xml:space="preserve">
-    <value>Only useable by the current user on this computer</value>
-  </data>
-  <data name="_ChangePasswordForm_userLabel_" xml:space="preserve">
-    <value>Additonal protect and encrypted your authenticators to only allow access by the current user.</value>
+    <value>And only by the current user on this computer</value>
   </data>
   <data name="_ChangePasswordForm_verifyFieldLabel_" xml:space="preserve">
     <value>Verify</value>

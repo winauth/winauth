@@ -59,23 +59,20 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void ChangePasswordForm_Load(object sender, EventArgs e)
 		{
-			if (PasswordType == Authenticator.PasswordTypes.None)
-			{
-				noneCheckbox.Checked = true;
-			}
-			else if ((PasswordType & Authenticator.PasswordTypes.Machine) != 0 || (PasswordType & Authenticator.PasswordTypes.User) != 0)
+			if ((PasswordType & Authenticator.PasswordTypes.Machine) != 0 || (PasswordType & Authenticator.PasswordTypes.User) != 0)
 			{
 				machineCheckbox.Checked = true;
 			}
-			else if ((PasswordType & Authenticator.PasswordTypes.User) != 0)
+			if ((PasswordType & Authenticator.PasswordTypes.User) != 0)
 			{
 				userCheckbox.Checked = true;
 			}
+			userCheckbox.Enabled = machineCheckbox.Checked;
+
 			if ((PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
 			{
 				passwordCheckbox.Checked = true;
 			}
-			userCheckbox.Enabled = machineCheckbox.Checked;
 		}
 
 		/// <summary>
@@ -93,31 +90,15 @@ namespace WinAuth
 		}
 
 		/// <summary>
-		/// None is ticked
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void noneCheckbox_CheckedChanged(object sender, EventArgs e)
-		{
-			if (noneCheckbox.Checked == true)
-			{
-				userCheckbox.Checked = false;
-				machineCheckbox.Checked = false;
-				passwordCheckbox.Checked = false;
-				passwordField.Text = verifyField.Text = string.Empty;
-			}
-		}
-
-		/// <summary>
 		/// Machine encryption is ticked
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void machineCheckbox_CheckedChanged(object sender, EventArgs e)
 		{
-			if (machineCheckbox.Checked == true)
+			if (machineCheckbox.Checked == false)
 			{
-				noneCheckbox.Checked = false;
+				userCheckbox.Checked = false;
 			}
 			userCheckbox.Enabled = machineCheckbox.Checked;
 		}
@@ -129,10 +110,6 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void userCheckbox_CheckedChanged(object sender, EventArgs e)
 		{
-			if (userCheckbox.Checked == true)
-			{
-				noneCheckbox.Checked = false;
-			}
 		}
 
 		/// <summary>
@@ -146,7 +123,6 @@ namespace WinAuth
 			verifyField.Enabled = (passwordCheckbox.Checked);
 			if (passwordCheckbox.Checked == true)
 			{
-				noneCheckbox.Checked = false;
 				passwordField.Focus();
 			}
 		}

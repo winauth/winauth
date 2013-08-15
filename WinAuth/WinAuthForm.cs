@@ -784,6 +784,7 @@ namespace WinAuth
 			if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 			{
 				NewVersionAvailable(Updater.LastKnownLatestVersion);
+				SaveConfig();
 			}
 		}
 
