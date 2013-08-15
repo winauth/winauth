@@ -46,8 +46,10 @@
 			this.verifyField = new MetroFramework.Controls.MetroTextBox();
 			this.verifyFieldLabel = new MetroFramework.Controls.MetroLabel();
 			this.passwordFieldLabel = new MetroFramework.Controls.MetroLabel();
+			this.pictureBox3 = new System.Windows.Forms.PictureBox();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// noneCheckbox
@@ -85,47 +87,49 @@
 			// 
 			this.machineCheckbox.AutoSize = true;
 			this.machineCheckbox.FontSize = MetroFramework.MetroCheckBoxSize.Medium;
-			this.machineCheckbox.Location = new System.Drawing.Point(23, 292);
+			this.machineCheckbox.Location = new System.Drawing.Point(23, 203);
 			this.machineCheckbox.Name = "machineCheckbox";
 			this.machineCheckbox.Size = new System.Drawing.Size(213, 19);
-			this.machineCheckbox.TabIndex = 2;
+			this.machineCheckbox.TabIndex = 1;
 			this.machineCheckbox.Text = "Only useable on this computer";
 			this.machineCheckbox.UseSelectable = true;
 			this.machineCheckbox.CheckedChanged += new System.EventHandler(this.machineCheckbox_CheckedChanged);
 			// 
 			// machineLabel
 			// 
-			this.machineLabel.Location = new System.Drawing.Point(23, 314);
+			this.machineLabel.Location = new System.Drawing.Point(23, 225);
 			this.machineLabel.Name = "machineLabel";
-			this.machineLabel.Size = new System.Drawing.Size(628, 63);
+			this.machineLabel.Size = new System.Drawing.Size(628, 64);
 			this.machineLabel.TabIndex = 1;
 			this.machineLabel.Text = resources.GetString("machineLabel.Text");
 			// 
 			// userCheckbox
 			// 
 			this.userCheckbox.AutoSize = true;
+			this.userCheckbox.Enabled = false;
 			this.userCheckbox.FontSize = MetroFramework.MetroCheckBoxSize.Medium;
-			this.userCheckbox.Location = new System.Drawing.Point(23, 201);
+			this.userCheckbox.Location = new System.Drawing.Point(40, 292);
 			this.userCheckbox.Name = "userCheckbox";
-			this.userCheckbox.Size = new System.Drawing.Size(288, 19);
-			this.userCheckbox.TabIndex = 1;
-			this.userCheckbox.Text = "Only useable by this user on this computer";
+			this.userCheckbox.Size = new System.Drawing.Size(334, 19);
+			this.userCheckbox.TabIndex = 2;
+			this.userCheckbox.Text = "Only useable by the current user on this computer";
 			this.userCheckbox.UseSelectable = true;
 			this.userCheckbox.CheckedChanged += new System.EventHandler(this.userCheckbox_CheckedChanged);
 			// 
 			// userLabel
 			// 
-			this.userLabel.Location = new System.Drawing.Point(23, 223);
+			this.userLabel.Location = new System.Drawing.Point(40, 314);
 			this.userLabel.Name = "userLabel";
-			this.userLabel.Size = new System.Drawing.Size(628, 69);
+			this.userLabel.Size = new System.Drawing.Size(611, 30);
 			this.userLabel.TabIndex = 1;
-			this.userLabel.Text = resources.GetString("userLabel.Text");
+			this.userLabel.Text = "Additonal protect and encrypted your authenticators to only allow access by the c" +
+    "urrent user.";
 			// 
 			// passwordCheckbox
 			// 
 			this.passwordCheckbox.AutoSize = true;
 			this.passwordCheckbox.FontSize = MetroFramework.MetroCheckBoxSize.Medium;
-			this.passwordCheckbox.Location = new System.Drawing.Point(23, 400);
+			this.passwordCheckbox.Location = new System.Drawing.Point(23, 368);
 			this.passwordCheckbox.Name = "passwordCheckbox";
 			this.passwordCheckbox.Size = new System.Drawing.Size(214, 19);
 			this.passwordCheckbox.TabIndex = 3;
@@ -135,7 +139,7 @@
 			// 
 			// passwordLabel
 			// 
-			this.passwordLabel.Location = new System.Drawing.Point(23, 422);
+			this.passwordLabel.Location = new System.Drawing.Point(23, 390);
 			this.passwordLabel.Name = "passwordLabel";
 			this.passwordLabel.Size = new System.Drawing.Size(628, 65);
 			this.passwordLabel.TabIndex = 1;
@@ -156,7 +160,7 @@
 			// 
 			this.pictureBox2.Image = global::WinAuth.Properties.Resources.BluePixel;
 			this.pictureBox2.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-			this.pictureBox2.Location = new System.Drawing.Point(24, 383);
+			this.pictureBox2.Location = new System.Drawing.Point(24, 351);
 			this.pictureBox2.Name = "pictureBox2";
 			this.pictureBox2.Size = new System.Drawing.Size(620, 1);
 			this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -167,7 +171,7 @@
 			// 
 			this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancelButton.Location = new System.Drawing.Point(576, 557);
+			this.cancelButton.Location = new System.Drawing.Point(568, 550);
 			this.cancelButton.Name = "cancelButton";
 			this.cancelButton.Size = new System.Drawing.Size(75, 23);
 			this.cancelButton.TabIndex = 7;
@@ -178,7 +182,7 @@
 			// 
 			this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.okButton.Location = new System.Drawing.Point(495, 557);
+			this.okButton.Location = new System.Drawing.Point(487, 550);
 			this.okButton.Name = "okButton";
 			this.okButton.Size = new System.Drawing.Size(75, 23);
 			this.okButton.TabIndex = 6;
@@ -189,7 +193,7 @@
 			// passwordField
 			// 
 			this.passwordField.Enabled = false;
-			this.passwordField.Location = new System.Drawing.Point(123, 490);
+			this.passwordField.Location = new System.Drawing.Point(123, 458);
 			this.passwordField.MaxLength = 32767;
 			this.passwordField.Name = "passwordField";
 			this.passwordField.PasswordChar = '●';
@@ -203,7 +207,7 @@
 			// verifyField
 			// 
 			this.verifyField.Enabled = false;
-			this.verifyField.Location = new System.Drawing.Point(123, 519);
+			this.verifyField.Location = new System.Drawing.Point(123, 487);
 			this.verifyField.MaxLength = 32767;
 			this.verifyField.Name = "verifyField";
 			this.verifyField.PasswordChar = '●';
@@ -217,7 +221,7 @@
 			// verifyFieldLabel
 			// 
 			this.verifyFieldLabel.AutoSize = true;
-			this.verifyFieldLabel.Location = new System.Drawing.Point(40, 520);
+			this.verifyFieldLabel.Location = new System.Drawing.Point(40, 488);
 			this.verifyFieldLabel.Name = "verifyFieldLabel";
 			this.verifyFieldLabel.Size = new System.Drawing.Size(41, 19);
 			this.verifyFieldLabel.TabIndex = 5;
@@ -226,11 +230,22 @@
 			// passwordFieldLabel
 			// 
 			this.passwordFieldLabel.AutoSize = true;
-			this.passwordFieldLabel.Location = new System.Drawing.Point(40, 491);
+			this.passwordFieldLabel.Location = new System.Drawing.Point(40, 459);
 			this.passwordFieldLabel.Name = "passwordFieldLabel";
 			this.passwordFieldLabel.Size = new System.Drawing.Size(63, 19);
 			this.passwordFieldLabel.TabIndex = 5;
 			this.passwordFieldLabel.Text = "Password";
+			// 
+			// pictureBox3
+			// 
+			this.pictureBox3.Image = global::WinAuth.Properties.Resources.BluePixel;
+			this.pictureBox3.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+			this.pictureBox3.Location = new System.Drawing.Point(27, 529);
+			this.pictureBox3.Name = "pictureBox3";
+			this.pictureBox3.Size = new System.Drawing.Size(620, 1);
+			this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+			this.pictureBox3.TabIndex = 8;
+			this.pictureBox3.TabStop = false;
 			// 
 			// ChangePasswordForm
 			// 
@@ -238,7 +253,8 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancelButton;
-			this.ClientSize = new System.Drawing.Size(674, 603);
+			this.ClientSize = new System.Drawing.Size(674, 596);
+			this.Controls.Add(this.pictureBox3);
 			this.Controls.Add(this.verifyField);
 			this.Controls.Add(this.passwordField);
 			this.Controls.Add(this.verifyFieldLabel);
@@ -263,6 +279,7 @@
 			this.Shown += new System.EventHandler(this.ChangePasswordForm_Shown);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -287,6 +304,7 @@
 		private MetroFramework.Controls.MetroTextBox verifyField;
 		private MetroFramework.Controls.MetroLabel verifyFieldLabel;
 		private MetroFramework.Controls.MetroLabel passwordFieldLabel;
+		private System.Windows.Forms.PictureBox pictureBox3;
 
 	}
 }

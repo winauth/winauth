@@ -156,7 +156,7 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Your authenticators will be protected by encrypting them using your built-in Windows machine key. Your data can only be read by someone or an application on this computer. You must remove this setting to copy it to another computer or if you will be reinstalling Windows..
+        ///   Looks up a localized string similar to Your authenticators will be protected by encrypting them using your built-in Windows machine key. Your data can only be read by an application on this computer. You must remove this setting to copy it to another computer or if you will be reinstalling Windows..
         /// </summary>
         internal static string _ChangePasswordForm_machineLabel_ {
             get {
@@ -219,7 +219,7 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Only useable by this user on this computer.
+        ///   Looks up a localized string similar to Only useable by the current user on this computer.
         /// </summary>
         internal static string _ChangePasswordForm_userCheckbox_ {
             get {
@@ -228,7 +228,7 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Your authenticators will be protected by encrypting them using the current Windows user account. Your data can only be read by this user on this computer. You must remove this setting to copy it to another computer or if you will be reinstalling Windows..
+        ///   Looks up a localized string similar to Additonal protect and encrypted your authenticators to only allow access by the current user..
         /// </summary>
         internal static string _ChangePasswordForm_userLabel_ {
             get {

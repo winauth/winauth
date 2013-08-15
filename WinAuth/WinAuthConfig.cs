@@ -72,11 +72,6 @@ namespace WinAuth
 		/// </summary>
 		public Authenticator.PasswordTypes PasswordType = Authenticator.PasswordTypes.None;
 
-		/// <summary>
-		/// Flag for portable mode so we don't write any registry keys or other files
-		/// </summary>
-		public bool Portable { get; set; }
-
     /// <summary>
     /// All authenticators
     /// </summary>
@@ -273,30 +268,22 @@ namespace WinAuth
 		}
 
 		/// <summary>
-		/// Read a setting value. If in Portable mode, it is taken from the Config, otherwise from the Registry.
+		/// Read a setting value.
 		/// </summary>
 		/// <param name="name">name of setting</param>
 		/// <param name="defaultValue">default value if setting doesn't exist</param>
 		/// <returns>setting value or default value</returns>
 		public string ReadSetting(string name, string defaultValue = null)
 		{
-			if (this.Portable == true)
+			// read setting from _settings
+			string value;
+			if (_settings.TryGetValue(name, out value) == true)
 			{
-				// read setting from _settings
-				string value;
-				if (_settings.TryGetValue(name, out value) == true)
-				{
-					return value;
-				}
-				else
-				{
-					return defaultValue;
-				}
+				return value;
 			}
 			else
 			{
-				// read from registry
-				return WinAuthHelper.ReadRegistryValue(name, defaultValue) as string;
+				return defaultValue;
 			}
 		}
 
@@ -307,55 +294,34 @@ namespace WinAuth
 		/// <returns>string array of all child (recursively) setting names. Empty is none.</returns>
 		public string[] ReadSettingKeys(string name)
 		{
-			if (this.Portable == true)
+			List<string> keys = new List<string>();
+			foreach (var entry in _settings)
 			{
-				List<string> keys = new List<string>();
-				foreach (var entry in _settings)
+				if (entry.Key.StartsWith(name) == true)
 				{
-					if (entry.Key.StartsWith(name) == true)
-					{
-						keys.Add(entry.Key);
-					}
+					keys.Add(entry.Key);
 				}
-				return keys.ToArray();
 			}
-			else
-			{
-				return WinAuthHelper.ReadRegistryKeys(name);
-			}
+			return keys.ToArray();
 		}
 
 		/// <summary>
-		/// Write a setting value into the Config or Registry
+		/// Write a setting value into the Config
 		/// </summary>
 		/// <param name="name">name of setting value</param>
 		/// <param name="value">setting value. If null, the setting is deleted.</param>
 		public void WriteSetting(string name, string value)
 		{
-			if (this.Portable == true)
+			if (value == null)
 			{
-				if (value == null)
+				if (_settings.ContainsKey(name) == true)
 				{
-					if (_settings.ContainsKey(name) == true)
-					{
-						_settings.Remove(name);
-					}
-				}
-				else
-				{
-					_settings[name] = value;
+					_settings.Remove(name);
 				}
 			}
 			else
 			{
-				if (value == null)
-				{
-					WinAuthHelper.DeleteRegistryKey(name);
-				}
-				else
-				{
-					WinAuthHelper.WriteRegistryValue(name, value);
-				}
+				_settings[name] = value;
 			}
 		}
 
@@ -832,56 +798,6 @@ namespace WinAuth
     #endregion
 
 	}
-
-/*
-	public static class SecureStringExtension
-	{
-		/// <summary>
-		/// Create a SecureString from a string
-		/// </summary>
-		/// <param name="current">normal string</param>
-		/// <returns>new SecureString instance</returns>
-		public static SecureString ToSecure(this string current, bool makeReadOnly = true)
-		{
-			if (current == null)
-			{
-				return null;
-			}
-
-			var secure = new SecureString();
-			foreach (var c in current.ToCharArray()) secure.AppendChar(c);
-			if (makeReadOnly == true)
-			{
-				secure.MakeReadOnly();
-			}
-			return secure;
-		}
-
-		/// <summary>
-		/// Get the contexts of a SecureString as a normal string
-		/// </summary>
-		/// <param name="secure">SecureString instance</param>
-		/// <returns>normal string</returns>
-		public static string ToUnsecureString(this SecureString secure)
-		{
-			if (secure == null)
-			{
-				throw new ArgumentNullException("securePassword");
-			}
-
-			IntPtr unmanagedString = IntPtr.Zero;
-			try
-			{
-				unmanagedString = Marshal.SecureStringToGlobalAllocUnicode(secure);
-				return Marshal.PtrToStringUni(unmanagedString);
-			}
-			finally
-			{
-				Marshal.ZeroFreeGlobalAllocUnicode(unmanagedString);
-			}
-		}
-	}
-*/
 
   /// <summary>
   /// Config change event arguments

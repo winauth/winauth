@@ -140,11 +140,6 @@ namespace WinAuth
 				{
 					configFile = null;
 				}
-				else
-				{
-					// having the config in the same directory enables portable mode
-					config.Portable = true;
-				}
       }
       if (string.IsNullOrEmpty(configFile) == true)
       {
@@ -211,10 +206,7 @@ namespace WinAuth
 				MessageBox.Show(form, string.Format(strings.CannotLoadAuthenticator, configFile) + ": " + ex.Message, WinAuthMain.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 
-			if (config.Portable == false)
-			{
-				SaveToRegistry(config);
-			}
+			SaveToRegistry(config);
 
       return config;
     }
@@ -269,14 +261,14 @@ namespace WinAuth
 				if (string.IsNullOrEmpty(config.Filename) == true)
 				{
 					string configDirectory;
-					if (config.Portable == true)
-					{
-						configDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-					}
-					else
-					{
+					//if (config.Portable == true)
+					//{
+					//	configDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+					//}
+					//else
+					//{
 						configDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuthMain.APPLICATION_NAME);
-					}
+					//}
 					Directory.CreateDirectory(configDirectory);
 					config.Filename = Path.Combine(configDirectory, DEFAULT_AUTHENTICATOR_FILE_NAME);
 				}
@@ -318,7 +310,7 @@ namespace WinAuth
 		/// Save a PGP encrpyted version of an authenticator into the registry for recovery
 		/// </summary>
 		/// <param name="wa">WinAuthAuthenticator instance</param>
-		public static void SaveToRegistry(WinAuthConfig config, WinAuthAuthenticator wa)
+		public static void SaveToRegistry(WinAuthAuthenticator wa)
 		{
 			if (wa == null || wa.AuthenticatorData == null)
 			{
@@ -340,7 +332,7 @@ namespace WinAuth
 						wa.WriteXmlString(xw);
 					}
 
-					config.WriteSetting(WINAUTHREGKEY_BACKUP + "\\" + authkey, PGPEncrypt(sw.ToString(), WinAuthHelper.WINAUTH_PGP_PUBLICKEY));
+					WriteRegistryValue(WINAUTHREGKEY_BACKUP + "\\" + authkey, PGPEncrypt(sw.ToString(), WinAuthHelper.WINAUTH_PGP_PUBLICKEY));
 				}
 			}
 		}
@@ -364,9 +356,9 @@ namespace WinAuth
 		public static string ReadBackupFromRegistry(WinAuthConfig config)
 		{
 			StringBuilder buffer = new StringBuilder();
-			foreach (string name in config.ReadSettingKeys(WINAUTHREGKEY_BACKUP))
+			foreach (string name in ReadRegistryKeys(WINAUTHREGKEY_BACKUP))
 			{
-				object val = config.ReadSetting(name);
+				object val = ReadRegistryValue(name);
 				if (val != null)
 				{
 					buffer.Append(name + "=" + Convert.ToString(val)).Append(Environment.NewLine);

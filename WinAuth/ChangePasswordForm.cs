@@ -63,7 +63,7 @@ namespace WinAuth
 			{
 				noneCheckbox.Checked = true;
 			}
-			else if ((PasswordType & Authenticator.PasswordTypes.Machine) != 0)
+			else if ((PasswordType & Authenticator.PasswordTypes.Machine) != 0 || (PasswordType & Authenticator.PasswordTypes.User) != 0)
 			{
 				machineCheckbox.Checked = true;
 			}
@@ -75,6 +75,7 @@ namespace WinAuth
 			{
 				passwordCheckbox.Checked = true;
 			}
+			userCheckbox.Enabled = machineCheckbox.Checked;
 		}
 
 		/// <summary>
@@ -117,8 +118,8 @@ namespace WinAuth
 			if (machineCheckbox.Checked == true)
 			{
 				noneCheckbox.Checked = false;
-				userCheckbox.Checked = false;
 			}
+			userCheckbox.Enabled = machineCheckbox.Checked;
 		}
 
 		/// <summary>
@@ -131,7 +132,6 @@ namespace WinAuth
 			if (userCheckbox.Checked == true)
 			{
 				noneCheckbox.Checked = false;
-				machineCheckbox.Checked = false;
 			}
 		}
 

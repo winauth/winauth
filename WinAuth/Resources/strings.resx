@@ -295,7 +295,7 @@ All other trademarks are the property of their respective owners.</value>
     <value>Only useable on this computer</value>
   </data>
   <data name="_ChangePasswordForm_machineLabel_" xml:space="preserve">
-    <value>Your authenticators will be protected by encrypting them using your built-in Windows machine key. Your data can only be read by someone or an application on this computer. You must remove this setting to copy it to another computer or if you will be reinstalling Windows.</value>
+    <value>Your authenticators will be protected by encrypting them using your built-in Windows machine key. Your data can only be read by an application on this computer. You must remove this setting to copy it to another computer or if you will be reinstalling Windows.</value>
   </data>
   <data name="_ChangePasswordForm_noneCheckbox_" xml:space="preserve">
     <value>I do NOT want to use any protection</value>
@@ -316,10 +316,10 @@ All other trademarks are the property of their respective owners.</value>
     <value>Your authenticators will be encrypted using your own password. You will need to enter your password to open WinAuth but can copy it between different computers. Your authenticators will be inaccessible if you forget your password and do not have a backup.</value>
   </data>
   <data name="_ChangePasswordForm_userCheckbox_" xml:space="preserve">
-    <value>Only useable by this user on this computer</value>
+    <value>Only useable by the current user on this computer</value>
   </data>
   <data name="_ChangePasswordForm_userLabel_" xml:space="preserve">
-    <value>Your authenticators will be protected by encrypting them using the current Windows user account. Your data can only be read by this user on this computer. You must remove this setting to copy it to another computer or if you will be reinstalling Windows.</value>
+    <value>Additonal protect and encrypted your authenticators to only allow access by the current user.</value>
   </data>
   <data name="_ChangePasswordForm_verifyFieldLabel_" xml:space="preserve">
     <value>Verify</value>

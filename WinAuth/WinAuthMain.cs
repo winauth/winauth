@@ -101,11 +101,6 @@ namespace WinAuth
 
 		public static ResourceManager StringResources = new ResourceManager(typeof(WinAuth.Resources.strings).FullName, typeof(WinAuth.Resources.strings).Assembly);
 
-		/// <summary>
-		/// Save the main form so we can access the Config and portable flag
-		/// </summary>
-		private static WinAuthForm _mainForm;
-
     /// <summary>
     /// The main entry point for the application.
     /// </summary>
@@ -158,16 +153,11 @@ namespace WinAuth
 					e = e.InnerException;
 				}
 				//
-				string dir;
-				if (IsPortable == true)
+				string dir = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuthMain.APPLICATION_NAME);
+				if (Directory.Exists(dir) == false)
 				{
 					dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 				}
-				else
-				{
-					dir = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuthMain.APPLICATION_NAME);
-				}
-				Directory.CreateDirectory(dir);
 				File.WriteAllText(Path.Combine(dir, "winauth.log"), capture.ToString());
 			}
 			catch (Exception) { }
@@ -192,24 +182,6 @@ namespace WinAuth
 			catch (Exception) { }
 		}
 
-		/// <summary>
-		/// Return the portable flag from the current Config or false if we don't have one yet
-		/// </summary>
-		private static bool IsPortable
-		{
-			get
-			{
-				if (_mainForm != null && _mainForm.Config != null && _mainForm.Config.Portable == true)
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-		}
-
 		private static void main()
 		{
 			// Issue #53: set a default culture
@@ -220,8 +192,7 @@ namespace WinAuth
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
-			_mainForm = new WinAuthForm();
-			Application.Run(_mainForm);
+			Application.Run(new WinAuthForm());
 		}
   }
 }
