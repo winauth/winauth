@@ -163,16 +163,6 @@ namespace WinAuth.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap EndOfNationsIcon {
-            get {
-                object obj = ResourceManager.GetObject("EndOfNationsIcon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap GoogleAuthenticatorIcon {
             get {
                 object obj = ResourceManager.GetObject("GoogleAuthenticatorIcon", resourceCulture);

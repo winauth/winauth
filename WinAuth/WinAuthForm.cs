@@ -338,6 +338,7 @@ namespace WinAuth
 				}
 
 				this.Config.WriteSetting(WINAUTHREGKEY_BETAWARNING, betaversion);
+				SaveConfig();
 			}
 #endif
 

@@ -74,7 +74,6 @@ namespace WinAuth
 			{"Trion", "TrionAuthenticatorIcon.png"},
 			{"Rift", "RiftIcon.png"},
 			{"Defiance", "DefianceIcon.png"},
-			{"End Of Nations", "EndOfNationsIcon.png"},
 			{"s3", string.Empty},
 			{"Google Authenticator", "GoogleAuthenticatorIcon.png"},
 			{"Google", "GoogleIcon.png"},
@@ -86,7 +85,7 @@ namespace WinAuth
 			{"s5", string.Empty},
 			{"Bitcoin", "BitcoinIcon.png"},
 			{"Bitcoin Gold Style", "BitcoinGoldIcon.png"},
-			{"Bitcoin Eruo Style", "BitcoinEuroIcon.png"},
+			{"Bitcoin Euro Style", "BitcoinEuroIcon.png"},
 			{"Litecoin", "LitecoinIcon.png"}
 		};
 

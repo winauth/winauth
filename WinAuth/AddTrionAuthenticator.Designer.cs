@@ -321,17 +321,6 @@ namespace WinAuth
 			this.groupBox1.TabIndex = 4;
 			this.groupBox1.TabStop = false;
 			// 
-			// endOfNationsIcon
-			// 
-			this.endOfNationsIcon.Image = global::WinAuth.Properties.Resources.EndOfNationsIcon;
-			this.endOfNationsIcon.Location = new System.Drawing.Point(315, 44);
-			this.endOfNationsIcon.Name = "endOfNationsIcon";
-			this.endOfNationsIcon.Size = new System.Drawing.Size(48, 48);
-			this.endOfNationsIcon.TabIndex = 4;
-			this.endOfNationsIcon.TabStop = false;
-			this.endOfNationsIcon.Tag = "EndOfNationsIcon.png";
-			this.endOfNationsIcon.Click += new System.EventHandler(this.endOfNationsIcon_Click);
-			// 
 			// defianceIcon
 			// 
 			this.defianceIcon.Image = global::WinAuth.Properties.Resources.DefianceIcon;

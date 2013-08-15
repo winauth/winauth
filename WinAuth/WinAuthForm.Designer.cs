@@ -103,7 +103,7 @@
 			this.newVersionLink.Cursor = System.Windows.Forms.Cursors.Hand;
 			this.newVersionLink.Location = new System.Drawing.Point(90, 10);
 			this.newVersionLink.Name = "newVersionLink";
-			this.newVersionLink.Size = new System.Drawing.Size(241, 23);
+			this.newVersionLink.Size = new System.Drawing.Size(225, 23);
 			this.newVersionLink.TabIndex = 2;
 			this.newVersionLink.Text = "New version is available";
 			this.newVersionLink.UseSelectable = true;

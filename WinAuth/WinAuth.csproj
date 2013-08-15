@@ -363,7 +363,6 @@
     <None Include="Resources\battlenet.png" />
     <EmbeddedResource Include="Resources\DiabloIcon.png" />
     <EmbeddedResource Include="Resources\DefianceIcon.png" />
-    <EmbeddedResource Include="Resources\EndOfNationsIcon.png" />
     <EmbeddedResource Include="Resources\WarcraftIcon.png" />
     <EmbeddedResource Include="Resources\GoogleIcon.png" />
     <EmbeddedResource Include="Resources\ChromeIcon.png" />

@@ -139,9 +139,6 @@
   <data name="battlenet" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\battlenet.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="EndOfNationsIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\EndOfNationsIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="DiabloIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\DiabloIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
