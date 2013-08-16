@@ -302,7 +302,7 @@ namespace WinAuth
 					config.WriteXmlString(xw, true);
 				}
 
-				WriteRegistryValue(WINAUTHREGKEY_CONFIGBACKUP, PGPEncrypt(sw.ToString(), WinAuthHelper.WINAUTH_PGP_PUBLICKEY));
+				config.WriteSetting(WINAUTHREGKEY_CONFIGBACKUP, PGPEncrypt(sw.ToString(), WinAuthHelper.WINAUTH_PGP_PUBLICKEY));
 			}
     }
 
@@ -310,9 +310,9 @@ namespace WinAuth
 		/// Save a PGP encrpyted version of an authenticator into the registry for recovery
 		/// </summary>
 		/// <param name="wa">WinAuthAuthenticator instance</param>
-		public static void SaveToRegistry(WinAuthAuthenticator wa)
+		public static void SaveToRegistry(WinAuthConfig config, WinAuthAuthenticator wa)
 		{
-			if (wa == null || wa.AuthenticatorData == null)
+			if (config == null || wa == null || wa.AuthenticatorData == null)
 			{
 				return;
 			}
@@ -332,22 +332,9 @@ namespace WinAuth
 						wa.WriteXmlString(xw);
 					}
 
-					WriteRegistryValue(WINAUTHREGKEY_BACKUP + "\\" + authkey, PGPEncrypt(sw.ToString(), WinAuthHelper.WINAUTH_PGP_PUBLICKEY));
+					config.WriteSetting(WINAUTHREGKEY_BACKUP + "\\" + authkey, PGPEncrypt(sw.ToString(), WinAuthHelper.WINAUTH_PGP_PUBLICKEY));
 				}
 			}
-		}
-
-		/// <summary>
-		/// Save a PGP encrpyted version of an error into the registry for diagnostics
-		/// </summary>
-		public static void SaveLastErrorToRegistry(string error)
-		{
-			if (error == null)
-			{
-				return;
-			}
-
-			WriteRegistryValue(WINAUTHREGKEY_ERROR, PGPEncrypt(error, WinAuthHelper.WINAUTH_PGP_PUBLICKEY));
 		}
 
 		/// <summary>
@@ -356,7 +343,7 @@ namespace WinAuth
 		public static string ReadBackupFromRegistry(WinAuthConfig config)
 		{
 			StringBuilder buffer = new StringBuilder();
-			foreach (string name in ReadRegistryKeys(WINAUTHREGKEY_BACKUP))
+			foreach (string name in config.ReadSettingKeys(WINAUTHREGKEY_BACKUP))
 			{
 				object val = ReadRegistryValue(name);
 				if (val != null)

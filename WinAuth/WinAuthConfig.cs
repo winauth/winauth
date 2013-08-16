@@ -268,6 +268,18 @@ namespace WinAuth
 		}
 
 		/// <summary>
+		/// Return if we are in portable mode, which is when the config filename is in teh same directory as the exe
+		/// </summary>
+		public bool IsPortable
+		{
+			get
+			{
+				return (string.IsNullOrEmpty(this.Filename) == false
+					&& string.Compare(Path.GetDirectoryName(this.Filename), Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), true) == 0);
+			}
+		}
+
+		/// <summary>
 		/// Read a setting value.
 		/// </summary>
 		/// <param name="name">name of setting</param>
@@ -275,15 +287,22 @@ namespace WinAuth
 		/// <returns>setting value or default value</returns>
 		public string ReadSetting(string name, string defaultValue = null)
 		{
-			// read setting from _settings
-			string value;
-			if (_settings.TryGetValue(name, out value) == true)
+			if (this.IsPortable == true)
 			{
-				return value;
+				// read setting from _settings
+				string value;
+				if (_settings.TryGetValue(name, out value) == true)
+				{
+					return value;
+				}
+				else
+				{
+					return defaultValue;
+				}
 			}
 			else
 			{
-				return defaultValue;
+				return WinAuthHelper.ReadRegistryValue(name, defaultValue) as string;
 			}
 		}
 
@@ -294,15 +313,22 @@ namespace WinAuth
 		/// <returns>string array of all child (recursively) setting names. Empty is none.</returns>
 		public string[] ReadSettingKeys(string name)
 		{
-			List<string> keys = new List<string>();
-			foreach (var entry in _settings)
+			if (this.IsPortable == true)
 			{
-				if (entry.Key.StartsWith(name) == true)
+				List<string> keys = new List<string>();
+				foreach (var entry in _settings)
 				{
-					keys.Add(entry.Key);
+					if (entry.Key.StartsWith(name) == true)
+					{
+						keys.Add(entry.Key);
+					}
 				}
+				return keys.ToArray();
 			}
-			return keys.ToArray();
+			else
+			{
+				return WinAuthHelper.ReadRegistryKeys(name);
+			}
 		}
 
 		/// <summary>
@@ -312,16 +338,23 @@ namespace WinAuth
 		/// <param name="value">setting value. If null, the setting is deleted.</param>
 		public void WriteSetting(string name, string value)
 		{
-			if (value == null)
+			if (this.IsPortable == true)
 			{
-				if (_settings.ContainsKey(name) == true)
+				if (value == null)
 				{
-					_settings.Remove(name);
+					if (_settings.ContainsKey(name) == true)
+					{
+						_settings.Remove(name);
+					}
+				}
+				else
+				{
+					_settings[name] = value;
 				}
 			}
 			else
 			{
-				_settings[name] = value;
+				WinAuthHelper.WriteRegistryValue(name, value);
 			}
 		}
 

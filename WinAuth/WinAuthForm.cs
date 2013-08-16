@@ -244,8 +244,8 @@ namespace WinAuth
 					}
 					importedAuthenticator.Name = importedName;
 
-					// save off any new authenticators into the registry for restore
-					WinAuthHelper.SaveToRegistry(importedAuthenticator);
+					// save off any new authenticators as a backup
+					WinAuthHelper.SaveToRegistry(this.Config, importedAuthenticator);
 
 					// first time we prompt for protection and set out main settings from imported config
 					if (this.Config.Count == 0)
@@ -966,8 +966,8 @@ namespace WinAuth
 
 				if (added == true)
 				{
-					// save off any new authenticators into the registry for restore
-					WinAuthHelper.SaveToRegistry(winauthauthenticator);
+					// save off any new authenticators as a backup
+					WinAuthHelper.SaveToRegistry(this.Config, winauthauthenticator);
 
 					// first time we prompt for protection
 					if (this.Config.Count == 0)
@@ -1249,7 +1249,7 @@ namespace WinAuth
 			menu.Items.Add(menuitem);
 			menu.Items.Add(new ToolStripSeparator() { Name = "changePasswordOptionsSeparatorItem" });
 
-			if (this.Config != null)
+			if (this.Config != null && this.Config.IsPortable == false)
 			{
 				menuitem = new ToolStripMenuItem(strings.MenuStartWithWindows);
 				menuitem.Name = "startWithWindowsOptionsMenuItem";
@@ -1530,7 +1530,10 @@ namespace WinAuth
 			}
 			else if (args.PropertyName == "StartWithWindows")
 			{
-				WinAuthHelper.SetStartWithWindows(this.Config.StartWithWindows);
+				if (this.Config.IsPortable == false)
+				{
+					WinAuthHelper.SetStartWithWindows(this.Config.StartWithWindows);
+				}
 			}
 			else if (args.AuthenticatorChangedEventArgs != null && args.AuthenticatorChangedEventArgs.Property == "HotKey")
 			{

@@ -161,13 +161,6 @@ namespace WinAuth
 			}
 			catch (Exception) { }
 
-			// save last error into registry for diagnosticss
-			try
-			{
-				WinAuthHelper.SaveLastErrorToRegistry(capture.ToString());
-			}
-			catch (Exception) { }
-
 			try
 			{
 				ExceptionForm report = new ExceptionForm();
