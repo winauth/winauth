@@ -16,14 +16,15 @@
     <PublishUrl>C:\My Projects\WinAuth\winauth.com\downloads\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateEnabled>true</UpdateEnabled>
     <UpdateMode>Background</UpdateMode>
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>true</UpdatePeriodically>
+    <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>https://www.winauth.com/download/</InstallUrl>
+    <MapFileExtensions>false</MapFileExtensions>
+    <InstallUrl>https://winauth.com/downloads/</InstallUrl>
+    <UpdateUrl>https://winauth.com/downloads/</UpdateUrl>
     <SupportUrl>https://winauth.com</SupportUrl>
     <ErrorReportUrl>https://code.google.com/p/winauth/issues/list</ErrorReportUrl>
     <TargetCulture>en</TargetCulture>
@@ -32,7 +33,7 @@
     <MinimumRequiredVersion>3.0.10.0</MinimumRequiredVersion>
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>21</ApplicationRevision>
+    <ApplicationRevision>55</ApplicationRevision>
     <ApplicationVersion>3.0.10.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -432,6 +433,9 @@
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
+  </Target>
+  <Target Name="AfterCompile">
+    <Exec Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\bin\signtool.exe&quot; sign /d &quot;WinAuth&quot; /du &quot;https://winauth.com/downloads&quot; /f &quot;$(ProjectDir)..\codesign.pfx&quot; /v &quot;$(ProjectDir)obj\$(ConfigurationName)\$(TargetFileName)&quot;" />
   </Target>
   -->
 </Project>

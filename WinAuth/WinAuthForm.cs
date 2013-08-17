@@ -343,24 +343,27 @@ namespace WinAuth
 #endif
 
 			// create the updater and check for update if appropriate
-			Updater = new WinAuthUpdater(this.Config);
+			if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed == false)
+			{
+				Updater = new WinAuthUpdater(this.Config);
 
-			// the very first time, we set it to update each time
-			if (Updater.LastCheck == DateTime.MinValue)
-			{
-				Updater.SetUpdateInterval(new TimeSpan(0, 0, 0));
-			}
-			if (Updater.IsAutoCheck == true)
-			{
-				Version latest = Updater.LastKnownLatestVersion;
-				if (latest != null && latest > Updater.CurrentVersion)
+				// the very first time, we set it to update each time
+				if (Updater.LastCheck == DateTime.MinValue)
 				{
-					newVersionLink.Text = "New version " + latest + " available";
-					newVersionLink.Visible = true;
+					Updater.SetUpdateInterval(new TimeSpan(0, 0, 0));
 				}
+				if (Updater.IsAutoCheck == true)
+				{
+					Version latest = Updater.LastKnownLatestVersion;
+					if (latest != null && latest > Updater.CurrentVersion)
+					{
+						newVersionLink.Text = "New version " + latest + " available";
+						newVersionLink.Visible = true;
+					}
+				}
+				// spin up the autocheck thread and assign callback
+				Updater.AutoCheck(NewVersionAvailable);
 			}
-			// spin up the autocheck thread and assign callback
-			Updater.AutoCheck(NewVersionAvailable);
 
 			// set up list
 			loadAuthenticatorList();
@@ -1201,7 +1204,10 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void newVersionLink_Click(object sender, EventArgs e)
 		{
-			ShowUpdaterForm();
+			if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed == false)
+			{
+				ShowUpdaterForm();
+			}
 		}
 
 #endregion
@@ -1274,12 +1280,15 @@ namespace WinAuth
 
 			menu.Items.Add(new ToolStripSeparator());
 
-			menuitem = new ToolStripMenuItem(strings.MenuUpdates + "...");
-			menuitem.Name = "aboutUpdatesMenuItem";
-			menuitem.Click += aboutUpdatesMenuItem_Click;
-			menu.Items.Add(menuitem);
+			if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed == false)
+			{
+				menuitem = new ToolStripMenuItem(strings.MenuUpdates + "...");
+				menuitem.Name = "aboutUpdatesMenuItem";
+				menuitem.Click += aboutUpdatesMenuItem_Click;
+				menu.Items.Add(menuitem);
 
-			menu.Items.Add(new ToolStripSeparator());
+				menu.Items.Add(new ToolStripSeparator());
+			}
 
 			menuitem = new ToolStripMenuItem(strings.MenuAbout + "...");
 			menuitem.Name = "aboutOptionsMenuItem";

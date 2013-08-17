@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Deployment.Application;
 using System.Globalization;
 using System.IO;
 using System.Net;
@@ -79,22 +80,22 @@ namespace WinAuth
 		/// <summary>
 		/// Period when the poller thread will check if it needs to check for a new version
 		/// </summary>
-		private const int UPDATECHECKTHREAD_SLEEP = 15 * 60 * 1000; // 15 minutes to check if we need to check
+		protected const int UPDATECHECKTHREAD_SLEEP = 15 * 60 * 1000; // 15 minutes to check if we need to check
 
 		/// <summary>
 		/// Registry key value name for when we last checked for a new version
 		/// </summary>
-		private const string WINAUTHREGKEY_LASTCHECK = WinAuthHelper.WINAUTHREGKEY + "\\LastUpdateCheck";
+		protected const string WINAUTHREGKEY_LASTCHECK = WinAuthHelper.WINAUTHREGKEY + "\\LastUpdateCheck";
 
 		/// <summary>
 		/// Registry key value name for how often we check for a new version
 		/// </summary>
-		private const string WINAUTHREGKEY_CHECKFREQUENCY = WinAuthHelper.WINAUTHREGKEY + "\\UpdateCheckFrequency";
+		protected const string WINAUTHREGKEY_CHECKFREQUENCY = WinAuthHelper.WINAUTHREGKEY + "\\UpdateCheckFrequency";
 
 		/// <summary>
 		/// Registry key value name for the last version we found when we checked
 		/// </summary>
-		private const string WINAUTHREGKEY_LATESTVERSION = WinAuthHelper.WINAUTHREGKEY + "\\LatestVersion";
+		protected const string WINAUTHREGKEY_LATESTVERSION = WinAuthHelper.WINAUTHREGKEY + "\\LatestVersion";
 
 		/// <summary>
 		/// The interval for checking new versions. Null is never, Zero is each time, else a period.
@@ -114,7 +115,7 @@ namespace WinAuth
 		/// <summary>
 		/// Current Config
 		/// </summary>
-		private WinAuthConfig Config { get; set; }
+		protected WinAuthConfig Config { get; set; }
 
 		/// <summary>
 		/// Create the version checker instance
@@ -164,6 +165,10 @@ namespace WinAuth
 			get
 			{
 				return _latestVersion;
+			}
+			protected set
+			{
+				_latestVersion = value;
 			}
 		}
 
@@ -224,7 +229,7 @@ namespace WinAuth
 		/// AutoCheck thread method to poll for new version
 		/// </summary>
 		/// <param name="p">our callback</param>
-		private void AutoCheckPoller(object p)
+		protected virtual void AutoCheckPoller(object p)
 		{
 			Action<Version> callback = p as Action<Version>;
 
@@ -233,7 +238,7 @@ namespace WinAuth
 				// only if autochecking is on, and is due, and we don't already have a later version
 				if (this.IsAutoCheck == true
 					&& _autocheckInterval.HasValue && _lastCheck.Add(_autocheckInterval.Value) < DateTime.Now
-					&& (_latestVersion == null || _latestVersion <= this.CurrentVersion))
+					&& (LastKnownLatestVersion == null || LastKnownLatestVersion <= this.CurrentVersion))
 				{
 					// update the last check time
 					_lastCheck = DateTime.Now;
@@ -261,7 +266,7 @@ namespace WinAuth
 		/// </summary>
 		/// <param name="callback">optional callback for async operation</param>
 		/// <returns>latest WinAuthVersionInfo or null if async</returns>
-		public WinAuthVersionInfo GetLatestVersion(Action<WinAuthVersionInfo, bool, Exception> callback = null)
+		public virtual WinAuthVersionInfo GetLatestVersion(Action<WinAuthVersionInfo, bool, Exception> callback = null)
 		{
 			// get the update URL from the config else use the default
 			string updateUrl = WinAuthMain.WINAUTH_UPDATE_URL;
@@ -285,7 +290,7 @@ namespace WinAuth
 					if (latestVersion != null)
 					{
 						// update local values
-						_latestVersion = latestVersion.Version;
+						LastKnownLatestVersion = latestVersion.Version;
 						Config.WriteSetting(WINAUTHREGKEY_LATESTVERSION, latestVersion.Version.ToString(3));
 					}
 					return latestVersion;
@@ -328,7 +333,7 @@ namespace WinAuth
 				if (latestVersion != null)
 				{
 					// update local values
-					_latestVersion = latestVersion.Version;
+					LastKnownLatestVersion = latestVersion.Version;
 					Config.WriteSetting(WINAUTHREGKEY_LATESTVERSION, latestVersion.Version.ToString(3));
 				}
 				// perform callback
