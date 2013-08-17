@@ -557,6 +557,15 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} is already running..
+        /// </summary>
+        internal static string AlreadyRunning {
+            get {
+                return ResourceManager.GetString("AlreadyRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Authenticator not implemented.
         /// </summary>
         internal static string AuthenticatorNotImplemented {

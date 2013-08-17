@@ -37,6 +37,9 @@ namespace WinAuth
 		void OnWinAuthAuthenticatorChanged(WinAuthAuthenticator sender, WinAuthAuthenticatorChangedEventArgs e);
 	}
 
+	/// <summary>
+	/// Wrapper for real authenticator data used to save to file with other application information
+	/// </summary>
   public class WinAuthAuthenticator : ICloneable
   {
     /// <summary>
@@ -44,10 +47,24 @@ namespace WinAuth
     /// </summary>
 		public event WinAuthAuthenticatorChangedHandler OnWinAuthAuthenticatorChanged;
 
+		/// <summary>
+		/// Unique Id of authenticator saved in config
+		/// </summary>
     public Guid Id { get; set; }
 
+		/// <summary>
+		/// Index for authenticator when in sorted list
+		/// </summary>
+		public int Index { get; set; }
+
+		/// <summary>
+		/// Actual authenticator data
+		/// </summary>
     public Authenticator AuthenticatorData { get; set; }
 
+		/// <summary>
+		/// When this authenticator was created
+		/// </summary>
     public DateTime Created { get; set; }
 
 		private string _name;
@@ -57,12 +74,11 @@ namespace WinAuth
     private bool _copyOnCode;
     private bool _hideSerial;
     private HotKey _hotkey;
-
 		private bool m_ignoreClipboard;
 
-		//public Authenticator.PasswordTypes PasswordType { get; set; }
-		//public string Password { get; set; }
-
+		/// <summary>
+		/// Create the authenticator wrapper
+		/// </summary>
     public WinAuthAuthenticator()
     {
       Id = Guid.NewGuid();
@@ -70,6 +86,10 @@ namespace WinAuth
       _autoRefresh = true;
     }
 
+		/// <summary>
+		/// Clone this authenticator
+		/// </summary>
+		/// <returns></returns>
     public object Clone()
     {
       WinAuthAuthenticator clone = this.MemberwiseClone() as WinAuthAuthenticator;
@@ -81,6 +101,9 @@ namespace WinAuth
       return clone;
     }
 
+		/// <summary>
+		/// Mark this authenticator as having changed
+		/// </summary>
 		public void MarkChanged()
 		{
 			if (OnWinAuthAuthenticatorChanged != null)
@@ -89,6 +112,9 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// Get/set the name of this authenticator
+		/// </summary>
 		public string Name
 		{
 			get
@@ -105,6 +131,9 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// Set the skin for the authenticator (used for Icon)
+		/// </summary>
 		public string Skin
     {
       get

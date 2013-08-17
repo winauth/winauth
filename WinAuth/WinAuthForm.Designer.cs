@@ -255,6 +255,7 @@
 			this.authenticatorList.TabIndex = 0;
 			this.authenticatorList.TabStop = false;
 			this.authenticatorList.Visible = false;
+			this.authenticatorList.Reordered += new WinAuth.AuthenticatorListReorderedHandler(this.authenticatorList_Reordered);
 			this.authenticatorList.ItemRemoved += new WinAuth.AuthenticatorListItemRemovedHandler(this.authenticatorList_ItemRemoved);
 			// 
 			// WinAuthForm

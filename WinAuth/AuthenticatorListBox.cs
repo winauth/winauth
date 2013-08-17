@@ -89,6 +89,13 @@ namespace WinAuth
 	public delegate void AuthenticatorListItemRemovedHandler(object source, AuthenticatorListItemRemovedEventArgs args);
 
 	/// <summary>
+	/// Delegate for Redordered event
+	/// </summary>
+	/// <param name="source"></param>
+	/// <param name="args"></param>
+	public delegate void AuthenticatorListReorderedHandler(object source, AuthenticatorListReorderedEventArgs args);
+
+	/// <summary>
 	/// Event arguments for removing an item
 	/// </summary>
 	public class AuthenticatorListItemRemovedEventArgs : EventArgs
@@ -105,6 +112,20 @@ namespace WinAuth
 			: base()
 		{
 			Item = item;
+		}
+	}
+
+	/// <summary>
+	/// Event arguments for reordering the list
+	/// </summary>
+	public class AuthenticatorListReorderedEventArgs : EventArgs
+	{
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public AuthenticatorListReorderedEventArgs()
+			: base()
+		{
 		}
 	}
 
@@ -138,6 +159,11 @@ namespace WinAuth
 		public event AuthenticatorListItemRemovedHandler ItemRemoved;
 
 		/// <summary>
+		/// Event handler for Reordered
+		/// </summary>
+		public event AuthenticatorListReorderedHandler Reordered;
+
+		/// <summary>
 		/// Scrolled event handler
 		/// </summary>
 		[Category("Action")]
@@ -154,6 +180,11 @@ namespace WinAuth
 		private AuthenticatorListitem _currentItem;
 
 		/// <summary>
+		/// Saved point of mouse down
+		/// </summary>
+		private Point _mouseDownLocation = Point.Empty;
+
+		/// <summary>
 		/// Default constructor for our authenticator list box
 		/// </summary>
 		public AuthenticatorListBox()
@@ -162,6 +193,7 @@ namespace WinAuth
       this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.ResizeRedraw | ControlStyles.UserPaint, true);
 			this.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
 			this.ReadOnly = true;
+			this.AllowDrop = true;
 
 			// hook the scroll event
 			this.Scrolled += AuthenticatorListBox_Scrolled;
@@ -279,7 +311,21 @@ namespace WinAuth
 		/// <param name="e"></param>
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
-			SetCursor(e.Location);
+			// if we are moving with LeftMouse down and moved more than 2 pixles then we are dragging
+			if (e.Button == System.Windows.Forms.MouseButtons.Left && _mouseDownLocation != Point.Empty)
+			{
+				int dx = Math.Abs(_mouseDownLocation.X - e.Location.X);
+				int dy = Math.Abs(_mouseDownLocation.Y - e.Location.Y);
+				if (dx > 2 || dy > 2)
+				{
+					// moved enough so start drag
+					this.DoDragDrop(this.CurrentItem, DragDropEffects.Move);
+				}
+			}
+			else if (e.Button == System.Windows.Forms.MouseButtons.None)
+			{
+				SetCursor(e.Location);
+			}
 
 			base.OnMouseMove(e);
 		}
@@ -292,7 +338,9 @@ namespace WinAuth
 		{
 			// set the currnet item based on position
 			SetCurrentItem(e.Location);
-			SetCursor(e.Location);
+			//SetCursor(e.Location);
+
+			_mouseDownLocation = e.Location;
 
 			base.OnMouseDown(e);
 		}
@@ -336,6 +384,51 @@ namespace WinAuth
 						RefreshCurrentItem();
 					}
 				}
+			}
+
+			_mouseDownLocation = Point.Empty;
+		}
+
+		/// <summary>
+		/// When we are dragging over
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnDragOver(DragEventArgs e)
+		{
+			e.Effect = DragDropEffects.Move;
+			//base.OnDragOver(drgevent);
+		}
+
+		/// <summary>
+		/// When a dragdrop operation has completed
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnDragDrop(DragEventArgs e)
+		{
+			Point point = this.PointToClient(new Point(e.X, e.Y));
+			int index = this.IndexFromPoint(point);
+			if (index < 0)
+			{
+				index = this.Items.Count - 1;
+			}
+			object item = e.Data.GetData(typeof(AuthenticatorListitem));
+			if (item != null && item is AuthenticatorListitem)
+			{
+				this.Items.Remove(item);
+				this.Items.Insert(index, item);
+
+				// set the correct indexes of our items
+				for (int i = 0; i < this.Items.Count; i++)
+				{
+					(this.Items[i] as AuthenticatorListitem).Index = i;
+				}
+
+				// fire the reordered event
+				Reordered(this, new AuthenticatorListReorderedEventArgs());
+			}
+			else
+			{
+				base.OnDragDrop(e);
 			}
 		}
 
@@ -556,22 +649,29 @@ namespace WinAuth
 		/// Set the current cursor based on position
 		/// </summary>
 		/// <param name="mouseLocation">current mouse position</param>
-		private void SetCursor(Point mouseLocation)
+		private void SetCursor(Point mouseLocation, Cursor force = null)
 		{
 			// set cursor if we are over a refresh icon
 			var cursor = Cursor.Current;
-			int index = this.IndexFromPoint(mouseLocation);
-			if (index >= 0 && index < this.Items.Count)
+			if (force == null)
 			{
-				var item = this.Items[index] as AuthenticatorListitem;
-				int x = 0;
-				int y = (this.ItemHeight * index) - (this.TopIndex * this.ItemHeight);
-				bool hasvscroll = (this.Height < (this.Items.Count * this.ItemHeight));
-				if (item.Authenticator.AutoRefresh == false && item.DisplayUntil < DateTime.Now
-					&& new Rectangle(x + this.Width - (ICON_WIDTH + MARGIN_RIGHT) - (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0), y + MARGIN_TOP, ICON_WIDTH, ICON_HEIGHT).Contains(mouseLocation))
+				int index = this.IndexFromPoint(mouseLocation);
+				if (index >= 0 && index < this.Items.Count)
 				{
-					cursor = Cursors.Hand;
+					var item = this.Items[index] as AuthenticatorListitem;
+					int x = 0;
+					int y = (this.ItemHeight * index) - (this.TopIndex * this.ItemHeight);
+					bool hasvscroll = (this.Height < (this.Items.Count * this.ItemHeight));
+					if (item.Authenticator.AutoRefresh == false && item.DisplayUntil < DateTime.Now
+						&& new Rectangle(x + this.Width - (ICON_WIDTH + MARGIN_RIGHT) - (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0), y + MARGIN_TOP, ICON_WIDTH, ICON_HEIGHT).Contains(mouseLocation))
+					{
+						cursor = Cursors.Hand;
+					}
 				}
+			}
+			else
+			{
+				cursor = force;
 			}
 			if (Cursor.Current != cursor)
 			{

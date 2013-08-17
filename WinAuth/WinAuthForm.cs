@@ -62,6 +62,11 @@ namespace WinAuth
     public WinAuthConfig Config { get; set; }
 
 		/// <summary>
+		/// Datetime for when we should save config
+		/// </summary>
+		private DateTime? _saveConfigTime;
+
+		/// <summary>
 		/// Self-updating object
 		/// </summary>
 		private WinAuthUpdater Updater { get; set; }
@@ -272,7 +277,7 @@ namespace WinAuth
 
 					// add to main list
 					this.Config.Add(importedAuthenticator);
-					SaveConfig();
+					SaveConfig(true);
 					loadAuthenticatorList(importedAuthenticator);
 
 					// reset UI
@@ -338,7 +343,7 @@ namespace WinAuth
 				}
 
 				this.Config.WriteSetting(WINAUTHREGKEY_BETAWARNING, betaversion);
-				SaveConfig();
+				SaveConfig(true);
 			}
 #endif
 
@@ -447,11 +452,23 @@ namespace WinAuth
 		}
 
 		/// <summary>
-		/// Save the current config
+		/// Save the current config immediately or delay it for a few seconds so we can make more changes
 		/// </summary>
-		private void SaveConfig()
+		private void SaveConfig(bool immediate = false)
 		{
-			WinAuthHelper.SaveConfig(this.Config);
+			if (immediate == true || (_saveConfigTime != null && _saveConfigTime <= DateTime.Now))
+			{
+				_saveConfigTime = null;
+				lock (this.Config)
+				{
+					WinAuthHelper.SaveConfig(this.Config);
+				}
+			}
+			else
+			{
+				// save it in a few seconds so we can batch up saves
+				_saveConfigTime = DateTime.Now.AddSeconds(3);
+			}
 		}
 
 		/// <summary>
@@ -857,6 +874,12 @@ namespace WinAuth
 				this.Config.Width = this.Width;
 				this.Config.Height = this.Height;
 			}
+
+			// perform save if we have one pending
+			if (_saveConfigTime != null)
+			{
+				SaveConfig(true);
+			}
 		}
 
 		/// <summary>
@@ -992,7 +1015,7 @@ namespace WinAuth
 					}
 
 					this.Config.Add(winauthauthenticator);
-					SaveConfig();
+					SaveConfig(true);
 					loadAuthenticatorList(winauthauthenticator);
 
 					// reset UI
@@ -1043,6 +1066,12 @@ namespace WinAuth
 		private void mainTimer_Tick(object sender, EventArgs e)
 		{
 			authenticatorList.Tick(sender, e);
+
+			// if a save is due
+			if (_saveConfigTime != null && _saveConfigTime.Value <= DateTime.Now)
+			{
+				SaveConfig();
+			}
 		}
 
 		/// <summary>
@@ -1105,6 +1134,30 @@ namespace WinAuth
 				this.Config.PasswordType = Authenticator.PasswordTypes.None;
 				this.Config.Password = null;
 			}
+
+			// save the current config
+			SaveConfig();
+		}
+
+		/// <summary>
+		/// Event fired when an authenticator is dragged and dropped in the listbox
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="args"></param>
+		private void authenticatorList_Reordered(object source, AuthenticatorListReorderedEventArgs args)
+		{
+			// set the new order of items in Config from that of the list
+			int count = this.authenticatorList.Items.Count;
+			for (int i=0; i<count; i++)
+			{
+				AuthenticatorListitem item = (AuthenticatorListitem)this.authenticatorList.Items[i];
+				this.Config.Where(a => a == item.Authenticator).FirstOrDefault().Index = i;
+			}
+			// resort the config list
+			this.Config.Sort();
+
+			// update UI
+			setAutoSize();
 
 			// save the current config
 			SaveConfig();
@@ -1388,7 +1441,7 @@ namespace WinAuth
 					this.Config.Password = null;
 				}
 
-				SaveConfig();
+				SaveConfig(true);
 			}
 		}
 

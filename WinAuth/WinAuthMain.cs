@@ -27,6 +27,8 @@ using System.Text;
 using System.Resources;
 using System.Runtime.CompilerServices;
 
+using WinAuth.Resources;
+
 namespace WinAuth
 {
   /// <summary>
@@ -106,25 +108,36 @@ namespace WinAuth
     [STAThread]
     static void Main()
     {
-			if (!System.Diagnostics.Debugger.IsAttached)
+			try
 			{
-				AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-				Application.ThreadException += OnThreadException;
-				Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+				using (var instance = new SingleGlobalInstance(5000))
+				{
+					if (!System.Diagnostics.Debugger.IsAttached)
+					{
+						AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+						Application.ThreadException += OnThreadException;
+						Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
-				try
-				{
-					main();
-				}
-				catch (Exception ex)
-				{
-					LogException(ex);
-					throw;
+						try
+						{
+							main();
+						}
+						catch (Exception ex)
+						{
+							LogException(ex);
+							throw;
+						}
+					}
+					else
+					{
+						main();
+					}
 				}
 			}
-			else
+			catch (TimeoutException)
 			{
-				main();
+				// instance already running
+				MessageBox.Show(string.Format(strings.AlreadyRunning, APPLICATION_NAME), APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 			}
     }
 

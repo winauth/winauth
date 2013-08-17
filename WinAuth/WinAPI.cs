@@ -271,6 +271,14 @@ namespace WinAuth
 			Hardware = 2,
 		}
 
+		public enum ShowWindowCommands : int
+		{
+			Hide = 0,
+			Normal = 1,
+			Minimized = 2,
+			Maximized = 3,
+		}
+
 		public struct MOUSEINPUT
 		{
 			public Int32 X;
@@ -310,6 +318,18 @@ namespace WinAuth
 			public MOUSEKEYBDHARDWAREINPUT Data;
 		}
 
+		[Serializable]
+		[StructLayout(LayoutKind.Sequential)]
+		public struct WINDOWPLACEMENT
+		{
+			public int length;
+			public int flags;
+			public ShowWindowCommands showCmd;
+			public System.Drawing.Point ptMinPosition;
+			public System.Drawing.Point ptMaxPosition;
+			public System.Drawing.Rectangle rcNormalPosition;
+		}
+
 		/// <summary>
 		/// Native Windows calls
 		/// </summary>
@@ -346,6 +366,22 @@ namespace WinAuth
 		internal static extern int HideCaret(IntPtr hwnd);
 		[DllImport("user32.dll", SetLastError = true)]
 		internal static extern int GetScrollInfo(IntPtr hWnd, int n, ref ScrollInfoStruct lpScrollInfo);
+
+		[DllImport("user32.dll", SetLastError=true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		internal static extern bool GetWindowPlacement(IntPtr hwnd, ref WINDOWPLACEMENT lpwndpl);
+
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		internal static extern bool ShowWindow(IntPtr hWnd, ShowWindowCommands nCmdShow);
+
+		public static WINDOWPLACEMENT GetPlacement(IntPtr hwnd)
+		{
+			WINDOWPLACEMENT placement = new WINDOWPLACEMENT();
+			placement.length = Marshal.SizeOf(placement);
+			GetWindowPlacement(hwnd, ref placement);
+			return placement;
+		}
 	}
 
 }

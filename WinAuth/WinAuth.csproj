@@ -195,6 +195,7 @@
     <Compile Include="SetShortcutKeyForm.Designer.cs">
       <DependentUpon>SetShortcutKeyForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="SingleGlobalInstance.cs" />
     <Compile Include="UnprotectPasswordForm.cs">
       <SubType>Form</SubType>
     </Compile>
