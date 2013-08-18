@@ -1155,6 +1155,8 @@ namespace WinAuth
 			}
 			// resort the config list
 			this.Config.Sort();
+			// update the notify menu
+			loadOptionsMenu(this.notifyMenu);
 
 			// update UI
 			setAutoSize();
@@ -1197,6 +1199,20 @@ namespace WinAuth
 				authenticatorList.Width = this.Width - _listoffset.Width;
 			}
 			this.ResumeLayout(true);
+		}
+
+		/// <summary>
+		/// Set the config once resizing has completed
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void WinAuthForm_ResizeEnd(object sender, EventArgs e)
+		{
+			if (this.Config != null && this.Config.AutoSize == false)
+			{
+				this.Config.Width = this.Width;
+				this.Config.Height = this.Height;
+			}
 		}
 
 		/// <summary>

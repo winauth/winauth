@@ -29,6 +29,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 
 using WinAuth.Resources;
+using System.Diagnostics;
 
 namespace WinAuth
 {
@@ -185,6 +186,26 @@ namespace WinAuth
 		private Point _mouseDownLocation = Point.Empty;
 
 		/// <summary>
+		/// Saved pont of mouse move
+		/// </summary>
+		private Point _mouseMoveLocation = Point.Empty;
+
+		/// <summary>
+		/// Bitmap of cloned item we are dragging
+		/// </summary>
+		private Bitmap _draggedBitmap;
+
+		/// <summary>
+		/// Offset of last position of dragged bitmap so we can paint behind it
+		/// </summary>
+		private Rectangle _draggedBitmapRect;
+
+		/// <summary>
+		/// Offset of mouseY and top of item
+		/// </summary>
+		private int _draggedBitmapOffsetY;
+
+		/// <summary>
 		/// Default constructor for our authenticator list box
 		/// </summary>
 		public AuthenticatorListBox()
@@ -306,31 +327,6 @@ namespace WinAuth
 		}
 
 		/// <summary>
-		/// Handle the mouse move event to capture cursor position
-		/// </summary>
-		/// <param name="e"></param>
-		protected override void OnMouseMove(MouseEventArgs e)
-		{
-			// if we are moving with LeftMouse down and moved more than 2 pixles then we are dragging
-			if (e.Button == System.Windows.Forms.MouseButtons.Left && _mouseDownLocation != Point.Empty)
-			{
-				int dx = Math.Abs(_mouseDownLocation.X - e.Location.X);
-				int dy = Math.Abs(_mouseDownLocation.Y - e.Location.Y);
-				if (dx > 2 || dy > 2)
-				{
-					// moved enough so start drag
-					this.DoDragDrop(this.CurrentItem, DragDropEffects.Move);
-				}
-			}
-			else if (e.Button == System.Windows.Forms.MouseButtons.None)
-			{
-				SetCursor(e.Location);
-			}
-
-			base.OnMouseMove(e);
-		}
-
-		/// <summary>
 		/// Handle mouse down event
 		/// </summary>
 		/// <param name="e"></param>
@@ -386,7 +382,59 @@ namespace WinAuth
 				}
 			}
 
+			// dispose and reset the dragging
 			_mouseDownLocation = Point.Empty;
+			if (_draggedBitmap != null)
+			{
+				_draggedBitmap.Dispose();
+				_draggedBitmap = null;
+				this.Invalidate(_draggedBitmapRect);
+			}
+		}
+
+		/// <summary>
+		/// Handle the mouse move event to capture cursor position
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			_mouseMoveLocation = e.Location;
+
+			// if we are moving with LeftMouse down and moved more than 2 pixles then we are dragging
+			if (e.Button == System.Windows.Forms.MouseButtons.Left && _mouseDownLocation != Point.Empty)
+			{
+				int dx = Math.Abs(_mouseDownLocation.X - e.Location.X);
+				int dy = Math.Abs(_mouseDownLocation.Y - e.Location.Y);
+				if (dx > 2 || dy > 2)
+				{
+					// get a snapshot of the current item for the drag
+					bool hasvscroll = (this.Height < (this.Items.Count * this.ItemHeight));
+					_draggedBitmap = new Bitmap(this.Width - (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0), this.ItemHeight);
+					_draggedBitmapRect = Rectangle.Empty;
+					using (Graphics g = Graphics.FromImage(_draggedBitmap))
+					{
+						int y = (this.ItemHeight * this.CurrentItem.Index) - (this.ItemHeight * this.TopIndex);
+
+						Point screen = this.Parent.PointToScreen(new Point(this.Location.X, this.Location.Y + y));
+						g.CopyFromScreen(screen.X, screen.Y, 0, 0, new Size(this.Width - (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0), this.ItemHeight), CopyPixelOperation.SourceCopy);
+
+						// save offset in Y from top of item
+						_draggedBitmapOffsetY = e.Y - y;
+					}
+
+					// make the bitmap darker
+					Lighten(_draggedBitmap, -10);
+
+					// moved enough so start drag
+					this.DoDragDrop(this.CurrentItem, DragDropEffects.Move);
+				}
+			}
+			else if (e.Button == System.Windows.Forms.MouseButtons.None)
+			{
+				SetCursor(e.Location);
+			}
+
+			base.OnMouseMove(e);
 		}
 
 		/// <summary>
@@ -395,8 +443,35 @@ namespace WinAuth
 		/// <param name="e"></param>
 		protected override void OnDragOver(DragEventArgs e)
 		{
-			e.Effect = DragDropEffects.Move;
-			//base.OnDragOver(drgevent);
+			Rectangle screen = this.Parent.RectangleToScreen(new Rectangle(this.Location.X, this.Location.Y, this.Width, this.Height));
+			Point mousePoint = new Point(e.X, e.Y);
+			if (screen.Contains(mousePoint) == false)
+			{
+				e.Effect = DragDropEffects.None;
+			}
+			else if (_draggedBitmap != null)
+			{
+				e.Effect = DragDropEffects.Move;
+				using (Graphics g = this.CreateGraphics())
+				{
+					Point mouseClientPoint = this.PointToClient(mousePoint);
+					int x = 0;
+					int y = Math.Max(mouseClientPoint.Y - _draggedBitmapOffsetY, 0);
+					Rectangle rect = new Rectangle(x, y, _draggedBitmap.Width, _draggedBitmap.Height);
+					g.DrawImageUnscaled(_draggedBitmap, rect);
+
+					if (_draggedBitmapRect != Rectangle.Empty)
+					{
+						// invalidate the extent between the old rect and this one
+						Region region = new Region(rect);
+						region.Union(_draggedBitmapRect);
+						region.Exclude(rect);
+						this.Invalidate(region);
+					}
+
+					_draggedBitmapRect = rect;
+				}
+			}
 		}
 
 		/// <summary>
@@ -1275,6 +1350,54 @@ namespace WinAuth
 			int y = this.ItemHeight * item.Index;
 			Rectangle rect = new Rectangle(0, 0, this.Width, this.Height);
 			this.Invalidate(rect, false);
+		}
+
+		/// <summary>
+		/// Convert a Bitmap into grayscale
+		/// http://stackoverflow.com/questions/4669317/how-to-convert-a-bitmap-image-to-black-and-white-in-c
+		/// </summary>
+		/// <param name="bmp">Bitmap to convert</param>
+		/// <returns>Original bitmap but grayscale</returns>
+		private static Bitmap GrayScale(Bitmap bmp)
+		{
+			int rgb;
+			Color c;
+
+			for (int y = 0; y < bmp.Height; y++)
+			{
+				for (int x = 0; x < bmp.Width; x++)
+				{
+					c = bmp.GetPixel(x, y);
+					rgb = (int)((c.R * 0.3) + (c.G * 0.59) + (c.B * 0.11));
+					bmp.SetPixel(x, y, Color.FromArgb(rgb, rgb, rgb));
+				}
+			}
+			return bmp;
+		}
+
+		/// <summary>
+		/// Lighten or darken a bitmap
+		/// </summary>
+		/// <param name="bmp">Bitmap</param>
+		/// <param name="amount">amount to change 0-255</param>
+		/// <returns>Original bitmap but darkened</returns>
+		private static Bitmap Lighten(Bitmap bmp, int amount)
+		{
+			Color c;
+			int r, g, b;
+
+			for (int y = 0; y < bmp.Height; y++)
+			{
+				for (int x = 0; x < bmp.Width; x++)
+				{
+					c = bmp.GetPixel(x, y);
+					r = Math.Max(Math.Min(c.R + amount, 255), 0);
+					g = Math.Max(Math.Min(c.G + amount, 255), 0);
+					b = Math.Max(Math.Min(c.B + amount, 255), 0);
+					bmp.SetPixel(x, y, Color.FromArgb(r, g, b));
+				}
+			}
+			return bmp;
 		}
 
 		#endregion

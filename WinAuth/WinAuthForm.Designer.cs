@@ -282,6 +282,7 @@
 			this.Shown += new System.EventHandler(this.WinAuthForm_Shown);
 			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WinAuthForm_MouseDown);
 			this.Resize += new System.EventHandler(this.WinAuthForm_Resize);
+			this.ResizeEnd += new System.EventHandler(this.WinAuthForm_ResizeEnd);
 			this.authenticatorMenu.ResumeLayout(false);
 			this.commandPanel.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.metroStyleManager)).EndInit();
