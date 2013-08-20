@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="label1.Text" xml:space="preserve">
+  <data name="newLabel1.Text" xml:space="preserve">
     <value>1. Go to www.battle.net and login to your account.
 2. Click Security Options from the top menu, choose "Authenticator". Make sure you choose the MOBILE authenticator. Click "Attach Authenticator".
 3. You will received a confirmation email. Please follow its instructions.</value>

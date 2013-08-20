@@ -1344,6 +1344,11 @@ namespace WinAuth
 						index = this.Items.Count - 1;
 					}
 					this.CurrentItem = (this.Items.Count != 0 ? this.Items[index] as AuthenticatorListitem : null);
+					// reset the correct indexes of our items
+					for (int i = 0; i < this.Items.Count; i++)
+					{
+						(this.Items[i] as AuthenticatorListitem).Index = i;
+					}
 				}
 			}
 			else if (menuitem.Name == "renameMenuItem")
