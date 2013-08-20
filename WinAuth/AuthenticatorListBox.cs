@@ -77,6 +77,11 @@ namespace WinAuth
 		public string LastCode { get; set; }
 
 		/// <summary>
+		/// If this item is being dragged
+		/// </summary>
+		public bool Dragging { get; set; }
+
+		/// <summary>
 		/// A count for password protected to allow multipel unprotect operations
 		/// </summary>
 		public int UnprotectCount { get; set; }
@@ -196,6 +201,11 @@ namespace WinAuth
 		private Bitmap _draggedBitmap;
 
 		/// <summary>
+		/// Item that is being dragged
+		/// </summary>
+		private AuthenticatorListitem _draggedItem;
+
+		/// <summary>
 		/// Offset of last position of dragged bitmap so we can paint behind it
 		/// </summary>
 		private Rectangle _draggedBitmapRect;
@@ -204,6 +214,16 @@ namespace WinAuth
 		/// Offset of mouseY and top of item
 		/// </summary>
 		private int _draggedBitmapOffsetY;
+
+		/// <summary>
+		/// Last TopIndex if we scrolled while dragging
+		/// </summary>
+		private int? _lastDragTopIndex;
+
+		/// <summary>
+		/// When we last changed the TopIndex
+		/// </summary>
+		private DateTime _lastDragScroll;
 
 		/// <summary>
 		/// Default constructor for our authenticator list box
@@ -215,6 +235,7 @@ namespace WinAuth
 			this.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
 			this.ReadOnly = true;
 			this.AllowDrop = true;
+			this.DoubleBuffered = true;
 
 			// hook the scroll event
 			this.Scrolled += AuthenticatorListBox_Scrolled;
@@ -334,8 +355,6 @@ namespace WinAuth
 		{
 			// set the currnet item based on position
 			SetCurrentItem(e.Location);
-			//SetCursor(e.Location);
-
 			_mouseDownLocation = e.Location;
 
 			base.OnMouseDown(e);
@@ -390,6 +409,10 @@ namespace WinAuth
 				_draggedBitmap = null;
 				this.Invalidate(_draggedBitmapRect);
 			}
+			if (_draggedItem != null)
+			{
+				_draggedItem = null;
+			}
 		}
 
 		/// <summary>
@@ -407,6 +430,8 @@ namespace WinAuth
 				int dy = Math.Abs(_mouseDownLocation.Y - e.Location.Y);
 				if (dx > 2 || dy > 2)
 				{
+					_draggedItem = this.CurrentItem;
+
 					// get a snapshot of the current item for the drag
 					bool hasvscroll = (this.Height < (this.Items.Count * this.ItemHeight));
 					_draggedBitmap = new Bitmap(this.Width - (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0), this.ItemHeight);
@@ -425,8 +450,11 @@ namespace WinAuth
 					// make the bitmap darker
 					Lighten(_draggedBitmap, -10);
 
+					_draggedItem.Dragging = true;
+					this.RefreshItem(_draggedItem);
+
 					// moved enough so start drag
-					this.DoDragDrop(this.CurrentItem, DragDropEffects.Move);
+					this.DoDragDrop(_draggedItem, DragDropEffects.Move);
 				}
 			}
 			else if (e.Button == System.Windows.Forms.MouseButtons.None)
@@ -475,31 +503,117 @@ namespace WinAuth
 		}
 
 		/// <summary>
+		/// Check if we should continue dragging
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnQueryContinueDrag(QueryContinueDragEventArgs e)
+		{
+			// if ESC is pressed, always stop
+			if (e.EscapePressed == true)
+			{
+				e.Action = DragAction.Cancel;
+
+				if (_draggedItem != null)
+				{
+					_draggedItem.Dragging = false;
+					this.RefreshItem(_draggedItem);
+					_draggedItem = null;
+				}
+				if (_draggedBitmap != null)
+				{
+					_draggedBitmap.Dispose();
+					_draggedBitmap = null;
+					this.Invalidate(_draggedBitmapRect);
+				}
+				_mouseDownLocation = Point.Empty;
+			}
+			else
+			{
+				DateTime now = DateTime.Now;
+				Rectangle screen = this.Parent.RectangleToScreen(new Rectangle(this.Location.X, this.Location.Y, this.Width, this.Height));
+				Point mousePoint = Cursor.Position;
+
+				// if we are at the top or bottom, scroll every 150ms
+				if (mousePoint.Y >= screen.Bottom)
+				{
+					int visible = this.ClientSize.Height / this.ItemHeight;
+					int maxtopindex = Math.Max(this.Items.Count - visible + 1, 0);
+					if (this.TopIndex < maxtopindex && now.Subtract(_lastDragScroll).TotalMilliseconds >= 150)
+					{
+						this.TopIndex++;
+						_lastDragScroll = now;
+						this.Refresh();
+					}
+				}
+				else if (mousePoint.Y <= screen.Top)
+				{
+					int visible = this.ClientSize.Height / this.ItemHeight;
+					if (this.TopIndex > 0 && now.Subtract(_lastDragScroll).TotalMilliseconds >= 150)
+					{
+						this.TopIndex--;
+						_lastDragScroll = now;
+						this.Refresh();
+					}
+				}
+				_lastDragTopIndex = this.TopIndex;
+
+				base.OnQueryContinueDrag(e);
+			}
+		}
+
+		/// <summary>
 		/// When a dragdrop operation has completed
 		/// </summary>
 		/// <param name="e"></param>
 		protected override void OnDragDrop(DragEventArgs e)
 		{
-			Point point = this.PointToClient(new Point(e.X, e.Y));
-			int index = this.IndexFromPoint(point);
-			if (index < 0)
+			AuthenticatorListitem item = e.Data.GetData(typeof(AuthenticatorListitem)) as AuthenticatorListitem;
+			if (item != null)
 			{
-				index = this.Items.Count - 1;
-			}
-			object item = e.Data.GetData(typeof(AuthenticatorListitem));
-			if (item != null && item is AuthenticatorListitem)
-			{
-				this.Items.Remove(item);
-				this.Items.Insert(index, item);
-
-				// set the correct indexes of our items
-				for (int i = 0; i < this.Items.Count; i++)
+				// stop paiting as we reorder to reduce flicker
+				WinAPI.SendMessage(this.Handle, WinAPI.WM_SETREDRAW, 0, IntPtr.Zero);
+				try
 				{
-					(this.Items[i] as AuthenticatorListitem).Index = i;
-				}
+					// get the new index
+					Point point = this.PointToClient(new Point(e.X, e.Y));
+					int index = this.IndexFromPoint(point);
+					if (index < 0)
+					{
+						index = this.Items.Count - 1;
+					}
+					// move the item
+					this.Items.Remove(item);
+					this.Items.Insert(index, item);
 
-				// fire the reordered event
-				Reordered(this, new AuthenticatorListReorderedEventArgs());
+					// set the correct indexes of our items
+					for (int i = 0; i < this.Items.Count; i++)
+					{
+						(this.Items[i] as AuthenticatorListitem).Index = i;
+					}
+
+					// fire the reordered event
+					Reordered(this, new AuthenticatorListReorderedEventArgs());
+
+					// clear state
+					item.Dragging = false;
+					_draggedItem = null;
+					if (_draggedBitmap != null)
+					{
+						_draggedBitmap.Dispose();
+						_draggedBitmap = null;
+					}
+
+					if (_lastDragTopIndex != null)
+					{
+						this.TopIndex = _lastDragTopIndex.Value;
+					}
+				}
+				finally
+				{
+					// resume painting
+					WinAPI.SendMessage(this.Handle, WinAPI.WM_SETREDRAW, 1, IntPtr.Zero);
+				}
+				this.Refresh();
 			}
 			else
 			{
@@ -1342,13 +1456,21 @@ namespace WinAuth
 		}
 
 		/// <summary>
-		/// Refresh the  current item by invalidating it
+		/// Refresh the current item by invalidating it
 		/// </summary>
 		private void RefreshCurrentItem()
 		{
-			var item = this.CurrentItem;
-			int y = this.ItemHeight * item.Index;
-			Rectangle rect = new Rectangle(0, 0, this.Width, this.Height);
+			RefreshItem(this.CurrentItem);
+		}
+
+		/// <summary>
+		/// Refresh the item by invalidating it
+		/// </summary>
+		private void RefreshItem(AuthenticatorListitem item)
+		{
+			bool hasvscroll = (this.Height < (this.Items.Count * this.ItemHeight));
+			int y = (this.ItemHeight * item.Index) - (this.ItemHeight * this.TopIndex);
+			Rectangle rect = new Rectangle(0, y, this.Width, this.Height);
 			this.Invalidate(rect, false);
 		}
 
@@ -1442,12 +1564,29 @@ namespace WinAuth
 				return;
 			}
 
+			AuthenticatorListitem item = this.Items[e.Index] as AuthenticatorListitem;
+			WinAuthAuthenticator auth = item.Authenticator;
+
+			// if the item is being dragged, we draw a blank placeholder
+			if (item.Dragging == true)
+			{
+				if (cliprect.IntersectsWith(e.Bounds) == true)
+				{
+					using (var brush = new SolidBrush(SystemColors.ControlLightLight))
+					{
+						using (Pen pen = new Pen(SystemColors.Control))
+						{
+							e.Graphics.DrawRectangle(pen, e.Bounds);
+							e.Graphics.FillRectangle(brush, e.Bounds);
+						}
+					}
+				}
+				return;
+			}
+
 			// draw the requested item
 			using (var brush = new SolidBrush(e.ForeColor))
 			{
-				AuthenticatorListitem item = this.Items[e.Index] as AuthenticatorListitem;
-				WinAuthAuthenticator auth = item.Authenticator;
-
 				bool showCode = (auth.AutoRefresh == true || item.DisplayUntil > DateTime.Now);
 
 				e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
