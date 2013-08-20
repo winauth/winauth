@@ -33,7 +33,7 @@
     <MinimumRequiredVersion>3.0.10.0</MinimumRequiredVersion>
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>57</ApplicationRevision>
+    <ApplicationRevision>58</ApplicationRevision>
     <ApplicationVersion>3.0.11.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -66,7 +66,7 @@
     <ApplicationIcon>winauth.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>A7301FD16D96D9DE77A40F2F2B09B65DA91F9F61</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>F61975099D14D6E0C04E21747F96A289F5AA9989</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>codesign.pfx</ManifestKeyFile>
