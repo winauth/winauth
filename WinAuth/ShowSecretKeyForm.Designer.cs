@@ -46,57 +46,41 @@ namespace WinAuth
 		private void InitializeComponent()
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShowSecretKeyForm));
-			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.allowCopyCheckBox = new System.Windows.Forms.CheckBox();
+			this.allowCopyCheckBox = new MetroFramework.Controls.MetroCheckBox();
 			this.secretKeyField = new WinAuth.SecretTextBox();
 			this.qrImage = new System.Windows.Forms.PictureBox();
-			this.label4 = new System.Windows.Forms.Label();
-			this.btnClose = new System.Windows.Forms.Button();
-			this.groupBox1.SuspendLayout();
+			this.label4 = new MetroFramework.Controls.MetroLabel();
+			this.btnClose = new MetroFramework.Controls.MetroButton();
+			this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
 			((System.ComponentModel.ISupportInitialize)(this.qrImage)).BeginInit();
 			this.SuspendLayout();
-			// 
-			// groupBox1
-			// 
-			this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.groupBox1.Controls.Add(this.allowCopyCheckBox);
-			this.groupBox1.Controls.Add(this.secretKeyField);
-			this.groupBox1.Controls.Add(this.qrImage);
-			this.groupBox1.Controls.Add(this.label4);
-			this.groupBox1.Location = new System.Drawing.Point(12, 12);
-			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(652, 237);
-			this.groupBox1.TabIndex = 0;
-			this.groupBox1.TabStop = false;
 			// 
 			// allowCopyCheckBox
 			// 
 			this.allowCopyCheckBox.AutoSize = true;
-			this.allowCopyCheckBox.Location = new System.Drawing.Point(487, 211);
+			this.allowCopyCheckBox.Location = new System.Drawing.Point(23, 246);
 			this.allowCopyCheckBox.Name = "allowCopyCheckBox";
-			this.allowCopyCheckBox.Size = new System.Drawing.Size(77, 17);
+			this.allowCopyCheckBox.Size = new System.Drawing.Size(82, 15);
 			this.allowCopyCheckBox.TabIndex = 5;
 			this.allowCopyCheckBox.Text = "Allow copy";
-			this.allowCopyCheckBox.UseVisualStyleBackColor = true;
+			this.allowCopyCheckBox.UseSelectable = true;
 			this.allowCopyCheckBox.CheckedChanged += new System.EventHandler(this.allowCopyCheckBox_CheckedChanged);
 			// 
 			// secretKeyField
 			// 
 			this.secretKeyField.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F);
-			this.secretKeyField.Location = new System.Drawing.Point(414, 175);
+			this.secretKeyField.Location = new System.Drawing.Point(23, 210);
 			this.secretKeyField.Multiline = true;
 			this.secretKeyField.Name = "secretKeyField";
 			this.secretKeyField.SecretMode = false;
-			this.secretKeyField.Size = new System.Drawing.Size(223, 30);
+			this.secretKeyField.Size = new System.Drawing.Size(361, 30);
 			this.secretKeyField.SpaceOut = 0;
 			this.secretKeyField.TabIndex = 2;
 			// 
 			// qrImage
 			// 
-			this.qrImage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.qrImage.BackColor = System.Drawing.SystemColors.ControlDark;
-			this.qrImage.Location = new System.Drawing.Point(451, 16);
+			this.qrImage.Location = new System.Drawing.Point(126, 317);
 			this.qrImage.Name = "qrImage";
 			this.qrImage.Size = new System.Drawing.Size(150, 150);
 			this.qrImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -105,12 +89,9 @@ namespace WinAuth
 			// 
 			// label4
 			// 
-			this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.label4.Location = new System.Drawing.Point(6, 16);
+			this.label4.Location = new System.Drawing.Point(23, 60);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(404, 156);
+			this.label4.Size = new System.Drawing.Size(361, 147);
 			this.label4.TabIndex = 1;
 			this.label4.Text = resources.GetString("label4.Text");
 			// 
@@ -118,41 +99,53 @@ namespace WinAuth
 			// 
 			this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnClose.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.btnClose.Location = new System.Drawing.Point(589, 264);
+			this.btnClose.Location = new System.Drawing.Point(309, 467);
 			this.btnClose.Name = "btnClose";
 			this.btnClose.Size = new System.Drawing.Size(75, 23);
 			this.btnClose.TabIndex = 4;
 			this.btnClose.Text = "Close";
-			this.btnClose.UseVisualStyleBackColor = true;
+			this.btnClose.UseSelectable = true;
+			// 
+			// metroLabel1
+			// 
+			this.metroLabel1.Location = new System.Drawing.Point(23, 281);
+			this.metroLabel1.Name = "metroLabel1";
+			this.metroLabel1.Size = new System.Drawing.Size(361, 33);
+			this.metroLabel1.TabIndex = 1;
+			this.metroLabel1.Text = "You can also scan the QR code with your mobile device.";
 			// 
 			// ShowSecretKeyForm
 			// 
 			this.AcceptButton = this.btnClose;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.BorderStyle = MetroFramework.Forms.MetroFormBorderStyle.FixedSingle;
 			this.CancelButton = this.btnClose;
-			this.ClientSize = new System.Drawing.Size(677, 299);
+			this.ClientSize = new System.Drawing.Size(407, 513);
+			this.Controls.Add(this.allowCopyCheckBox);
 			this.Controls.Add(this.btnClose);
-			this.Controls.Add(this.groupBox1);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+			this.Controls.Add(this.secretKeyField);
+			this.Controls.Add(this.qrImage);
+			this.Controls.Add(this.metroLabel1);
+			this.Controls.Add(this.label4);
 			this.Name = "ShowSecretKeyForm";
+			this.Resizable = false;
 			this.ShowIcon = false;
 			this.Text = "Secret Key";
 			this.Load += new System.EventHandler(this.ShowSecretKeyForm_Load);
-			this.groupBox1.ResumeLayout(false);
-			this.groupBox1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.qrImage)).EndInit();
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
 		#endregion
 
-		private System.Windows.Forms.GroupBox groupBox1;
-		private System.Windows.Forms.Button btnClose;
-		private System.Windows.Forms.Label label4;
+		private MetroFramework.Controls.MetroButton btnClose;
+		private MetroFramework.Controls.MetroLabel label4;
 		private SecretTextBox secretKeyField;
 		private System.Windows.Forms.PictureBox qrImage;
-		private System.Windows.Forms.CheckBox allowCopyCheckBox;
+		private MetroFramework.Controls.MetroCheckBox allowCopyCheckBox;
+		private MetroFramework.Controls.MetroLabel metroLabel1;
 	}
 }

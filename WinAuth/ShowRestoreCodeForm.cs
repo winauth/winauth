@@ -30,7 +30,7 @@ namespace WinAuth
 	/// <summary>
 	/// Form display initialization confirmation.
 	/// </summary>
-	public partial class ShowRestoreCodeForm : Form
+	public partial class ShowRestoreCodeForm : ResourceForm
 	{
 		/// <summary>
 		/// Current authenticator

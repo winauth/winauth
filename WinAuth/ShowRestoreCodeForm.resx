@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="label4.Text" xml:space="preserve">
-    <value>The following are the Serial Number and Restore Code for your authenticator.
+    <value>The following are the Serial Number and Restore Code for your Battle.net authenticator.
 
 When your Authenticator was created, it was registered on the Battle.net servers and it can be retrieved using these two pieces of information.
 

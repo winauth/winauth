@@ -30,7 +30,7 @@ namespace WinAuth
 	/// <summary>
 	/// Form display initialization confirmation.
 	/// </summary>
-	public partial class ShowTrionSecretForm : Form
+	public partial class ShowTrionSecretForm : ResourceForm
 	{
 		/// <summary>
 		/// Current authenticator
