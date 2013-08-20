@@ -1360,6 +1360,19 @@ namespace WinAuth
 				RenameTextbox.Visible = true;
 				RenameTextbox.Focus();
 			}
+			else if (menuitem.Name == "syncMenuItem")
+			{
+				Cursor cursor = Cursor.Current;
+				try {
+					Cursor.Current = Cursors.WaitCursor;
+					auth.AuthenticatorData.Sync();
+					RefreshItem(item);
+				}
+				finally
+				{
+					Cursor.Current = cursor;
+				}
+			}
 			else if (menuitem.Name.StartsWith("iconMenuItem_") == true)
 			{
 				if (menuitem.Tag is string && string.Compare((string)menuitem.Tag, "OTHER") == 0)
