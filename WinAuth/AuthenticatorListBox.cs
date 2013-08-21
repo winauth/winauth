@@ -1090,7 +1090,7 @@ namespace WinAuth
 			menuitem.Visible = !auth.AutoRefresh;
 			//
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "copyCodeMenuItem").FirstOrDefault() as ToolStripMenuItem;
-			menuitem.Enabled = !(auth.AutoRefresh == false && item.DisplayUntil < DateTime.Now);
+			menuitem.Enabled = !auth.AutoRefresh;
 			//
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showRestoreCodeMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Visible = (auth.AuthenticatorData is BattleNetAuthenticator);
@@ -1217,7 +1217,7 @@ namespace WinAuth
 				}
 				try
 				{
-					auth.CopyCodeToClipboard(this.Parent as Form, item.LastCode);
+					auth.CopyCodeToClipboard(this.Parent as Form);
 				}
 				finally
 				{
