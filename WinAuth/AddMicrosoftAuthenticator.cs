@@ -37,7 +37,7 @@ namespace WinAuth
 	/// <summary>
 	/// Form class for create a new Battle.net authenticator
 	/// </summary>
-	public partial class AddMicrosoftAuthenticator : Form
+	public partial class AddMicrosoftAuthenticator : ResourceForm
 	{
 		/// <summary>
 		/// Form instantiation
@@ -119,14 +119,22 @@ namespace WinAuth
 				this.DialogResult = System.Windows.Forms.DialogResult.None;
 				return;
 			}
-			if (this.Authenticator.AuthenticatorData == null)
+
+			bool first = !this.newAuthenticatorProgress.Visible;
+			if (verifyAuthenticator(privatekey) == false)
 			{
-				WinAuthForm.ErrorDialog(this.Owner, "Please enter the Secret Code and click Verify Authenticator");
 				this.DialogResult = System.Windows.Forms.DialogResult.None;
 				return;
 			}
-			if (verifyAuthenticator(privatekey) == false)
+			if (first == true)
 			{
+				this.DialogResult = System.Windows.Forms.DialogResult.None;
+				return;
+			}
+
+			if (this.Authenticator.AuthenticatorData == null)
+			{
+				WinAuthForm.ErrorDialog(this.Owner, "Please enter the Secret Code and click Verify Authenticator");
 				this.DialogResult = System.Windows.Forms.DialogResult.None;
 				return;
 			}

@@ -31,7 +31,7 @@ namespace WinAuth
 	/// <summary>
 	/// Form class for create a new Battle.net authenticator
 	/// </summary>
-	public partial class AddTrionAuthenticator : Form
+	public partial class AddTrionAuthenticator : ResourceForm
 	{
 		/// <summary>
 		/// Form instantiation
@@ -193,16 +193,6 @@ namespace WinAuth
 		private void defianceIcon_Click(object sender, EventArgs e)
 		{
 			defianceIconRadioButton.Checked = true;
-		}
-
-		/// <summary>
-		/// Select one of the icons
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void endOfNationsIcon_Click(object sender, EventArgs e)
-		{
-			endOfNationIconRadioButton.Checked = true;
 		}
 
 		/// <summary>

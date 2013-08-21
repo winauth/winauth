@@ -37,7 +37,7 @@ namespace WinAuth
 	/// <summary>
 	/// Form class for create a new Battle.net authenticator
 	/// </summary>
-	public partial class AddGoogleAuthenticator : Form
+	public partial class AddGoogleAuthenticator : ResourceForm
 	{
 		/// <summary>
 		/// Form instantiation
@@ -62,8 +62,26 @@ namespace WinAuth
 		private void AddGoogleAuthenticator_Load(object sender, EventArgs e)
 		{
 			nameField.Text = this.Authenticator.Name;
+			codeField.SecretMode = true;
 		}
 
+		/// <summary>
+		/// Timer tick to show code
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void timer_Tick(object sender, EventArgs e)
+		{
+			if (this.Authenticator.AuthenticatorData != null && codeProgress.Visible == true)
+			{
+				int time = (int)(this.Authenticator.AuthenticatorData.ServerTime / 1000L) % 30;
+				codeProgress.Value = time + 1;
+				if (time == 0)
+				{
+					codeField.Text = this.Authenticator.AuthenticatorData.CurrentCode;
+				}
+			}
+		}
 
 		/// <summary>
 		/// Click the OK button to verify and add the authenticator
@@ -79,7 +97,13 @@ namespace WinAuth
 				this.DialogResult = System.Windows.Forms.DialogResult.None;
 				return;
 			}
+			bool first = !this.codeProgress.Visible;
 			if (verifyAuthenticator(privatekey) == false)
+			{
+				this.DialogResult = System.Windows.Forms.DialogResult.None;
+				return;
+			}
+			if (first == true)
 			{
 				this.DialogResult = System.Windows.Forms.DialogResult.None;
 				return;
@@ -87,17 +111,19 @@ namespace WinAuth
 		}
 
 		/// <summary>
-		/// Click button to show QR code
+		/// Click verify button to load and check code
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void showQrCodeButton_Click(object sender, EventArgs e)
+		private void verifyButton_Click(object sender, EventArgs e)
 		{
 			string privatekey = this.secretCodeField.Text.Trim();
-			if (string.IsNullOrEmpty(privatekey) == false)
+			if (privatekey.Length == 0)
 			{
-				verifyAuthenticator(privatekey);
+				WinAuthForm.ErrorDialog(this.Owner, "Please enter the Secret Code");
+				return;
 			}
+			verifyAuthenticator(privatekey);
 		}
 
 		/// <summary>
@@ -273,18 +299,11 @@ namespace WinAuth
 				auth.Sync();
 				this.Authenticator.AuthenticatorData = auth;
 
-				string url = "otpauth://" + authtype + "/" + this.Authenticator.Name + "?secret=" + privatekey;
-				BarcodeWriter writer = new BarcodeWriter();
-				writer.Format = BarcodeFormat.QR_CODE;
-				writer.Options = new ZXing.Common.EncodingOptions { Width = qrImage.Width, Height = qrImage.Height, Margin = 0 };
-				qrImage.Image = writer.Write(url);
+				codeProgress.Visible = true;
 
-				string summary = string.Empty;
-				if (string.IsNullOrEmpty(this.Authenticator.Name) == false)
-				{
-					summary += this.Authenticator.Name + Environment.NewLine;
-				}
-				summaryInfoLabel.Text = summary;
+				string key = Base32.getInstance().Encode(this.Authenticator.AuthenticatorData.SecretKey);
+				this.secretCodeField.Text = Regex.Replace(key, ".{3}", "$0 ").Trim();
+				this.codeField.Text = auth.CurrentCode;
 			}
 			catch (Exception irre)
 			{
@@ -296,8 +315,6 @@ namespace WinAuth
 		}
 
 #endregion
-
-
 
 	}
 }

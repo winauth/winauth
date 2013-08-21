@@ -419,7 +419,7 @@
 			// 
 			// newRestoreCodeField
 			// 
-			this.newRestoreCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+			this.newRestoreCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.newRestoreCodeField.Location = new System.Drawing.Point(126, 257);
 			this.newRestoreCodeField.Multiline = true;
 			this.newRestoreCodeField.Name = "newRestoreCodeField";
@@ -430,7 +430,7 @@
 			// 
 			// newLoginCodeField
 			// 
-			this.newLoginCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+			this.newLoginCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.newLoginCodeField.Location = new System.Drawing.Point(126, 218);
 			this.newLoginCodeField.Multiline = true;
 			this.newLoginCodeField.Name = "newLoginCodeField";
@@ -441,7 +441,7 @@
 			// 
 			// newSerialNumberField
 			// 
-			this.newSerialNumberField.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+			this.newSerialNumberField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.newSerialNumberField.Location = new System.Drawing.Point(126, 189);
 			this.newSerialNumberField.Multiline = true;
 			this.newSerialNumberField.Name = "newSerialNumberField";
