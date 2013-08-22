@@ -268,11 +268,19 @@ namespace WinAuth
 			}
 
 			// wait until the control,shift,alt keys have been lifted
-			//while (WinAPI.GetKeyState((UInt16)WinAPI.VirtualKeyCode.VK_CONTROL) < 0 || WinAPI.GetKeyState((UInt16)WinAPI.VirtualKeyCode.VK_SHIFT) < 0 || WinAPI.GetKeyState((UInt16)WinAPI.VirtualKeyCode.VK_MENU) < 0)
-			while (InputSimulator.IsKeyDown(VirtualKeyCode.SHIFT) || InputSimulator.IsKeyDown(VirtualKeyCode.CONTROL) || InputSimulator.IsKeyDown(VirtualKeyCode.MENU))
+			byte[] keystate = new byte[256];
+			long waitUntil = DateTime.Now.AddSeconds(5).Ticks; // don't wait forever
+			while (WinAPI.GetKeyboardState(keystate) == true && DateTime.Now.Ticks < waitUntil 
+				&& ((keystate[(int)WinAPI.VirtualKeyCode.VK_SHIFT] & 0x80) != 0
+				|| (keystate[(int)WinAPI.VirtualKeyCode.VK_CONTROL] & 0x80) != 0
+				|| (keystate[(int)WinAPI.VirtualKeyCode.VK_MENU] & 0x80) != 0))
 			{
 				Application.DoEvents();
 				System.Threading.Thread.Sleep(50);
+			}
+			if (DateTime.Now.Ticks >= waitUntil)
+			{
+				return;
 			}
 
 			// replace any {CODE} items

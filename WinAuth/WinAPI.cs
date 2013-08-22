@@ -360,6 +360,9 @@ namespace WinAuth
 		internal static extern UInt32 SendInput(UInt32 numberOfInputs, INPUT[] inputs, Int32 sizeOfInputStructure);
 		[DllImport("user32.dll", SetLastError = true)]
 		internal static extern Int16 GetKeyState(UInt16 virtualKeyCode);
+		[DllImport("user32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		internal static extern bool GetKeyboardState(byte[] lpKeyState);
 		[DllImport("User32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		internal static extern bool BlockInput([MarshalAs(UnmanagedType.Bool)] bool fBlockIt);
