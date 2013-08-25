@@ -249,26 +249,30 @@ namespace WinAuth
 			georequest.ContentType = "application/json";
 			// get response
 			string responseString = null;
-			using (HttpWebResponse georesponse = (HttpWebResponse)georequest.GetResponse())
+			try
 			{
-				// OK?
-				if (georesponse.StatusCode == HttpStatusCode.OK)
+				using (HttpWebResponse georesponse = (HttpWebResponse)georequest.GetResponse())
 				{
-					using (MemoryStream ms = new MemoryStream())
+					// OK?
+					if (georesponse.StatusCode == HttpStatusCode.OK)
 					{
-						using (Stream bs = georesponse.GetResponseStream())
+						using (MemoryStream ms = new MemoryStream())
 						{
-							byte[] temp = new byte[RESPONSE_BUFFER_SIZE];
-							int read;
-							while ((read = bs.Read(temp, 0, RESPONSE_BUFFER_SIZE)) != 0)
+							using (Stream bs = georesponse.GetResponseStream())
 							{
-								ms.Write(temp, 0, read);
+								byte[] temp = new byte[RESPONSE_BUFFER_SIZE];
+								int read;
+								while ((read = bs.Read(temp, 0, RESPONSE_BUFFER_SIZE)) != 0)
+								{
+									ms.Write(temp, 0, read);
+								}
+								responseString = Encoding.UTF8.GetString(ms.ToArray());
 							}
-							responseString = Encoding.UTF8.GetString(ms.ToArray());
 						}
 					}
 				}
 			}
+			catch (Exception) { }
 			if (string.IsNullOrEmpty(responseString) == false)
 			{
 				// not worth a full json parser, just regex it
@@ -339,45 +343,51 @@ namespace WinAuth
 			byte[] encrypted = rsa.ProcessBlock(data, 0, data.Length);
 
 			// call the enroll server
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(GetMobileUrl(region) + ENROLL_PATH);
-			request.Method = "POST";
-			request.ContentType = "application/octet-stream";
-			request.ContentLength = encrypted.Length;
-			Stream requestStream = request.GetRequestStream();
-			requestStream.Write(encrypted, 0, encrypted.Length);
-			requestStream.Close();
 			byte[] responseData = null;
-			using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+			try
 			{
-				// OK?
-				if (response.StatusCode != HttpStatusCode.OK)
+				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(GetMobileUrl(region) + ENROLL_PATH);
+				request.Method = "POST";
+				request.ContentType = "application/octet-stream";
+				request.ContentLength = encrypted.Length;
+				Stream requestStream = request.GetRequestStream();
+				requestStream.Write(encrypted, 0, encrypted.Length);
+				requestStream.Close();
+				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
 				{
-					throw new InvalidEnrollResponseException(string.Format("{0}: {1}", (int)response.StatusCode, response.StatusDescription));
-				}
-
-				// load back the buffer - should only be a byte[45]
-				using (MemoryStream ms = new MemoryStream())
-				{
-					//using (BufferedStream bs = new BufferedStream(response.GetResponseStream()))
-					using (Stream bs = response.GetResponseStream())
+					// OK?
+					if (response.StatusCode != HttpStatusCode.OK)
 					{
-						byte[] temp = new byte[RESPONSE_BUFFER_SIZE];
-						int read;
-						while ((read = bs.Read(temp, 0, RESPONSE_BUFFER_SIZE)) != 0)
-						{
-							ms.Write(temp, 0, read);
-						}
-						responseData = ms.ToArray();
+						throw new InvalidEnrollResponseException(string.Format("{0}: {1}", (int)response.StatusCode, response.StatusDescription));
+					}
 
-						// check it is correct size
-						if (responseData.Length != ENROLL_RESPONSE_SIZE)
+					// load back the buffer - should only be a byte[45]
+					using (MemoryStream ms = new MemoryStream())
+					{
+						//using (BufferedStream bs = new BufferedStream(response.GetResponseStream()))
+						using (Stream bs = response.GetResponseStream())
 						{
-						  throw new InvalidEnrollResponseException(string.Format("Invalid response data size (expected 45 got {0})", responseData.Length));
+							byte[] temp = new byte[RESPONSE_BUFFER_SIZE];
+							int read;
+							while ((read = bs.Read(temp, 0, RESPONSE_BUFFER_SIZE)) != 0)
+							{
+								ms.Write(temp, 0, read);
+							}
+							responseData = ms.ToArray();
+
+							// check it is correct size
+							if (responseData.Length != ENROLL_RESPONSE_SIZE)
+							{
+								throw new InvalidEnrollResponseException(string.Format("Invalid response data size (expected 45 got {0})", responseData.Length));
+							}
 						}
 					}
 				}
 			}
-
+			catch (Exception ex)
+			{
+				throw new InvalidEnrollResponseException("Cannot contact Battle.net servers: " + ex.Message);
+			}
 			// return data:
 			// 00-07 server time (Big Endian)
 			// 08-24 serial number (17)
