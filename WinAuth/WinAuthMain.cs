@@ -54,12 +54,12 @@ namespace WinAuth
 		/// <summary>
 		/// URL to post error reports
 		/// </summary>
-		public const string WINAUTH_BUG_URL = "http://www.winauth.com/bug";
+		public const string WINAUTH_BUG_URL = "https://winauth.com/bug";
 
 		/// <summary>
 		/// URL to get latest information
 		/// </summary>
-		public const string WINAUTH_UPDATE_URL = "http://www.winauth.com/current-version.xml";
+		public const string WINAUTH_UPDATE_URL = "https://winauth.com/current-version.xml";
 
 		/// <summary>
 		/// Set of inbuilt icons and authenticator types
