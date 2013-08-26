@@ -743,13 +743,12 @@ namespace WinAuth
 		{
 			if (Config.AutoSize == true)
 			{
-				this.Width = 420; // hard code till we ajdust for best label width
+				this.Width = Math.Max(420, authenticatorList.Margin.Horizontal + authenticatorList.GetMaxItemWidth() + (this.Width - authenticatorList.Width));
 
 				int height = this.Height - authenticatorList.Height;
 				height += (this.Config.Count * authenticatorList.ItemHeight);
 				this.Height = height;
 
-				//this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 				this.Resizable = false;
 			}
 			else
@@ -1600,9 +1599,8 @@ namespace WinAuth
 				}
 				notifyIcon.Visible = useTrayIcon;
 			}
-			else if (args.PropertyName == "AutoSize")
+			else if (args.PropertyName == "AutoSize" || (args.PropertyName == "Authenticator" && args.AuthenticatorChangedEventArgs.Property == "Name"))
 			{
-				//this.FormBorderStyle = (this.Config.AutoSize ? System.Windows.Forms.FormBorderStyle.FixedSingle : System.Windows.Forms.FormBorderStyle.Sizable);
 				setAutoSize();
 				this.Invalidate();
 			}

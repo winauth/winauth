@@ -85,6 +85,11 @@ namespace WinAuth
 		/// A count for password protected to allow multipel unprotect operations
 		/// </summary>
 		public int UnprotectCount { get; set; }
+
+		/// <summary>
+		/// Width of item for autosizing
+		/// </summary>
+		public int AutoWidth { get; set; }
 	}
 
 	/// <summary>
@@ -684,7 +689,7 @@ namespace WinAuth
 			get
 			{
 				bool hasvscroll = (this.Height < (this.Items.Count * this.ItemHeight));
-				int labelMaxWidth = GetMaxLabelWidth(this.Width - this.Margin.Horizontal - this.DefaultPadding.Horizontal - (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0));
+				int labelMaxWidth = GetMaxAvailableLabelWidth(this.Width - this.Margin.Horizontal - this.DefaultPadding.Horizontal - (hasvscroll ? SystemInformation.VerticalScrollBarWidth : 0));
 				if (_renameTextbox == null)
 				{
 					_renameTextbox = new TextBox();
@@ -770,6 +775,8 @@ namespace WinAuth
 				string newname = RenameTextbox.Text.Trim();
 				if (newname.Length != 0)
 				{
+					// force the autowidth to be recaculated when we set the name
+					item.AutoWidth = 0;
 					item.Authenticator.Name = newname;
 					RefreshItem(item.Index);
 				}
@@ -1545,13 +1552,42 @@ namespace WinAuth
 		#region Owner Draw
 
 		/// <summary>
-		/// Calculate the maximum label with based on the currnet control size
+		/// Calculate the maximum available label with based on the currnet control size
 		/// </summary>
 		/// <param name="totalWidth">control size</param>
 		/// <returns>maximum possible width for label</returns>
-		protected int GetMaxLabelWidth(int totalWidth)
+		protected int GetMaxAvailableLabelWidth(int totalWidth)
 		{
 			return totalWidth - MARGIN_LEFT - ICON_WIDTH - ICON_MARGIN_RIGHT - PIE_WIDTH - MARGIN_RIGHT;
+		}
+
+		/// <summary>
+		/// Calculate the maximum label width based on the currnet names
+		/// </summary>
+		/// <param name="totalWidth">control size</param>
+		/// <returns>maximum possible width for label</returns>
+		public int GetMaxItemWidth()
+		{
+			var items = this.Items.Cast<AuthenticatorListitem>();
+			if (items.Where(i => i.AutoWidth == 0).Count() != 0)
+			{
+				using (Graphics g = this.CreateGraphics())
+				{
+					using (var font = new Font(this.Font.FontFamily, FONT_SIZE, FontStyle.Regular))
+					{
+						foreach (AuthenticatorListitem item in items.Where(i => i.AutoWidth == 0))
+						{
+							WinAuthAuthenticator auth = item.Authenticator;
+
+							SizeF labelsize = g.MeasureString(auth.Name, font);
+							item.AutoWidth = MARGIN_LEFT + ICON_WIDTH + ICON_MARGIN_RIGHT + (int)Math.Ceiling(labelsize.Width) + PIE_WIDTH + MARGIN_RIGHT;
+						}
+					}
+				}
+			}
+
+			int maxWidth = this.Items.Cast<AuthenticatorListitem>().Max(i => i.AutoWidth);
+			return maxWidth;
 		}
 
 		/// <summary>
@@ -1614,7 +1650,10 @@ namespace WinAuth
 				{
 					using (var icon = auth.Icon)
 					{
-						e.Graphics.DrawImage(icon, new PointF(e.Bounds.X + MARGIN_LEFT, e.Bounds.Y + MARGIN_TOP));
+						if (icon != null)
+						{
+							e.Graphics.DrawImage(icon, new PointF(e.Bounds.X + MARGIN_LEFT, e.Bounds.Y + MARGIN_TOP));
+						}
 					}
 				}
 
@@ -1622,7 +1661,7 @@ namespace WinAuth
 				{
 					string label = auth.Name;
 					SizeF labelsize = e.Graphics.MeasureString(label.ToString(), font);
-					int labelMaxWidth = GetMaxLabelWidth(e.Bounds.Width);
+					int labelMaxWidth = GetMaxAvailableLabelWidth(e.Bounds.Width);
 					if (labelsize.Width > labelMaxWidth)
 					{
 						StringBuilder newlabel = new StringBuilder(label + "...");
@@ -1635,7 +1674,6 @@ namespace WinAuth
 					rect = new Rectangle(e.Bounds.X + 64, e.Bounds.Y + MARGIN_TOP, (int)labelsize.Height, (int)labelsize.Width);
 					if (cliprect.IntersectsWith(rect) == true)
 					{
-						//e.Graphics.DrawString(label, font, brush, new PointF(e.Bounds.X + 64, e.Bounds.Y + 8));
 						e.Graphics.DrawString(label, font, brush, new RectangleF(e.Bounds.X + MARGIN_LEFT + ICON_WIDTH + ICON_MARGIN_RIGHT, e.Bounds.Y + MARGIN_TOP, labelMaxWidth, labelsize.Height));
 					}
 
