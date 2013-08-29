@@ -1409,11 +1409,17 @@ namespace WinAuth
 							{
 								if (iconimage.Width != ICON_WIDTH || iconimage.Height != ICON_HEIGHT)
 								{
-									Image.GetThumbnailImageAbort thumbNailCallback = new Image.GetThumbnailImageAbort(ThumbnailCallback);
-									using (Bitmap scaled = iconimage.GetThumbnailImage(ICON_WIDTH, ICON_HEIGHT, thumbNailCallback, System.IntPtr.Zero) as Bitmap)
-									{
-										auth.Icon = scaled;
-									}
+                  using (Bitmap scaled = new Bitmap(ICON_WIDTH, ICON_HEIGHT))
+                  {
+                    using (Graphics g = Graphics.FromImage(scaled))
+                    {
+                      g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                      g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                      g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                      g.DrawImage(iconimage, new Rectangle(0, 0, ICON_WIDTH, ICON_HEIGHT));
+                    }
+                    auth.Icon = scaled;
+                  }
 								}
 								else
 								{
@@ -1469,15 +1475,6 @@ namespace WinAuth
 					ProtectAuthenticator(item);
 				}
 			}
-		}
-
-		/// <summary>
-		/// Callback used for Image's thumbnail creator
-		/// </summary>
-		/// <returns></returns>
-		public bool ThumbnailCallback()
-		{
-			return false;
 		}
 
 		/// <summary>
