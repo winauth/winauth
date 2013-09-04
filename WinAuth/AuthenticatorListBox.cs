@@ -1566,6 +1566,7 @@ namespace WinAuth
 		public int GetMaxItemWidth()
 		{
 			var items = this.Items.Cast<AuthenticatorListitem>();
+
 			if (items.Where(i => i.AutoWidth == 0).Count() != 0)
 			{
 				using (Graphics g = this.CreateGraphics())

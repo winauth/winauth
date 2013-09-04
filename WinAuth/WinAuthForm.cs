@@ -743,7 +743,14 @@ namespace WinAuth
 		{
 			if (Config.AutoSize == true)
 			{
-				this.Width = Math.Max(420, authenticatorList.Margin.Horizontal + authenticatorList.GetMaxItemWidth() + (this.Width - authenticatorList.Width));
+				if (this.Config.Count != 0)
+				{
+					this.Width = Math.Max(420, authenticatorList.Margin.Horizontal + authenticatorList.GetMaxItemWidth() + (this.Width - authenticatorList.Width));
+				}
+				else
+				{
+					this.Width = 420;
+				}
 
 				int height = this.Height - authenticatorList.Height;
 				height += (this.Config.Count * authenticatorList.ItemHeight);
