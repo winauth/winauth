@@ -33,7 +33,7 @@
     <MinimumRequiredVersion>3.0.10.0</MinimumRequiredVersion>
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>3</ApplicationRevision>
+    <ApplicationRevision>6</ApplicationRevision>
     <ApplicationVersion>3.0.15.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -68,7 +68,7 @@
   <PropertyGroup>
     <ManifestCertificateThumbprint>F61975099D14D6E0C04E21747F96A289F5AA9989</ManifestCertificateThumbprint>
   </PropertyGroup>
-  <PropertyGroup>
+  <PropertyGroup Condition="Exists('$(MSBuildProjectDirectory)codesign.pfx')">
     <ManifestKeyFile>codesign.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
@@ -78,7 +78,7 @@
     <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
   <PropertyGroup />
-  <PropertyGroup>
+  <PropertyGroup Condition="Exists('$(MSBuildProjectDirectory)codesign.pfx')">
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup />
@@ -94,6 +94,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Crypto, Version=1.7.4137.9688, Culture=neutral, PublicKeyToken=a4292a325f69b123, processorArchitecture=MSIL">
@@ -343,7 +346,6 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="codesign.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
@@ -436,9 +438,6 @@
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
-  </Target>
-  <Target Name="AfterCompile">
-    <Exec Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\bin\signtool.exe&quot; sign /d &quot;WinAuth&quot; /du &quot;https://winauth.com/downloads&quot; /f &quot;$(ProjectDir)..\codesign.pfx&quot; /v &quot;$(ProjectDir)obj\$(ConfigurationName)\$(TargetFileName)&quot;" />
   </Target>
   -->
 </Project>
