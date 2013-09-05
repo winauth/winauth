@@ -21,8 +21,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Reflection;
 using System.Security;
 using System.Security.Cryptography;
 using System.Windows.Forms;
@@ -82,6 +84,12 @@ namespace WinAuth
 		private string BuildDiagnostics()
 		{
 			StringBuilder diag = new StringBuilder();
+
+			Version version;
+			if (Version.TryParse(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion, out version) == true)
+			{
+				diag.Append("Version:" + version.ToString(4));
+			}
 
 			// add winauth log
 			string dir = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuthMain.APPLICATION_NAME);
