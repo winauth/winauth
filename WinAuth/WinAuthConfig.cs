@@ -354,7 +354,14 @@ namespace WinAuth
 			}
 			else
 			{
-				WinAuthHelper.WriteRegistryValue(name, value);
+				if (value == null)
+				{
+					WinAuthHelper.DeleteRegistryKey(name);
+				}
+				else
+				{
+					WinAuthHelper.WriteRegistryValue(name, value);
+				}
 			}
 		}
 
