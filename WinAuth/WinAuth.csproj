@@ -103,9 +103,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
-    <Reference Include="InputSimulator">
-      <HintPath>..\Third Party\WindowsInputSimulator\bin\Release\InputSimulator.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -417,6 +414,10 @@
     <ProjectReference Include="..\Authenticator\Authenticator.csproj">
       <Project>{eaf2d5ce-d817-453a-8a32-3d531570ae04}</Project>
       <Name>Authenticator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Third Party\InputSimulator\InputSimulator.csproj">
+      <Project>{3549cd6f-80f8-450f-b99e-cf0a736b1f2a}</Project>
+      <Name>InputSimulator</Name>
     </ProjectReference>
     <ProjectReference Include="..\Third Party\MetroFramework\MetroFramework.Design\MetroFramework.Design.csproj">
       <Project>{7316584d-9a16-4280-a8ab-6d45198c6e4d}</Project>

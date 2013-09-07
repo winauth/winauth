@@ -324,6 +324,9 @@ namespace WinAuth
 								// run the command
 								switch (cmd)
 								{
+									case "BS":
+										SendKey('\x08', delay, repeat);
+										break;
 									case "TAB":
 										SendKey('\t', delay, repeat);
 										break;
@@ -401,8 +404,6 @@ namespace WinAuth
 		/// <param name="repeat">number of times</param>
 		private void SendKey(string key, int delay, int repeat)
 		{
-			// escape any special codes for SendKeys
-			key = Regex.Replace(key, @"([()+\^%~{}])", "{$1}", RegexOptions.Multiline);
 			for (; repeat > 0; repeat--)
 			{
 				// Issue#100: change to use InputSimulator as SendKeys does not work for internation keyboards
