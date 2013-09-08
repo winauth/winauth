@@ -347,8 +347,10 @@ namespace WinAuth
 			}
 #endif
 
+#if !MONO
 			// create the updater and check for update if appropriate
 			if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed == false)
+#endif
 			{
 				Updater = new WinAuthUpdater(this.Config);
 
@@ -1279,7 +1281,10 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void newVersionLink_Click(object sender, EventArgs e)
 		{
+#if !MONO
+			// create the updater and check for update if appropriate
 			if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed == false)
+#endif
 			{
 				ShowUpdaterForm();
 			}
@@ -1355,7 +1360,10 @@ namespace WinAuth
 
 			menu.Items.Add(new ToolStripSeparator());
 
+#if !MONO
+			// create the updater and check for update if appropriate
 			if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed == false)
+#endif
 			{
 				menuitem = new ToolStripMenuItem(strings.MenuUpdates + "...");
 				menuitem.Name = "aboutUpdatesMenuItem";

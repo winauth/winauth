@@ -108,12 +108,14 @@ namespace WinAuth
     [STAThread]
     static void Main()
     {
+#if !MONO
 			try
 			{
 				using (var instance = new SingleGlobalInstance(5000))
 				{
 					if (!System.Diagnostics.Debugger.IsAttached)
 					{
+#endif
 						AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 						Application.ThreadException += OnThreadException;
 						Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
@@ -127,6 +129,7 @@ namespace WinAuth
 							LogException(ex);
 							throw;
 						}
+#if !MONO
 					}
 					else
 					{
@@ -139,7 +142,8 @@ namespace WinAuth
 				// instance already running
 				MessageBox.Show(string.Format(strings.AlreadyRunning, APPLICATION_NAME), APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 			}
-    }
+#endif
+		}
 
 		static void OnThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
 		{
