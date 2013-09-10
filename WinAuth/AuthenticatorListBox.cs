@@ -513,8 +513,11 @@ namespace WinAuth
 		/// <param name="e"></param>
 		protected override void OnQueryContinueDrag(QueryContinueDragEventArgs e)
 		{
+			Rectangle screen = this.Parent.RectangleToScreen(new Rectangle(this.Location.X, this.Location.Y, this.Width, this.Height));
+			Point mousePoint = Cursor.Position;
+
 			// if ESC is pressed, always stop
-			if (e.EscapePressed == true)
+			if (e.EscapePressed == true || ((e.KeyState & 1) == 0 && screen.Contains(mousePoint) == false))
 			{
 				e.Action = DragAction.Cancel;
 
@@ -535,8 +538,6 @@ namespace WinAuth
 			else
 			{
 				DateTime now = DateTime.Now;
-				Rectangle screen = this.Parent.RectangleToScreen(new Rectangle(this.Location.X, this.Location.Y, this.Width, this.Height));
-				Point mousePoint = Cursor.Position;
 
 				// if we are at the top or bottom, scroll every 150ms
 				if (mousePoint.Y >= screen.Bottom)
