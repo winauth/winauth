@@ -81,10 +81,12 @@ namespace WinAuth
 		/// </summary>
 		private bool m_explictClose;
 
+#if !MONO
 		/// <summary>
 		/// Hook for hotkey to send code to window
 		/// </summary>
 		private KeyboardHook m_hook;
+#endif
 
 		/// <summary>
 		/// Flag to say we are processing sending message to other window
@@ -284,8 +286,10 @@ namespace WinAuth
 					setAutoSize();
 					introLabel.Visible = (this.Config.Count == 0);
 
+#if !MONO
 					// reset hotkeys
 					HookHotkeys();
+#endif
 
 					needPassword = false;
 					retry = false;
@@ -394,8 +398,10 @@ namespace WinAuth
 			notifyIcon.Visible = this.Config.UseTrayIcon;
 			notifyIcon.Text = this.Text = WinAuthMain.APPLICATION_TITLE;
 
+#if !MONO
 			// hook hotkeys
 			HookHotkeys();
+#endif
 
 			// save the position of the list within the form else starting as minimized breaks the size
 			_listoffset = new Rectangle(authenticatorList.Left, authenticatorList.Top, (this.Width - authenticatorList.Width), (this.Height - authenticatorList.Height));
@@ -553,6 +559,7 @@ namespace WinAuth
 			addAuthenticatorMenu.Items.Add(subitem);
 		}
 
+#if !MONO
 		/// <summary>
 		/// Unhook the current key hook
 		/// </summary>
@@ -684,6 +691,8 @@ namespace WinAuth
 				}
 			}
 		}
+
+#endif
 
 		/// <summary>
 		/// Put data into the clipboard
@@ -870,8 +879,10 @@ namespace WinAuth
 				return;
 			}
 
+#if !MONO
 			// remove the hotkey hook
 			UnhookHotkeys();
+#endif
 
 			// ensure the notify icon is closed
 			notifyIcon.Visible = false;
@@ -1030,8 +1041,10 @@ namespace WinAuth
 					setAutoSize();
 					introLabel.Visible = (this.Config.Count == 0);
 
+#if !MONO
 					// reset hotkeeys
 					HookHotkeys();
+#endif
 				}
 			}
 		}
@@ -1626,11 +1639,13 @@ namespace WinAuth
 					WinAuthHelper.SetStartWithWindows(this.Config.StartWithWindows);
 				}
 			}
+#if !MONO
 			else if (args.AuthenticatorChangedEventArgs != null && args.AuthenticatorChangedEventArgs.Property == "HotKey")
 			{
 				// rehook hotkeys
 				HookHotkeys();
 			}
+#endif
 
 			// batch up saves so they can be done out of line
 			SaveConfig();

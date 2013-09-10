@@ -46,7 +46,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -125,80 +125,56 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AboutForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="AboutForm.cs" />
     <Compile Include="AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="AddGoogleAuthenticator.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="AddGoogleAuthenticator.cs" />
     <Compile Include="AddGoogleAuthenticator.designer.cs">
       <DependentUpon>AddGoogleAuthenticator.cs</DependentUpon>
     </Compile>
-    <Compile Include="AddGuildWarsAuthenticator.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="AddGuildWarsAuthenticator.cs" />
     <Compile Include="AddGuildWarsAuthenticator.designer.cs">
       <DependentUpon>AddGuildWarsAuthenticator.cs</DependentUpon>
     </Compile>
-    <Compile Include="AddMicrosoftAuthenticator.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="AddMicrosoftAuthenticator.cs" />
     <Compile Include="AddMicrosoftAuthenticator.designer.cs">
       <DependentUpon>AddMicrosoftAuthenticator.cs</DependentUpon>
     </Compile>
-    <Compile Include="AddTrionAuthenticator.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="AddTrionAuthenticator.cs" />
     <Compile Include="AddTrionAuthenticator.designer.cs">
       <DependentUpon>AddTrionAuthenticator.cs</DependentUpon>
     </Compile>
     <Compile Include="AuthenticatorListBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="BetaForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="BetaForm.cs" />
     <Compile Include="BetaForm.designer.cs">
       <DependentUpon>BetaForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ChangePasswordForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="ChangePasswordForm.cs" />
     <Compile Include="ChangePasswordForm.Designer.cs">
       <DependentUpon>ChangePasswordForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="GetPasswordForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="GetPasswordForm.cs" />
     <Compile Include="GetPasswordForm.designer.cs">
       <DependentUpon>GetPasswordForm.cs</DependentUpon>
     </Compile>
     <Compile Include="HotKeySequence.cs" />
-    <Compile Include="DiagnosticForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="DiagnosticForm.cs" />
     <Compile Include="DiagnosticForm.designer.cs">
       <DependentUpon>DiagnosticForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ExceptionForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="ExceptionForm.cs" />
     <Compile Include="ExceptionForm.designer.cs">
       <DependentUpon>ExceptionForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="SetShortcutKeyForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="SetShortcutKeyForm.cs" />
     <Compile Include="SetShortcutKeyForm.Designer.cs">
       <DependentUpon>SetShortcutKeyForm.cs</DependentUpon>
     </Compile>
     <Compile Include="SingleGlobalInstance.cs" />
-    <Compile Include="UnprotectPasswordForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="UnprotectPasswordForm.cs" />
     <Compile Include="UnprotectPasswordForm.designer.cs">
       <DependentUpon>UnprotectPasswordForm.cs</DependentUpon>
     </Compile>
@@ -207,9 +183,7 @@
     </Compile>
     <Compile Include="HotKey.cs" />
     <Compile Include="ISecretTextBox.cs" />
-    <Compile Include="AddBattleNetAuthenticator.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="AddBattleNetAuthenticator.cs" />
     <Compile Include="AddBattleNetAuthenticator.Designer.cs">
       <DependentUpon>AddBattleNetAuthenticator.cs</DependentUpon>
     </Compile>
@@ -231,27 +205,19 @@
     <Compile Include="SecretTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="SetPasswordForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="SetPasswordForm.cs" />
     <Compile Include="SetPasswordForm.Designer.cs">
       <DependentUpon>SetPasswordForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ShowRestoreCodeForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="ShowRestoreCodeForm.cs" />
     <Compile Include="ShowRestoreCodeForm.designer.cs">
       <DependentUpon>ShowRestoreCodeForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ShowSecretKeyForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="ShowSecretKeyForm.cs" />
     <Compile Include="ShowSecretKeyForm.designer.cs">
       <DependentUpon>ShowSecretKeyForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ShowTrionSecretForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="ShowTrionSecretForm.cs" />
     <Compile Include="ShowTrionSecretForm.designer.cs">
       <DependentUpon>ShowTrionSecretForm.cs</DependentUpon>
     </Compile>
@@ -415,17 +381,9 @@
       <Project>{eaf2d5ce-d817-453a-8a32-3d531570ae04}</Project>
       <Name>Authenticator</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Third Party\InputSimulator\InputSimulator.csproj">
-      <Project>{3549cd6f-80f8-450f-b99e-cf0a736b1f2a}</Project>
-      <Name>InputSimulator</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Third Party\MetroFramework\MetroFramework.Design\MetroFramework.Design.csproj">
-      <Project>{7316584d-9a16-4280-a8ab-6d45198c6e4d}</Project>
-      <Name>MetroFramework.Design</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Third Party\MetroFramework\MetroFramework\MetroFramework.csproj">
-      <Project>{bb41ac8b-cbed-4387-a7e0-4567edb3f57f}</Project>
-      <Name>MetroFramework</Name>
+    <ProjectReference Include="..\Third Party\MetroFramework\MetroFramework.Mono\MetroFramework.Mono\MetroFramework.Mono.csproj">
+      <Project>{4d7a6cb4-c59b-42af-8031-89fcee844108}</Project>
+      <Name>MetroFramework.Mono</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

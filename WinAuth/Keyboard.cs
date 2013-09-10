@@ -26,6 +26,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 
+#if !MONO
 using WindowsInput;
 
 namespace WinAuth
@@ -595,3 +596,5 @@ namespace WinAuth
 
 
 }
+
+#endif

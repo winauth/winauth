@@ -25,9 +25,6 @@ using System.ComponentModel;
 using System.Security;
 using System.Windows.Forms;
 
-using MetroFramework.Components;
-using MetroFramework.Drawing;
-using MetroFramework.Interfaces;
 using System.Resources;
 
 namespace WinAuth
