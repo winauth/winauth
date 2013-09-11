@@ -1612,7 +1612,7 @@ namespace WinAuth
 		protected void OnDrawItem(DrawItemEventArgs e, Rectangle cliprect)
 		{
 			// no need to draw nothing
-			if (this.Items.Count == 0)
+			if (this.Items.Count == 0 || e.Index < 0)
 			{
 				return;
 			}
