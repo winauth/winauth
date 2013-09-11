@@ -412,7 +412,12 @@ namespace WinAuth
 				// if initially minizied, we need to hide
 				if (WindowState == FormWindowState.Minimized)
 				{
-					Hide();
+					// hide this and metro owner
+					Form form = this;
+					do
+					{
+						form.Hide();
+					} while ((form = form.Owner) != null);
 				}
 			}
 		}
@@ -831,7 +836,12 @@ namespace WinAuth
 				// if initially minizied, we need to hide
 				if (WindowState == FormWindowState.Minimized)
 				{
-					Hide();
+					// hide this and metro owner
+					Form form = this;
+					do
+					{
+						form.Hide();
+					} while ((form = form.Owner) != null);
 				}
 			}
 
@@ -863,8 +873,12 @@ namespace WinAuth
 			{
 				e.Cancel = true;
 				notifyIcon.Visible = true;
-				//notifyIcon.Text = this.Text;
-				Hide();
+				// hide this and metro owner
+				Form form = this;
+				do
+				{
+					form.Hide();
+				} while ((form = form.Owner) != null);
 				return;
 			}
 
