@@ -25,6 +25,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.XPath;
 using System.Windows;
@@ -44,6 +45,7 @@ using Org.BouncyCastle.Bcpg.OpenPgp;
 using Microsoft.Win32;
 
 using WinAuth.Resources;
+using System.Collections.Specialized;
 
 namespace WinAuth
 {
@@ -371,6 +373,103 @@ namespace WinAuth
         DeleteRegistryKey(RUNKEY + "\\" + WinAuthMain.APPLICATION_NAME);
       }			
     }
+
+		#region HttpUtility
+
+		/// <summary>
+		/// Our own version of HtmlEncode replacing HttpUtility.HtmlEncode so we can remove the System.Web reference
+		/// which isn't available in the .Net client profile
+		/// </summary>
+		/// <param name="text">text to be encoded</param>
+		/// <returns>encoded string</returns>
+		public static string HtmlEncode(string text)
+		{
+			if (string.IsNullOrEmpty(text) == true)
+			{
+				return text;
+			}
+
+			StringBuilder sb = new StringBuilder(text.Length);
+
+			int len = text.Length;
+			for (int i = 0; i < len; i++)
+			{
+				switch (text[i])
+				{
+
+					case '<':
+						sb.Append("&lt;");
+						break;
+					case '>':
+						sb.Append("&gt;");
+						break;
+					case '"':
+						sb.Append("&quot;");
+						break;
+					case '&':
+						sb.Append("&amp;");
+						break;
+					default:
+						if (text[i] > 159)
+						{
+							// decimal numeric entity
+							sb.Append("&#");
+							sb.Append(((int)text[i]).ToString(CultureInfo.InvariantCulture));
+							sb.Append(";");
+						}
+						else
+						{
+							sb.Append(text[i]);
+						}
+						break;
+				}
+			}
+			
+			return sb.ToString();
+		}
+
+		/// <summary>
+		/// Our own version of HttpUtility.ParseQueryString so we can remove the reference to System.Web
+		/// which is not available in client profile.
+		/// </summary>
+		/// <param name="qs">string query string</param>
+		/// <returns>collection of name value pairs</returns>
+		public static NameValueCollection ParseQueryString(string qs)
+		{
+			NameValueCollection pairs = new NameValueCollection();
+
+			// ignore blanks and remove initial "?"
+			if (string.IsNullOrEmpty(qs) == true)
+			{
+				return pairs;
+			}
+			if (qs.StartsWith("?") == true)
+			{
+				qs = qs.Substring(1);
+			}
+
+			// get each a=b&... key-value pair
+			foreach (string p in qs.Split('&'))
+			{
+				string[] keypair = p.Split('=');
+				string key = keypair[0];
+				string v = (keypair.Length >= 2 ? keypair[1] : null);
+				if (string.IsNullOrEmpty(v) == false)
+				{
+					// decode (without using System.Web)
+					string newv;
+					while ((newv = Uri.UnescapeDataString(v)) != v)
+					{
+						v = newv;
+					}
+				}
+				pairs.Add(key, v);
+			}
+
+			return pairs;
+		}
+
+		#endregion
 
 		#region Registry Function
 

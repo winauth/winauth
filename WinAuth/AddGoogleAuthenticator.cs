@@ -28,7 +28,6 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using System.Web;
 
 using ZXing;
 
@@ -280,7 +279,7 @@ namespace WinAuth
 					this.Authenticator.Name = this.nameField.Text = label;
 				}
 
-				NameValueCollection qs = HttpUtility.ParseQueryString(match.Groups[3].Value);
+				NameValueCollection qs = WinAuthHelper.ParseQueryString(match.Groups[3].Value);
 				privatekey = qs["secret"] ?? privatekey;
 			}
 

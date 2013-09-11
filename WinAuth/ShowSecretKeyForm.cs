@@ -24,7 +24,6 @@ using System.Drawing;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using System.Web;
 
 using ZXing;
 
@@ -70,7 +69,7 @@ namespace WinAuth
 			string key = Base32.getInstance().Encode(CurrentAuthenticator.AuthenticatorData.SecretKey);
 			this.secretKeyField.Text = Regex.Replace(key, ".{3}", "$0 ").Trim();
 
-			string url = "otpauth://totp/" + HttpUtility.HtmlEncode(CurrentAuthenticator.Name) + "?secret=" + key;
+			string url = "otpauth://totp/" + WinAuthHelper.HtmlEncode(CurrentAuthenticator.Name) + "?secret=" + key;
 
 			BarcodeWriter writer = new BarcodeWriter();
 			writer.Format = BarcodeFormat.QR_CODE;
