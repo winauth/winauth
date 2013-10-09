@@ -136,7 +136,9 @@
     <value>Change or Remove Password</value>
   </data>
   <data name="ClipboardInUse" xml:space="preserve">
-    <value>Unable to copy to the clipboard. Another application is probably using it.\n\nTry again?</value>
+    <value>Unable to copy to the clipboard. Another application is probably using it.
+
+Try again?</value>
   </data>
   <data name="CopyCode" xml:space="preserve">
     <value>Copy Code</value>
@@ -171,6 +173,9 @@ Do you want to try again?</value>
   </data>
   <data name="HideDetails" xml:space="preserve">
     <value>Hide Details</value>
+  </data>
+  <data name="HotKeyNotAvailable" xml:space="preserve">
+    <value>The shortuct key combination is already in use or not available</value>
   </data>
   <data name="Icon" xml:space="preserve">
     <value>Icon</value>

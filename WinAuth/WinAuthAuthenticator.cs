@@ -74,7 +74,6 @@ namespace WinAuth
     private bool _copyOnCode;
     private bool _hideSerial;
     private HotKey _hotkey;
-		private bool m_ignoreClipboard;
 
 		/// <summary>
 		/// Create the authenticator wrapper
@@ -311,6 +310,11 @@ namespace WinAuth
 					}
 				}
 
+				if (AuthenticatorData == null)
+				{
+					return null;
+				}
+
 				return new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("WinAuth.Resources." + AuthenticatorData.GetType().Name + "Icon.png"));
 			}
 			set
@@ -332,13 +336,8 @@ namespace WinAuth
 		/// <summary>
 		/// Copy the current code to the clipboard
 		/// </summary>
-		public void CopyCodeToClipboard(Form form, string code = null)
+		public void CopyCodeToClipboard(Form form, string code = null, bool showError = false)
 		{
-			if (m_ignoreClipboard == true)
-			{
-				return;
-			}
-
 			if (code == null)
 			{
 				code = AuthenticatorData.CurrentCode;
@@ -347,22 +346,31 @@ namespace WinAuth
 			bool clipRetry = false;
 			do
 			{
-				try
+				bool failed = false;
+				// check if the clipboard is locked
+				if (WinAPI.GetOpenClipboardWindow() != IntPtr.Zero)
 				{
-					Clipboard.Clear();
-					Clipboard.SetDataObject(code, true, 4, 250);
+					failed = true;
 				}
-				catch (ExternalException)
+				else
+				{
+					try
+					{
+						Clipboard.Clear();
+						Clipboard.SetDataObject(code, true, 4, 250);
+					}
+					catch (ExternalException)
+					{
+						failed = true;
+					}
+				}
+
+				if (failed == true && showError == true)
 				{
 					// only show an error the first time
 					clipRetry = (MessageBox.Show(form, strings.ClipboardInUse,
 						WinAuthMain.APPLICATION_NAME,
 						MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
-					if (clipRetry == false)
-					{
-						// dont show error again...gets annoying
-						m_ignoreClipboard = true;
-					}
 				}
 			}
 			while (clipRetry == true);

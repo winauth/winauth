@@ -611,7 +611,9 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to copy to the clipboard. Another application is probably using it.\n\nTry again?.
+        ///   Looks up a localized string similar to Unable to copy to the clipboard. Another application is probably using it.
+        ///
+        ///Try again?.
         /// </summary>
         internal static string ClipboardInUse {
             get {
@@ -710,6 +712,15 @@ namespace WinAuth.Resources {
         internal static string HideDetails {
             get {
                 return ResourceManager.GetString("HideDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The shortuct key combination is already in use or not available.
+        /// </summary>
+        internal static string HotKeyNotAvailable {
+            get {
+                return ResourceManager.GetString("HotKeyNotAvailable", resourceCulture);
             }
         }
         
