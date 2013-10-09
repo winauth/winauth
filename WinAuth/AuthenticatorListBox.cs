@@ -1097,9 +1097,6 @@ namespace WinAuth
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showCodeMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Visible = !auth.AutoRefresh;
 			//
-			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "copyCodeMenuItem").FirstOrDefault() as ToolStripMenuItem;
-			menuitem.Enabled = !auth.AutoRefresh;
-			//
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showRestoreCodeMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Visible = (auth.AuthenticatorData is BattleNetAuthenticator);
 			//
@@ -1225,7 +1222,7 @@ namespace WinAuth
 				}
 				try
 				{
-					auth.CopyCodeToClipboard(this.Parent as Form);
+					auth.CopyCodeToClipboard(this.Parent as Form, null, true);
 				}
 				finally
 				{
@@ -1699,7 +1696,7 @@ namespace WinAuth
 								if (code != item.LastCode && auth.CopyOnCode == true)
 								{
 									// code has changed - copy to clipboard
-									auth.CopyCodeToClipboard(this.Parent as Form);
+									auth.CopyCodeToClipboard(this.Parent as Form, code);
 								}
 							}
 							item.LastCode = code;
