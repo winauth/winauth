@@ -579,22 +579,39 @@ namespace WinAuth
 			UnhookHotkeys();
 
 			// hook hotkey
-			Dictionary<Tuple<Keys, WinAPI.KeyModifiers>, WinAuthAuthenticator> keys = new Dictionary<Tuple<Keys, WinAPI.KeyModifiers>, WinAuthAuthenticator>();
+			List<WinAuthAuthenticator> keys = new List<WinAuthAuthenticator>();
 			foreach (var auth in Config)
 			{
-				if (auth.HotKey != null )
+				if (auth.HotKey != null)
 				{
-					var hotkey = new Tuple<Keys, WinAPI.KeyModifiers>((Keys)auth.HotKey.Key, auth.HotKey.Modifiers);
-					if (keys.ContainsKey(hotkey) == false)
-					{
-						keys.Add(hotkey, auth);
-					}
+					keys.Add(auth);
 				}
 			}
 			if (keys.Count != 0)
 			{
-				m_hook = new KeyboardHook(keys);
-				m_hook.KeyDown += new KeyboardHook.KeyboardHookEventHandler(Hotkey_KeyDown);
+				m_hook = new KeyboardHook(this, keys);
+				m_hook.KeyPressed += new KeyboardHook.KeyboardHookEventHandler(Hotkey_KeyPressed);
+			}
+		}
+
+		/// <summary>
+		/// General Windows Message handler
+		/// </summary>
+		/// <param name="m"></param>
+		protected override void WndProc(ref Message m)
+		{
+			base.WndProc(ref m);
+
+			// pick up the HotKey message from RegisterHotKey and call hook callback
+			if (m.Msg == WinAPI.WM_HOTKEY)
+			{
+				Keys key = (Keys)(((int)m.LParam >> 16) & 0xffff);
+				WinAPI.KeyModifiers modifier = (WinAPI.KeyModifiers)((int)m.LParam & 0xffff);
+
+				if (m_hook != null)
+				{
+					m_hook.KeyCallback(new KeyboardHookEventArgs(key, modifier));
+				}
 			}
 		}
 
@@ -603,14 +620,16 @@ namespace WinAuth
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		void Hotkey_KeyDown(object sender, KeyboardHookEventArgs e)
+		void Hotkey_KeyPressed(object sender, KeyboardHookEventArgs e)
 		{
 			// avoid multiple keypresses being sent
 			if (e.Authenticator != null && Monitor.TryEnter(m_sendingKeys) == true)
 			{
 				try
 				{
-					this.Invoke((MethodInvoker)delegate { HandleHotkey(e.Authenticator); });
+					// set Tag as HotKeyLauncher so we can pull back related authenticator and check for timeout
+					hotkeyTimer.Tag = new HotKeyLauncher(this, e.Authenticator);
+					hotkeyTimer.Enabled = true;
 
 					// mark event as handled
 					e.Handled = true;
@@ -622,6 +641,41 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// Timer tick for hotkey
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		void hotkeyTimer_Tick(object sender, EventArgs e)
+		{
+			HotKeyLauncher data = hotkeyTimer.Tag as HotKeyLauncher;
+
+			// check we don't wait forever
+			if (data.Started.AddSeconds(5) < DateTime.Now)
+			{
+				hotkeyTimer.Enabled = false;
+				return;
+			}
+
+			// wait until the modifiers are released
+			if ((System.Windows.Forms.Control.ModifierKeys & Keys.Alt) != 0
+				|| (System.Windows.Forms.Control.ModifierKeys & Keys.Control) != 0
+				|| (System.Windows.Forms.Control.ModifierKeys & Keys.Shift) != 0)
+			{
+				return;
+			}
+
+			// cancel the timer
+			hotkeyTimer.Enabled = false;
+
+			// invoke the handler method in the correct context
+			data.Form.Invoke((MethodInvoker)delegate { HandleHotkey(data.Authenticator); });
+		}
+
+		/// <summary>
+		/// Process the pressed hotkey by performing the appropriate operation
+		/// </summary>
+		/// <param name="auth">Authenticator</param>
 		private void HandleHotkey(WinAuthAuthenticator auth)
 		{
 			// get the code
@@ -686,7 +740,7 @@ namespace WinAuth
 					keysend.SendKeys(this, command, code);
 				}
 			}
-		}
+	  }
 
 		/// <summary>
 		/// Put data into the clipboard
@@ -1642,6 +1696,39 @@ namespace WinAuth
 			SaveConfig();
     }
 #endregion
+
+		/// <summary>
+		/// Inner class used to form details of hot key
+		/// </summary>
+		class HotKeyLauncher
+		{
+			/// <summary>
+			/// Owning form
+			/// </summary>
+			public WinAuthForm Form { get; set; }
+
+			/// <summary>
+			/// Hotkey authenticator
+			/// </summary>
+			public WinAuthAuthenticator Authenticator { get; set; }
+
+			/// <summary>
+			/// When hotkey was pressed
+			/// </summary>
+			public DateTime Started { get; set; }
+
+			/// <summary>
+			/// Create a new HotKeyLauncher object
+			/// </summary>
+			/// <param name="form">owning Form</param>
+			/// <param name="auth">Authenticator</param>
+			public HotKeyLauncher(WinAuthForm form, WinAuthAuthenticator auth)
+			{
+				Started = DateTime.Now;
+				Form = form;
+				Authenticator = auth;
+			}
+		}
 
   }
 }

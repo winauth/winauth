@@ -153,7 +153,6 @@ namespace WinAuth
 
 			if (this.Hotkey != null)
 			{
-				this.Hotkey.Key = key;
 				WinAPI.KeyModifiers modifiers = WinAPI.KeyModifiers.None;
 				if (shiftToggle.Checked)
 				{
@@ -167,6 +166,16 @@ namespace WinAuth
 				{
 					modifiers |= WinAPI.KeyModifiers.Alt;
 				}
+
+				// check it is available if this is a different hotkey
+				if ((key != this.Hotkey.Key || modifiers != this.Hotkey.Modifiers) && KeyboardHook.IsHotkeyAvailable(this, (Keys)key, modifiers) == false)
+				{
+					WinAuthForm.ErrorDialog(this, strings.HotKeyNotAvailable);
+					this.DialogResult = System.Windows.Forms.DialogResult.None;
+					return;
+				}
+
+				this.Hotkey.Key = key;
 				this.Hotkey.Modifiers = modifiers;
 
 				if (notifyRadioButton.Checked == true)

@@ -193,13 +193,14 @@ namespace WinAuth
 		/// Key modifiers for setting/check alt,ctrl,etc (there is no etc key)
 		/// </summary>
 		[Flags()]
-		public enum KeyModifiers : int
+		public enum KeyModifiers : uint
 		{
 			None = 0,
 			Alt = 1,
 			Control = 2,
 			Shift = 4,
-			Windows = 8
+			Windows = 8,
+			NoRepeat = 0x4000
 		}
 
 		/// <summary>
@@ -210,6 +211,8 @@ namespace WinAuth
 		public const int WM_SYSKEYDOWN = 0x104;
 		public const int WM_SYSKEYUP = 0x105;
 		public const int WM_SETREDRAW = 0x0b;
+		public const int WM_HOTKEY = 0x0312;
+		public const int WM_USER = 0x0400;
 
 		/// <summary>
 		/// Windows constants for capturing scroll events
@@ -337,7 +340,7 @@ namespace WinAuth
 		[DllImport("user32.dll")]
 		internal static extern bool UnhookWindowsHookEx(IntPtr hInstance);
 		[DllImport("user32.dll")]
-		internal static extern int CallNextHookEx(IntPtr id, int code, int wParam, ref KeyboardHookStruct lParam);
+		internal static extern IntPtr CallNextHookEx(IntPtr id, int code, int wParam, ref KeyboardHookStruct lParam);
 		[DllImport("user32.dll", EntryPoint = "PostMessageA", SetLastError = true)]
 		internal static extern bool PostMessage(IntPtr hWnd, uint msg, int wParam, IntPtr lParam);
 		[DllImport("user32.dll", EntryPoint = "SendMessageA", SetLastError = true)]
@@ -360,6 +363,8 @@ namespace WinAuth
 		internal static extern UInt32 SendInput(UInt32 numberOfInputs, INPUT[] inputs, Int32 sizeOfInputStructure);
 		[DllImport("user32.dll", SetLastError = true)]
 		internal static extern Int16 GetKeyState(UInt16 virtualKeyCode);
+		[DllImport("user32.dll", SetLastError = true)]
+		internal static extern Int16 GetAsyncKeyState(UInt16 virtualKeyCode);
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		internal static extern bool GetKeyboardState(byte[] lpKeyState);
@@ -378,6 +383,13 @@ namespace WinAuth
 		[DllImport("user32.dll")]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		internal static extern bool ShowWindow(IntPtr hWnd, ShowWindowCommands nCmdShow);
+
+		[return: MarshalAs(UnmanagedType.Bool)]
+		[DllImport("user32.dll", SetLastError = true)]
+		static extern bool PostMessage(HandleRef hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+		[DllImport("user32.dll")]
+		internal static extern IntPtr GetOpenClipboardWindow();
 
 		public static WINDOWPLACEMENT GetPlacement(IntPtr hwnd)
 		{

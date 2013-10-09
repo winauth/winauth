@@ -54,6 +54,7 @@
 			this.passwordField = new MetroFramework.Controls.MetroTextBox();
 			this.passwordTimer = new System.Windows.Forms.Timer(this.components);
 			this.authenticatorList = new WinAuth.AuthenticatorListBox();
+			this.hotkeyTimer = new System.Windows.Forms.Timer(this.components);
 			this.authenticatorMenu.SuspendLayout();
 			this.commandPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.metroStyleManager)).BeginInit();
@@ -238,6 +239,7 @@
 			// 
 			// authenticatorList
 			// 
+			this.authenticatorList.AllowDrop = true;
 			this.authenticatorList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -255,8 +257,13 @@
 			this.authenticatorList.TabIndex = 0;
 			this.authenticatorList.TabStop = false;
 			this.authenticatorList.Visible = false;
-			this.authenticatorList.Reordered += new WinAuth.AuthenticatorListReorderedHandler(this.authenticatorList_Reordered);
 			this.authenticatorList.ItemRemoved += new WinAuth.AuthenticatorListItemRemovedHandler(this.authenticatorList_ItemRemoved);
+			this.authenticatorList.Reordered += new WinAuth.AuthenticatorListReorderedHandler(this.authenticatorList_Reordered);
+			// 
+			// hotkeyTimer
+			// 
+			this.hotkeyTimer.Interval = 250;
+			this.hotkeyTimer.Tick += new System.EventHandler(this.hotkeyTimer_Tick);
 			// 
 			// WinAuthForm
 			// 
@@ -280,9 +287,9 @@
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.WinAuthForm_FormClosing);
 			this.Load += new System.EventHandler(this.WinAuthForm_Load);
 			this.Shown += new System.EventHandler(this.WinAuthForm_Shown);
+			this.ResizeEnd += new System.EventHandler(this.WinAuthForm_ResizeEnd);
 			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WinAuthForm_MouseDown);
 			this.Resize += new System.EventHandler(this.WinAuthForm_Resize);
-			this.ResizeEnd += new System.EventHandler(this.WinAuthForm_ResizeEnd);
 			this.authenticatorMenu.ResumeLayout(false);
 			this.commandPanel.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.metroStyleManager)).EndInit();
@@ -315,6 +322,7 @@
 		private MetroFramework.Controls.MetroLabel passwordLabel;
 		private System.Windows.Forms.ContextMenuStrip notifyMenu;
 		private MetroFramework.Controls.MetroLink newVersionLink;
+		private System.Windows.Forms.Timer hotkeyTimer;
 
   }
 }

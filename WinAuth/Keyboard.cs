@@ -19,6 +19,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Reflection;
@@ -37,34 +38,14 @@ namespace WinAuth
 	public class KeyboardHook : IDisposable
 	{
 		/// <summary>
-		/// Native Windows calls
+		/// Owning form for hotkey
 		/// </summary>
-		[DllImport("user32.dll")]
-		public static extern IntPtr SetWindowsHookEx(WinAPI.HookType code, KeyboardHookProc callback, IntPtr hInstance, int threadId);
+		private Form m_form;
 
 		/// <summary>
 		/// Our keyboard hook handle
 		/// </summary>
 		private IntPtr m_hook = IntPtr.Zero;
-
-		/// <summary>
-		/// Refernce to hook proc to stop garbage collection - stops working and you'll not know why
-		/// </summary>
-		private KeyboardHookProc m_hookedProc;
-
-		/// <summary>
-		/// Reference to async hook
-		/// </summary>
-		private KeyboardHookAsync m_hookedAsync;
-
-		/// <summary>
-		/// Normal hook deleage
-		/// </summary>
-		/// <param name="code"></param>
-		/// <param name="wParam"></param>
-		/// <param name="lParam"></param>
-		/// <returns></returns>
-		public delegate int KeyboardHookProc(int code, int wParam, ref WinAPI.KeyboardHookStruct lParam);
 
 		/// <summary>
 		/// Async hook delegate
@@ -83,25 +64,21 @@ namespace WinAuth
 		/// <summary>
 		/// User Event for picking up KeyDown
 		/// </summary>
-		public event KeyboardHookEventHandler KeyDown;
-
-		/// <summary>
-		/// User Event for pickup up KeyUp
-		/// </summary>
-		public event KeyboardHookEventHandler KeyUp;
+		public event KeyboardHookEventHandler KeyPressed;
 
 		/// <summary>
 		/// Our keys to watch for. If none in this list send nothing. We hold a key and associated Modifier
 		/// </summary>
-		private Dictionary<Tuple<Keys, WinAPI.KeyModifiers>, WinAuthAuthenticator> m_hookedKeys = new Dictionary<Tuple<Keys, WinAPI.KeyModifiers>, WinAuthAuthenticator>();
+		private List<WinAuthAuthenticator> m_hooked = new List<WinAuthAuthenticator>();
 
 		/// <summary>
 		/// Create out new KeyBoard hook for these keys
 		/// </summary>
 		/// <param name="keys"></param>
-		public KeyboardHook(Dictionary<Tuple<Keys, WinAPI.KeyModifiers>, WinAuthAuthenticator> keys)
+		public KeyboardHook(Form form, List<WinAuthAuthenticator> hookedauths)
 		{
-			m_hookedKeys = keys;
+			m_form = form;
+			m_hooked = hookedauths;
 			Hook();
 		}
 
@@ -126,15 +103,17 @@ namespace WinAuth
 		/// </summary>
 		protected void Hook()
 		{
-			if (m_hook == IntPtr.Zero)
+			for (int i=0; i<m_hooked.Count; i++)
 			{
-				// We have to store the HookProc, so that it is not garbage collected during runtime
-				m_hookedProc = HookProc;
+				WinAuthAuthenticator auth = m_hooked[i];
+				Keys key = (Keys)auth.HotKey.Key;
+				WinAPI.KeyModifiers modifier = auth.HotKey.Modifiers;
 
-				// need instance handle to module to create a system-wide hook
-				IntPtr instance = WinAPI.LoadLibrary("User32");
-				m_hook = SetWindowsHookEx(WinAPI.HookType.WH_KEYBOARD_LL, m_hookedProc, instance, 0);
-				m_hookedAsync = new KeyboardHookAsync(KeyCallback);
+				if (WinAPI.RegisterHotKey(m_form.Handle, i + 1, modifier | WinAPI.KeyModifiers.NoRepeat, key) == false)
+				{
+					// the MOD_NOREPEAT flag is not support in XP or 2003 and we should get a fail, so we call again without it
+					WinAPI.RegisterHotKey(m_form.Handle, i + 1, modifier, key);
+				}
 			}
 		}
 
@@ -143,80 +122,46 @@ namespace WinAuth
 		/// </summary>
 		public void UnHook()
 		{
-			if (m_hook != IntPtr.Zero)
+			for (int i=0; i<m_hooked.Count; i++)
 			{
-				WinAPI.UnhookWindowsHookEx(m_hook);
-				m_hook = IntPtr.Zero;
-
-				// clear the forced references for GC
-				m_hookedAsync = null;
-				m_hookedProc = null;
+				WinAPI.UnregisterHotKey(m_form.Handle, i+1);
 			}
+			m_hooked.Clear();
 		}
 
 		/// <summary>
-		/// This is the main Windows hook callback.
+		/// Check if a specified Hotkey is available
 		/// </summary>
-		/// <param name="code">callback code</param>
-		/// <param name="wParam">key code</param>
-		/// <param name="lParam">key extra info</param>
-		/// <returns>1 if event was handled</returns>
-		[MethodImpl(MethodImplOptions.NoInlining)]
-		public int HookProc(int code, int wParam, ref WinAPI.KeyboardHookStruct lParam)
+		/// <param name="form">owning form</param>
+		/// <param name="key">hot key Key</param>
+		/// <param name="modifier">hoy key Modifier</param>
+		/// <returns>true if available</returns>
+		public static bool IsHotkeyAvailable(Form form, Keys key, WinAPI.KeyModifiers modifier)
 		{
-			// we only look for keyups and downs
-			if (code >= 0 && (wParam == WinAPI.WM_KEYDOWN || wParam == WinAPI.WM_SYSKEYDOWN || wParam == WinAPI.WM_KEYUP || wParam == WinAPI.WM_SYSKEYUP))
+			bool available = WinAPI.RegisterHotKey(form.Handle, 0, modifier, key);
+			if (available == true)
 			{
-				// create out async handler and call it. if we needed to return "handled" chage this to ".Invoke()"
-				KeyboardHookEventArgs kea = new KeyboardHookEventArgs((Keys)lParam.vkCode);
-				if (KeyMatch(wParam, kea) == true)
-				{
-					m_hookedAsync.BeginInvoke(wParam, kea, null, null);
-					return 1;
-				}
+				WinAPI.UnregisterHotKey(form.Handle, 0);
 			}
-
-			return WinAPI.CallNextHookEx(m_hook, code, wParam, ref lParam);
+			return available;
 		}
 
 		/// <summary>
-		/// Check if the key matches one of our hooked keys
+		/// Callback called by Form to initaite press of hotkey
 		/// </summary>
-		/// <param name="code">key code</param>
-		/// <param name="kea">KeyboardHookEventArgs</param>
-		/// <returns>true if there is a match</returns>
-		private bool KeyMatch(int code, KeyboardHookEventArgs kea)
-		{
-			// key and modifers match?
-			foreach (var e in m_hookedKeys)
-			{
-				if (e.Key.Item1 == kea.Key && e.Key.Item2  == kea.Modifiers)
-				{
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		/// <summary>
-		/// Entry point for our actuall Keyboard hook. Check the keys and call User event if neccessary.
-		/// </summary>
-		/// <param name="code">key code</param>
-		/// <param name="kea">EventArgs holding modifiers</param>
-		public void KeyCallback(int code, KeyboardHookEventArgs kea)
+		/// <param name="kea">KeyboardHookEventArgs event args</param>
+		public void KeyCallback(KeyboardHookEventArgs kea)
 		{
 			// key and modifers match?
 			WinAuthAuthenticator match = null;
-			foreach (var e in m_hookedKeys)
+			foreach (var auth in m_hooked)
 			{
-				if (e.Key.Item1 == kea.Key && e.Key.Item2  == kea.Modifiers)
+				if ((Keys)auth.HotKey.Key == kea.Key && auth.HotKey.Modifiers == kea.Modifiers)
 				{
-					match = e.Value;
+					match = auth;
 					break;
 				}
 			}
-			//if (!m_hookedKeys.ContainsKey(kea.Key) || m_hookedKeys[kea.Key] != kea.Modifiers)
 			if (match == null)
 			{
 				return;
@@ -224,13 +169,9 @@ namespace WinAuth
 			kea.Authenticator = match;
 
 			// call user events
-			if ((code == WinAPI.WM_KEYDOWN || code == WinAPI.WM_SYSKEYDOWN) && KeyDown != null)
+			if (KeyPressed != null)
 			{
-				KeyDown(this, kea);
-			}
-			else if ((code == WinAPI.WM_KEYUP || code == WinAPI.WM_SYSKEYUP) && KeyUp != null)
-			{
-				KeyUp(this, kea);
+				KeyPressed(this, kea);
 			}
 		}
 	}
@@ -265,22 +206,6 @@ namespace WinAuth
 			{
 				WinAPI.SetForegroundWindow(m_hWnd);
 				System.Threading.Thread.Sleep(50);
-			}
-
-			// wait until the control,shift,alt keys have been lifted
-			byte[] keystate = new byte[256];
-			long waitUntil = DateTime.Now.AddSeconds(5).Ticks; // don't wait forever
-			while (WinAPI.GetKeyboardState(keystate) == true && DateTime.Now.Ticks < waitUntil 
-				&& ((keystate[(int)WinAPI.VirtualKeyCode.VK_SHIFT] & 0x80) != 0
-				|| (keystate[(int)WinAPI.VirtualKeyCode.VK_CONTROL] & 0x80) != 0
-				|| (keystate[(int)WinAPI.VirtualKeyCode.VK_MENU] & 0x80) != 0))
-			{
-				Application.DoEvents();
-				System.Threading.Thread.Sleep(50);
-			}
-			if (DateTime.Now.Ticks >= waitUntil)
-			{
-				return;
 			}
 
 			// replace any {CODE} items
@@ -561,6 +486,21 @@ namespace WinAuth
 		public bool Handled;
 
 		/// <summary>
+		/// Create a new KeyboardHookEventArgs for a key and modifier
+		/// </summary>
+		/// <param name="key"></param>
+		/// <param name="modifier"></param>
+		public KeyboardHookEventArgs(Keys key, WinAPI.KeyModifiers modifier)
+		{
+			this.Key = key;
+			this.Modifiers = modifier;
+
+			this.Alt = (modifier & WinAPI.KeyModifiers.Alt) != 0;
+			this.Control = (modifier & WinAPI.KeyModifiers.Control) != 0;
+			this.Shift = (modifier & WinAPI.KeyModifiers.Shift) != 0;
+		}
+
+		/// <summary>
 		/// Create a new EventArg for the key
 		/// </summary>
 		/// <param name="keyCode"></param>
@@ -592,6 +532,5 @@ namespace WinAuth
 			catch (Exception) { }
 		}
 	}
-
 
 }

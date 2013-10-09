@@ -175,6 +175,7 @@
     <Compile Include="GetPasswordForm.designer.cs">
       <DependentUpon>GetPasswordForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="HotKeyLauncher.cs" />
     <Compile Include="HotKeySequence.cs" />
     <Compile Include="DiagnosticForm.cs">
       <SubType>Form</SubType>
