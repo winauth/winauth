@@ -151,7 +151,7 @@ namespace WinAuth
 			LogException(e.ExceptionObject as Exception);
 		}
 
-		private static void LogException(Exception ex)
+		public static void LogException(Exception ex)
 		{
 			// add catch for unknown application exceptions to try and get closer to bug
 			StringBuilder capture = new StringBuilder();

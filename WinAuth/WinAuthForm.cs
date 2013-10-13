@@ -206,7 +206,7 @@ namespace WinAuth
 				}
 				catch (Exception ex)
 				{
-					if (ErrorDialog(this, strings.UnknownError + ex.Message, ex, MessageBoxButtons.RetryCancel) == System.Windows.Forms.DialogResult.Cancel)
+					if (ErrorDialog(this, strings.UnknownError + ": " + ex.Message, ex, MessageBoxButtons.RetryCancel) == System.Windows.Forms.DialogResult.Cancel)
 					{
 						this.Close();
 						return;
@@ -302,7 +302,7 @@ namespace WinAuth
 				}
 				catch (Exception ex)
 				{
-					if (ErrorDialog(this, strings.UnknownError + ex.Message, ex, MessageBoxButtons.RetryCancel) == System.Windows.Forms.DialogResult.Cancel)
+					if (ErrorDialog(this, strings.UnknownError + ": " + ex.Message, ex, MessageBoxButtons.RetryCancel) == System.Windows.Forms.DialogResult.Cancel)
 					{
 						return;
 					}
@@ -503,7 +503,13 @@ namespace WinAuth
         e = e.InnerException;
       }
 			message += Environment.NewLine + Environment.NewLine + capture.ToString();
+
+			if (ex != null)
+			{
+				WinAuthMain.LogException(ex);
+			}
 #endif
+
 			return MessageBox.Show(form, message, WinAuthMain.APPLICATION_TITLE, buttons, MessageBoxIcon.Exclamation);
 		}
 
