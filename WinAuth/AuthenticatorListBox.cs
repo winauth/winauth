@@ -429,7 +429,7 @@ namespace WinAuth
 			_mouseMoveLocation = e.Location;
 
 			// if we are moving with LeftMouse down and moved more than 2 pixles then we are dragging
-			if (e.Button == System.Windows.Forms.MouseButtons.Left && _mouseDownLocation != Point.Empty)
+			if (e.Button == System.Windows.Forms.MouseButtons.Left && _mouseDownLocation != Point.Empty && this.Items.Count > 1)
 			{
 				int dx = Math.Abs(_mouseDownLocation.X - e.Location.X);
 				int dy = Math.Abs(_mouseDownLocation.Y - e.Location.Y);
