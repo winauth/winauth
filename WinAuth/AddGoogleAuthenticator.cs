@@ -29,6 +29,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
+using WinAuth.Resources;
+
 using ZXing;
 
 namespace WinAuth
@@ -295,7 +297,6 @@ namespace WinAuth
 			{
 				GoogleAuthenticator auth = new GoogleAuthenticator();
 				auth.Enroll(privatekey);
-				auth.Sync();
 				this.Authenticator.AuthenticatorData = auth;
 
 				codeProgress.Visible = true;
@@ -303,6 +304,11 @@ namespace WinAuth
 				string key = Base32.getInstance().Encode(this.Authenticator.AuthenticatorData.SecretKey);
 				this.secretCodeField.Text = Regex.Replace(key, ".{3}", "$0 ").Trim();
 				this.codeField.Text = auth.CurrentCode;
+
+				if (auth.ServerTimeDiff == 0L)
+				{
+					MessageBox.Show(this, string.Format(strings.AuthenticatorSyncError, "Google"), WinAuthMain.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				}
 			}
 			catch (Exception irre)
 			{

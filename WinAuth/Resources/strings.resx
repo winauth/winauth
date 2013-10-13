@@ -123,6 +123,11 @@
   <data name="AuthenticatorNotImplemented" xml:space="preserve">
     <value>Authenticator not implemented</value>
   </data>
+  <data name="AuthenticatorSyncError" xml:space="preserve">
+    <value>Warning: unable to connect to {0} to set time correctly.
+
+Your code may not be correct</value>
+  </data>
   <data name="AutoRefresh" xml:space="preserve">
     <value>Auto Refresh</value>
   </data>

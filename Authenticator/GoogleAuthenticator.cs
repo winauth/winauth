@@ -115,37 +115,45 @@ namespace WinAuth
     /// </summary>
     public override void Sync()
     {
-      // we use the Header response field from a request to www.google.come
-      HttpWebRequest request = (HttpWebRequest)WebRequest.Create(TIME_SYNC_URL);
-      request.Method = "GET";
-      request.ContentType = "text/html";
-      // get response
-      using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-      {
-        // OK?
-        if (response.StatusCode != HttpStatusCode.OK)
-        {
-          throw new ApplicationException(string.Format("{0}: {1}", (int)response.StatusCode, response.StatusDescription));
-        }
+			try
+			{
+				// we use the Header response field from a request to www.google.come
+				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(TIME_SYNC_URL);
+				request.Method = "GET";
+				request.ContentType = "text/html";
+				// get response
+				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+				{
+					// OK?
+					if (response.StatusCode != HttpStatusCode.OK)
+					{
+						throw new ApplicationException(string.Format("{0}: {1}", (int)response.StatusCode, response.StatusDescription));
+					}
 
-        string headerdate = response.Headers["Date"];
-        if (string.IsNullOrEmpty(headerdate) == false)
-        {
-          DateTime dt;
-          if (DateTime.TryParse(headerdate, out dt) == true)
-          {
-            // get as ms since epoch
-            long dtms = Convert.ToInt64((dt.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalMilliseconds);
+					string headerdate = response.Headers["Date"];
+					if (string.IsNullOrEmpty(headerdate) == false)
+					{
+						DateTime dt;
+						if (DateTime.TryParse(headerdate, out dt) == true)
+						{
+							// get as ms since epoch
+							long dtms = Convert.ToInt64((dt.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalMilliseconds);
 
-            // get the difference between the server time and our current time
-            long serverTimeDiff = dtms - CurrentTime;
+							// get the difference between the server time and our current time
+							long serverTimeDiff = dtms - CurrentTime;
 
-            // update the Data object
-            ServerTimeDiff = serverTimeDiff;
-          }
+							// update the Data object
+							ServerTimeDiff = serverTimeDiff;
+						}
 
-        }
-      }
+					}
+				}
+			}
+			catch (WebException)
+			{
+				// set to zero to force reset
+				ServerTimeDiff = 0;
+			}
     }
 
   }

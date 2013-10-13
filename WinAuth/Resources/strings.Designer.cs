@@ -575,6 +575,17 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Warning: unable to connect to {0} to set time correctly.
+        ///
+        ///Your code may not be correct.
+        /// </summary>
+        internal static string AuthenticatorSyncError {
+            get {
+                return ResourceManager.GetString("AuthenticatorSyncError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Auto Refresh.
         /// </summary>
         internal static string AutoRefresh {
