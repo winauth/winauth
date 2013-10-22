@@ -70,6 +70,19 @@ namespace WinAuth
 		private void allowCopyNewButton_CheckedChanged(object sender, EventArgs e)
 		{
 			newSerialNumberField.SecretMode = !allowCopyNewButton.Checked;
+
+			if (this.Authenticator != null && this.Authenticator.AuthenticatorData != null)
+			{
+				// Issue#122: remove dashes if copyable so can be pasted into Battle.net form
+				if (allowCopyNewButton.Checked == true)
+				{
+					newSerialNumberField.Text = ((BattleNetAuthenticator)this.Authenticator.AuthenticatorData).Serial.Replace("-", "");
+				}
+				else
+				{
+					newSerialNumberField.Text = ((BattleNetAuthenticator)this.Authenticator.AuthenticatorData).Serial;
+				}
+			}
 			newLoginCodeField.SecretMode = !allowCopyNewButton.Checked;
 			newRestoreCodeField.SecretMode = !allowCopyNewButton.Checked;
 		}
