@@ -174,12 +174,13 @@ namespace WinAuth
         return config;
       }
 
+			bool changed = false;
 			try
 			{
 				using (FileStream fs = new FileStream(configFile, FileMode.Open, FileAccess.Read))
 				{
 					XmlReader reader = XmlReader.Create(fs);
-					config.ReadXml(reader, password);
+					changed = config.ReadXml(reader, password);
 				}
 
 				config.Filename = configFile;
@@ -191,6 +192,11 @@ namespace WinAuth
 					{
 						wa.Created = fi.CreationTime;
 					}
+				}
+
+				if (changed == true)
+				{
+					SaveConfig(config);
 				}
 			}
 			catch (EncrpytedSecretDataException )
@@ -285,27 +291,15 @@ namespace WinAuth
     }
 
     /// <summary>
-    /// Save a PGP encrpyted version of the config into the registry for recovery
-    /// </summary>
+    /// Save a PGP encrypted version of the config into the registry for recovery
+		/// 
+		/// Issue#133: this just compounds each time we load, and is really pointless so we are removing it
+		/// but in the meantime we have to clear it out
+		/// </summary>
     /// <param name="config"></param>
 		private static void SaveToRegistry(WinAuthConfig config)
     {
-			// create an unencrypted clone
-			config = config.Clone() as WinAuthConfig;
-			config.PasswordType = Authenticator.PasswordTypes.None;
-
-			// save the whole config
-			using (StringWriter sw = new StringWriter())
-			{
-				XmlWriterSettings xmlsettings = new XmlWriterSettings();
-				xmlsettings.Indent = true;
-				using (XmlWriter xw = XmlWriter.Create(sw, xmlsettings))
-				{
-					config.WriteXmlString(xw, true);
-				}
-
-				config.WriteSetting(WINAUTHREGKEY_CONFIGBACKUP, PGPEncrypt(sw.ToString(), WinAuthHelper.WINAUTH_PGP_PUBLICKEY));
-			}
+			config.WriteSetting(WINAUTHREGKEY_CONFIGBACKUP, null);
     }
 
 		/// <summary>
