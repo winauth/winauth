@@ -45,7 +45,7 @@ namespace WinAuth
   [Serializable()]
 	public class WinAuthConfig : IList<WinAuthAuthenticator>, ICloneable, IWinAuthAuthenticatorChangedListener
   {
-    public static decimal CURRENTVERSION = decimal.Parse(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(2));
+    public static decimal CURRENTVERSION = decimal.Parse(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(2), System.Globalization.CultureInfo.InvariantCulture);
 
     /// <summary>
     /// Event handler fired when a config property is changed
