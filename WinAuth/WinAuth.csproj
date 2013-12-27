@@ -308,6 +308,7 @@
       <DependentUpon>ExceptionForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\strings.de.resx" />
     <EmbeddedResource Include="SetShortcutKeyForm.resx">
       <DependentUpon>SetShortcutKeyForm.cs</DependentUpon>
     </EmbeddedResource>

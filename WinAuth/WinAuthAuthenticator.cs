@@ -334,6 +334,24 @@ namespace WinAuth
 		}
 
 		/// <summary>
+		/// Sync the current authenticator's time with its server
+		/// </summary>
+		public void Sync()
+		{
+			if (AuthenticatorData != null)
+			{
+				try
+				{
+					AuthenticatorData.Sync();
+				}
+				catch (EncrpytedSecretDataException)
+				{
+					// reset lastsync to force sync on next decryption
+				}
+			}
+		}
+
+		/// <summary>
 		/// Copy the current code to the clipboard
 		/// </summary>
 		public void CopyCodeToClipboard(Form form, string code = null, bool showError = false)
@@ -376,8 +394,10 @@ namespace WinAuth
 			while (clipRetry == true);
 		}
 
-    public void ReadXml(XmlReader reader, string password)
+    public bool ReadXml(XmlReader reader, string password)
     {
+			bool changed = false;
+
       Guid id;
       if (Guid.TryParse(reader.GetAttribute("id"), out id) == true)
       {
@@ -416,7 +436,7 @@ namespace WinAuth
       if (reader.IsEmptyElement)
       {
         reader.Read();
-        return;
+        return changed;
       }
 
       reader.Read();
@@ -466,7 +486,7 @@ namespace WinAuth
 							try
 							{
 								// we don't pass the password as they are locked till clicked
-								this.AuthenticatorData.ReadXml(reader);
+								changed = this.AuthenticatorData.ReadXml(reader) || changed;
 							}
 							catch (EncrpytedSecretDataException )
 							{
@@ -504,6 +524,8 @@ namespace WinAuth
           break;
         }
       }
+
+			return changed;
     }
 
     /// <summary>

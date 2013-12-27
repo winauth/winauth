@@ -133,6 +133,11 @@ namespace WinAuth
 		public long ServerTimeDiff { get; set; }
 
 		/// <summary>
+		/// Time of last synced
+		/// </summary>
+		public long LastServerTime { get; set; }
+
+		/// <summary>
 		/// Type of password used to encrypt secretdata
 		/// </summary>
 		public PasswordTypes PasswordType { get; private set; }
@@ -502,25 +507,26 @@ namespace WinAuth
 			if (this.PasswordType != PasswordTypes.None)
 			{
 				// check if the data has changed
-				if (this.SecretData != null)
-				{
-					using (SHA1 sha1 = SHA1.Create())
-					{
-						byte[] secretHash = sha1.ComputeHash(Encoding.UTF8.GetBytes(this.SecretData));
-						if (this.SecretHash == null || secretHash.SequenceEqual(this.SecretHash) == false)
-						{
-							// we need to encrypt changed secret data
-							SetEncryption(this.PasswordType, this.Password);
-						}
-					}
-				}
+				//if (this.SecretData != null)
+				//{
+				//	using (SHA1 sha1 = SHA1.Create())
+				//	{
+				//		byte[] secretHash = sha1.ComputeHash(Encoding.UTF8.GetBytes(this.SecretData));
+				//		if (this.SecretHash == null || secretHash.SequenceEqual(this.SecretHash) == false)
+				//		{
+				//			// we need to encrypt changed secret data
+				//			SetEncryption(this.PasswordType, this.Password);
+				//		}
+				//	}
+				//}
+
 				this.SecretData = null;
 				this.RequiresPassword = true;
 				this.Password = null;
 			}
 		}
 
-		public void Unprotect(string password)
+		public bool Unprotect(string password)
 		{
 			PasswordTypes passwordType = this.PasswordType;
 			if (passwordType == PasswordTypes.None)
@@ -529,13 +535,14 @@ namespace WinAuth
 			}
 
 			// decrypt
+			bool changed = false;
 			try
 			{
 				string data = Authenticator.DecryptSequence(this.EncryptedData, this.PasswordType, password);
 				using (MemoryStream ms = new MemoryStream(Authenticator.StringToByteArray(data)))
 				{
 					XmlReader reader = XmlReader.Create(ms);
-					this.ReadXml(reader, password);
+					changed = this.ReadXml(reader, password) || changed;
 				}
 				this.RequiresPassword = false;
 				// calculate hash of current secretdata
@@ -544,7 +551,35 @@ namespace WinAuth
 					this.SecretHash = sha1.ComputeHash(Encoding.UTF8.GetBytes(this.SecretData));
 				}
 				// keep the password until we reprotect in case data changes
-				this.Password = password; 
+				this.Password = password;
+
+				if (changed == true)
+				{
+					// we need to encrypt changed secret data
+					using (MemoryStream ms = new MemoryStream())
+					{
+						// get the plain version
+						XmlWriterSettings settings = new XmlWriterSettings();
+						settings.Indent = true;
+						settings.Encoding = Encoding.UTF8;
+						using (XmlWriter encryptedwriter = XmlWriter.Create(ms, settings))
+						{
+							WriteToWriter(encryptedwriter);
+						}
+						string encrypteddata = Authenticator.ByteArrayToString(ms.ToArray());
+
+						// update secret hash
+						using (SHA1 sha1 = SHA1.Create())
+						{
+							this.SecretHash = sha1.ComputeHash(Encoding.UTF8.GetBytes(this.SecretData));
+						}
+
+						// encrypt
+						this.EncryptedData = Authenticator.EncryptSequence(encrypteddata, passwordType, password);
+					}
+				}
+
+				return changed;
 			}
 			catch (EncrpytedSecretDataException)
 			{
@@ -557,7 +592,7 @@ namespace WinAuth
 			}
 		}
 
-		public void ReadXml(XmlReader reader, string password = null)
+		public bool ReadXml(XmlReader reader, string password = null)
 		{
 			// decode the password type
 			string encrypted = reader.GetAttribute("encrypted");
@@ -568,7 +603,7 @@ namespace WinAuth
 			{
 				// read the encrypted text from the node
 				this.EncryptedData = reader.ReadElementContentAsString();
-				Unprotect(password);
+				return Unprotect(password);
 
 				//// decrypt
 				//try
@@ -589,15 +624,13 @@ namespace WinAuth
 				//{
 				//	this.PasswordType = passwordType;
 				//}
-
-				return;
 			}
 
 			reader.MoveToContent();
 			if (reader.IsEmptyElement)
 			{
 				reader.Read();
-				return;
+				return false;
 			}
 
 			reader.Read();
@@ -607,6 +640,10 @@ namespace WinAuth
 				{
 					switch (reader.Name)
 					{
+						case "lastservertime":
+							LastServerTime = reader.ReadElementContentAsLong();
+							break;
+
 						case "servertimediff":
 							ServerTimeDiff = reader.ReadElementContentAsLong();
 							break;
@@ -628,6 +665,17 @@ namespace WinAuth
 					reader.Read();
 					break;
 				}
+			}
+
+			// check if we need to sync, or if it's been a week
+			if (ServerTimeDiff == 0 || LastServerTime == 0 || LastServerTime < DateTime.Now.AddDays(-7).Ticks)
+			{
+				Sync();
+				return true;
+			}
+			else
+			{
+				return false;
 			}
 		}
 
@@ -653,6 +701,10 @@ namespace WinAuth
 			{
 				writer.WriteStartElement("servertimediff");
 				writer.WriteString(ServerTimeDiff.ToString());
+				writer.WriteEndElement();
+				//
+				writer.WriteStartElement("lastservertime");
+				writer.WriteString(LastServerTime.ToString());
 				writer.WriteEndElement();
 				//
 				writer.WriteStartElement("secretdata");

@@ -86,7 +86,10 @@ namespace WinAuth
 			// try to unprotect
 			try
 			{
-				Authenticator.AuthenticatorData.Unprotect(password);
+				if (Authenticator.AuthenticatorData.Unprotect(password) == true)
+				{
+					Authenticator.MarkChanged();
+				}
 			}
 			catch (BadPasswordException)
 			{

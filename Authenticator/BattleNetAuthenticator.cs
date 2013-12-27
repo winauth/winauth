@@ -440,10 +440,16 @@ namespace WinAuth
 
 
 		/// <summary>
-		/// Synchorise this authenticator's time with server time. We update our data record with the difference from our UTC time.
+		/// Synchronise this authenticator's time with server time. We update our data record with the difference from our UTC time.
 		/// </summary>
 		public override void Sync()
 		{
+			// check if data is protected
+			if (this.SecretKey == null && this.EncryptedData != null)
+			{
+				throw new EncrpytedSecretDataException();
+			}
+
 			// create a connection to time sync server
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(GetMobileUrl(this.Region) + SYNC_PATH);
 			request.Method = "GET";
@@ -494,6 +500,7 @@ namespace WinAuth
 
 			// update the Data object
 			ServerTimeDiff = serverTimeDiff;
+			LastServerTime = DateTime.Now.Ticks;
 		}
 
 		/// <summary>

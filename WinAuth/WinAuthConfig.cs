@@ -607,8 +607,10 @@ namespace WinAuth
       return clone;
     }
 
-    public void ReadXml(XmlReader reader, string password = null)
+    public bool ReadXml(XmlReader reader, string password = null)
     {
+			bool changed = false;
+
       reader.Read();
       while (reader.EOF == false && reader.IsEmptyElement == true)
       {
@@ -622,7 +624,7 @@ namespace WinAuth
           switch (reader.Name)
           {
             case "WinAuth":
-              ReadXmlInternal(reader, password);
+              changed = ReadXmlInternal(reader, password);
               break;
 
             default:
@@ -636,10 +638,14 @@ namespace WinAuth
           break;
         }
       }
+
+			return changed;
     }
 
-    protected void ReadXmlInternal(XmlReader reader, string password = null)
+    protected bool ReadXmlInternal(XmlReader reader, string password = null)
     {
+			bool changed = false;
+
       decimal version;
       if (decimal.TryParse(reader.GetAttribute("version"), out version) == true)
       {
@@ -658,20 +664,20 @@ namespace WinAuth
 				using (MemoryStream ms = new MemoryStream(Authenticator.StringToByteArray(data)))
 				{
           reader = XmlReader.Create(ms);
-          ReadXml(reader, password);
+          changed = ReadXml(reader, password);
         }
 
 				this.PasswordType = Authenticator.DecodePasswordTypes(encrypted);
 				this.Password = password;
 
-        return;
+        return changed;
       }
 
       reader.MoveToContent();
       if (reader.IsEmptyElement)
       {
         reader.Read();
-        return;
+        return changed;
       }
 
       bool defaultAutoRefresh = true;
@@ -688,7 +694,7 @@ namespace WinAuth
           switch (reader.Name)
           {
 						case "config":
-							ReadXmlInternal(reader, password);
+							changed = ReadXmlInternal(reader, password) || changed;
 							break;
 
             case "alwaysontop":
@@ -739,7 +745,7 @@ namespace WinAuth
 
             case "WinAuthAuthenticator":
 							var wa = new WinAuthAuthenticator();
-              wa.ReadXml(reader, password);
+              changed = wa.ReadXml(reader, password) || changed;
               this.Add(wa);
 							if (this.CurrentAuthenticator == null)
 							{
@@ -816,6 +822,8 @@ namespace WinAuth
           break;
         }
       }
+
+			return changed;
     }
 
     /// <summary>

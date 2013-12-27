@@ -115,6 +115,12 @@ namespace WinAuth
     /// </summary>
     public override void Sync()
     {
+			// check if data is protected
+			if (this.SecretKey == null && this.EncryptedData != null)
+			{
+				throw new EncrpytedSecretDataException();
+			}
+
 			try
 			{
 				// we use the Header response field from a request to www.google.come
@@ -144,6 +150,7 @@ namespace WinAuth
 
 							// update the Data object
 							ServerTimeDiff = serverTimeDiff;
+							LastServerTime = DateTime.Now.Ticks;
 						}
 
 					}

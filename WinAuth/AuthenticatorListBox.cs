@@ -928,7 +928,7 @@ namespace WinAuth
 		/// <param name="item"></param>
 		private void ProtectAuthenticator(AuthenticatorListitem item)
 		{
-			// if alrady protected just decrement counter
+			// if already protected just decrement counter
 			item.UnprotectCount--;
 			if (item.UnprotectCount > 0)
 			{
@@ -1367,15 +1367,25 @@ namespace WinAuth
 			}
 			else if (menuitem.Name == "syncMenuItem")
 			{
+				// check if the authentcated is still protected
+				DialogResult wasprotected = UnprotectAuthenticator(item);
+				if (wasprotected == DialogResult.Cancel)
+				{
+					return;
+				}
 				Cursor cursor = Cursor.Current;
 				try {
 					Cursor.Current = Cursors.WaitCursor;
-					auth.AuthenticatorData.Sync();
+					auth.Sync();
 					RefreshItem(item);
 				}
 				finally
 				{
 					Cursor.Current = cursor;
+					if (wasprotected == DialogResult.OK)
+					{
+						ProtectAuthenticator(item);
+					}
 				}
 			}
 			else if (menuitem.Name.StartsWith("iconMenuItem_") == true)

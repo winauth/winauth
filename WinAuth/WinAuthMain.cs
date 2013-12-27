@@ -190,9 +190,12 @@ namespace WinAuth
 		private static void main()
 		{
 			// Issue #53: set a default culture
-			CultureInfo ci = new CultureInfo("en"); // or en-US, en-GB
-			System.Threading.Thread.CurrentThread.CurrentCulture = ci;
-			System.Threading.Thread.CurrentThread.CurrentUICulture = ci;
+			if (System.Threading.Thread.CurrentThread.CurrentCulture == null || System.Threading.Thread.CurrentThread.CurrentUICulture == null)
+			{
+				CultureInfo ci = new CultureInfo("en"); // or en-US, en-GB
+				System.Threading.Thread.CurrentThread.CurrentCulture = ci;
+				System.Threading.Thread.CurrentThread.CurrentUICulture = ci;
+			}
 
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);

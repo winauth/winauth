@@ -238,7 +238,7 @@ namespace WinAuth
 
 					// get the actual authenticator and ensure it is synced
 					WinAuthAuthenticator importedAuthenticator = config[0];
-					importedAuthenticator.AuthenticatorData.Sync();
+					importedAuthenticator.Sync();
 
 					// make sure there isn't a name clash
 					int rename = 0;
