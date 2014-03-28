@@ -47,6 +47,11 @@ namespace WinAuth
 		public Exception ErrorException { get; set; }
 
 		/// <summary>
+		/// Current config
+		/// </summary>
+		public WinAuthConfig Config { get; set; }
+
+		/// <summary>
 		/// Create the  Form
 		/// </summary>
 		public ExceptionForm()
@@ -98,6 +103,32 @@ namespace WinAuth
 			{
 				diag.Append("--WINAUTH.LOG--").Append(Environment.NewLine);
 				diag.Append(File.ReadAllText(winauthlog)).Append(Environment.NewLine).Append(Environment.NewLine);
+			}
+
+			// add authenticator.xml
+			foreach (string file in Directory.GetFiles(dir, "*.xml"))
+			{
+				diag.Append("--" + file + "--").Append(Environment.NewLine);
+				diag.Append(File.ReadAllText(file)).Append(Environment.NewLine).Append(Environment.NewLine);
+			}
+
+			// add the current config
+			if (this.Config != null)
+			{
+				using (var ms = new MemoryStream())
+				{
+					XmlWriterSettings settings = new XmlWriterSettings();
+					settings.Indent = true;
+					using (var xml = XmlWriter.Create(ms, settings))
+					{
+						this.Config.WriteXmlString(xml);
+					}
+
+					ms.Position = 0;
+
+					diag.Append("-- Config --").Append(Environment.NewLine);
+					diag.Append(new StreamReader(ms).ReadToEnd()).Append(Environment.NewLine).Append(Environment.NewLine);
+				}
 			}
 
 			// add the exception

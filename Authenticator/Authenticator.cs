@@ -910,6 +910,16 @@ namespace WinAuth
       return data;
     }
 
+		//public static void Log(string message)
+		//{
+		//	try
+		//	{
+		//		string dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+		//		File.AppendAllText(Path.Combine(dir, "winauth.log"), message);
+		//	}
+		//	catch (Exception) { }
+		//}
+
 		private static string DecryptSequenceNoHash(string data, PasswordTypes encryptedTypes, string password, bool decode = false)
 		{
 			try
@@ -919,29 +929,35 @@ namespace WinAuth
 				{
 					// we are going to decrypt with the Windows local machine key
 					byte[] cipher = Authenticator.StringToByteArray(data);
+					//Log("Decrypt Machine: " + data + Environment.NewLine);
 					byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
 					if (decode == true)
 					{
+						//Log("Decode Machine: " + ByteArrayToString(plain) + Environment.NewLine);
 						data = Encoding.UTF8.GetString(plain, 0, plain.Length);
 					}
 					else
 					{
 						data = ByteArrayToString(plain);
 					}
+					//Log("Decrypted Machine: " + data + Environment.NewLine);
 				}
 				if ((encryptedTypes & PasswordTypes.User) != 0)
 				{
 					// we are going to decrypt with the Windows User account key
 					byte[] cipher = StringToByteArray(data);
+					//Log("Decrypt User: " + data + Environment.NewLine);
 					byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.CurrentUser);
 					if (decode == true)
 					{
+						//Log("Decode User: " + ByteArrayToString(plain) + Environment.NewLine);
 						data = Encoding.UTF8.GetString(plain, 0, plain.Length);
 					}
 					else
 					{
 						data = ByteArrayToString(plain);
 					}
+					//Log("Decrypted User: " + data + Environment.NewLine);
 				}
 				if ((encryptedTypes & PasswordTypes.Explicit) != 0)
 				{
@@ -950,11 +966,14 @@ namespace WinAuth
 					{
 						throw new EncrpytedSecretDataException();
 					}
+					///Log("Decrypt Explicit: " + password + " " + data + Environment.NewLine);
 					data = Authenticator.Decrypt(data, password, true);
+					//Log("Decrypted Explicit: " + data + Environment.NewLine);
 					if (decode == true)
 					{
 						byte[] plain = Authenticator.StringToByteArray(data);
 						data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+						//Log("Decode Explicit: " + data + Environment.NewLine);
 					}
 				}
 			}
@@ -1121,7 +1140,7 @@ namespace WinAuth
 					outBytes = t;
 				}
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
 				// an exception is due to bad password
 				throw new BadPasswordException();

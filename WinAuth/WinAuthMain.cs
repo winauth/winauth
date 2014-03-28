@@ -161,7 +161,7 @@ namespace WinAuth
 				Exception e = ex;
 				while (e != null)
 				{
-					capture.Append(new StackTrace(e).ToString()).Append(Environment.NewLine);
+					capture.Append(new StackTrace(e, true).ToString()).Append(Environment.NewLine);
 					e = e.InnerException;
 				}
 				//
@@ -179,6 +179,10 @@ namespace WinAuth
 				ExceptionForm report = new ExceptionForm();
 				report.ErrorException = ex;
 				report.TopMost = true;
+				if (_form != null && _form.Config != null)
+				{
+					report.Config = _form.Config;
+				}
 				if (report.ShowDialog() == DialogResult.Cancel)
 				{
 					Process.GetCurrentProcess().Kill();
@@ -186,6 +190,8 @@ namespace WinAuth
 			}
 			catch (Exception) { }
 		}
+
+		private static WinAuthForm _form;
 
 		private static void main()
 		{
@@ -200,7 +206,8 @@ namespace WinAuth
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
-			Application.Run(new WinAuthForm());
+			_form = new WinAuthForm();
+			Application.Run(_form);
 		}
   }
 }

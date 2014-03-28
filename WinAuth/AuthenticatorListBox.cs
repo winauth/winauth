@@ -339,7 +339,7 @@ namespace WinAuth
 							item.LastUpdate = DateTime.MinValue;
 							item.LastCode = null;
 
-							if (item.Authenticator.AuthenticatorData.PasswordType == Authenticator.PasswordTypes.Explicit)
+							if (item.Authenticator.AuthenticatorData != null && item.Authenticator.AuthenticatorData.PasswordType == Authenticator.PasswordTypes.Explicit)
 							{
 								ProtectAuthenticator(item);
 							}
@@ -358,7 +358,7 @@ namespace WinAuth
 		/// <param name="e"></param>
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
-			// set the currnet item based on position
+			// set the current item based on position
 			SetCurrentItem(e.Location);
 			_mouseDownLocation = e.Location;
 
@@ -1760,7 +1760,7 @@ namespace WinAuth
 								}
 							}
 						}
-						else if (auth.AuthenticatorData.RequiresPassword == true)
+						else if (auth.AuthenticatorData != null && auth.AuthenticatorData.RequiresPassword == true)
 						{
 							e.Graphics.DrawImage(WinAuth.Properties.Resources.RefreshIconWithLock, rect);
 						}
