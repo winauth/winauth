@@ -53,6 +53,11 @@ namespace WinAuth
 		/// </summary>
 		public WinAuthAuthenticator Authenticator { get; set; }
 
+		/// <summary>
+		/// If we have already warned about sync error
+		/// </summary>
+		private bool SyncErrorWarned;
+
 #region Form Events
 
 		/// <summary>
@@ -305,8 +310,9 @@ namespace WinAuth
 				this.secretCodeField.Text = Regex.Replace(key, ".{3}", "$0 ").Trim();
 				this.codeField.Text = auth.CurrentCode;
 
-				if (auth.ServerTimeDiff == 0L)
+				if (auth.ServerTimeDiff == 0L && SyncErrorWarned == false)
 				{
+					SyncErrorWarned = true;
 					MessageBox.Show(this, string.Format(strings.AuthenticatorSyncError, "Google"), WinAuthMain.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
 				}
 			}

@@ -1027,12 +1027,32 @@ namespace WinAuth
 			menuitem.DropDownItems.Add("-");
 			this.ContextMenuStrip.Items.Add(menuitem);
 			int iconindex = 1;
-			foreach (string icon in WinAuthMain.AUTHENTICATOR_ICONS.Keys)
+			var parentItem = menuitem;
+			foreach (Tuple<string,string> entry in WinAuthMain.AUTHENTICATOR_ICONS)
 			{
-				string iconfile = WinAuthMain.AUTHENTICATOR_ICONS[icon];
+				string icon = entry.Item1;
+				string iconfile = entry.Item2;
 				if (iconfile.Length == 0)
 				{
-					menuitem.DropDownItems.Add(new ToolStripSeparator());
+					parentItem.DropDownItems.Add(new ToolStripSeparator());
+				}
+				else if (icon.StartsWith("+") == true)
+				{
+					if (parentItem.Tag is ToolStripMenuItem)
+					{
+						parentItem = parentItem.Tag as ToolStripMenuItem;
+					}
+
+					subitem = new ToolStripMenuItem();
+					subitem.Text = icon.Substring(1);
+					//subitem.Name = "iconMenuItem_" + iconindex++;
+					subitem.Tag = parentItem;
+					subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("WinAuth.Resources." + iconfile));
+					subitem.ImageAlign = ContentAlignment.MiddleLeft;
+					subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
+					//subitem.Click += ContextMenu_Click;
+					parentItem.DropDownItems.Add(subitem);
+					parentItem = subitem;
 				}
 				else
 				{
@@ -1044,7 +1064,7 @@ namespace WinAuth
 					subitem.ImageAlign = ContentAlignment.MiddleLeft;
 					subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
 					subitem.Click += ContextMenu_Click;
-					menuitem.DropDownItems.Add(subitem);
+					parentItem.DropDownItems.Add(subitem);
 				}
 			}
 			menuitem.DropDownItems.Add("-");
@@ -1118,7 +1138,7 @@ namespace WinAuth
 			subitem.CheckState = CheckState.Checked;
 			foreach (ToolStripItem iconitem in menuitem.DropDownItems)
 			{
-				if (iconitem is ToolStripMenuItem)
+				if (iconitem is ToolStripMenuItem && iconitem.Tag is string)
 				{
 					ToolStripMenuItem iconmenuitem = (ToolStripMenuItem)iconitem;
 					if (string.IsNullOrEmpty((string)iconmenuitem.Tag) && string.IsNullOrEmpty(auth.Skin) == true)
@@ -1278,6 +1298,31 @@ namespace WinAuth
 				}
 				try
 				{
+					if (wasprotected != DialogResult.OK)
+					{
+						// confirm current main password
+						var mainform = this.Parent as WinAuthForm;
+						if ((mainform.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
+						{
+							bool invalidPassword = false;
+							while (true)
+							{
+								GetPasswordForm checkform = new GetPasswordForm();
+								checkform.InvalidPassword = invalidPassword;
+								var result = checkform.ShowDialog(this);
+								if (result == DialogResult.Cancel)
+								{
+									return;
+								}
+								if (mainform.Config.IsPassword(checkform.Password) == true)
+								{
+									break;
+								}
+								invalidPassword = true;
+							}
+						}
+					}
+
 					// show the serial and restore code for Battle.net authenticator				
 					ShowRestoreCodeForm form = new ShowRestoreCodeForm();
 					form.CurrentAuthenticator = auth;
@@ -1301,6 +1346,31 @@ namespace WinAuth
 				}
 				try
 				{
+					if (wasprotected != DialogResult.OK)
+					{
+						// confirm current main password
+						var mainform = this.Parent as WinAuthForm;
+						if ((mainform.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
+						{
+							bool invalidPassword = false;
+							while (true)
+							{
+								GetPasswordForm checkform = new GetPasswordForm();
+								checkform.InvalidPassword = invalidPassword;
+								var result = checkform.ShowDialog(this);
+								if (result == DialogResult.Cancel)
+								{
+									return;
+								}
+								if (mainform.Config.IsPassword(checkform.Password) == true)
+								{
+									break;
+								}
+								invalidPassword = true;
+							}
+						}
+					}
+
 					// show the secret key for Google authenticator				
 					ShowSecretKeyForm form = new ShowSecretKeyForm();
 					form.CurrentAuthenticator = auth;

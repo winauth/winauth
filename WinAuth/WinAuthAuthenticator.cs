@@ -25,6 +25,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Xml;
+using System.Web;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -617,6 +618,40 @@ namespace WinAuth
 
       writer.WriteEndElement();
     }
+
+		/// <summary>
+		/// Create a KeyUriFormat compatible URL
+		/// See https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
+		/// </summary>
+		/// <returns>string</returns>
+		public string ToUrl()
+		{
+			string extraparams = string.Empty;
+			string issuer = string.Empty;
+			if (this.AuthenticatorData is BattleNetAuthenticator)
+			{
+				issuer = "BattleNet";
+				extraparams += "&serial=" + HttpUtility.UrlEncode(((BattleNetAuthenticator)this.AuthenticatorData).Serial.Replace("-", ""));
+			}
+			else if (this.AuthenticatorData is TrionAuthenticator)
+			{
+				issuer = "Trion";
+			}
+			string label = HttpUtility.UrlEncode(this.Name);
+			string secret = HttpUtility.UrlEncode(Base32.getInstance().Encode(this.AuthenticatorData.SecretKey));
+			if (issuer.Length != 0)
+			{
+				extraparams += "&issuer=" + HttpUtility.UrlEncode(issuer);
+			}
+
+			var url = string.Format("otpauth://totp/{0}?secret={1}&digits={2}{3}",
+				(issuer.Length != 0 ? issuer + ":" + label : label),
+				secret,
+				this.AuthenticatorData.CodeDigits,
+				extraparams);
+
+			return url;
+		}
 
   }
 

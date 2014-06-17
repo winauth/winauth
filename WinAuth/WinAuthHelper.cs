@@ -28,6 +28,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.XPath;
+using System.Web;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -41,6 +42,9 @@ using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Bcpg;
 using Org.BouncyCastle.Bcpg.OpenPgp;
+
+using ICSharpCode.SharpZipLib.Core;
+using ICSharpCode.SharpZipLib.Zip;
 
 using Microsoft.Win32;
 
@@ -367,6 +371,316 @@ namespace WinAuth
         DeleteRegistryKey(RUNKEY + "\\" + WinAuthMain.APPLICATION_NAME);
       }			
     }
+
+		public static List<WinAuthAuthenticator> ImportAuthenticators(Form parent, string file, string password = null, string pgpKey = null)
+		{
+			List<WinAuthAuthenticator> authenticators = new List<WinAuthAuthenticator>();
+
+			StringBuilder lines = new StringBuilder();
+			bool retry;
+			do
+			{
+				retry = false;
+				lines.Length = 0;
+
+				// open the zip file
+				if (string.Compare(Path.GetExtension(file), ".zip", true) == 0)
+				{
+					using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read))
+					{
+						ZipFile zip = null;
+						try
+						{
+							zip = new ZipFile(fs);
+							if (string.IsNullOrEmpty(password) == false)
+							{
+								zip.Password = password;
+							}
+
+							byte[] buffer = new byte[4096];
+							foreach (ZipEntry entry in zip)
+							{
+								if (entry.IsFile == false)
+								{
+									continue;
+								}
+
+								// read file out
+								Stream zs = zip.GetInputStream(entry);
+								using (var ms = new MemoryStream())
+								{
+									StreamUtils.Copy(zs, ms, buffer);
+
+									// get as string and append
+									ms.Seek(0, SeekOrigin.Begin);
+									using (var sr = new StreamReader(ms))
+									{
+										lines.Append(sr.ReadToEnd()).Append(Environment.NewLine);
+									}
+								}
+							}
+						}
+						catch (ZipException ex)
+						{
+							if (ex.Message.IndexOf("password") != -1)
+							{
+								// already have a password
+								if (string.IsNullOrEmpty(password) == false)
+								{
+									WinAuthForm.ErrorDialog(parent, strings.InvalidPassword, ex.InnerException, MessageBoxButtons.OK);
+								}
+
+								// need password
+								GetPasswordForm form = new GetPasswordForm();
+								if (form.ShowDialog(parent) == DialogResult.Cancel)
+								{
+									return null;
+								}
+								password = form.Password;
+								retry = true;
+								continue;
+							}
+
+							throw ex;
+						}
+						finally
+						{
+							if (zip != null)
+							{
+								zip.IsStreamOwner = true;
+								zip.Close();
+							}
+						}
+					}
+				}
+				else if (string.Compare(Path.GetExtension(file), ".pgp", true) == 0)
+				{
+					string encoded = File.ReadAllText(file);
+					if (string.IsNullOrEmpty(pgpKey) == true)
+					{
+						// need password
+						GetPGPKeyForm form = new GetPGPKeyForm();
+						if (form.ShowDialog(parent) == DialogResult.Cancel)
+						{
+							return null;
+						}
+						pgpKey = form.PGPKey;
+						password = form.Password;
+						retry = true;
+						continue;
+					}
+					try
+					{
+						string line = PGPDecrypt(encoded, pgpKey, password);
+						lines.Append(line);
+					}
+					catch (Exception ex)
+					{
+						WinAuthForm.ErrorDialog(parent, strings.InvalidPassword, ex.InnerException, MessageBoxButtons.OK);
+
+						pgpKey = null;
+						password = null;
+						retry = true;
+						continue;
+					}
+				}
+				else // read a plain text file
+				{
+					lines.Append(File.ReadAllText(file));
+				}
+			} while (retry);
+
+			int linenumber = 0;
+			try
+			{
+				using (var sr = new StringReader(lines.ToString()))
+				{
+					string line;
+					while ((line = sr.ReadLine()) != null)
+					{
+						linenumber++;
+
+						// ignore blank lines or comments
+						line = line.Trim();
+						if (line.Length == 0 || line.IndexOf("#") == 0)
+						{
+							continue;
+						}
+
+						// parse and validate URI
+						var uri = new Uri(line);
+
+						// we only support "otpauth"
+						if (uri.Scheme != "otpauth")
+						{
+							throw new ApplicationException("Import only supports otpauth://");
+						}
+						// we only support totp (not hotp)
+						if (uri.Host != "totp")
+						{
+							throw new ApplicationException("Import only supports otpauth://totp/");
+						}
+
+						// get the label and optional issuer
+						string issuer = string.Empty;
+						string label = (string.IsNullOrEmpty(uri.LocalPath) == false ? uri.LocalPath.Substring(1) : string.Empty); // skip past initial /
+						int p = label.IndexOf(":");
+						if (p != -1)
+						{
+							issuer = label.Substring(0, p);
+							label = label.Substring(p + 1);
+						}
+						// + aren't decoded
+						label = label.Replace("+", " ");
+
+						var query = HttpUtility.ParseQueryString(uri.Query);
+						string secret = query["secret"];
+						if (string.IsNullOrEmpty(secret) == true)
+						{
+							throw new ApplicationException("Authenticator does not contain secret");
+						}
+
+						WinAuthAuthenticator importedAuthenticator = new WinAuthAuthenticator();
+						importedAuthenticator.AutoRefresh = false;
+						//
+						Authenticator auth;
+						if (string.Compare(issuer, "BattleNet", true) == 0)
+						{
+							string serial = query["serial"];
+							if (string.IsNullOrEmpty(serial) == true)
+							{
+								throw new ApplicationException("Battle.net Authenticator does not have a serial");
+							}
+							serial = serial.ToUpper();
+							if (Regex.IsMatch(serial, @"^[A-Z]{2}-?[\d]{4}-?[\d]{4}-?[\d]{4}$") == false)
+							{
+								throw new ApplicationException("Invalid serial for Battle.net Authenticator");
+							}
+							auth = new BattleNetAuthenticator();
+							//char[] decoded = Base32.getInstance().Decode(secret).Select(c => Convert.ToChar(c)).ToArray(); // this is hex string values
+							//string hex = new string(decoded);
+							//((BattleNetAuthenticator)auth).SecretKey = Authenticator.StringToByteArray(hex);
+
+							((BattleNetAuthenticator)auth).SecretKey = Base32.getInstance().Decode(secret);
+
+							((BattleNetAuthenticator)auth).Serial = serial;
+
+							issuer = string.Empty;
+						}
+						else // if (string.Compare(issuer, "Google", true) == 0)
+						{
+							auth = new GoogleAuthenticator();
+							((GoogleAuthenticator)auth).Enroll(secret);
+
+							if (string.Compare(issuer, "Google", true) == 0)
+							{
+								issuer = string.Empty;
+							}
+						}
+						//
+						int digits = 0;
+						int.TryParse(query["digits"], out digits);
+						if (digits != 0)
+						{
+							auth.CodeDigits = digits;
+						}
+						//
+						if (label.Length != 0)
+						{
+							importedAuthenticator.Name = label + (issuer.Length != 0 ? " (" + issuer + ")" : string.Empty);
+						}
+						else if (issuer.Length != 0)
+						{
+							importedAuthenticator.Name = issuer;
+						}
+						else
+						{
+							importedAuthenticator.Name = "Imported";
+						}
+						//
+						importedAuthenticator.AuthenticatorData = auth;
+
+						// sync
+						importedAuthenticator.Sync();
+
+						authenticators.Add(importedAuthenticator);
+					}
+				}
+
+				return authenticators;
+			}
+			catch (UriFormatException ex)
+			{
+				throw new ImportException(string.Format(strings.ImportInvalidUri, linenumber), ex);
+			}
+			catch (Exception ex)
+			{
+				throw new ImportException(string.Format(strings.ImportError, linenumber, ex.Message), ex);
+			}
+		}
+
+		public static void ExportAuthenticators(IList<WinAuthAuthenticator> authenticators, string file, string password, string pgpKey)
+		{
+			// create file in memory
+			using (var ms = new MemoryStream())
+			{
+				using (var sw = new StreamWriter(ms))
+				{
+					foreach (var auth in authenticators)
+					{
+						string line = auth.ToUrl();
+						sw.WriteLine(line);
+					}
+
+					// reset and write stream out to disk or as zip
+					sw.Flush();
+					ms.Seek(0, SeekOrigin.Begin);
+
+					// reset and write stream out to disk or as zip
+					if (string.Compare(Path.GetExtension(file), ".zip", true) == 0)
+					{
+						using (var zip = new ZipOutputStream(new FileStream(file, FileMode.Create, FileAccess.Write)))
+						{
+							if (string.IsNullOrEmpty(password) == false)
+							{
+								zip.Password = password;
+							}
+
+							zip.IsStreamOwner = true;
+
+							ZipEntry entry = new ZipEntry(ZipEntry.CleanName(Path.GetFileNameWithoutExtension(file) + ".txt"));
+							entry.DateTime = DateTime.Now;
+							zip.UseZip64 = UseZip64.Off;
+
+							zip.PutNextEntry(entry);
+
+							byte[] buffer = new byte[4096];
+							StreamUtils.Copy(ms, zip, buffer);
+
+							zip.CloseEntry();
+						}
+					}
+					else if (string.IsNullOrEmpty(pgpKey) == false)
+					{
+						using (var sr = new StreamReader(ms))
+						{
+							var plain = sr.ReadToEnd();
+							string encoded = PGPEncrypt(plain, pgpKey);
+
+							File.WriteAllText(file, encoded);
+						}
+					}
+					else
+					{
+						using (var fs = new FileStream(file, FileMode.Create, FileAccess.Write))
+						{
+							byte[] buffer = new byte[4096];
+							StreamUtils.Copy(ms, fs, buffer);
+						}
+					}
+				}
+			}
+		}
 
 		#region HttpUtility
 
@@ -900,4 +1214,5 @@ namespace WinAuth
 		#endregion
 
 	}
+
 }

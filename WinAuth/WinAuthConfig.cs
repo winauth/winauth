@@ -365,6 +365,16 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// Check if a given password is the config's password
+		/// </summary>
+		/// <param name="password"></param>
+		/// <returns></returns>
+		public bool IsPassword(string password)
+		{
+			return (string.Compare(password, this.Password) == 0);
+		}
+
     #endregion
 
 		#region IList

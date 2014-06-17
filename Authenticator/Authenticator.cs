@@ -91,7 +91,7 @@ namespace WinAuth
 		/// <summary>
 		/// Default number of digits in code
 		/// </summary>
-		private const int DEFAULT_CODE_DIGITS = 6;
+		public const int DEFAULT_CODE_DIGITS = 6;
 
 		/// <summary>
 		/// Private encrpytion key used to encrypt Battle.net mobile authenticator data.
@@ -1140,7 +1140,7 @@ namespace WinAuth
 					outBytes = t;
 				}
 			}
-			catch (Exception ex)
+			catch (Exception )
 			{
 				// an exception is due to bad password
 				throw new BadPasswordException();

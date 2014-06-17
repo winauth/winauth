@@ -27,9 +27,11 @@ using System.Reflection;
 using System.Resources;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Web;
 using System.Windows.Forms;
 
 using MetroFramework;
@@ -327,6 +329,88 @@ namespace WinAuth
 		}
 
 		/// <summary>
+		/// Import authenticators from a text file containing KeyUri formats
+		/// https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
+		/// </summary>
+		/// <param name="authenticatorFile">name text file</param>
+		private void importAuthenticatorFromText(string authenticatorFile)
+		{
+			List<WinAuthAuthenticator> authenticators = null;
+			bool retry;
+			do
+			{
+				retry = false;
+				try
+				{
+					authenticators = WinAuthHelper.ImportAuthenticators(this, authenticatorFile);
+				}
+				catch (ImportException ex)
+				{
+					if (ErrorDialog(this, ex.Message, ex.InnerException, MessageBoxButtons.RetryCancel) == System.Windows.Forms.DialogResult.Cancel)
+					{
+						return;
+					}
+					retry = true;
+				}
+			} while (retry);
+			if (authenticators == null)
+			{
+				return;
+			}
+
+			// save all the new authenticators
+			foreach (var authenticator in authenticators)
+			{
+				//sync
+				authenticator.Sync();
+
+				// make sure there isn't a name clash
+				int rename = 0;
+				string importedName = authenticator.Name;
+				while (this.Config.Where(a => a.Name == importedName).Count() != 0)
+				{
+					importedName = authenticator.Name + " (" + (++rename) + ")";
+				}
+				authenticator.Name = importedName;
+
+				// save off any new authenticators as a backup
+				WinAuthHelper.SaveToRegistry(this.Config, authenticator);
+
+				// first time we prompt for protection and set out main settings from imported config
+				if (this.Config.Count == 0)
+				{
+					ChangePasswordForm form = new ChangePasswordForm();
+					form.PasswordType = Authenticator.PasswordTypes.Explicit;
+					if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+					{
+						this.Config.PasswordType = form.PasswordType;
+						if ((this.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
+						{
+							this.Config.Password = form.Password;
+						}
+						else
+						{
+							this.Config.Password = null;
+						}
+					}
+				}
+
+				// add to main list
+				this.Config.Add(authenticator);
+			}
+
+			SaveConfig(true);
+			loadAuthenticatorList();
+
+			// reset UI
+			setAutoSize();
+			introLabel.Visible = (this.Config.Count == 0);
+
+			// reset hotkeys
+			HookHotkeys();
+		}
+
+		/// <summary>
 		/// Initialise the current form and UI
 		/// </summary>
 		private void InitializeForm()
@@ -559,6 +643,17 @@ namespace WinAuth
 			subitem.ImageAlign = ContentAlignment.MiddleLeft;
 			subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
 			subitem.Click += importAuthenticatorMenu_Click;
+			addAuthenticatorMenu.Items.Add(subitem);
+			//
+			addAuthenticatorMenu.Items.Add(new ToolStripSeparator());
+			//
+			subitem = new ToolStripMenuItem();
+			subitem.Text = strings.MenuImportText;
+			subitem.Name = "importTextMenuItem";
+			subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("WinAuth.Resources.TextIcon.png"));
+			subitem.ImageAlign = ContentAlignment.MiddleLeft;
+			subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
+			subitem.Click += importTextMenu_Click;
 			addAuthenticatorMenu.Items.Add(subitem);
 		}
 
@@ -1139,6 +1234,28 @@ namespace WinAuth
 		}
 
 		/// <summary>
+		/// Click to import an text file of authenticators
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		void importTextMenu_Click(object sender, EventArgs e)
+		{
+			ToolStripItem menuitem = (ToolStripItem)sender;
+
+			OpenFileDialog ofd = new OpenFileDialog();
+			ofd.AddExtension = true;
+			ofd.CheckFileExists = true;
+			ofd.CheckPathExists = true;
+			ofd.Filter = "Text Files (*.txt)|*.txt|Zip Files (*.zip)|*.zip|PGP Files (*.pgp)|*.pgp|All Files (*.*)|*.*";
+			ofd.RestoreDirectory = true;
+			ofd.Title = WinAuthMain.APPLICATION_TITLE;
+			if (ofd.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+			{
+				importAuthenticatorFromText(ofd.FileName);
+			}
+		}
+
+		/// <summary>
 		/// Timer tick event
 		/// </summary>
 		/// <param name="sender"></param>
@@ -1429,6 +1546,13 @@ namespace WinAuth
 
 			menu.Items.Add(new ToolStripSeparator());
 
+			menuitem = new ToolStripMenuItem(strings.MenuExport);
+			menuitem.Name = "exportOptionsMenuItem";
+			menuitem.Click += exportOptionsMenuItem_Click;
+			menu.Items.Add(menuitem);
+
+			menu.Items.Add(new ToolStripSeparator());
+
 			if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed == false)
 			{
 				menuitem = new ToolStripMenuItem(strings.MenuUpdates + "...");
@@ -1523,6 +1647,27 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void changePasswordOptionsMenuItem_Click(object sender, EventArgs e)
 		{
+			// confirm current password
+			if ((this.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
+			{
+				bool invalidPassword = false;
+				while (true)
+				{
+					GetPasswordForm checkform = new GetPasswordForm();
+					checkform.InvalidPassword = invalidPassword;
+					var result = checkform.ShowDialog(this);
+					if (result == DialogResult.Cancel)
+					{
+						return;
+					}
+					if (this.Config.IsPassword(checkform.Password) == true)
+					{
+						break;
+					}
+					invalidPassword = true;
+				}
+			}
+
 			ChangePasswordForm form = new ChangePasswordForm();
 			form.PasswordType = this.Config.PasswordType;
 			if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
@@ -1618,6 +1763,41 @@ namespace WinAuth
 		private void autoSizeOptionsMenuItem_Click(object sender, EventArgs e)
 		{
 			this.Config.AutoSize = !this.Config.AutoSize;
+		}
+
+		/// <summary>
+		/// Click the Export menu
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void exportOptionsMenuItem_Click(object sender, EventArgs e)
+		{
+			// confirm current password
+			if ((this.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
+			{
+				bool invalidPassword = false;
+				while (true)
+				{
+					GetPasswordForm checkform = new GetPasswordForm();
+					checkform.InvalidPassword = invalidPassword;
+					var result = checkform.ShowDialog(this);
+					if (result == DialogResult.Cancel)
+					{
+						return;
+					}
+					if (this.Config.IsPassword(checkform.Password) == true)
+					{
+						break;
+					}
+					invalidPassword = true;
+				}
+			}
+
+			ExportForm exportform = new ExportForm();
+			if (exportform.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+			{
+				WinAuthHelper.ExportAuthenticators(this.Config, exportform.ExportFile, exportform.Password, exportform.PGPKey);
+			}
 		}
 
 		/// <summary>

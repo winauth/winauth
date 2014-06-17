@@ -112,187 +112,11 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AlreadyRunning" xml:space="preserve">
-    <value>{0} is already running.</value>
-  </data>
-  <data name="AuthenticatorNotImplemented" xml:space="preserve">
-    <value>Authenticator not implemented</value>
-  </data>
-  <data name="AuthenticatorSyncError" xml:space="preserve">
-    <value>Warning: unable to connect to {0} to set time correctly.
-
-Your code may not be correct</value>
-  </data>
-  <data name="AutoRefresh" xml:space="preserve">
-    <value>Auto Refresh</value>
-  </data>
-  <data name="CannotFindConfigurationFile" xml:space="preserve">
-    <value>Unable to find your configuration file</value>
-  </data>
-  <data name="CannotLoadAuthenticator" xml:space="preserve">
-    <value>Unable to load authenticator from {0}</value>
-  </data>
-  <data name="ChangeOrRemovePassword" xml:space="preserve">
-    <value>Change or Remove Password</value>
-  </data>
-  <data name="ClipboardInUse" xml:space="preserve">
-    <value>Unable to copy to the clipboard. Another application is probably using it.
-
-Try again?</value>
-  </data>
-  <data name="CopyCode" xml:space="preserve">
-    <value>Copy Code</value>
-  </data>
-  <data name="CopyOnNewCode" xml:space="preserve">
-    <value>Copy on New Code</value>
-  </data>
-  <data name="Delete" xml:space="preserve">
-    <value>Delete</value>
-  </data>
-  <data name="DeleteAuthenticatorWarning" xml:space="preserve">
-    <value>Are you sure you want to delete this authenticator?
-
-This will permanently remove it and you may no longer be able to access you account.</value>
-  </data>
-  <data name="EnterPassword" xml:space="preserve">
-    <value>Please enter a password</value>
-  </data>
-  <data name="ErrorLoadingIconFile" xml:space="preserve">
-    <value>Error loading image file: {0}
-
-Do you want to try again?</value>
-  </data>
-  <data name="ErrorOccured" xml:space="preserve">
-    <value>An error has occurred</value>
-  </data>
-  <data name="ErrorReportSubmitted" xml:space="preserve">
-    <value>Thank you. Your error report has been submitted.</value>
-  </data>
-  <data name="ErrorSendingErrorReport" xml:space="preserve">
-    <value>Unable to send your error report</value>
-  </data>
-  <data name="FileMustBeZip" xml:space="preserve">
-    <value>File must be a zip file</value>
-  </data>
-  <data name="HideDetails" xml:space="preserve">
-    <value>Hide Details</value>
-  </data>
-  <data name="HotKeyNotAvailable" xml:space="preserve">
-    <value>The shortuct key combination is already in use or not available</value>
-  </data>
-  <data name="Icon" xml:space="preserve">
-    <value>Icon</value>
-  </data>
-  <data name="IconAuto" xml:space="preserve">
-    <value>Auto</value>
-  </data>
-  <data name="ImportError" xml:space="preserve">
-    <value>Error importing at line {0}:{1}</value>
-  </data>
-  <data name="ImportInvalidUri" xml:space="preserve">
-    <value>Invalid authenticator at line {0}</value>
-  </data>
-  <data name="InvalidPassword" xml:space="preserve">
-    <value>Invalid password</value>
-  </data>
-  <data name="LoadIconImage" xml:space="preserve">
-    <value>Load Icon Image</value>
-  </data>
-  <data name="LoadPreviousAuthenticator" xml:space="preserve">
-    <value>You have an authenticator from a previous version of WinAuth ({0}).
-
-You can either import it now or use the 'Add' button to import it later.
-
-Would you like to import your previous authenticator now?</value>
-  </data>
-  <data name="MenuAbout" xml:space="preserve">
-    <value>About</value>
-  </data>
-  <data name="MenuAlwaysOnTop" xml:space="preserve">
-    <value>Always on Top</value>
-  </data>
-  <data name="MenuAutoSize" xml:space="preserve">
-    <value>Auto Size</value>
-  </data>
-  <data name="MenuChangeProtection" xml:space="preserve">
-    <value>Change Protection</value>
-  </data>
-  <data name="MenuExit" xml:space="preserve">
-    <value>Exit</value>
-  </data>
-  <data name="MenuExport" xml:space="preserve">
-    <value>Export...</value>
-  </data>
-  <data name="MenuImportText" xml:space="preserve">
-    <value>Import...</value>
-  </data>
-  <data name="MenuImportWinauth" xml:space="preserve">
-    <value>Import WinAuth 2.x</value>
-  </data>
-  <data name="MenuOpen" xml:space="preserve">
-    <value>Open</value>
-  </data>
-  <data name="MenuPortable" xml:space="preserve">
-    <value>Portable</value>
-  </data>
-  <data name="MenuStartWithWindows" xml:space="preserve">
-    <value>Start With Windows</value>
-  </data>
-  <data name="MenuUpdates" xml:space="preserve">
-    <value>Check for updates...</value>
-  </data>
-  <data name="MenuUseSystemTrayIcon" xml:space="preserve">
-    <value>Use System Tray Icon</value>
-  </data>
-  <data name="MissingFile" xml:space="preserve">
-    <value>Select or enter a file</value>
-  </data>
-  <data name="MissingPGPKey" xml:space="preserve">
-    <value>Please enter a PGP key</value>
-  </data>
-  <data name="Other" xml:space="preserve">
-    <value>Other</value>
-  </data>
-  <data name="OverwritePortableConfigFile" xml:space="preserve">
-    <value>{0} already exists.
-
-Do you want to overwrite it?</value>
-  </data>
-  <data name="PasswordsDontMatch" xml:space="preserve">
-    <value>Passwords do not match</value>
-  </data>
-  <data name="Rename" xml:space="preserve">
-    <value>Rename</value>
-  </data>
-  <data name="SetPassword" xml:space="preserve">
-    <value>Set Password</value>
-  </data>
-  <data name="ShortcutKey" xml:space="preserve">
-    <value>Shortcut Key</value>
-  </data>
-  <data name="ShowCode" xml:space="preserve">
-    <value>Show Code</value>
-  </data>
-  <data name="ShowSecretKey" xml:space="preserve">
-    <value>Show Secret Key</value>
-  </data>
-  <data name="ShowSerialAndRestoreCode" xml:space="preserve">
-    <value>Show Serial &amp;&amp; Restore Code</value>
-  </data>
-  <data name="ShowSerialKeyAndDeviceId" xml:space="preserve">
-    <value>Show Serial Key and Device ID</value>
-  </data>
-  <data name="SyncTime" xml:space="preserve">
-    <value>Sync Time</value>
-  </data>
-  <data name="UnknownError" xml:space="preserve">
-    <value>An unknown error occured</value>
-  </data>
   <data name="_AboutForm_" xml:space="preserve">
     <value>About WinAuth</value>
   </data>
@@ -300,7 +124,7 @@ Do you want to overwrite it?</value>
     <value>WinAuth {0}
 Copyright {1}. Colin Mackie. All rights reserved.</value>
   </data>
-  <data name="_AboutForm_closeButton_" xml:space="preserve">
+  <data name="_AboutForm_closeButton" xml:space="preserve">
     <value>Close</value>
   </data>
   <data name="_AboutForm_licenseLabel_" xml:space="preserve">
@@ -386,33 +210,6 @@ If you are happy to send this information please either click Send Error Report 
   </data>
   <data name="_GetPasswordForm_passwordField_" xml:space="preserve">
     <value>password</value>
-  </data>
-  <data name="_GetPGPKeyForm_" xml:space="preserve">
-    <value>PGP Key</value>
-  </data>
-  <data name="_GetPGPKeyForm_browseButton_" xml:space="preserve">
-    <value>Browse...</value>
-  </data>
-  <data name="_GetPGPKeyForm_browseLabel_" xml:space="preserve">
-    <value>Or, select your key file</value>
-  </data>
-  <data name="_GetPGPKeyForm_cancelButton_" xml:space="preserve">
-    <value>Cancel</value>
-  </data>
-  <data name="_GetPGPKeyForm_invalidPassword_" xml:space="preserve">
-    <value>Invalid password</value>
-  </data>
-  <data name="_GetPGPKeyForm_okButton_" xml:space="preserve">
-    <value>OK</value>
-  </data>
-  <data name="_GetPGPKeyForm_passwordField_" xml:space="preserve">
-    <value>Optional password</value>
-  </data>
-  <data name="_GetPGPKeyForm_passwordLabel_" xml:space="preserve">
-    <value>If your key has a password</value>
-  </data>
-  <data name="_GetPGPKeyForm_pgpLabel_" xml:space="preserve">
-    <value>Enter or select your PGPkey</value>
   </data>
   <data name="_SetPasswordForm_" xml:space="preserve">
     <value>Set Password</value>
@@ -500,5 +297,160 @@ If you are happy to send this information please either click Send Error Report 
   </data>
   <data name="_WinAuthForm_passwordLabel_" xml:space="preserve">
     <value>Password</value>
+  </data>
+  <data name="AlreadyRunning" xml:space="preserve">
+    <value>{0} is already running.</value>
+  </data>
+  <data name="AuthenticatorNotImplemented" xml:space="preserve">
+    <value>Authenticator not implemented</value>
+  </data>
+  <data name="AuthenticatorSyncError" xml:space="preserve">
+    <value>Warning: unable to connect to {0} to set time correctly.
+
+Your code may not be correct</value>
+  </data>
+  <data name="AutoRefresh" xml:space="preserve">
+    <value>Auto Refresh</value>
+  </data>
+  <data name="CannotFindConfigurationFile" xml:space="preserve">
+    <value>Unable to find your configuration file</value>
+  </data>
+  <data name="CannotLoadAuthenticator" xml:space="preserve">
+    <value>Unable to load authenticator from {0}</value>
+  </data>
+  <data name="ChangeOrRemovePassword" xml:space="preserve">
+    <value>Change or Remove Password</value>
+  </data>
+  <data name="ClipboardInUse" xml:space="preserve">
+    <value>Unable to copy to the clipboard. Another application is probably using it.
+
+Try again?</value>
+  </data>
+  <data name="CopyCode" xml:space="preserve">
+    <value>Copy Code</value>
+  </data>
+  <data name="CopyOnNewCode" xml:space="preserve">
+    <value>Copy on New Code</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="DeleteAuthenticatorWarning" xml:space="preserve">
+    <value>Are you sure you want to delete this authenticator?
+
+This will permanently remove it and you may no longer be able to access you account.</value>
+  </data>
+  <data name="EnterPassword" xml:space="preserve">
+    <value>Please enter a password</value>
+  </data>
+  <data name="ErrorLoadingIconFile" xml:space="preserve">
+    <value>Error loading image file: {0}
+
+Do you want to try again?</value>
+  </data>
+  <data name="ErrorOccured" xml:space="preserve">
+    <value>An error has occurred</value>
+  </data>
+  <data name="ErrorReportSubmitted" xml:space="preserve">
+    <value>Thank you. Your error report has been submitted.</value>
+  </data>
+  <data name="ErrorSendingErrorReport" xml:space="preserve">
+    <value>Unable to send your error report</value>
+  </data>
+  <data name="HideDetails" xml:space="preserve">
+    <value>Hide Details</value>
+  </data>
+  <data name="HotKeyNotAvailable" xml:space="preserve">
+    <value>The shortuct key combination is already in use or not available</value>
+  </data>
+  <data name="Icon" xml:space="preserve">
+    <value>Icon</value>
+  </data>
+  <data name="IconAuto" xml:space="preserve">
+    <value>Auto</value>
+  </data>
+  <data name="InvalidPassword" xml:space="preserve">
+    <value>Invalid password</value>
+  </data>
+  <data name="LoadIconImage" xml:space="preserve">
+    <value>Load Icon Image</value>
+  </data>
+  <data name="LoadPreviousAuthenticator" xml:space="preserve">
+    <value>You have an authenticator from a previous version of WinAuth ({0}).
+
+You can either import it now or use the 'Add' button to import it later.
+
+Would you like to import your previous authenticator now?</value>
+  </data>
+  <data name="MenuAbout" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="MenuAlwaysOnTop" xml:space="preserve">
+    <value>Always on Top</value>
+  </data>
+  <data name="MenuAutoSize" xml:space="preserve">
+    <value>Auto Size</value>
+  </data>
+  <data name="MenuChangeProtection" xml:space="preserve">
+    <value>Change Protection</value>
+  </data>
+  <data name="MenuExit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="MenuImportWinauth" xml:space="preserve">
+    <value>Import WinAuth 2.x</value>
+  </data>
+  <data name="MenuOpen" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="MenuPortable" xml:space="preserve">
+    <value>Portable</value>
+  </data>
+  <data name="MenuStartWithWindows" xml:space="preserve">
+    <value>Start With Windows</value>
+  </data>
+  <data name="MenuUpdates" xml:space="preserve">
+    <value>Check for updates...</value>
+  </data>
+  <data name="MenuUseSystemTrayIcon" xml:space="preserve">
+    <value>Use System Tray Icon</value>
+  </data>
+  <data name="Other" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="OverwritePortableConfigFile" xml:space="preserve">
+    <value>{0} already exists.
+
+Do you want to overwrite it?</value>
+  </data>
+  <data name="PasswordsDontMatch" xml:space="preserve">
+    <value>Passwords do not match</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="SetPassword" xml:space="preserve">
+    <value>Set Password</value>
+  </data>
+  <data name="ShortcutKey" xml:space="preserve">
+    <value>Shortcut Key</value>
+  </data>
+  <data name="ShowCode" xml:space="preserve">
+    <value>Show Code</value>
+  </data>
+  <data name="ShowSecretKey" xml:space="preserve">
+    <value>Show Secret Key</value>
+  </data>
+  <data name="ShowSerialAndRestoreCode" xml:space="preserve">
+    <value>Show Serial &amp;&amp; Restore Code</value>
+  </data>
+  <data name="ShowSerialKeyAndDeviceId" xml:space="preserve">
+    <value>Show Serial Key and Device ID</value>
+  </data>
+  <data name="SyncTime" xml:space="preserve">
+    <value>Sync Time</value>
+  </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>An unknown error occured</value>
   </data>
 </root>

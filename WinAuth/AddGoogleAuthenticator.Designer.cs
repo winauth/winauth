@@ -229,7 +229,7 @@ namespace WinAuth
 			// 
 			// codeField
 			// 
-			this.codeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.codeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
 			this.codeField.Location = new System.Drawing.Point(113, 344);
 			this.codeField.Multiline = true;
 			this.codeField.Name = "codeField";
@@ -283,7 +283,7 @@ namespace WinAuth
 			this.Name = "AddGoogleAuthenticator";
 			this.Resizable = false;
 			this.ShowIcon = false;
-			this.Text = "Add Google Authenticator";
+			this.Text = "Add Authenticator";
 			this.Load += new System.EventHandler(this.AddGoogleAuthenticator_Load);
 			((System.ComponentModel.ISupportInitialize)(this.icon3)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.icon2)).EndInit();

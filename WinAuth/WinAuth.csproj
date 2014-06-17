@@ -46,7 +46,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;BETA</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>true</UseVSHostingProcess>
@@ -104,10 +104,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\Third Party\SharpZipLib\net-20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -169,6 +173,18 @@
     <Compile Include="ChangePasswordForm.Designer.cs">
       <DependentUpon>ChangePasswordForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="GetPGPKeyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GetPGPKeyForm.designer.cs">
+      <DependentUpon>GetPGPKeyForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExportForm.Designer.cs">
+      <DependentUpon>ExportForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="GetPasswordForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -188,6 +204,7 @@
     <Compile Include="ExceptionForm.designer.cs">
       <DependentUpon>ExceptionForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ImportException.cs" />
     <Compile Include="SetShortcutKeyForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -297,6 +314,12 @@
     <EmbeddedResource Include="ChangePasswordForm.resx">
       <DependentUpon>ChangePasswordForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GetPGPKeyForm.resx">
+      <DependentUpon>GetPGPKeyForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExportForm.resx">
+      <DependentUpon>ExportForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GetPasswordForm.resx">
       <DependentUpon>GetPasswordForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -308,7 +331,9 @@
       <DependentUpon>ExceptionForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\strings.de.resx" />
+    <EmbeddedResource Include="Resources\strings.de.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="SetShortcutKeyForm.resx">
       <DependentUpon>SetShortcutKeyForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -383,6 +408,27 @@
     <EmbeddedResource Include="Resources\BitcoinGoldIcon.png" />
     <EmbeddedResource Include="Resources\LitecoinIcon.png" />
     <EmbeddedResource Include="Resources\BitcoinEuroIcon.png" />
+    <EmbeddedResource Include="Resources\TextIcon.png" />
+    <EmbeddedResource Include="Resources\AndroidIcon.png" />
+    <EmbeddedResource Include="Resources\AppleIcon.png" />
+    <EmbeddedResource Include="Resources\DropboxIcon.png" />
+    <EmbeddedResource Include="Resources\FacebookIcon.png" />
+    <EmbeddedResource Include="Resources\FlickrIcon.png" />
+    <EmbeddedResource Include="Resources\GitIcon.png" />
+    <EmbeddedResource Include="Resources\Google2Icon.png" />
+    <EmbeddedResource Include="Resources\InstagramIcon.png" />
+    <EmbeddedResource Include="Resources\LinkedinIcon.png" />
+    <EmbeddedResource Include="Resources\MacIcon.png" />
+    <EmbeddedResource Include="Resources\TwitterIcon.png" />
+    <EmbeddedResource Include="Resources\WordpressIcon.png" />
+    <EmbeddedResource Include="Resources\YahooIcon.png" />
+    <EmbeddedResource Include="Resources\DogeIcon.png" />
+    <EmbeddedResource Include="Resources\WindowsPhoneIcon.png" />
+    <EmbeddedResource Include="Resources\AppleWhiteIcon.png" />
+    <EmbeddedResource Include="Resources\AppleColorIcon.png" />
+    <EmbeddedResource Include="Resources\GitHubIcon.png" />
+    <EmbeddedResource Include="Resources\WildstarIcon.png" />
+    <EmbeddedResource Include="Resources\FirefallIcon.png" />
     <Content Include="winauth.ico" />
   </ItemGroup>
   <ItemGroup>
