@@ -435,7 +435,7 @@ namespace WinAuth
 							byte[] buffer = new byte[4096];
 							foreach (ZipEntry entry in zip)
 							{
-								if (entry.IsFile == false)
+								if (entry.IsFile == false || string.Compare(Path.GetExtension(entry.Name), ".txt", true) != 0)
 								{
 									continue;
 								}
