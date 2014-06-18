@@ -99,7 +99,7 @@ namespace WinAuth
 
 		private void pgpCheckbox_CheckedChanged(object sender, EventArgs e)
 		{
-			passwordField.Enabled = false;
+			passwordCheckbox.Checked = false;
 
 			pgpField.Enabled = pgpCheckbox.Checked;
 			if (pgpCheckbox.Checked == true)

@@ -983,6 +983,15 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remember Position.
+        /// </summary>
+        internal static string MenuRememberPosition {
+            get {
+                return ResourceManager.GetString("MenuRememberPosition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Start With Windows.
         /// </summary>
         internal static string MenuStartWithWindows {

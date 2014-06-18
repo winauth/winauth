@@ -87,7 +87,7 @@ namespace WinAuth
 			{new Tuple<string,string>("WildStar", "WildstarIcon.png")},
 			{new Tuple<string,string>("s2c", string.Empty)},
 			{new Tuple<string,string>("Firefall", "FirefallIcon.png")},
-			{new Tuple<string,string>("+Systems", "MicrosoftAuthenticatorIcon.png")},
+			{new Tuple<string,string>("+Software", "MicrosoftAuthenticatorIcon.png")},
 			{new Tuple<string,string>("Microsoft", "MicrosoftAuthenticatorIcon.png")},
 			{new Tuple<string,string>("Windows 8", "Windows8Icon.png")},
 			{new Tuple<string,string>("Windows 7", "Windows7Icon.png")},
@@ -102,10 +102,13 @@ namespace WinAuth
 			{new Tuple<string,string>("s5", string.Empty)},
 			{new Tuple<string,string>("Git", "GitIcon.png")},
 			{new Tuple<string,string>("GitHub", "GitHubIcon.png")},
+			{new Tuple<string,string>("s6", string.Empty)},
+			{new Tuple<string,string>("Amazon", "AmazonIcon.png")},
+			{new Tuple<string,string>("Amazon AWS", "AmazonAWSIcon.png")},
 			{new Tuple<string,string>("+Crypto", "BitcoinIcon.png")},
 			{new Tuple<string,string>("Bitcoin", "BitcoinIcon.png")},
-			{new Tuple<string,string>("Bitcoin Gold Style", "BitcoinGoldIcon.png")},
-			{new Tuple<string,string>("Bitcoin Euro Style", "BitcoinEuroIcon.png")},
+			{new Tuple<string,string>("Bitcoin Gold", "BitcoinGoldIcon.png")},
+			{new Tuple<string,string>("Bitcoin Euro", "BitcoinEuroIcon.png")},
 			{new Tuple<string,string>("Litecoin", "LitecoinIcon.png")},
 			{new Tuple<string,string>("Dogecoin", "DogeIcon.png")},
 			{new Tuple<string,string>("+Social", "FacebookIcon.png")},
@@ -120,11 +123,13 @@ namespace WinAuth
 
 		public static List<RegisteredAuthenticator> REGISTERED_AUTHENTICATORS = new List<RegisteredAuthenticator>
 		{
-			new RegisteredAuthenticator {Name="Authenticator", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Google, Icon="GoogleAuthenticatorIcon.png"},
+			new RegisteredAuthenticator {Name="Authenticator", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.RFC6238_TIME, Icon="WinAuthIcon.png"},
+			null,
+			new RegisteredAuthenticator {Name="Google", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Google, Icon="GoogleIcon.png"},
+			new RegisteredAuthenticator {Name="Microsoft", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Microsoft, Icon="MicrosoftAuthenticatorIcon.png"},
 			new RegisteredAuthenticator {Name="Battle.Net", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.BattleNet, Icon="BattleNetAuthenticatorIcon.png"},
 			new RegisteredAuthenticator {Name="Guild Wars 2", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.GuildWars, Icon="GuildWarsAuthenticatorIcon.png"},
-			new RegisteredAuthenticator {Name="Trion / Rift", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Trion, Icon="TrionAuthenticatorIcon.png"},
-			new RegisteredAuthenticator {Name="Microsoft", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Microsoft, Icon="MicrosoftAuthenticatorIcon.png"}
+			new RegisteredAuthenticator {Name="Trion / Rift", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Trion, Icon="TrionAuthenticatorIcon.png"}
 		};
 
 		public static ResourceManager StringResources = new ResourceManager(typeof(WinAuth.Resources.strings).FullName, typeof(WinAuth.Resources.strings).Assembly);

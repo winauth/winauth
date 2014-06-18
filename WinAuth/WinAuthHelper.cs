@@ -18,12 +18,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Security.Permissions;
+using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -49,7 +52,6 @@ using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Win32;
 
 using WinAuth.Resources;
-using System.Collections.Specialized;
 
 namespace WinAuth
 {
@@ -178,6 +180,13 @@ namespace WinAuth
         return config;
       }
 
+			// check if readonly
+			FileInfo fi = new FileInfo(configFile);
+			if (fi.Exists && fi.IsReadOnly)
+			{
+				config.IsReadOnly = true;
+			}
+
 			bool changed = false;
 			try
 			{
@@ -191,14 +200,13 @@ namespace WinAuth
 
 				if (config.Version < WinAuthConfig.CURRENTVERSION)
 				{
-					FileInfo fi = new FileInfo(configFile);
 					foreach (WinAuthAuthenticator wa in config)
 					{
 						wa.Created = fi.CreationTime;
 					}
 				}
 
-				if (changed == true)
+				if (changed == true && config.IsReadOnly == false)
 				{
 					SaveConfig(config);
 				}
@@ -285,12 +293,30 @@ namespace WinAuth
 					config.Filename = Path.Combine(configDirectory, DEFAULT_AUTHENTICATOR_FILE_NAME);
 				}
 
-        // write memory stream to file
-        byte[] data = ms.ToArray();
-				using (FileStream fs = new FileStream(config.Filename, FileMode.Create, FileAccess.Write, FileShare.None))
-        {
-          fs.Write(data, 0, data.Length);
-        }
+				FileInfo fi = new FileInfo(config.Filename);
+				if (!fi.Exists || !fi.IsReadOnly)
+				{
+					// write memory stream to file
+					try
+					{
+						byte[] data = ms.ToArray();
+						using (FileStream fs = new FileStream(config.Filename, FileMode.Create, FileAccess.Write, FileShare.None))
+						{
+							fs.Write(data, 0, data.Length);
+						}
+					}
+					catch (UnauthorizedAccessException ex)
+					{
+						// fail silently if read only
+						if (fi.IsReadOnly)
+						{
+							config.IsReadOnly = true;
+							return;
+						}
+
+						throw ex;
+					}
+				}
       }
     }
 
@@ -372,9 +398,18 @@ namespace WinAuth
       }			
     }
 
-		public static List<WinAuthAuthenticator> ImportAuthenticators(Form parent, string file, string password = null, string pgpKey = null)
+		/// <summary>
+		/// Import a file containing authenticators in the KeyUriFormat. The file might be plain text, encrypted zip or encrypted pgp.
+		/// </summary>
+		/// <param name="parent">parent Form</param>
+		/// <param name="file">file name to import</param>
+		/// <returns>list of imported authenticators</returns>
+		public static List<WinAuthAuthenticator> ImportAuthenticators(Form parent, string file)
 		{
 			List<WinAuthAuthenticator> authenticators = new List<WinAuthAuthenticator>();
+
+			string password = null;
+			string pgpKey = null;
 
 			StringBuilder lines = new StringBuilder();
 			bool retry;
@@ -600,6 +635,21 @@ namespace WinAuth
 						//
 						importedAuthenticator.AuthenticatorData = auth;
 
+						// set the icon
+						string icon = query["icon"];
+						if (string.IsNullOrEmpty(icon) == false)
+						{
+							if (icon.StartsWith("base64:") == true)
+							{
+								string b64 = Convert.ToBase64String(Base32.getInstance().Decode(icon.Substring(7)));
+								importedAuthenticator.Skin = "base64:" + b64;
+							}
+							else
+							{
+								importedAuthenticator.Skin = icon + "Icon.png";
+							}
+						}
+
 						// sync
 						importedAuthenticator.Sync();
 
@@ -619,17 +669,41 @@ namespace WinAuth
 			}
 		}
 
-		public static void ExportAuthenticators(IList<WinAuthAuthenticator> authenticators, string file, string password, string pgpKey)
+		public static void ExportAuthenticators(Form form, IList<WinAuthAuthenticator> authenticators, string file, string password, string pgpKey)
 		{
 			// create file in memory
 			using (var ms = new MemoryStream())
 			{
 				using (var sw = new StreamWriter(ms))
 				{
+					List<WinAuthAuthenticator> unprotected = new List<WinAuthAuthenticator>();
 					foreach (var auth in authenticators)
 					{
+						// unprotect if necessary
+						if (auth.AuthenticatorData.RequiresPassword == true)
+						{
+							// request the password
+							UnprotectPasswordForm getPassForm = new UnprotectPasswordForm();
+							getPassForm.Authenticator = auth;
+							DialogResult result = getPassForm.ShowDialog(form);
+							if (result == DialogResult.OK)
+							{
+								unprotected.Add(auth);
+							}
+							else
+							{
+								continue;
+							}
+						}
+
 						string line = auth.ToUrl();
 						sw.WriteLine(line);
+					}
+
+					// reprotect
+					foreach (var auth in unprotected)
+					{
+						auth.AuthenticatorData.Protect();
 					}
 
 					// reset and write stream out to disk or as zip

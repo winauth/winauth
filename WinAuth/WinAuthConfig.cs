@@ -19,6 +19,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -27,7 +28,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
-
 using WinAuth.Resources;
 
 namespace WinAuth
@@ -103,6 +103,11 @@ namespace WinAuth
 		private bool _autoSize;
 
 		/// <summary>
+		/// Remember position
+		/// </summary>
+		private Point _position = Point.Empty;
+
+		/// <summary>
 		/// Width if not autosize
 		/// </summary>
 		private int _width;
@@ -111,6 +116,11 @@ namespace WinAuth
 		/// Height if not autosize
 		/// </summary>
 		private int _height;
+
+		/// <summary>
+		/// This config is readonly
+		/// </summary>
+		private bool _readOnly;
 
 		/// <summary>
 		/// Class used to serialize the settings inside the Xml config file
@@ -225,6 +235,25 @@ namespace WinAuth
 				if (OnConfigChanged != null)
 				{
 					OnConfigChanged(this, new ConfigChangedEventArgs("AutoSize"));
+				}
+			}
+		}
+
+		/// <summary>
+		/// Get/set the position
+		/// </summary>
+		public Point Position
+		{
+			get
+			{
+				return _position;
+			}
+			set
+			{
+				_position = value;
+				if (OnConfigChanged != null)
+				{
+					OnConfigChanged(this, new ConfigChangedEventArgs("Position"));
 				}
 			}
 		}
@@ -487,7 +516,11 @@ namespace WinAuth
 		{
 			get
 			{
-				return false;
+				return _readOnly;
+			}
+			set
+			{
+				_readOnly = value;
 			}
 		}
 
@@ -723,6 +756,14 @@ namespace WinAuth
 							_autoSize = reader.ReadElementContentAsBoolean();
 							break;
 
+						case "left":
+							_position.X = reader.ReadElementContentAsInt();
+							break;
+
+						case "top":
+							_position.Y = reader.ReadElementContentAsInt();
+							break;
+
 						case "width":
 							_width = reader.ReadElementContentAsInt();
 							break;
@@ -918,6 +959,16 @@ namespace WinAuth
 			writer.WriteStartElement("autosize");
 			writer.WriteValue(this.AutoSize);
 			writer.WriteEndElement();
+			//
+			if (this.Position.IsEmpty == false)
+			{
+				writer.WriteStartElement("left");
+				writer.WriteValue(this.Position.X);
+				writer.WriteEndElement();
+				writer.WriteStartElement("top");
+				writer.WriteValue(this.Position.Y);
+				writer.WriteEndElement();
+			}
 			//
 			writer.WriteStartElement("width");
 			writer.WriteValue(this.Width);

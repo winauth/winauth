@@ -501,4 +501,7 @@ If you are happy to send this information please either click Send Error Report 
   <data name="_WinAuthForm_passwordLabel_" xml:space="preserve">
     <value>Password</value>
   </data>
+  <data name="MenuRememberPosition" xml:space="preserve">
+    <value>Remember Position</value>
+  </data>
 </root>

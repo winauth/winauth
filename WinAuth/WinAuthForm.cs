@@ -471,6 +471,7 @@ namespace WinAuth
 			commandPanel.Visible = true;
 			introLabel.Visible = (this.Config.Count == 0);
 			authenticatorList.Visible = (this.Config.Count != 0);
+			this.addAuthenticatorButton.Visible = !this.Config.IsReadOnly;
 
 			// set title
 			notifyIcon.Visible = this.Config.UseTrayIcon;
@@ -481,6 +482,18 @@ namespace WinAuth
 
 			// save the position of the list within the form else starting as minimized breaks the size
 			_listoffset = new Rectangle(authenticatorList.Left, authenticatorList.Top, (this.Width - authenticatorList.Width), (this.Height - authenticatorList.Height));
+
+			// set positions
+			if (this.Config.Position.IsEmpty == false)
+			{
+				try
+				{
+					this.StartPosition = FormStartPosition.Manual;
+					this.Left = this.Config.Position.X;
+					this.Top = this.Config.Position.Y;
+				}
+				catch (Exception) { }
+			}
 
 			// if we passed "-min" flag
 			if (_initiallyMinimised == true)
@@ -620,6 +633,12 @@ namespace WinAuth
 			int index = 0;
 			foreach (RegisteredAuthenticator auth in WinAuthMain.REGISTERED_AUTHENTICATORS)
 			{
+				if (auth == null)
+				{
+					addAuthenticatorMenu.Items.Add(new ToolStripSeparator());
+					continue;
+				}
+
 				subitem = new ToolStripMenuItem();
 				subitem.Text = auth.Name;
 				subitem.Name = "addAuthenticatorMenuItem_" + index++;
@@ -639,7 +658,7 @@ namespace WinAuth
 			subitem = new ToolStripMenuItem();
 			subitem.Text = strings.MenuImportWinauth;
 			subitem.Name = "importAuthenticatorMenuItem";
-			subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("WinAuth.Resources.WinAuthIcon.png"));
+			subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("WinAuth.Resources.WinAuth2Icon.png"));
 			subitem.ImageAlign = ContentAlignment.MiddleLeft;
 			subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
 			subitem.Click += importAuthenticatorMenu_Click;
@@ -1049,6 +1068,10 @@ namespace WinAuth
 				this.Config.Width = this.Width;
 				this.Config.Height = this.Height;
 			}
+			if (this.Config != null && this.Config.Position.IsEmpty == false && this.Config.IsPortable == false)
+			{
+				this.Config.Position = new Point(this.Left, this.Top);
+			}
 
 			// perform save if we have one pending
 			if (_saveConfigTime != null)
@@ -1157,6 +1180,25 @@ namespace WinAuth
 					winauthauthenticator.AutoRefresh = false;
 
 					AddMicrosoftAuthenticator form = new AddMicrosoftAuthenticator();
+					form.Authenticator = winauthauthenticator;
+					added = (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK);
+				}
+				else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.RFC6238_TIME)
+				{
+					// create the Google authenticator
+					// add the new authenticator
+					int existing = 0;
+					string name;
+					do
+					{
+						name = "Authenticator" + (existing != 0 ? " (" + existing + ")" : string.Empty);
+						existing++;
+					} while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name).Count() != 0);
+					winauthauthenticator.Name = name;
+					winauthauthenticator.AutoRefresh = false;
+					winauthauthenticator.Skin = "WinAuthIcon.png";
+
+					AddAuthenticator form = new AddAuthenticator();
 					form.Authenticator = winauthauthenticator;
 					added = (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK);
 				}
@@ -1515,11 +1557,14 @@ namespace WinAuth
 				menu.Items.Add(separator);
 			}
 
-			menuitem = new ToolStripMenuItem(strings.MenuChangeProtection + "...");
-			menuitem.Name = "changePasswordOptionsMenuItem";
-			menuitem.Click += changePasswordOptionsMenuItem_Click;
-			menu.Items.Add(menuitem);
-			menu.Items.Add(new ToolStripSeparator() { Name = "changePasswordOptionsSeparatorItem" });
+			if (this.Config == null || this.Config.IsReadOnly == false)
+			{
+				menuitem = new ToolStripMenuItem(strings.MenuChangeProtection + "...");
+				menuitem.Name = "changePasswordOptionsMenuItem";
+				menuitem.Click += changePasswordOptionsMenuItem_Click;
+				menu.Items.Add(menuitem);
+				menu.Items.Add(new ToolStripSeparator() { Name = "changePasswordOptionsSeparatorItem" });
+			}
 
 			if (this.Config != null && this.Config.IsPortable == false)
 			{
@@ -1543,6 +1588,14 @@ namespace WinAuth
 			menuitem.Name = "autoSizeOptionsMenuItem";
 			menuitem.Click += autoSizeOptionsMenuItem_Click;
 			menu.Items.Add(menuitem);
+
+			if (this.Config != null && this.Config.IsPortable == false)
+			{
+				menuitem = new ToolStripMenuItem(strings.MenuRememberPosition);
+				menuitem.Name = "rememberPositionOptionsMenuItem";
+				menuitem.Click += rememberPositionOptionsMenuItem_Click;
+				menu.Items.Add(menuitem);
+			}
 
 			menu.Items.Add(new ToolStripSeparator());
 
@@ -1603,7 +1656,10 @@ namespace WinAuth
 			ToolStripMenuItem menuitem;
 
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "changePasswordOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
-			menuitem.Enabled = (this.Config != null && this.Config.Count != 0);
+			if (menuitem != null)
+			{
+				menuitem.Enabled = (this.Config != null && this.Config.Count != 0);
+			}
 
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "openOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Visible = (this.Config.UseTrayIcon == true && this.Visible == false);
@@ -1637,7 +1693,16 @@ namespace WinAuth
 			menuitem.Checked = this.Config.UseTrayIcon;
 
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "autoSizeOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
-			menuitem.Checked = this.Config.AutoSize;
+			if (menuitem != null)
+			{
+				menuitem.Checked = this.Config.AutoSize;
+			}
+
+			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "rememberPositionOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			if (menuitem != null)
+			{
+				menuitem.Checked = !this.Config.Position.IsEmpty;
+			}
 		}
 
 		/// <summary>
@@ -1766,6 +1831,16 @@ namespace WinAuth
 		}
 
 		/// <summary>
+		/// Click the Remember Position menu item
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void rememberPositionOptionsMenuItem_Click(object sender, EventArgs e)
+		{
+			this.Config.Position = (this.Config.Position.IsEmpty ? new Point(this.Left, this.Top) : Point.Empty);
+		}
+
+		/// <summary>
 		/// Click the Export menu
 		/// </summary>
 		/// <param name="sender"></param>
@@ -1796,7 +1871,7 @@ namespace WinAuth
 			ExportForm exportform = new ExportForm();
 			if (exportform.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 			{
-				WinAuthHelper.ExportAuthenticators(this.Config, exportform.ExportFile, exportform.Password, exportform.PGPKey);
+				WinAuthHelper.ExportAuthenticators(this, this.Config, exportform.ExportFile, exportform.Password, exportform.PGPKey);
 			}
 		}
 

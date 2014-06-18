@@ -891,7 +891,7 @@ namespace WinAuth
 				return DialogResult.OK;
 			}
 
-			// if there is no protection reutrn None
+			// if there is no protection return None
 			WinAuthAuthenticator auth = item.Authenticator;
 			if (auth.AuthenticatorData.RequiresPassword == false)
 			{

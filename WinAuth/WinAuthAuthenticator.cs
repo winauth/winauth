@@ -644,6 +644,21 @@ namespace WinAuth
 				extraparams += "&issuer=" + HttpUtility.UrlEncode(issuer);
 			}
 
+			// add the skin
+			if (string.IsNullOrEmpty(this.Skin) == false)
+			{
+				if (this.Skin.StartsWith("base64:") == true)
+				{
+					byte[] bytes = Convert.FromBase64String(this.Skin.Substring(7));
+					string icon32 = Base32.getInstance().Encode(bytes);
+					extraparams += "&icon=" + HttpUtility.UrlEncode("base64:" + icon32);
+				}
+				else
+				{
+					extraparams += "&icon=" + HttpUtility.UrlEncode(this.Skin.Replace("Icon.png", ""));
+				}
+			}
+
 			var url = string.Format("otpauth://totp/{0}?secret={1}&digits={2}{3}",
 				(issuer.Length != 0 ? issuer + ":" + label : label),
 				secret,
