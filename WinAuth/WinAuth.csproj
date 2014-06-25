@@ -442,6 +442,7 @@
     <EmbeddedResource Include="Resources\WinAuth2Icon.png" />
     <EmbeddedResource Include="Resources\AmazonAWSIcon.png" />
     <EmbeddedResource Include="Resources\AmazonIcon.png" />
+    <EmbeddedResource Include="Resources\RuneScapeIcon.png" />
     <Content Include="winauth.ico" />
   </ItemGroup>
   <ItemGroup>

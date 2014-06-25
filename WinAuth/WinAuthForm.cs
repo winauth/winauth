@@ -219,10 +219,104 @@ namespace WinAuth
 		}
 
 		/// <summary>
+		/// Import authenticators from a file
+		/// 
+		/// *.xml = WinAuth v2
+		/// *.txt = plain text with KeyUriFormat per line (https://code.google.com/p/google-authenticator/wiki/KeyUriFormat)
+		/// *.zip = encrypted zip, containing import file
+		/// *.pgp = PGP encrypted, containing import file
+		/// 
+		/// </summary>
+		/// <param name="authenticatorFile">name import file</param>
+		private void importAuthenticator(string authenticatorFile)
+		{
+			// call legacy import for v2 xml files
+			if (string.Compare(Path.GetExtension(authenticatorFile), ".xml", true) == 0)
+			{
+				importAuthenticatorFromV2(authenticatorFile);
+				return;
+			}
+
+			List<WinAuthAuthenticator> authenticators = null;
+			bool retry;
+			do
+			{
+				retry = false;
+				try
+				{
+					authenticators = WinAuthHelper.ImportAuthenticators(this, authenticatorFile);
+				}
+				catch (ImportException ex)
+				{
+					if (ErrorDialog(this, ex.Message, ex.InnerException, MessageBoxButtons.RetryCancel) == System.Windows.Forms.DialogResult.Cancel)
+					{
+						return;
+					}
+					retry = true;
+				}
+			} while (retry);
+			if (authenticators == null)
+			{
+				return;
+			}
+
+			// save all the new authenticators
+			foreach (var authenticator in authenticators)
+			{
+				//sync
+				authenticator.Sync();
+
+				// make sure there isn't a name clash
+				int rename = 0;
+				string importedName = authenticator.Name;
+				while (this.Config.Where(a => a.Name == importedName).Count() != 0)
+				{
+					importedName = authenticator.Name + " (" + (++rename) + ")";
+				}
+				authenticator.Name = importedName;
+
+				// save off any new authenticators as a backup
+				WinAuthHelper.SaveToRegistry(this.Config, authenticator);
+
+				// first time we prompt for protection and set out main settings from imported config
+				if (this.Config.Count == 0)
+				{
+					ChangePasswordForm form = new ChangePasswordForm();
+					form.PasswordType = Authenticator.PasswordTypes.Explicit;
+					if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
+					{
+						this.Config.PasswordType = form.PasswordType;
+						if ((this.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
+						{
+							this.Config.Password = form.Password;
+						}
+						else
+						{
+							this.Config.Password = null;
+						}
+					}
+				}
+
+				// add to main list
+				this.Config.Add(authenticator);
+			}
+
+			SaveConfig(true);
+			loadAuthenticatorList();
+
+			// reset UI
+			setAutoSize();
+			introLabel.Visible = (this.Config.Count == 0);
+
+			// reset hotkeys
+			HookHotkeys();
+		}
+
+		/// <summary>
 		/// Import a v2 authenticator from an existing file name
 		/// </summary>
 		/// <param name="authenticatorFile">name of v2 xml file</param>
-		private void importAuthenticator(string authenticatorFile)
+		private void importAuthenticatorFromV2(string authenticatorFile)
 		{
 			bool retry = false;
 			string password = null;
@@ -326,88 +420,6 @@ namespace WinAuth
 					retry = true;
 				}
 			} while (retry == true);
-		}
-
-		/// <summary>
-		/// Import authenticators from a text file containing KeyUri formats
-		/// https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
-		/// </summary>
-		/// <param name="authenticatorFile">name text file</param>
-		private void importAuthenticatorFromText(string authenticatorFile)
-		{
-			List<WinAuthAuthenticator> authenticators = null;
-			bool retry;
-			do
-			{
-				retry = false;
-				try
-				{
-					authenticators = WinAuthHelper.ImportAuthenticators(this, authenticatorFile);
-				}
-				catch (ImportException ex)
-				{
-					if (ErrorDialog(this, ex.Message, ex.InnerException, MessageBoxButtons.RetryCancel) == System.Windows.Forms.DialogResult.Cancel)
-					{
-						return;
-					}
-					retry = true;
-				}
-			} while (retry);
-			if (authenticators == null)
-			{
-				return;
-			}
-
-			// save all the new authenticators
-			foreach (var authenticator in authenticators)
-			{
-				//sync
-				authenticator.Sync();
-
-				// make sure there isn't a name clash
-				int rename = 0;
-				string importedName = authenticator.Name;
-				while (this.Config.Where(a => a.Name == importedName).Count() != 0)
-				{
-					importedName = authenticator.Name + " (" + (++rename) + ")";
-				}
-				authenticator.Name = importedName;
-
-				// save off any new authenticators as a backup
-				WinAuthHelper.SaveToRegistry(this.Config, authenticator);
-
-				// first time we prompt for protection and set out main settings from imported config
-				if (this.Config.Count == 0)
-				{
-					ChangePasswordForm form = new ChangePasswordForm();
-					form.PasswordType = Authenticator.PasswordTypes.Explicit;
-					if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-					{
-						this.Config.PasswordType = form.PasswordType;
-						if ((this.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
-						{
-							this.Config.Password = form.Password;
-						}
-						else
-						{
-							this.Config.Password = null;
-						}
-					}
-				}
-
-				// add to main list
-				this.Config.Add(authenticator);
-			}
-
-			SaveConfig(true);
-			loadAuthenticatorList();
-
-			// reset UI
-			setAutoSize();
-			introLabel.Visible = (this.Config.Count == 0);
-
-			// reset hotkeys
-			HookHotkeys();
 		}
 
 		/// <summary>
@@ -652,17 +664,6 @@ namespace WinAuth
 				subitem.Click += addAuthenticatorMenu_Click;
 				addAuthenticatorMenu.Items.Add(subitem);
 			}
-			//
-			addAuthenticatorMenu.Items.Add(new ToolStripSeparator());
-			//
-			subitem = new ToolStripMenuItem();
-			subitem.Text = strings.MenuImportWinauth;
-			subitem.Name = "importAuthenticatorMenuItem";
-			subitem.Image = new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("WinAuth.Resources.WinAuth2Icon.png"));
-			subitem.ImageAlign = ContentAlignment.MiddleLeft;
-			subitem.ImageScaling = ToolStripItemImageScaling.SizeToFit;
-			subitem.Click += importAuthenticatorMenu_Click;
-			addAuthenticatorMenu.Items.Add(subitem);
 			//
 			addAuthenticatorMenu.Items.Add(new ToolStripSeparator());
 			//
@@ -1029,7 +1030,7 @@ namespace WinAuth
 					MessageBoxIcon.Question);
 				if (importResult == System.Windows.Forms.DialogResult.Yes)
 				{
-					importAuthenticator(_existingv2Config);
+					importAuthenticatorFromV2(_existingv2Config);
 				}
 				_existingv2Config = null;
 			}
@@ -1246,36 +1247,6 @@ namespace WinAuth
 		}
 
 		/// <summary>
-		/// Click to import an existing WinAuth 2.x authenticator
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		void importAuthenticatorMenu_Click(object sender, EventArgs e)
-		{
-			ToolStripItem menuitem = (ToolStripItem)sender;
-
-			OpenFileDialog ofd = new OpenFileDialog();
-			ofd.AddExtension = true;
-			ofd.CheckFileExists = true;
-			ofd.CheckPathExists = true;
-			ofd.DefaultExt = "xml";
-			ofd.FileName = "authenticator.xml";
-			string lastv2file = WinAuthHelper.GetLastV2Config();
-			if (string.IsNullOrEmpty(lastv2file) == false)
-			{
-				ofd.InitialDirectory = Path.GetDirectoryName(lastv2file);
-				ofd.FileName = Path.GetFileName(lastv2file);
-			}
-			ofd.Filter = "WinAuth (*.xml)|*.xml|All Files (*.*)|*.*";
-			ofd.RestoreDirectory = true;
-			ofd.Title = WinAuthMain.APPLICATION_TITLE;
-			if (ofd.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
-			{
-				importAuthenticator(ofd.FileName);
-			}
-		}
-
-		/// <summary>
 		/// Click to import an text file of authenticators
 		/// </summary>
 		/// <param name="sender"></param>
@@ -1288,12 +1259,20 @@ namespace WinAuth
 			ofd.AddExtension = true;
 			ofd.CheckFileExists = true;
 			ofd.CheckPathExists = true;
-			ofd.Filter = "Text Files (*.txt)|*.txt|Zip Files (*.zip)|*.zip|PGP Files (*.pgp)|*.pgp|All Files (*.*)|*.*";
+			//
+			string lastv2file = WinAuthHelper.GetLastV2Config();
+			if (string.IsNullOrEmpty(lastv2file) == false)
+			{
+				ofd.InitialDirectory = Path.GetDirectoryName(lastv2file);
+				ofd.FileName = Path.GetFileName(lastv2file);
+			}
+			//
+			ofd.Filter = "WinAuth Files (*.xml)|*.xml|Text Files (*.txt)|*.txt|Zip Files (*.zip)|*.zip|PGP Files (*.pgp)|*.pgp|All Files (*.*)|*.*";
 			ofd.RestoreDirectory = true;
 			ofd.Title = WinAuthMain.APPLICATION_TITLE;
 			if (ofd.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 			{
-				importAuthenticatorFromText(ofd.FileName);
+				importAuthenticator(ofd.FileName);
 			}
 		}
 
