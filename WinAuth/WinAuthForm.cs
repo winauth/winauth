@@ -443,6 +443,9 @@ namespace WinAuth
 			}
 #endif
 
+			// hook into System time change event
+			Microsoft.Win32.SystemEvents.TimeChanged += new EventHandler(SystemEvents_TimeChanged);
+
 			// create the updater and check for update if appropriate
 			if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed == false)
 			{
@@ -1495,6 +1498,29 @@ namespace WinAuth
 			{
 				ShowUpdaterForm();
 			}
+		}
+
+		/// <summary>
+		/// System time change event. We need to resync any unprotected authenticators
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		void SystemEvents_TimeChanged(object sender, EventArgs e)
+		{
+			Cursor cursor = Cursor.Current;
+			Cursor.Current = Cursors.WaitCursor;
+			foreach (var auth in this.Config)
+			{
+				if (auth.AuthenticatorData != null && auth.AuthenticatorData.RequiresPassword == false)
+				{
+					try
+					{
+						auth.Sync();
+					}
+					catch (Exception) { }
+				}
+			}
+			Cursor.Current = cursor;
 		}
 
 #endregion

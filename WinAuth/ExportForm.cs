@@ -73,11 +73,6 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void ExportForm_Shown(object sender, EventArgs e)
 		{
-			// Buf in MetroFrame where focus is not set correcty during Load, so we do it here
-			//if (fileField.Enabled == true)
-			//{
-			//	fileField.Focus();
-			//}
 		}
 
 		/// <summary>
@@ -87,7 +82,10 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void passwordCheckbox_CheckedChanged(object sender, EventArgs e)
 		{
-			pgpCheckbox.Checked = false;
+			if (passwordCheckbox.Checked == true)
+			{
+				pgpCheckbox.Checked = false;
+			}
 
 			passwordField.Enabled = (passwordCheckbox.Checked);
 			verifyField.Enabled = (passwordCheckbox.Checked);
@@ -97,9 +95,17 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// Check the PGP encryption
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void pgpCheckbox_CheckedChanged(object sender, EventArgs e)
 		{
-			passwordCheckbox.Checked = false;
+			if (pgpCheckbox.Checked == true)
+			{
+				passwordCheckbox.Checked = false;
+			}
 
 			pgpField.Enabled = pgpCheckbox.Checked;
 			if (pgpCheckbox.Checked == true)
@@ -126,6 +132,11 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// Click the browse button
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void browseButton_Click(object sender, EventArgs e)
 		{
 			SaveFileDialog sfd = new SaveFileDialog();

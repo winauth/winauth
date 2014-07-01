@@ -667,8 +667,8 @@ namespace WinAuth
 				}
 			}
 
-			// check if we need to sync, or if it's been a week
-			if (ServerTimeDiff == 0 || LastServerTime == 0 || LastServerTime < DateTime.Now.AddDays(-7).Ticks)
+			// check if we need to sync, or if it's been a day
+			if (ServerTimeDiff == 0 || LastServerTime == 0 || LastServerTime < DateTime.Now.AddHours(-24).Ticks)
 			{
 				Sync();
 				return true;

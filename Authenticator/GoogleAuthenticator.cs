@@ -113,7 +113,7 @@ namespace WinAuth
     /// <summary>
     /// Synchorise this authenticator's time with Google. We update our data record with the difference from our UTC time.
     /// </summary>
-    public override void Sync()
+		public override void Sync()
     {
 			// check if data is protected
 			if (this.SecretKey == null && this.EncryptedData != null)
