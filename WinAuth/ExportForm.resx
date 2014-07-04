@@ -117,7 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="introLabel.Text" xml:space="preserve">
-    <value>This will export a text file with an authenticator per line in Google's KeyUriFormat (https://code.google.com/p/google-authenticator/wiki/KeyUriFormat) that can be imported into WinAuth or some other authenticator applications.</value>
-  </data>
 </root>

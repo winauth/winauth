@@ -88,6 +88,7 @@ namespace WinAuth
 			this.cancelButton.TabIndex = 7;
 			this.cancelButton.Text = "Cancel";
 			this.cancelButton.UseSelectable = true;
+			this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
 			// 
 			// nameLabel
 			// 
