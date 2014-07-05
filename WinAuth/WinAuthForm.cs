@@ -498,6 +498,13 @@ namespace WinAuth
 			// save the position of the list within the form else starting as minimized breaks the size
 			_listoffset = new Rectangle(authenticatorList.Left, authenticatorList.Top, (this.Width - authenticatorList.Width), (this.Height - authenticatorList.Height));
 
+			// set the shadow type (change in config for compatibility)
+			MetroFormShadowType shadow;
+			if (Enum.TryParse<MetroFormShadowType>(this.Config.ShadowType, true, out shadow) == true)
+			{
+				this.ShadowType = shadow;
+			}
+
 			// set positions
 			if (this.Config.Position.IsEmpty == false)
 			{

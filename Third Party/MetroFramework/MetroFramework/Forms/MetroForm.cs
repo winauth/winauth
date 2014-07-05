@@ -184,10 +184,12 @@ namespace MetroFramework.Forms
             set { isResizable = value; }
         }
 
-        private MetroFormShadowType shadowType = MetroFormShadowType.Flat;
+				//private MetroFormShadowType shadowType = MetroFormShadowType.Flat;
+				private MetroFormShadowType shadowType = MetroFormShadowType.AeroShadow;
         [Category(MetroDefaults.PropertyCategory.Appearance)]
-        [DefaultValue(MetroFormShadowType.Flat)]
-        public MetroFormShadowType ShadowType
+        //[DefaultValue(MetroFormShadowType.Flat)]
+				[DefaultValue(MetroFormShadowType.AeroShadow)]
+				public MetroFormShadowType ShadowType
         {
             get { return IsMdiChild ? MetroFormShadowType.None : shadowType; }
             set { shadowType = value; }

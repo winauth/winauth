@@ -123,6 +123,11 @@ namespace WinAuth
 		private bool _readOnly;
 
 		/// <summary>
+		/// MetroFormShadowType for main form
+		/// </summary>
+		private string _shadowType;
+
+		/// <summary>
 		/// Class used to serialize the settings inside the Xml config file
 		/// </summary>
 		[XmlRoot(ElementName="settings")]
@@ -292,6 +297,25 @@ namespace WinAuth
 				if (OnConfigChanged != null)
 				{
 					OnConfigChanged(this, new ConfigChangedEventArgs("Height"));
+				}
+			}
+		}
+
+		/// <summary>
+		/// Get/set shadow type for main form
+		/// </summary>
+		public string ShadowType
+		{
+			get
+			{
+				return _shadowType;
+			}
+			set
+			{
+				_shadowType = value;
+				if (OnConfigChanged != null)
+				{
+					OnConfigChanged(this, new ConfigChangedEventArgs("ShadowType"));
 				}
 			}
 		}
@@ -618,7 +642,6 @@ namespace WinAuth
     public WinAuthConfig()
     {
       Version = CURRENTVERSION;
-      //AlwaysOnTop = true;
 			AutoSize = true;
     }
 
@@ -770,6 +793,10 @@ namespace WinAuth
 
 						case "height":
 							_height = reader.ReadElementContentAsInt();
+							break;
+
+						case "shadowtype":
+							_shadowType = reader.ReadElementContentAsString();
 							break;
 
 						case "settings":
@@ -977,6 +1004,13 @@ namespace WinAuth
 			writer.WriteStartElement("height");
 			writer.WriteValue(this.Height);
 			writer.WriteEndElement();
+			//
+			if (string.IsNullOrEmpty(this.ShadowType) == false)
+			{
+				writer.WriteStartElement("shadowtype");
+				writer.WriteValue(this.ShadowType);
+				writer.WriteEndElement();
+			}
 			//
 			if (includeSettings == true && _settings.Count != 0)
 			{
