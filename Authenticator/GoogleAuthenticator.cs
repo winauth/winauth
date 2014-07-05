@@ -55,10 +55,20 @@ namespace WinAuth
     /// </summary>
     private const int CODE_DIGITS = 6;
 
+		/// <summary>
+		/// Number of minutes to ignore syncing if network error
+		/// </summary>
+		private const int SYNC_ERROR_MINUTES = 5;
+
     /// <summary>
     /// URL used to sync time
     /// </summary>
     private const string TIME_SYNC_URL = "http://www.google.com";
+
+		/// <summary>
+		/// Time of last Sync error
+		/// </summary>
+		private static DateTime _lastSyncError = DateTime.MinValue;
 
     #region Authenticator data
 
@@ -69,28 +79,6 @@ namespace WinAuth
         return Base32.getInstance().Encode(SecretKey);
       }
     }
-
-    /// <summary>
-    /// Get/set the combined secret data value as hex coded string arrays
-    /// </summary>
-		//public override string SecretData
-		//{
-		//	get
-		//	{
-		//		return Authenticator.ByteArrayToString(SecretKey);
-		//	}
-		//	set
-		//	{
-		//		if (string.IsNullOrEmpty(value) == false)
-		//		{
-		//			SecretKey = Authenticator.StringToByteArray(value);
-		//		}
-		//		else
-		//		{
-		//			SecretKey = null;
-		//		}
-		//	}
-		//}
 
     #endregion
 
@@ -111,7 +99,7 @@ namespace WinAuth
     }
 
     /// <summary>
-    /// Synchorise this authenticator's time with Google. We update our data record with the difference from our UTC time.
+    /// Synchronise this authenticator's time with Google. We update our data record with the difference from our UTC time.
     /// </summary>
 		public override void Sync()
     {
@@ -121,12 +109,19 @@ namespace WinAuth
 				throw new EncrpytedSecretDataException();
 			}
 
+			// don't retry for 5 minutes
+			if (_lastSyncError >= DateTime.Now.AddMinutes(0 - SYNC_ERROR_MINUTES))
+			{
+				return;
+			}
+
 			try
 			{
 				// we use the Header response field from a request to www.google.come
 				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(TIME_SYNC_URL);
 				request.Method = "GET";
 				request.ContentType = "text/html";
+				request.Timeout = 5000;
 				// get response
 				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
 				{
@@ -152,12 +147,17 @@ namespace WinAuth
 							ServerTimeDiff = serverTimeDiff;
 							LastServerTime = DateTime.Now.Ticks;
 						}
-
 					}
+
+					// clear any sync error
+					_lastSyncError = DateTime.MinValue;
 				}
 			}
-			catch (WebException)
+			catch (WebException )
 			{
+				// don't retry for a while after error
+				_lastSyncError = DateTime.Now;
+
 				// set to zero to force reset
 				ServerTimeDiff = 0;
 			}

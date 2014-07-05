@@ -106,6 +106,11 @@ namespace WinAuth
 			"0101";
 
 		/// <summary>
+		/// Number of minutes to ignore syncing if network error
+		/// </summary>
+		private const int SYNC_ERROR_MINUTES = 5;
+
+		/// <summary>
 		/// URLs for all mobile services
 		/// </summary>
 		private static string REGION_US = "US";
@@ -147,6 +152,11 @@ namespace WinAuth
 		/// URL for GEO IP lookup to determine region
 		/// </summary>
 		private static string GEOIPURL = "http://geoiplookup.wikimedia.org";
+
+		/// <summary>
+		/// Time of last Sync error
+		/// </summary>
+		private static DateTime _lastSyncError = DateTime.MinValue;
 
 		#region Authenticator data
 
@@ -247,6 +257,7 @@ namespace WinAuth
 			HttpWebRequest georequest = (HttpWebRequest)WebRequest.Create(GEOIPURL);
 			georequest.Method = "GET";
 			georequest.ContentType = "application/json";
+			georequest.Timeout = 10000;
 			// get response
 			string responseString = null;
 			try
@@ -350,6 +361,7 @@ namespace WinAuth
 				request.Method = "POST";
 				request.ContentType = "application/octet-stream";
 				request.ContentLength = encrypted.Length;
+				request.Timeout = 10000;
 				Stream requestStream = request.GetRequestStream();
 				requestStream.Write(encrypted, 0, encrypted.Length);
 				requestStream.Close();
@@ -450,57 +462,78 @@ namespace WinAuth
 				throw new EncrpytedSecretDataException();
 			}
 
-			// create a connection to time sync server
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(GetMobileUrl(this.Region) + SYNC_PATH);
-			request.Method = "GET";
-
-			// get response
-			byte[] responseData = null;
-			using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+			// don't retry for 5 minutes
+			if (_lastSyncError >= DateTime.Now.AddMinutes(0 - SYNC_ERROR_MINUTES))
 			{
-				// OK?
-				if (response.StatusCode != HttpStatusCode.OK)
-				{
-					throw new ApplicationException(string.Format("{0}: {1}", (int)response.StatusCode, response.StatusDescription));
-				}
+				return;
+			}
 
-				// load back the buffer - should only be a byte[8]
-				using (MemoryStream ms = new MemoryStream())
+			try
+			{
+				// create a connection to time sync server
+				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(GetMobileUrl(this.Region) + SYNC_PATH);
+				request.Method = "GET";
+				request.Timeout = 5000;
+
+				// get response
+				byte[] responseData = null;
+				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
 				{
-					// using (BufferedStream bs = new BufferedStream(response.GetResponseStream()))
-					using (Stream bs = response.GetResponseStream())
+					// OK?
+					if (response.StatusCode != HttpStatusCode.OK)
 					{
-						byte[] temp = new byte[RESPONSE_BUFFER_SIZE];
-						int read;
-						while ((read = bs.Read(temp, 0, RESPONSE_BUFFER_SIZE)) != 0)
-						{
-							ms.Write(temp, 0, read);
-						}
-						responseData = ms.ToArray();
+						throw new ApplicationException(string.Format("{0}: {1}", (int)response.StatusCode, response.StatusDescription));
+					}
 
-						// check it is correct size
-						if (responseData.Length != SYNC_RESPONSE_SIZE)
+					// load back the buffer - should only be a byte[8]
+					using (MemoryStream ms = new MemoryStream())
+					{
+						// using (BufferedStream bs = new BufferedStream(response.GetResponseStream()))
+						using (Stream bs = response.GetResponseStream())
 						{
-							throw new InvalidSyncResponseException(string.Format("Invalid response data size (expected " + SYNC_RESPONSE_SIZE + " got {0}", responseData.Length));
+							byte[] temp = new byte[RESPONSE_BUFFER_SIZE];
+							int read;
+							while ((read = bs.Read(temp, 0, RESPONSE_BUFFER_SIZE)) != 0)
+							{
+								ms.Write(temp, 0, read);
+							}
+							responseData = ms.ToArray();
+
+							// check it is correct size
+							if (responseData.Length != SYNC_RESPONSE_SIZE)
+							{
+								throw new InvalidSyncResponseException(string.Format("Invalid response data size (expected " + SYNC_RESPONSE_SIZE + " got {0}", responseData.Length));
+							}
 						}
 					}
 				}
+
+				// return data:
+				// 00-07 server time (Big Endian)
+
+				// extract the server time
+				if (BitConverter.IsLittleEndian == true)
+				{
+					Array.Reverse(responseData);
+				}
+				// get the difference between the server time and our current time
+				long serverTimeDiff = BitConverter.ToInt64(responseData, 0) - CurrentTime;
+
+				// update the Data object
+				ServerTimeDiff = serverTimeDiff;
+				LastServerTime = DateTime.Now.Ticks;
+
+				// clear any sync error
+				_lastSyncError = DateTime.MinValue;
 			}
-
-			// return data:
-			// 00-07 server time (Big Endian)
-
-			// extract the server time
-			if (BitConverter.IsLittleEndian == true)
+			catch (WebException)
 			{
-				Array.Reverse(responseData);
-			}
-			// get the difference between the server time and our current time
-			long serverTimeDiff = BitConverter.ToInt64(responseData, 0) - CurrentTime;
+				// don't retry for a while after error
+				_lastSyncError = DateTime.Now;
 
-			// update the Data object
-			ServerTimeDiff = serverTimeDiff;
-			LastServerTime = DateTime.Now.Ticks;
+				// set to zero to force reset
+				ServerTimeDiff = 0;
+			}
 		}
 
 		/// <summary>
