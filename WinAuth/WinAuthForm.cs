@@ -1667,6 +1667,11 @@ namespace WinAuth
 			ToolStripItem item;
 			ToolStripMenuItem menuitem;
 
+			if (this.Config == null)
+			{
+				return;
+			}
+
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "changePasswordOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			if (menuitem != null)
 			{
@@ -1674,9 +1679,15 @@ namespace WinAuth
 			}
 
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "openOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
-			menuitem.Visible = (this.Config.UseTrayIcon == true && this.Visible == false);
+			if (menuitem != null)
+			{
+				menuitem.Visible = (this.Config.UseTrayIcon == true && this.Visible == false);
+			}
 			item = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "openOptionsSeparatorItem").FirstOrDefault();
-			item.Visible = (this.Config.UseTrayIcon == true && this.Visible == false);
+			if (item != null)
+			{
+				item.Visible = (this.Config.UseTrayIcon == true && this.Visible == false);
+			}
 
 			for (int i = 1; i <= this.Config.Count; i++)
 			{
@@ -1699,10 +1710,16 @@ namespace WinAuth
 			}
 
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "alwaysOnTopOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
-			menuitem.Checked = this.Config.AlwaysOnTop;
+			if (menuitem != null)
+			{
+				menuitem.Checked = this.Config.AlwaysOnTop;
+			}
 
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "useSystemTrayIconOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
-			menuitem.Checked = this.Config.UseTrayIcon;
+			if (menuitem != null)
+			{
+				menuitem.Checked = this.Config.UseTrayIcon;
+			}
 
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "autoSizeOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			if (menuitem != null)
