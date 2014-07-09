@@ -333,7 +333,7 @@ namespace WinAuth
     }
 
 		/// <summary>
-		/// Save a PGP encrpyted version of an authenticator into the registry for recovery
+		/// Save a PGP encrypted version of an authenticator into the registry for recovery
 		/// </summary>
 		/// <param name="wa">WinAuthAuthenticator instance</param>
 		public static void SaveToRegistry(WinAuthConfig config, WinAuthAuthenticator wa)
