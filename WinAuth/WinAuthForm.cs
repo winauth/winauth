@@ -1601,7 +1601,7 @@ namespace WinAuth
 			menuitem.Click += autoSizeOptionsMenuItem_Click;
 			menu.Items.Add(menuitem);
 
-			if (this.Config != null && this.Config.IsPortable == false)
+			if (this.Config != null)
 			{
 				menuitem = new ToolStripMenuItem(strings.MenuRememberPosition);
 				menuitem.Name = "rememberPositionOptionsMenuItem";
