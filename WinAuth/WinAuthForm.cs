@@ -508,13 +508,18 @@ namespace WinAuth
 			// set positions
 			if (this.Config.Position.IsEmpty == false)
 			{
-				try
+				// check we aren't out of bounds in case of multi-monitor change
+				var v = SystemInformation.VirtualScreen;
+				if ((this.Config.Position.X + this.Width) >= v.Left && this.Config.Position.X < v.Width && this.Config.Position.Y > v.Top)
 				{
-					this.StartPosition = FormStartPosition.Manual;
-					this.Left = this.Config.Position.X;
-					this.Top = this.Config.Position.Y;
+					try
+					{
+						this.StartPosition = FormStartPosition.Manual;
+						this.Left = this.Config.Position.X;
+						this.Top = this.Config.Position.Y;
+					}
+					catch (Exception) { }
 				}
-				catch (Exception) { }
 			}
 
 			// if we passed "-min" flag
@@ -1079,7 +1084,7 @@ namespace WinAuth
 				this.Config.Width = this.Width;
 				this.Config.Height = this.Height;
 			}
-			if (this.Config != null && this.Config.Position.IsEmpty == false && this.Config.IsPortable == false)
+			if (this.Config != null && this.Config.Position.IsEmpty == false)
 			{
 				this.Config.Position = new Point(this.Left, this.Top);
 			}
