@@ -53,12 +53,9 @@
 			this.okButton = new MetroFramework.Controls.MetroButton();
 			this.cancelButton = new MetroFramework.Controls.MetroButton();
 			this.newAuthenticatorTimer = new System.Windows.Forms.Timer(this.components);
-			this.defianceIconRadioButton = new WinAuth.GroupMetroRadioButton();
+			this.archeageIconRadioButton = new WinAuth.GroupMetroRadioButton();
 			this.riftIconRadioButton = new WinAuth.GroupMetroRadioButton();
-			this.trionIconRadioButton = new WinAuth.GroupMetroRadioButton();
-			this.defianceIcon = new System.Windows.Forms.PictureBox();
-			this.iconRift = new System.Windows.Forms.PictureBox();
-			this.iconTrion = new System.Windows.Forms.PictureBox();
+			this.glyphIconRadioButton = new WinAuth.GroupMetroRadioButton();
 			this.label10 = new MetroFramework.Controls.MetroLabel();
 			this.label6 = new MetroFramework.Controls.MetroLabel();
 			this.nameField = new MetroFramework.Controls.MetroTextBox();
@@ -68,12 +65,18 @@
 			this.newLoginCodeField = new WinAuth.SecretTextBox();
 			this.newSerialNumberField = new WinAuth.SecretTextBox();
 			this.recoverAuthenticatorTab = new MetroFramework.Controls.MetroTabPage();
-			((System.ComponentModel.ISupportInitialize)(this.defianceIcon)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.iconRift)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.iconTrion)).BeginInit();
+			this.trionAuthenticatorRadioButton = new WinAuth.GroupMetroRadioButton();
+			this.iconTrion = new System.Windows.Forms.PictureBox();
+			this.archeageIcon = new System.Windows.Forms.PictureBox();
+			this.iconRift = new System.Windows.Forms.PictureBox();
+			this.iconGlyph = new System.Windows.Forms.PictureBox();
 			this.tabControl1.SuspendLayout();
 			this.newAuthenticatorTab.SuspendLayout();
 			this.recoverAuthenticatorTab.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.iconTrion)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.archeageIcon)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.iconRift)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.iconGlyph)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// allowCopyNewButton
@@ -268,9 +271,9 @@
 			this.label9.AutoSize = true;
 			this.label9.Location = new System.Drawing.Point(7, 13);
 			this.label9.Name = "label9";
-			this.label9.Size = new System.Drawing.Size(283, 19);
+			this.label9.Size = new System.Drawing.Size(251, 19);
 			this.label9.TabIndex = 1;
-			this.label9.Text = "1. Enter your Trion account email and password";
+			this.label9.Text = "1. Enter your account email and password";
 			// 
 			// okButton
 			// 
@@ -302,16 +305,16 @@
 			this.newAuthenticatorTimer.Interval = 500;
 			this.newAuthenticatorTimer.Tick += new System.EventHandler(this.newAuthenticatorTimer_Tick);
 			// 
-			// defianceIconRadioButton
+			// archeageIconRadioButton
 			// 
-			this.defianceIconRadioButton.Group = "ICON";
-			this.defianceIconRadioButton.Location = new System.Drawing.Point(232, 122);
-			this.defianceIconRadioButton.Name = "defianceIconRadioButton";
-			this.defianceIconRadioButton.Size = new System.Drawing.Size(14, 13);
-			this.defianceIconRadioButton.TabIndex = 3;
-			this.defianceIconRadioButton.Tag = "DefianceIcon.png";
-			this.defianceIconRadioButton.UseSelectable = true;
-			this.defianceIconRadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
+			this.archeageIconRadioButton.Group = "ICON";
+			this.archeageIconRadioButton.Location = new System.Drawing.Point(232, 122);
+			this.archeageIconRadioButton.Name = "archeageIconRadioButton";
+			this.archeageIconRadioButton.Size = new System.Drawing.Size(14, 13);
+			this.archeageIconRadioButton.TabIndex = 3;
+			this.archeageIconRadioButton.Tag = "ArcheAgeIcon.png";
+			this.archeageIconRadioButton.UseSelectable = true;
+			this.archeageIconRadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
 			// 
 			// riftIconRadioButton
 			// 
@@ -324,51 +327,18 @@
 			this.riftIconRadioButton.UseSelectable = true;
 			this.riftIconRadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
 			// 
-			// trionIconRadioButton
+			// glyphIconRadioButton
 			// 
-			this.trionIconRadioButton.Checked = true;
-			this.trionIconRadioButton.Group = "ICON";
-			this.trionIconRadioButton.Location = new System.Drawing.Point(80, 122);
-			this.trionIconRadioButton.Name = "trionIconRadioButton";
-			this.trionIconRadioButton.Size = new System.Drawing.Size(14, 13);
-			this.trionIconRadioButton.TabIndex = 1;
-			this.trionIconRadioButton.TabStop = true;
-			this.trionIconRadioButton.Tag = "TrionAuthenticatorIcon.png";
-			this.trionIconRadioButton.UseSelectable = true;
-			this.trionIconRadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
-			// 
-			// defianceIcon
-			// 
-			this.defianceIcon.Image = global::WinAuth.Properties.Resources.DefianceIcon;
-			this.defianceIcon.Location = new System.Drawing.Point(252, 107);
-			this.defianceIcon.Name = "defianceIcon";
-			this.defianceIcon.Size = new System.Drawing.Size(48, 48);
-			this.defianceIcon.TabIndex = 4;
-			this.defianceIcon.TabStop = false;
-			this.defianceIcon.Tag = "DefianceIcon.png";
-			this.defianceIcon.Click += new System.EventHandler(this.defianceIcon_Click);
-			// 
-			// iconRift
-			// 
-			this.iconRift.Image = global::WinAuth.Properties.Resources.RiftIcon;
-			this.iconRift.Location = new System.Drawing.Point(176, 107);
-			this.iconRift.Name = "iconRift";
-			this.iconRift.Size = new System.Drawing.Size(48, 48);
-			this.iconRift.TabIndex = 4;
-			this.iconRift.TabStop = false;
-			this.iconRift.Tag = "RiftIcon.png";
-			this.iconRift.Click += new System.EventHandler(this.iconRift_Click);
-			// 
-			// iconTrion
-			// 
-			this.iconTrion.Image = global::WinAuth.Properties.Resources.TrionAuthenticatorIcon;
-			this.iconTrion.Location = new System.Drawing.Point(100, 107);
-			this.iconTrion.Name = "iconTrion";
-			this.iconTrion.Size = new System.Drawing.Size(48, 48);
-			this.iconTrion.TabIndex = 4;
-			this.iconTrion.TabStop = false;
-			this.iconTrion.Tag = "TrionAuthenticatorIcon.png";
-			this.iconTrion.Click += new System.EventHandler(this.iconTrion_Click);
+			this.glyphIconRadioButton.Checked = true;
+			this.glyphIconRadioButton.Group = "ICON";
+			this.glyphIconRadioButton.Location = new System.Drawing.Point(80, 122);
+			this.glyphIconRadioButton.Name = "glyphIconRadioButton";
+			this.glyphIconRadioButton.Size = new System.Drawing.Size(14, 13);
+			this.glyphIconRadioButton.TabIndex = 1;
+			this.glyphIconRadioButton.TabStop = true;
+			this.glyphIconRadioButton.Tag = "GlyphIcon.png";
+			this.glyphIconRadioButton.UseSelectable = true;
+			this.glyphIconRadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
 			// 
 			// label10
 			// 
@@ -503,6 +473,61 @@
 			this.recoverAuthenticatorTab.VerticalScrollbarHighlightOnWheel = false;
 			this.recoverAuthenticatorTab.VerticalScrollbarSize = 10;
 			// 
+			// trionAuthenticatorRadioButton
+			// 
+			this.trionAuthenticatorRadioButton.Group = "ICON";
+			this.trionAuthenticatorRadioButton.Location = new System.Drawing.Point(304, 122);
+			this.trionAuthenticatorRadioButton.Name = "trionAuthenticatorRadioButton";
+			this.trionAuthenticatorRadioButton.Size = new System.Drawing.Size(14, 13);
+			this.trionAuthenticatorRadioButton.TabIndex = 3;
+			this.trionAuthenticatorRadioButton.Tag = "TrionAuthenticatorIcon.png";
+			this.trionAuthenticatorRadioButton.UseSelectable = true;
+			this.trionAuthenticatorRadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
+			// 
+			// iconTrion
+			// 
+			this.iconTrion.Image = global::WinAuth.Properties.Resources.TrionAuthenticatorIcon;
+			this.iconTrion.Location = new System.Drawing.Point(324, 107);
+			this.iconTrion.Name = "iconTrion";
+			this.iconTrion.Size = new System.Drawing.Size(48, 48);
+			this.iconTrion.TabIndex = 4;
+			this.iconTrion.TabStop = false;
+			this.iconTrion.Tag = "TrionAuthenticatorIcon.png";
+			this.iconTrion.Click += new System.EventHandler(this.trionIcon_Click);
+			// 
+			// archeageIcon
+			// 
+			this.archeageIcon.Image = global::WinAuth.Properties.Resources.ArcheAgeIcon;
+			this.archeageIcon.Location = new System.Drawing.Point(252, 107);
+			this.archeageIcon.Name = "archeageIcon";
+			this.archeageIcon.Size = new System.Drawing.Size(48, 48);
+			this.archeageIcon.TabIndex = 4;
+			this.archeageIcon.TabStop = false;
+			this.archeageIcon.Tag = "ArcheAgeIcon.png";
+			this.archeageIcon.Click += new System.EventHandler(this.iconArcheAge_Click);
+			// 
+			// iconRift
+			// 
+			this.iconRift.Image = global::WinAuth.Properties.Resources.RiftIcon;
+			this.iconRift.Location = new System.Drawing.Point(176, 107);
+			this.iconRift.Name = "iconRift";
+			this.iconRift.Size = new System.Drawing.Size(48, 48);
+			this.iconRift.TabIndex = 4;
+			this.iconRift.TabStop = false;
+			this.iconRift.Tag = "RiftIcon.png";
+			this.iconRift.Click += new System.EventHandler(this.iconRift_Click);
+			// 
+			// iconGlyph
+			// 
+			this.iconGlyph.Image = global::WinAuth.Properties.Resources.GlyphIcon;
+			this.iconGlyph.Location = new System.Drawing.Point(100, 107);
+			this.iconGlyph.Name = "iconGlyph";
+			this.iconGlyph.Size = new System.Drawing.Size(48, 48);
+			this.iconGlyph.TabIndex = 4;
+			this.iconGlyph.TabStop = false;
+			this.iconGlyph.Tag = "GlyphIcon.png";
+			this.iconGlyph.Click += new System.EventHandler(this.iconGlyph_Click);
+			// 
 			// AddTrionAuthenticator
 			// 
 			this.AcceptButton = this.okButton;
@@ -512,31 +537,34 @@
 			this.CancelButton = this.cancelButton;
 			this.ClientSize = new System.Drawing.Size(502, 585);
 			this.Controls.Add(this.tabControl1);
-			this.Controls.Add(this.defianceIconRadioButton);
+			this.Controls.Add(this.trionAuthenticatorRadioButton);
+			this.Controls.Add(this.archeageIconRadioButton);
 			this.Controls.Add(this.riftIconRadioButton);
 			this.Controls.Add(this.cancelButton);
-			this.Controls.Add(this.trionIconRadioButton);
+			this.Controls.Add(this.glyphIconRadioButton);
 			this.Controls.Add(this.okButton);
-			this.Controls.Add(this.defianceIcon);
+			this.Controls.Add(this.iconTrion);
+			this.Controls.Add(this.archeageIcon);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.iconRift);
 			this.Controls.Add(this.nameField);
-			this.Controls.Add(this.iconTrion);
+			this.Controls.Add(this.iconGlyph);
 			this.Controls.Add(this.label10);
 			this.MaximizeBox = false;
 			this.Name = "AddTrionAuthenticator";
 			this.Resizable = false;
 			this.ShowIcon = false;
-			this.Text = "Add Trion Authenticator";
+			this.Text = "Add Glyph Authenticator";
 			this.Load += new System.EventHandler(this.AddTrionAuthenticator_Load);
-			((System.ComponentModel.ISupportInitialize)(this.defianceIcon)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.iconRift)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.iconTrion)).EndInit();
 			this.tabControl1.ResumeLayout(false);
 			this.newAuthenticatorTab.ResumeLayout(false);
 			this.newAuthenticatorTab.PerformLayout();
 			this.recoverAuthenticatorTab.ResumeLayout(false);
 			this.recoverAuthenticatorTab.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.iconTrion)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.archeageIcon)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.iconRift)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.iconGlyph)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -570,17 +598,19 @@
 		private MetroFramework.Controls.MetroLabel label8;
 		private MetroFramework.Controls.MetroLabel label5;
 		private MetroFramework.Controls.MetroLabel label4;
-		private WinAuth.GroupMetroRadioButton defianceIconRadioButton;
+		private WinAuth.GroupMetroRadioButton archeageIconRadioButton;
 		private WinAuth.GroupMetroRadioButton riftIconRadioButton;
-		private WinAuth.GroupMetroRadioButton trionIconRadioButton;
-		private System.Windows.Forms.PictureBox defianceIcon;
+		private WinAuth.GroupMetroRadioButton glyphIconRadioButton;
+		private System.Windows.Forms.PictureBox archeageIcon;
 		private System.Windows.Forms.PictureBox iconRift;
-		private System.Windows.Forms.PictureBox iconTrion;
+		private System.Windows.Forms.PictureBox iconGlyph;
 		private MetroFramework.Controls.MetroLabel label6;
 		private MetroFramework.Controls.MetroTextBox nameField;
 		private MetroFramework.Controls.MetroLabel label10;
 		private MetroFramework.Controls.MetroTabControl tabControl1;
 		private MetroFramework.Controls.MetroTabPage newAuthenticatorTab;
 		private MetroFramework.Controls.MetroTabPage recoverAuthenticatorTab;
+		private System.Windows.Forms.PictureBox iconTrion;
+		private GroupMetroRadioButton trionAuthenticatorRadioButton;
 	}
 }

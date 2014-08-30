@@ -391,6 +391,11 @@ namespace WinAuth
 		[DllImport("user32.dll")]
 		internal static extern IntPtr GetOpenClipboardWindow();
 
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+		internal static extern int GetWindowTextLength(IntPtr hWnd);
+		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		internal static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+
 		public static WINDOWPLACEMENT GetPlacement(IntPtr hwnd)
 		{
 			WINDOWPLACEMENT placement = new WINDOWPLACEMENT();

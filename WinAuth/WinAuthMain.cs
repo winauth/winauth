@@ -81,6 +81,8 @@ namespace WinAuth
 			{new Tuple<string,string>("Guild Wars 2", "GuildWarsAuthenticatorIcon.png")},
 			{new Tuple<string,string>("s2", string.Empty)},
 			{new Tuple<string,string>("Trion", "TrionAuthenticatorIcon.png")},
+			{new Tuple<string,string>("Glyph", "GlyphIcon.png")},
+			{new Tuple<string,string>("ArcheAge", "ArcheAgeIcon.png")},
 			{new Tuple<string,string>("Rift", "RiftIcon.png")},
 			{new Tuple<string,string>("Defiance", "DefianceIcon.png")},
 			{new Tuple<string,string>("s2b", string.Empty)},
@@ -135,7 +137,7 @@ namespace WinAuth
 			new RegisteredAuthenticator {Name="Microsoft", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Microsoft, Icon="MicrosoftAuthenticatorIcon.png"},
 			new RegisteredAuthenticator {Name="Battle.Net", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.BattleNet, Icon="BattleNetAuthenticatorIcon.png"},
 			new RegisteredAuthenticator {Name="Guild Wars 2", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.GuildWars, Icon="GuildWarsAuthenticatorIcon.png"},
-			new RegisteredAuthenticator {Name="Trion / Rift", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Trion, Icon="TrionAuthenticatorIcon.png"}
+			new RegisteredAuthenticator {Name="Glyph / Trion", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Trion, Icon="GlyphIcon.png"}
 		};
 
 		public static ResourceManager StringResources = new ResourceManager(typeof(WinAuth.Resources.strings).FullName, typeof(WinAuth.Resources.strings).Assembly);
@@ -197,6 +199,7 @@ namespace WinAuth
 			try
 			{
 				Exception e = ex;
+				capture.Append(e.Message).Append(Environment.NewLine);
 				while (e != null)
 				{
 					capture.Append(new StackTrace(e, true).ToString()).Append(Environment.NewLine);

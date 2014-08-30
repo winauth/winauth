@@ -328,6 +328,8 @@ namespace WinAuth
 			uint codemask = (uint)Math.Pow(10, CodeDigits);
 			string format = new string('0', CodeDigits);
 			string code = (fullcode % codemask).ToString(format);
+			// New glyph authenticator now uses 6, but takes the first 6 of 8 rather the proper last 6, so again we override the standard implementation
+			code = code.Substring(0, 6);
 
 			return code;
 		}

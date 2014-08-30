@@ -367,20 +367,37 @@ namespace WinAuth
 			{
 				bool failed = false;
 				// check if the clipboard is locked
-				if (WinAPI.GetOpenClipboardWindow() != IntPtr.Zero)
+				IntPtr hWnd = WinAPI.GetOpenClipboardWindow();
+				if (hWnd != IntPtr.Zero)
 				{
+					int len = WinAPI.GetWindowTextLength(hWnd);
+					if (len == 0)
+					{
+						WinAuthMain.LogException(new ApplicationException("Clipboard in use by another process"));
+					}
+					else
+					{
+						StringBuilder sb = new StringBuilder(len + 1);
+						WinAPI.GetWindowText(hWnd, sb, sb.Capacity);
+						WinAuthMain.LogException(new ApplicationException("Clipboard in use by '" + sb.ToString() + "'"));
+					}
+
 					failed = true;
 				}
 				else
 				{
+					// Issue#170: can still get error copying even though it works, so just increase retries and ignore error
 					try
 					{
 						Clipboard.Clear();
+
+						// add delay for clip error
+						System.Threading.Thread.Sleep(100);
+
 						Clipboard.SetDataObject(code, true, 4, 250);
 					}
-					catch (ExternalException)
+					catch (ExternalException )
 					{
-						failed = true;
 					}
 				}
 

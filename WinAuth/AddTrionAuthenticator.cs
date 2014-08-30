@@ -170,16 +170,6 @@ namespace WinAuth
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void iconTrion_Click(object sender, EventArgs e)
-		{
-			trionIconRadioButton.Checked = true;
-		}
-
-		/// <summary>
-		/// Select one of the icons
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
 		private void iconRift_Click(object sender, EventArgs e)
 		{
 			riftIconRadioButton.Checked = true;
@@ -190,9 +180,29 @@ namespace WinAuth
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void defianceIcon_Click(object sender, EventArgs e)
+		private void iconGlyph_Click(object sender, EventArgs e)
 		{
-			defianceIconRadioButton.Checked = true;
+			glyphIconRadioButton.Checked = true;
+		}
+
+		/// <summary>
+		/// Select one of the icons
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void iconArcheAge_Click(object sender, EventArgs e)
+		{
+			archeageIconRadioButton.Checked = true;
+		}
+
+		/// <summary>
+		/// Select one of the icons
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void trionIcon_Click(object sender, EventArgs e)
+		{
+			trionAuthenticatorRadioButton.Checked = true;
 		}
 
 		/// <summary>
@@ -358,6 +368,7 @@ namespace WinAuth
 		}
 
 #endregion
+
 
 	}
 }
