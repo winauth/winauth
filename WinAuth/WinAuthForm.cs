@@ -39,6 +39,7 @@ using MetroFramework.Forms;
 
 using WinAuth.Resources;
 using System.Security;
+using System.Net;
 
 namespace WinAuth
 {
@@ -128,6 +129,7 @@ namespace WinAuth
     {
       // get any command arguments
 			string password = null;
+			string proxy = null;
       string[] args = Environment.GetCommandLineArgs();
       for (int i = 1; i < args.Length; i++)
       {
@@ -147,6 +149,11 @@ namespace WinAuth
               i++;
 							password = args[i];
               break;
+						case "--proxy":
+							// set proxy [user[:pass]@]ip[:host]
+							i++;
+							proxy = args[i];
+							break;
 						default:
               break;
           }
@@ -156,6 +163,27 @@ namespace WinAuth
 					_startupConfigFile = arg;
         }
       }
+
+			// set the default web proxy
+			if (string.IsNullOrEmpty(proxy) == false)
+			{
+				try
+				{
+					Uri uri = new Uri(proxy.IndexOf("://") == -1 ? "http://" + proxy : proxy);
+					WebProxy webproxy = new WebProxy(uri.Host + ":" + uri.Port, true);
+					if (string.IsNullOrEmpty(uri.UserInfo) == false)
+					{
+						string[] auth = uri.UserInfo.Split(':');
+						webproxy.Credentials = new NetworkCredential(auth[0], (auth.Length > 1 ? auth[1] : string.Empty));
+					}
+					WebRequest.DefaultWebProxy = webproxy;
+				}
+				catch (UriFormatException )
+				{
+					ErrorDialog(this, "Invalid proxy value (" + proxy + ")" + Environment.NewLine + Environment.NewLine + "Use --proxy [user[:password]@]ip[:port], e.g. 127.0.0.1:8080 or me:mypass@10.0.0.1:8080");
+					this.Close();
+				}
+			}
 
 			loadConfig(password);
 		}
@@ -947,9 +975,10 @@ namespace WinAuth
 					this.Width = 420;
 				}
 
+				// Issue#175; take the smallest of full height or 62% screen height
 				int height = this.Height - authenticatorList.Height;
 				height += (this.Config.Count * authenticatorList.ItemHeight);
-				this.Height = height;
+				this.Height = Math.Min(Screen.GetWorkingArea(this).Height * 62 / 100, height);
 
 				this.Resizable = false;
 			}
