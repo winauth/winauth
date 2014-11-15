@@ -27,6 +27,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 using System.Windows.Forms;
 
 using WinAuth.Resources;
@@ -251,7 +252,7 @@ namespace WinAuth
 					request.UserAgent = "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)";
 					using (var response = (HttpWebResponse)request.GetResponse())
 					{
-						if (response.StatusCode == HttpStatusCode.Accepted && response.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase) == true)
+						if (response.StatusCode == HttpStatusCode.OK && response.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase) == true)
 						{
 							using (Bitmap bitmap = (Bitmap)Bitmap.FromStream(response.GetResponseStream()))
 							{
@@ -259,7 +260,7 @@ namespace WinAuth
 								var result = reader.Decode(bitmap);
 								if (result != null)
 								{
-									privatekey = result.Text;
+									privatekey = HttpUtility.UrlDecode(result.Text);
 								}
 							}
 						}
@@ -282,7 +283,7 @@ namespace WinAuth
 						var result = reader.Decode(bitmap);
 						if (result != null)
 						{
-							privatekey = result.Text;
+							privatekey = HttpUtility.UrlDecode(result.Text);
 						}
 					}
 				}

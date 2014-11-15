@@ -80,7 +80,7 @@ namespace WinAuth
 		private void okButton_Click(object sender, EventArgs e)
 		{
 			// it isn't empty
-			string password = this.passwordField.Text.Trim();
+			string password = this.passwordField.Text;
 			if (password.Length == 0)
 			{
 				invalidPasswordLabel.Text = strings.EnterPassword;

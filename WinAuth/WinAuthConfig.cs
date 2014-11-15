@@ -255,10 +255,13 @@ namespace WinAuth
 			}
 			set
 			{
-				_position = value;
-				if (OnConfigChanged != null)
+				if (_position != value)
 				{
-					OnConfigChanged(this, new ConfigChangedEventArgs("Position"));
+					_position = value;
+					if (OnConfigChanged != null)
+					{
+						OnConfigChanged(this, new ConfigChangedEventArgs("Position"));
+					}
 				}
 			}
 		}
@@ -274,10 +277,13 @@ namespace WinAuth
 			}
 			set
 			{
-				_width = value;
-				if (OnConfigChanged != null)
+				if (_width != value)
 				{
-					OnConfigChanged(this, new ConfigChangedEventArgs("Width"));
+					_width = value;
+					if (OnConfigChanged != null)
+					{
+						OnConfigChanged(this, new ConfigChangedEventArgs("Width"));
+					}
 				}
 			}
 		}
@@ -293,10 +299,13 @@ namespace WinAuth
 			}
 			set
 			{
-				_height = value;
-				if (OnConfigChanged != null)
+				if (_height != value)
 				{
-					OnConfigChanged(this, new ConfigChangedEventArgs("Height"));
+					_height = value;
+					if (OnConfigChanged != null)
+					{
+						OnConfigChanged(this, new ConfigChangedEventArgs("Height"));
+					}
 				}
 			}
 		}

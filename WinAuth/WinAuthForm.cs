@@ -509,7 +509,7 @@ namespace WinAuth
 			// initialize UI
 			LoadAddAuthenticatorTypes();
 			loadOptionsMenu(this.optionsMenu);
-			loadOptionsMenu(this.notifyMenu);
+			loadNotifyMenu(this.notifyMenu);
 			passwordPanel.Visible = false;
 			commandPanel.Visible = true;
 			introLabel.Visible = (this.Config.Count == 0);
@@ -548,6 +548,23 @@ namespace WinAuth
 					}
 					catch (Exception) { }
 				}
+
+				// check we aren't below the taskbar
+				int lowesty = Screen.GetWorkingArea(this).Bottom;
+				var bottom = this.Top + this.Height;
+				if (bottom > lowesty)
+				{
+					this.Top -= (bottom - lowesty);
+					if (this.Top < 0)
+					{
+						this.Height += this.Top;
+						Top = 0;
+					}
+				}
+			}
+			else if (this.Config.AutoSize == true)
+			{
+				this.CenterToScreen();
 			}
 
 			// if we passed "-min" flag
@@ -561,7 +578,7 @@ namespace WinAuth
 				notifyIcon.Visible = true;
 				notifyIcon.Text = this.Text;
 
-				// if initially minizied, we need to hide
+				// if initially minimized, we need to hide
 				if (WindowState == FormWindowState.Minimized)
 				{
 					// hide this and metro owner
@@ -1113,7 +1130,7 @@ namespace WinAuth
 				this.Config.Width = this.Width;
 				this.Config.Height = this.Height;
 			}
-			if (this.Config != null && this.Config.Position.IsEmpty == false)
+			if (this.Config != null /* && this.Config.Position.IsEmpty == false */)
 			{
 				this.Config.Position = new Point(this.Left, this.Top);
 			}
@@ -1418,7 +1435,7 @@ namespace WinAuth
 			// resort the config list
 			this.Config.Sort();
 			// update the notify menu
-			loadOptionsMenu(this.notifyMenu);
+			loadNotifyMenu(this.notifyMenu);
 
 			// update UI
 			setAutoSize();
@@ -1577,31 +1594,11 @@ namespace WinAuth
 
 			menu.Items.Clear();
 
-			menuitem = new ToolStripMenuItem(strings.MenuOpen);
-			menuitem.Name = "openOptionsMenuItem";
-			menuitem.Click += openOptionsMenuItem_Click;
-			menu.Items.Add(menuitem);
-			menu.Items.Add(new ToolStripSeparator() { Name = "openOptionsSeparatorItem" });
-
-			if (this.Config != null && this.Config.Count != 0)
-			{
-				var index = 1;
-				foreach (var auth in this.Config)
-				{
-					menuitem = new ToolStripMenuItem(index.ToString() + ". " + auth.Name);
-					menuitem.Name = "authenticatorOptionsMenuItem_" + index;
-					menuitem.Tag = auth;
-					menuitem.ShortcutKeyDisplayString = (auth.HotKey != null ? auth.HotKey.ToString() : null);
-					menuitem.Click += authenticatorOptionsMenuItem_Click;
-					menuitem.Visible = false;
-					menu.Items.Add(menuitem);
-					index++;
-				}
-				var separator = new ToolStripSeparator();
-				separator.Name = "authenticatorOptionsSeparatorItem";
-				separator.Visible = false;
-				menu.Items.Add(separator);
-			}
+			//menuitem = new ToolStripMenuItem(strings.MenuOpen);
+			//menuitem.Name = "openOptionsMenuItem";
+			//menuitem.Click += openOptionsMenuItem_Click;
+			//menu.Items.Add(menuitem);
+			//menu.Items.Add(new ToolStripSeparator() { Name = "openOptionsSeparatorItem" });
 
 			if (this.Config == null || this.Config.IsReadOnly == false)
 			{
@@ -1634,14 +1631,6 @@ namespace WinAuth
 			menuitem.Name = "autoSizeOptionsMenuItem";
 			menuitem.Click += autoSizeOptionsMenuItem_Click;
 			menu.Items.Add(menuitem);
-
-			if (this.Config != null)
-			{
-				menuitem = new ToolStripMenuItem(strings.MenuRememberPosition);
-				menuitem.Name = "rememberPositionOptionsMenuItem";
-				menuitem.Click += rememberPositionOptionsMenuItem_Click;
-				menu.Items.Add(menuitem);
-			}
 
 			menu.Items.Add(new ToolStripSeparator());
 
@@ -1677,13 +1666,69 @@ namespace WinAuth
 		}
 
 		/// <summary>
+		/// Load the menu items for the notify menu
+		/// </summary>
+		private void loadNotifyMenu(ContextMenuStrip menu)
+		{
+			ToolStripMenuItem menuitem;
+
+			menu.Items.Clear();
+
+			menuitem = new ToolStripMenuItem(strings.MenuOpen);
+			menuitem.Name = "openOptionsMenuItem";
+			menuitem.Click += openOptionsMenuItem_Click;
+			menu.Items.Add(menuitem);
+			menu.Items.Add(new ToolStripSeparator() { Name = "openOptionsSeparatorItem" });
+
+			if (this.Config != null && this.Config.Count != 0)
+			{
+				// because of window size, we only show first 30.
+				// @todo change to MRU
+				var index = 1;
+				foreach (var auth in this.Config.Take(30))
+				{
+					menuitem = new ToolStripMenuItem(index.ToString() + ". " + auth.Name);
+					menuitem.Name = "authenticatorOptionsMenuItem_" + index;
+					menuitem.Tag = auth;
+					menuitem.ShortcutKeyDisplayString = (auth.HotKey != null ? auth.HotKey.ToString() : null);
+					menuitem.Click += authenticatorOptionsMenuItem_Click;
+					menu.Items.Add(menuitem);
+					index++;
+				}
+				var separator = new ToolStripSeparator();
+				separator.Name = "authenticatorOptionsSeparatorItem";
+				menu.Items.Add(separator);
+			}
+
+			menuitem = new ToolStripMenuItem(strings.MenuUseSystemTrayIcon);
+			menuitem.Name = "useSystemTrayIconOptionsMenuItem";
+			menuitem.Click += useSystemTrayIconOptionsMenuItem_Click;
+			menu.Items.Add(menuitem);
+
+			menu.Items.Add(new ToolStripSeparator());
+
+			menuitem = new ToolStripMenuItem(strings.MenuAbout + "...");
+			menuitem.Name = "aboutOptionsMenuItem";
+			menuitem.Click += aboutOptionMenuItem_Click;
+			menu.Items.Add(menuitem);
+
+			menu.Items.Add(new ToolStripSeparator());
+
+			menuitem = new ToolStripMenuItem(strings.MenuExit);
+			menuitem.Name = "exitOptionsMenuItem";
+			menuitem.ShortcutKeys = Keys.F4 | Keys.Alt;
+			menuitem.Click += exitOptionMenuItem_Click;
+			menu.Items.Add(menuitem);
+		}
+
+		/// <summary>
 		/// Set the state of the items when opening the Options menu
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void optionsMenu_Opening(object sender, CancelEventArgs e)
 		{
-			OpeningOptionsMenu(this.optionsMenu, false, e);
+			OpeningOptionsMenu(this.optionsMenu, e);
 		}
 
 		/// <summary>
@@ -1693,10 +1738,15 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void notifyMenu_Opening(object sender, CancelEventArgs e)
 		{
-			OpeningOptionsMenu(this.notifyMenu, true, e);
+			OpeningNotifyMenu(this.notifyMenu, e);
 		}
 
-		private void OpeningOptionsMenu(ContextMenuStrip menu, bool notify, CancelEventArgs e)
+		/// <summary>
+		/// Set state of menuitems when opening the Options menu
+		/// </summary>
+		/// <param name="menu"></param>
+		/// <param name="e"></param>
+		private void OpeningOptionsMenu(ContextMenuStrip menu, CancelEventArgs e)
 		{
 			ToolStripItem item;
 			ToolStripMenuItem menuitem;
@@ -1723,20 +1773,6 @@ namespace WinAuth
 				item.Visible = (this.Config.UseTrayIcon == true && this.Visible == false);
 			}
 
-			for (int i = 1; i <= this.Config.Count; i++)
-			{
-				menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "authenticatorOptionsMenuItem_" + i).FirstOrDefault() as ToolStripMenuItem;
-				if (menuitem != null)
-				{
-					menuitem.Visible = notify;
-				}
-			}
-			item = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "authenticatorOptionsSeparatorItem").FirstOrDefault();
-			if (item != null)
-			{
-				item.Visible = notify;
-			}
-
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "startWithWindowsOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			if (menuitem != null)
 			{
@@ -1761,10 +1797,55 @@ namespace WinAuth
 				menuitem.Checked = this.Config.AutoSize;
 			}
 
-			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "rememberPositionOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "autoSizeOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			if (menuitem != null)
 			{
-				menuitem.Checked = !this.Config.Position.IsEmpty;
+				menuitem.Checked = this.Config.AutoSize;
+			}
+		}
+
+		/// <summary>
+		/// Set state of menuitemns when opening the notify menu
+		/// </summary>
+		/// <param name="menu"></param>
+		/// <param name="e"></param>
+		private void OpeningNotifyMenu(ContextMenuStrip menu, CancelEventArgs e)
+		{
+			ToolStripItem item;
+			ToolStripMenuItem menuitem;
+
+			if (this.Config == null)
+			{
+				return;
+			}
+
+			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "changePasswordOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			if (menuitem != null)
+			{
+				menuitem.Enabled = (this.Config != null && this.Config.Count != 0);
+			}
+
+			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "openOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			if (menuitem != null)
+			{
+				menuitem.Visible = (this.Config.UseTrayIcon == true && this.Visible == false);
+			}
+			item = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "openOptionsSeparatorItem").FirstOrDefault();
+			if (item != null)
+			{
+				item.Visible = (this.Config.UseTrayIcon == true && this.Visible == false);
+			}
+
+			//for (int i = 1; i <= this.Config.Count; i++)
+			//{
+			//	menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "authenticatorOptionsMenuItem_" + i).FirstOrDefault() as ToolStripMenuItem;
+			//}
+			//item = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "authenticatorOptionsSeparatorItem").FirstOrDefault();
+
+			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "useSystemTrayIconOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			if (menuitem != null)
+			{
+				menuitem.Checked = this.Config.UseTrayIcon;
 			}
 		}
 
@@ -1891,16 +1972,6 @@ namespace WinAuth
 		private void autoSizeOptionsMenuItem_Click(object sender, EventArgs e)
 		{
 			this.Config.AutoSize = !this.Config.AutoSize;
-		}
-
-		/// <summary>
-		/// Click the Remember Position menu item
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void rememberPositionOptionsMenuItem_Click(object sender, EventArgs e)
-		{
-			this.Config.Position = (this.Config.Position.IsEmpty ? new Point(this.Left, this.Top) : Point.Empty);
 		}
 
 		/// <summary>
