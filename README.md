@@ -6,8 +6,8 @@
 
 ####Notice about  Google Code
 
-This project was formally https://code.google.com/p/winauth but has been migrated to GitHub following Google's
-accouncement that [Google Code is being shutdown](http://google-opensource.blogspot.com/2015/03/farewell-to-google-code.html).
+This project was formally at https://code.google.com/p/winauth but has been migrated to GitHub following Google's
+announcement that [Google Code is being shutdown](http://google-opensource.blogspot.com/2015/03/farewell-to-google-code.html).
 
 ----
 
