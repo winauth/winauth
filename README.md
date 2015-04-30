@@ -11,10 +11,6 @@ announcement that [Google Code is being shutdown](http://google-opensource.blogs
 
 ----
 
-Bitcoin donations can be sent to `1C4bMkMATViiWYsmJSDUx2MruWM785C36Y`
-
-----
-
 ##WinAuth 3.1
 
 WinAuth provides an alternative solution to combine various two-factor authenticator services in one convenient place.
@@ -167,6 +163,10 @@ All trademarks are recognised, including but not limited to:
 ##Author
 
 WinAuth was written by Colin Mackie. Copyright (C) 2010-2015.
+
+----
+
+Bitcoin donations can be sent to `1C4bMkMATViiWYsmJSDUx2MruWM785C36Y`
 
 ----
 
