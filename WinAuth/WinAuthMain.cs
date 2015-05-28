@@ -72,7 +72,7 @@ namespace WinAuth
 			{new Tuple<string,string>("Google", "GoogleIcon.png")},
 			{new Tuple<string,string>("Chrome", "ChromeIcon.png")},
 			{new Tuple<string,string>("Google (Blue)", "Google2Icon.png")},
-			{new Tuple<string,string>("+MMORPG", "BattleNetAuthenticatorIcon.png")},
+			{new Tuple<string,string>("+Games", "BattleNetAuthenticatorIcon.png")},
 			{new Tuple<string,string>("Battle.Net", "BattleNetAuthenticatorIcon.png")},
 			{new Tuple<string,string>("World of Warcraft", "WarcraftIcon.png")},
 			{new Tuple<string,string>("Diablo III", "DiabloIcon.png")},
@@ -91,6 +91,8 @@ namespace WinAuth
 			{new Tuple<string,string>("Firefall", "FirefallIcon.png")},
 			{new Tuple<string,string>("s2d", string.Empty)},
 			{new Tuple<string,string>("RuneScape", "RuneScapeIcon.png")},
+			{new Tuple<string,string>("s2e", string.Empty)},
+			{new Tuple<string,string>("Steam", "SteamAuthenticatorIcon.png")},
 			{new Tuple<string,string>("+Software", "MicrosoftAuthenticatorIcon.png")},
 			{new Tuple<string,string>("Microsoft", "MicrosoftAuthenticatorIcon.png")},
 			{new Tuple<string,string>("Windows 8", "Windows8Icon.png")},
@@ -137,7 +139,8 @@ namespace WinAuth
 			new RegisteredAuthenticator {Name="Microsoft", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Microsoft, Icon="MicrosoftAuthenticatorIcon.png"},
 			new RegisteredAuthenticator {Name="Battle.Net", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.BattleNet, Icon="BattleNetAuthenticatorIcon.png"},
 			new RegisteredAuthenticator {Name="Guild Wars 2", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.GuildWars, Icon="GuildWarsAuthenticatorIcon.png"},
-			new RegisteredAuthenticator {Name="Glyph / Trion", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Trion, Icon="GlyphIcon.png"}
+			new RegisteredAuthenticator {Name="Glyph / Trion", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Trion, Icon="GlyphIcon.png"},
+			new RegisteredAuthenticator {Name="Steam", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Steam, Icon="SteamAuthenticatorIcon.png"}
 		};
 
 		public static ResourceManager StringResources = new ResourceManager(typeof(WinAuth.Resources.strings).FullName, typeof(WinAuth.Resources.strings).Assembly);

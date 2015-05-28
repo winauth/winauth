@@ -992,6 +992,11 @@ namespace WinAuth
 			menuitem.Click += ContextMenu_Click;
 			this.ContextMenuStrip.Items.Add(menuitem);
 			//
+			menuitem = new ToolStripMenuItem(strings.ShowRevocation + "...");
+			menuitem.Name = "showSteamSecretMenuItem";
+			menuitem.Click += ContextMenu_Click;
+			this.ContextMenuStrip.Items.Add(menuitem);
+			//
 			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
 			//
 			menuitem = new ToolStripMenuItem(strings.Delete);
@@ -1125,6 +1130,9 @@ namespace WinAuth
 			//
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showTrionSecretMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Visible = (auth.AuthenticatorData is TrionAuthenticator);
+			//
+			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showSteamSecretMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem.Visible = (auth.AuthenticatorData is SteamAuthenticator);
 			//
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "autoRefreshMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.CheckState = (auth.AutoRefresh == true ? CheckState.Checked : CheckState.Unchecked);
@@ -1386,7 +1394,7 @@ namespace WinAuth
 			}
 			else if (menuitem.Name == "showTrionSecretMenuItem")
 			{
-				// check if the authentcated is still protected
+				// check if the authenticator is still protected
 				DialogResult wasprotected = UnprotectAuthenticator(item);
 				if (wasprotected == DialogResult.Cancel)
 				{
@@ -1396,6 +1404,29 @@ namespace WinAuth
 				{
 					// show the secret key for Trion authenticator				
 					ShowTrionSecretForm form = new ShowTrionSecretForm();
+					form.CurrentAuthenticator = auth;
+					form.ShowDialog(this.Parent as Form);
+				}
+				finally
+				{
+					if (wasprotected == DialogResult.OK)
+					{
+						ProtectAuthenticator(item);
+					}
+				}
+			}
+			else if (menuitem.Name == "showSteamSecretMenuItem")
+			{
+				// check if the authenticator is still protected
+				DialogResult wasprotected = UnprotectAuthenticator(item);
+				if (wasprotected == DialogResult.Cancel)
+				{
+					return;
+				}
+				try
+				{
+					// show the secret key for Steam authenticator				
+					ShowSteamSecretForm form = new ShowSteamSecretForm();
 					form.CurrentAuthenticator = auth;
 					form.ShowDialog(this.Parent as Form);
 				}
@@ -1735,7 +1766,7 @@ namespace WinAuth
 
 				using (var font = new Font(e.Font.FontFamily, FONT_SIZE, FontStyle.Regular))
 				{
-					string label = auth.Name;
+					string label = auth.Name + " " + auth.AuthenticatorData.CodeInterval;
 					SizeF labelsize = e.Graphics.MeasureString(label.ToString(), font);
 					int labelMaxWidth = GetMaxAvailableLabelWidth(e.Bounds.Width);
 					if (labelsize.Width > labelMaxWidth)
@@ -1780,7 +1811,10 @@ namespace WinAuth
 								}
 							}
 							item.LastCode = code;
-							code = code.Insert(code.Length / 2, " ");
+							if (code.Length > 5)
+							{
+								code = code.Insert(code.Length / 2, " ");
+							}
 						}
 						catch (EncrpytedSecretDataException )
 						{

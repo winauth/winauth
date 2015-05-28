@@ -43,6 +43,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -50,8 +51,13 @@
       <Name>System.Data</Name>
     </Reference>
     <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
+    </Reference>
+    <Reference Include="Unity.Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Unity.Newtonsoft.Json.7.0.0.0\lib\net35-Client\Unity.Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -59,6 +65,7 @@
     <Compile Include="BattleNetAuthenticator.cs" />
     <Compile Include="Authenticator.cs" />
     <Compile Include="Base32.cs" />
+    <Compile Include="SteamAuthenticator.cs" />
     <Compile Include="TrionAuthenticator.cs" />
     <Compile Include="GoogleAuthenticator.cs" />
     <Compile Include="GuildWarsAuthenticator.cs" />

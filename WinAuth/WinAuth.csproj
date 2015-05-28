@@ -180,6 +180,18 @@
     <Compile Include="AddAuthenticator.designer.cs">
       <DependentUpon>AddAuthenticator.cs</DependentUpon>
     </Compile>
+    <Compile Include="AddSteamAuthenticator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddSteamAuthenticator.designer.cs">
+      <DependentUpon>AddSteamAuthenticator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ShowSteamSecretForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ShowSteamSecretForm.designer.cs">
+      <DependentUpon>ShowSteamSecretForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="GetPGPKeyForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -324,6 +336,12 @@
     <EmbeddedResource Include="AddAuthenticator.resx">
       <DependentUpon>AddAuthenticator.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="AddSteamAuthenticator.resx">
+      <DependentUpon>AddSteamAuthenticator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShowSteamSecretForm.resx">
+      <DependentUpon>ShowSteamSecretForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GetPGPKeyForm.resx">
       <DependentUpon>GetPGPKeyForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -378,6 +396,7 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
@@ -448,6 +467,11 @@
     <EmbeddedResource Include="Resources\LastPassIcon.png" />
     <EmbeddedResource Include="Resources\ArcheAgeIcon.png" />
     <EmbeddedResource Include="Resources\GlyphIcon.png" />
+    <EmbeddedResource Include="Resources\SteamAuthenticatorIcon.png" />
+    <EmbeddedResource Include="Resources\SteamIcon.png" />
+    <EmbeddedResource Include="Resources\Steam2Icon.png" />
+    <EmbeddedResource Include="Resources\Steam3Icon.png" />
+    <None Include="images\spinner24.gif" />
     <Content Include="winauth.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -472,9 +496,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="images\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Authenticator\Authenticator.csproj">
       <Project>{eaf2d5ce-d817-453a-8a32-3d531570ae04}</Project>

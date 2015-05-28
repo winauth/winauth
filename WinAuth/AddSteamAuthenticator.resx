@@ -117,11 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="label.Text" xml:space="preserve">
-    <value>The following diagnostic information can be used to track down bugs and issues in WinAuth.
+  <data name="metroLabel1.Text" xml:space="preserve">
+    <value>Your authenticator has been added to your Steam account.
 
-Whilst this information does include information about your authenticator, it is only used by the WinAuth develoepers solely for the purposes of investigating bugs and issues. It does not include any personal or identifying information and has been encrypted using PGP so that it cannot be read by anyone else.
-
-If you are happy to provide this information, please copy the text below and go to https://code.google.com/p/winauth/issues and register a new Issue.</value>
+Please make sure you have copied down your revocation code and your secret key if you want to import this authenticator into another application.
+</value>
   </data>
 </root>

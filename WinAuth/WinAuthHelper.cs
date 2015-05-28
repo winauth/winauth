@@ -602,6 +602,15 @@ namespace WinAuth
 
 							issuer = string.Empty;
 						}
+						else if (string.Compare(issuer, "Steam", true) == 0)
+						{
+							auth = new SteamAuthenticator();
+							((SteamAuthenticator)auth).SecretKey = Base32.getInstance().Decode(secret);
+							((SteamAuthenticator)auth).Serial = string.Empty;
+							((SteamAuthenticator)auth).DeviceId = string.Empty;
+							((SteamAuthenticator)auth).RevocationCode = string.Empty;
+							issuer = string.Empty;
+						}
 						else // if (string.Compare(issuer, "Google", true) == 0)
 						{
 							auth = new GoogleAuthenticator();

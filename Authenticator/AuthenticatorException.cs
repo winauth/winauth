@@ -78,7 +78,7 @@ namespace WinAuth
 	/// </summary>
 	public class InvalidEnrollResponseException : AuthenticatorException
 	{
-		public InvalidEnrollResponseException(string msg) : base(msg) { }
+		public InvalidEnrollResponseException(string msg = null, Exception ex = null) : base(msg, ex) { }
 	}
 
 	/// <summary>

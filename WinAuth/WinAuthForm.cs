@@ -901,7 +901,10 @@ namespace WinAuth
 					{
 						auth.CopyCodeToClipboard(this, code);
 					}
-					code = code.Insert(code.Length / 2, " ");
+					if (code.Length > 5)
+					{
+						code = code.Insert(code.Length / 2, " ");
+					}
 					notifyIcon.ShowBalloonTip(10000, auth.Name, code, ToolTipIcon.Info);
 				}
 				if (auth.HotKey.Action == HotKey.HotKeyActions.Copy)
@@ -1190,6 +1193,24 @@ namespace WinAuth
 					winauthauthenticator.AutoRefresh = false;
 
 					AddTrionAuthenticator form = new AddTrionAuthenticator();
+					form.Authenticator = winauthauthenticator;
+					added = (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK);
+				}
+				else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.Steam)
+				{
+					// create the authenticator
+					int existing = 0;
+					string name;
+					do
+					{
+						name = "Steam" + (existing != 0 ? " (" + existing + ")" : string.Empty);
+						existing++;
+					} while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name).Count() != 0);
+
+					winauthauthenticator.Name = name;
+					winauthauthenticator.AutoRefresh = false;
+
+					AddSteamAuthenticator form = new AddSteamAuthenticator();
 					form.Authenticator = winauthauthenticator;
 					added = (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK);
 				}
@@ -1928,7 +1949,10 @@ namespace WinAuth
 					{
 						auth.CopyCodeToClipboard(this, code);
 					}
-					code = code.Insert(code.Length / 2, " ");
+					if (code.Length > 5)
+					{
+						code = code.Insert(code.Length / 2, " ");
+					}
 					notifyIcon.ShowBalloonTip(10000, auth.Name, code, ToolTipIcon.Info);
 				}
 			}

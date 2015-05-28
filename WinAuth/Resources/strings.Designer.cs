@@ -1102,6 +1102,15 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show Revocation Code.
+        /// </summary>
+        internal static string ShowRevocation {
+            get {
+                return ResourceManager.GetString("ShowRevocation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show Secret Key.
         /// </summary>
         internal static string ShowSecretKey {

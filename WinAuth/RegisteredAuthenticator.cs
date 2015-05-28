@@ -34,7 +34,8 @@ namespace WinAuth
 			Trion,
 			Microsoft,
 			RFC6238_TIME,
-			RFC6238_COUNTER
+			RFC6238_COUNTER,
+			Steam
 		}
 
 		public string Name;

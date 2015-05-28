@@ -199,4 +199,19 @@
   <data name="GlyphIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\GlyphIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="SteamAuthenticatorIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SteamAuthenticatorIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Steam2Icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Steam2Icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Steam3Icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Steam3Icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SteamIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SteamIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="spinner24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\images\spinner24.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>
