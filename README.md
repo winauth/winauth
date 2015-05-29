@@ -13,7 +13,7 @@ announcement that [Google Code is being shutdown](http://google-opensource.blogs
 
 ##WinAuth 3.2 (beta)
 
- * Added Steam authenticator
+ * Added **Steam** authenticator
  * Fixed mouse wheel to scroll authenticators
 
 <img src="https://winauth.com/images/steam.png" alt="WinAuth Supports Steam" />
@@ -93,7 +93,7 @@ There are no other executables installed on your machine. There is no installer 
 
 ####I found WinAuth on another website, is it the same thing?
 
-WinAuth source code is uploaded to GitHub at http://github.com/cdmackie/winauth and pre-built binaries and installers are on [winauth.com](https://winauth.com). It had been hosted using Google Code at https://code.google.com/p/winauth, but has been moved to GiHub since Google Code is being closed down. It is not published anywhere else, so please do not download any other programs claiming to be WinAuth.
+WinAuth source code is uploaded to GitHub at http://github.com/winauth/winauth and pre-built binaries and installers are on [winauth.com](https://winauth.com). It had been hosted using Google Code at https://code.google.com/p/winauth, but has been moved to GiHub since Google Code is being closed down. It is not published anywhere else, so please do not download any other programs claiming to be WinAuth.
 
 ###Battle.net
 
@@ -140,15 +140,13 @@ All trademarks are recognised, including but not limited to:
   * Trion, Rift
   * Google
   * Microsoft
-	* Steam
+  * Steam
 
 ----
 
 ##Author
 
 WinAuth was written by Colin Mackie. Copyright (C) 2010-2015.
-
-----
 
 Bitcoin donations can be sent to `1C4bMkMATViiWYsmJSDUx2MruWM785C36Y`
 
