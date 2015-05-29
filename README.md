@@ -1,17 +1,24 @@
 #Windows Authenticator
 
-*WinAuth is a portable, open-source Authenticator for Windows that provides a time-based RFC 6238 authenticator and common implementations, such as the Google Authenticator. WinAuth can be used with many Bitcoin trading websites as well as supporting Battle.net (World of Warcraft, Hearthstone, Diablo III), Guild Wars 2, Glyph (Rift and ArcheAge), WildStar and RuneScape.*
+*WinAuth is a portable, open-source Authenticator for Windows that provides a time-based RFC 6238 authenticator and common implementations, such as the Google Authenticator. WinAuth can be used with many Bitcoin trading websites as well as supporting Battle.net (World of Warcraft, Hearthstone, Heroes of the Storm, Diablo), Guild Wars 2, Glyph (Rift and ArcheAge), WildStar, RuneScape and Steam.*
 
 ----
 
-####Notice about  Google Code
+####Notice about Google Code
 
 This project was formally at https://code.google.com/p/winauth but has been migrated to GitHub following Google's
 announcement that [Google Code is being shutdown](http://google-opensource.blogspot.com/2015/03/farewell-to-google-code.html).
 
 ----
 
-##WinAuth 3.1
+##WinAuth 3.2 (beta)
+
+ * Added Steam authenticator
+ * Fixed mouse wheel to scroll authenticators
+
+<img src="https://winauth.com/images/steam.png" alt="WinAuth Supports Steam" />
+ 
+##WinAuth 3.1 (stable)
 
 WinAuth provides an alternative solution to combine various two-factor authenticator services in one convenient place.
 
@@ -51,36 +58,12 @@ To use:
   * Click the icon on the right to show the current code, if auto-refresh is not enabled
   * Click cog/options icon for program options
 
-Changes:
-
-3.1.8 RELEASE (2014-08-29)
-  * Update Glyph/Trion branding and authenticator to use 6 digits
-  * Fix issue 170 with error on copying to clipboard
-  * Added Glyph and ArcheAge Icons
-
-3.1.6 RELEASE (2014-07-14)
-  * Remove default shadow from frame. Add option in config to restore if desired.
-  * Added Icons
-  * Add remember Position in portable mode
-  * Fix crash on showing menu before password
-  * Fix time-sync retry if network error
-
 To compile and build from source:
   * Download source code file or clone project
   * Requires Microsoft Visual Studio 2012 (previous versions will work, but you will need to create your own solution/project files)
   * nuget is used for dependencies
   * any other dependencies are included in the source tree in the 3rd Party folder
   * Use [ILMerge](http://research.microsoft.com/en-us/people/mbarnett/ilmerge.aspx ) to combine assemblies into one single exe file
-
-----
-
-###Upgrading from WinAuth 2.x
-
-When you first run WinAuth, it will check for an existing authenticator from any previous version 2.x, and will prompt you to import. You can either do this immediately or choose to do it later.
-
-When importing, a copy of your authenticator is made and stored, ensuring that your previous file is not changed. In this way, WinAuth 3.0 can be run alongside the previous WinAuth 2.x.
-
-If you have multiple authenticators from version 2.x, you can use the Add button to import each one.
 
 ----
 
@@ -157,6 +140,7 @@ All trademarks are recognised, including but not limited to:
   * Trion, Rift
   * Google
   * Microsoft
+	* Steam
 
 ----
 
