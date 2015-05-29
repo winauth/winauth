@@ -111,7 +111,7 @@ namespace WinAuth.Resources {
         ///
         ///NCsoft, the interlocking NC logo, ArenaNet, Guild Wars, Guild Wars Factions, Guild Wars Nightfall, Guild Wars: Eye of the North, Guild Wars 2, and all associated logos and designs are trademarks or registered trademarks of NCsoft Corporation.
         ///
-        ///All other trademarks are the property of their respective owners..
+        ///Valve, the Valve logo, Half-Life, the Half-Life logo, the Lambda logo, Steam, the Steam lo [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string _AboutForm_trademarkLabel_ {
             get {

@@ -93,6 +93,7 @@ namespace WinAuth
 			{new Tuple<string,string>("RuneScape", "RuneScapeIcon.png")},
 			{new Tuple<string,string>("s2e", string.Empty)},
 			{new Tuple<string,string>("Steam", "SteamAuthenticatorIcon.png")},
+			{new Tuple<string,string>("Steam (2)", "SteamIcon.png")},
 			{new Tuple<string,string>("+Software", "MicrosoftAuthenticatorIcon.png")},
 			{new Tuple<string,string>("Microsoft", "MicrosoftAuthenticatorIcon.png")},
 			{new Tuple<string,string>("Windows 8", "Windows8Icon.png")},

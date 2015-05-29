@@ -71,14 +71,14 @@
 			this.trademarkLabel.FontSize = MetroFramework.MetroLabelSize.Small;
 			this.trademarkLabel.Location = new System.Drawing.Point(23, 308);
 			this.trademarkLabel.Name = "trademarkLabel";
-			this.trademarkLabel.Size = new System.Drawing.Size(368, 161);
+			this.trademarkLabel.Size = new System.Drawing.Size(368, 280);
 			this.trademarkLabel.TabIndex = 6;
 			this.trademarkLabel.Text = resources.GetString("trademarkLabel.Text");
 			// 
 			// reportButton
 			// 
 			this.reportButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.reportButton.Location = new System.Drawing.Point(23, 491);
+			this.reportButton.Location = new System.Drawing.Point(23, 599);
 			this.reportButton.Name = "reportButton";
 			this.reportButton.Size = new System.Drawing.Size(112, 23);
 			this.reportButton.TabIndex = 7;
@@ -90,7 +90,7 @@
 			// 
 			this.closeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.closeButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.closeButton.Location = new System.Drawing.Point(314, 491);
+			this.closeButton.Location = new System.Drawing.Point(314, 599);
 			this.closeButton.Name = "closeButton";
 			this.closeButton.Size = new System.Drawing.Size(75, 23);
 			this.closeButton.TabIndex = 8;
@@ -103,7 +103,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BorderStyle = MetroFramework.Forms.MetroFormBorderStyle.FixedSingle;
-			this.ClientSize = new System.Drawing.Size(415, 537);
+			this.ClientSize = new System.Drawing.Size(415, 645);
 			this.Controls.Add(this.reportButton);
 			this.Controls.Add(this.closeButton);
 			this.Controls.Add(this.trademarkLabel);

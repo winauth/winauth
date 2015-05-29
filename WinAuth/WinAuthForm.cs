@@ -118,6 +118,11 @@ namespace WinAuth
 
 		private string _startupConfigFile;
 
+		/// <summary>
+		/// Forwarder for mousewheel messages to list control
+		/// </summary>
+		private WinAPI.MessageForwarder _wheelMessageForwarder;
+
     #endregion
 
 		/// <summary>
@@ -515,6 +520,9 @@ namespace WinAuth
 			introLabel.Visible = (this.Config.Count == 0);
 			authenticatorList.Visible = (this.Config.Count != 0);
 			this.addAuthenticatorButton.Visible = !this.Config.IsReadOnly;
+
+			// redirect mouse wheel events
+			_wheelMessageForwarder = new WinAPI.MessageForwarder(authenticatorList, WinAPI.WM_MOUSEWHEEL);
 
 			// set title
 			notifyIcon.Visible = this.Config.UseTrayIcon;
@@ -1516,7 +1524,7 @@ namespace WinAuth
 		}
 
 		/// <summary>
-		/// CLick the button to enter a password
+		/// Click the button to enter a password
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>

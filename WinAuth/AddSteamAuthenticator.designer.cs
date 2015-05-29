@@ -38,7 +38,6 @@
 			this.captchaTabLabel = new MetroFramework.Controls.MetroLabel();
 			this.confirmButton = new MetroFramework.Controls.MetroButton();
 			this.cancelButton = new MetroFramework.Controls.MetroButton();
-			this.steam2IconRadioButton = new WinAuth.GroupMetroRadioButton();
 			this.steamIconRadioButton = new WinAuth.GroupMetroRadioButton();
 			this.steamAuthenticatorIconRadioButton = new WinAuth.GroupMetroRadioButton();
 			this.iconLabel = new MetroFramework.Controls.MetroLabel();
@@ -75,10 +74,7 @@
 			this.secretkeyField = new WinAuth.SecretTextBox();
 			this.revocationcode2Field = new WinAuth.SecretTextBox();
 			this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
-			this.steam3IconRadioButton = new WinAuth.GroupMetroRadioButton();
 			this.closeButton = new MetroFramework.Controls.MetroButton();
-			this.steam3Icon = new System.Windows.Forms.PictureBox();
-			this.steam2Icon = new System.Windows.Forms.PictureBox();
 			this.steamIcon = new System.Windows.Forms.PictureBox();
 			this.steamAuthenticatorIcon = new System.Windows.Forms.PictureBox();
 			this.tabs.SuspendLayout();
@@ -88,8 +84,6 @@
 			this.authTab.SuspendLayout();
 			this.confirmTab.SuspendLayout();
 			this.addedTab.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.steam3Icon)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.steam2Icon)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.steamIcon)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.steamAuthenticatorIcon)).BeginInit();
 			this.SuspendLayout();
@@ -188,17 +182,6 @@
 			this.cancelButton.UseSelectable = true;
 			this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
 			// 
-			// steam2IconRadioButton
-			// 
-			this.steam2IconRadioButton.Group = "ICON";
-			this.steam2IconRadioButton.Location = new System.Drawing.Point(232, 122);
-			this.steam2IconRadioButton.Name = "steam2IconRadioButton";
-			this.steam2IconRadioButton.Size = new System.Drawing.Size(14, 13);
-			this.steam2IconRadioButton.TabIndex = 3;
-			this.steam2IconRadioButton.Tag = "Steam2Icon.png";
-			this.steam2IconRadioButton.UseSelectable = true;
-			this.steam2IconRadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
-			// 
 			// steamIconRadioButton
 			// 
 			this.steamIconRadioButton.Group = "ICON";
@@ -206,7 +189,7 @@
 			this.steamIconRadioButton.Name = "steamIconRadioButton";
 			this.steamIconRadioButton.Size = new System.Drawing.Size(14, 13);
 			this.steamIconRadioButton.TabIndex = 2;
-			this.steamIconRadioButton.Tag = "RiftIcon.png";
+			this.steamIconRadioButton.Tag = "SteamIcon.png";
 			this.steamIconRadioButton.UseSelectable = true;
 			this.steamIconRadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
 			// 
@@ -619,17 +602,6 @@
 			this.metroLabel1.TabIndex = 2;
 			this.metroLabel1.Text = resources.GetString("metroLabel1.Text");
 			// 
-			// steam3IconRadioButton
-			// 
-			this.steam3IconRadioButton.Group = "ICON";
-			this.steam3IconRadioButton.Location = new System.Drawing.Point(304, 122);
-			this.steam3IconRadioButton.Name = "steam3IconRadioButton";
-			this.steam3IconRadioButton.Size = new System.Drawing.Size(14, 13);
-			this.steam3IconRadioButton.TabIndex = 4;
-			this.steam3IconRadioButton.Tag = "Steam3Icon.png";
-			this.steam3IconRadioButton.UseSelectable = true;
-			this.steam3IconRadioButton.CheckedChanged += new System.EventHandler(this.iconRadioButton_CheckedChanged);
-			// 
 			// closeButton
 			// 
 			this.closeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -642,28 +614,6 @@
 			this.closeButton.UseSelectable = true;
 			this.closeButton.Visible = false;
 			this.closeButton.Click += new System.EventHandler(this.closeButton_Click);
-			// 
-			// steam3Icon
-			// 
-			this.steam3Icon.Image = global::WinAuth.Properties.Resources.Steam3Icon;
-			this.steam3Icon.Location = new System.Drawing.Point(324, 107);
-			this.steam3Icon.Name = "steam3Icon";
-			this.steam3Icon.Size = new System.Drawing.Size(48, 48);
-			this.steam3Icon.TabIndex = 4;
-			this.steam3Icon.TabStop = false;
-			this.steam3Icon.Tag = "Steam3Icon.png";
-			this.steam3Icon.Click += new System.EventHandler(this.steamIcon_Click);
-			// 
-			// steam2Icon
-			// 
-			this.steam2Icon.Image = global::WinAuth.Properties.Resources.Steam2Icon;
-			this.steam2Icon.Location = new System.Drawing.Point(252, 107);
-			this.steam2Icon.Name = "steam2Icon";
-			this.steam2Icon.Size = new System.Drawing.Size(48, 48);
-			this.steam2Icon.TabIndex = 4;
-			this.steam2Icon.TabStop = false;
-			this.steam2Icon.Tag = "Steam2Icon.png";
-			this.steam2Icon.Click += new System.EventHandler(this.iconArcheAge_Click);
 			// 
 			// steamIcon
 			// 
@@ -695,14 +645,10 @@
 			this.CancelButton = this.cancelButton;
 			this.ClientSize = new System.Drawing.Size(501, 564);
 			this.Controls.Add(this.tabs);
-			this.Controls.Add(this.steam3IconRadioButton);
-			this.Controls.Add(this.steam2IconRadioButton);
 			this.Controls.Add(this.steamIconRadioButton);
 			this.Controls.Add(this.closeButton);
 			this.Controls.Add(this.cancelButton);
 			this.Controls.Add(this.steamAuthenticatorIconRadioButton);
-			this.Controls.Add(this.steam3Icon);
-			this.Controls.Add(this.steam2Icon);
 			this.Controls.Add(this.nameLabel);
 			this.Controls.Add(this.steamIcon);
 			this.Controls.Add(this.nameField);
@@ -727,8 +673,6 @@
 			this.confirmTab.PerformLayout();
 			this.addedTab.ResumeLayout(false);
 			this.addedTab.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.steam3Icon)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.steam2Icon)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.steamIcon)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.steamAuthenticatorIcon)).EndInit();
 			this.ResumeLayout(false);
@@ -747,10 +691,8 @@
 		private MetroFramework.Controls.MetroTextBox captchacodeField;
 		private MetroFramework.Controls.MetroTextBox usernameField;
 		private MetroFramework.Controls.MetroButton captchaButton;
-		private WinAuth.GroupMetroRadioButton steam2IconRadioButton;
 		private WinAuth.GroupMetroRadioButton steamIconRadioButton;
 		private WinAuth.GroupMetroRadioButton steamAuthenticatorIconRadioButton;
-		private System.Windows.Forms.PictureBox steam2Icon;
 		private System.Windows.Forms.PictureBox steamIcon;
 		private System.Windows.Forms.PictureBox steamAuthenticatorIcon;
 		private MetroFramework.Controls.MetroLabel nameLabel;
@@ -758,8 +700,6 @@
 		private MetroFramework.Controls.MetroLabel iconLabel;
 		private MetroFramework.Controls.MetroTabControl tabs;
 		private MetroFramework.Controls.MetroTabPage loginTab;
-		private System.Windows.Forms.PictureBox steam3Icon;
-		private GroupMetroRadioButton steam3IconRadioButton;
 		private MetroFramework.Controls.MetroLabel passwordLabel;
 		private MetroFramework.Controls.MetroLabel usernameLabel;
 		private MetroFramework.Controls.MetroButton authcodeButton;

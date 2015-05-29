@@ -194,6 +194,8 @@ namespace WinAuth
 
 			this.Authenticator.Name = nameField.Text;
 
+			int digits = (this.Authenticator.AuthenticatorData != null ? this.Authenticator.AuthenticatorData.CodeDigits : GoogleAuthenticator.DEFAULT_CODE_DIGITS);
+
 			string authtype = "totp";
 
 			// if this is a URL, pull it down
@@ -272,6 +274,7 @@ namespace WinAuth
 
 				NameValueCollection qs = WinAuthHelper.ParseQueryString(match.Groups[3].Value);
 				privatekey = qs["secret"] ?? privatekey;
+				int.TryParse(qs["digits"], out digits);
 			}
 
 			// just get the hex chars
@@ -286,9 +289,11 @@ namespace WinAuth
 			{
 				GoogleAuthenticator auth = new GoogleAuthenticator();
 				auth.Enroll(privatekey);
+				auth.CodeDigits = digits;
 				this.Authenticator.AuthenticatorData = auth;
 
 				codeProgress.Visible = true;
+				codeField.SpaceOut = digits / 2;
 
 				string key = Base32.getInstance().Encode(this.Authenticator.AuthenticatorData.SecretKey);
 				this.secretCodeField.Text = Regex.Replace(key, ".{3}", "$0 ").Trim();

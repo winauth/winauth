@@ -572,7 +572,7 @@ namespace WinAuth
 			HMac hmac = new HMac(new Sha1Digest());
 			hmac.Init(new KeyParameter(SecretKey));
 
-			byte[] codeIntervalArray = BitConverter.GetBytes(47760923L /*CodeInterval*/);
+			byte[] codeIntervalArray = BitConverter.GetBytes(CodeInterval);
 			if (BitConverter.IsLittleEndian)
 			{
 				Array.Reverse(codeIntervalArray);

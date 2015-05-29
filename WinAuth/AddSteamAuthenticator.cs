@@ -100,6 +100,7 @@ namespace WinAuth
 		{
 			if (m_enroll.Success == true)
 			{
+				this.Authenticator.Name = nameField.Text;
 				this.DialogResult = System.Windows.Forms.DialogResult.OK;
 			}
 		}
@@ -155,26 +156,6 @@ namespace WinAuth
 		private void iconGlyph_Click(object sender, EventArgs e)
 		{
 			steamAuthenticatorIconRadioButton.Checked = true;
-		}
-
-		/// <summary>
-		/// Select one of the icons
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void iconArcheAge_Click(object sender, EventArgs e)
-		{
-			steam2IconRadioButton.Checked = true;
-		}
-
-		/// <summary>
-		/// Select one of the icons
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void steamIcon_Click(object sender, EventArgs e)
-		{
-			steam3IconRadioButton.Checked = true;
 		}
 
 		/// <summary>
@@ -272,6 +253,7 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void closeButton_Click(object sender, EventArgs e)
 		{
+			this.Authenticator.Name = nameField.Text;
 			this.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.Close();
 		}

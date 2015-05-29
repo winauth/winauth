@@ -253,6 +253,19 @@ namespace WinAuth
 			loadContextMenuStrip();
     }
 
+		/// <summary>
+		/// Capture the mouse wheel events and scroll to appropriate position
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnMouseWheel(MouseEventArgs e)
+		{
+			base.OnMouseWheel(e);
+
+			int y = (e.Delta * this.ItemHeight) + MARGIN_TOP;
+			ScrollEventArgs sargs = new ScrollEventArgs(ScrollEventType.ThumbPosition, y, ScrollOrientation.VerticalScroll);
+			Scrolled(this, sargs);
+		}
+
 		#region Control Events
 
 		/// <summary>
@@ -1766,7 +1779,7 @@ namespace WinAuth
 
 				using (var font = new Font(e.Font.FontFamily, FONT_SIZE, FontStyle.Regular))
 				{
-					string label = auth.Name + " " + auth.AuthenticatorData.CodeInterval;
+					string label = auth.Name;
 					SizeF labelsize = e.Graphics.MeasureString(label.ToString(), font);
 					int labelMaxWidth = GetMaxAvailableLabelWidth(e.Bounds.Width);
 					if (labelsize.Width > labelMaxWidth)

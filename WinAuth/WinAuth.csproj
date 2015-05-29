@@ -186,6 +186,11 @@
     <Compile Include="AddSteamAuthenticator.designer.cs">
       <DependentUpon>AddSteamAuthenticator.cs</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="ShowSteamSecretForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -249,11 +254,6 @@
       <DependentUpon>AddBattleNetAuthenticator.cs</DependentUpon>
     </Compile>
     <Compile Include="Keyboard.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
     <Compile Include="ResourceForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -469,8 +469,6 @@
     <EmbeddedResource Include="Resources\GlyphIcon.png" />
     <EmbeddedResource Include="Resources\SteamAuthenticatorIcon.png" />
     <EmbeddedResource Include="Resources\SteamIcon.png" />
-    <EmbeddedResource Include="Resources\Steam2Icon.png" />
-    <EmbeddedResource Include="Resources\Steam3Icon.png" />
     <None Include="images\spinner24.gif" />
     <Content Include="winauth.ico" />
   </ItemGroup>

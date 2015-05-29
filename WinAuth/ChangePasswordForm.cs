@@ -141,7 +141,7 @@ namespace WinAuth
 				this.DialogResult = System.Windows.Forms.DialogResult.None;
 				return;
 			}
-			if (passwordCheckbox.Checked == true && string.Compare(passwordField.Text, verifyField.Text) != 0)
+			if (passwordCheckbox.Checked == true && string.Compare(passwordField.Text.Trim(), verifyField.Text.Trim()) != 0)
 			{
 				WinAuthForm.ErrorDialog(this, strings.PasswordsDontMatch);
 				this.DialogResult = System.Windows.Forms.DialogResult.None;
@@ -162,7 +162,7 @@ namespace WinAuth
 			if (passwordCheckbox.Checked == true)
 			{
 				PasswordType |= Authenticator.PasswordTypes.Explicit;
-				Password = this.passwordField.Text;
+				Password = this.passwordField.Text.Trim();
 			}
 		}
 

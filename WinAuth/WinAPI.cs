@@ -211,6 +211,7 @@ namespace WinAuth
 		public const int WM_SYSKEYDOWN = 0x104;
 		public const int WM_SYSKEYUP = 0x105;
 		public const int WM_SETREDRAW = 0x0b;
+		public const int WM_MOUSEWHEEL = 0x020A;
 		public const int WM_HOTKEY = 0x0312;
 		public const int WM_USER = 0x0400;
 
@@ -403,6 +404,82 @@ namespace WinAuth
 			GetWindowPlacement(hwnd, ref placement);
 			return placement;
 		}
+
+		/// <summary>
+		/// Class to forward messages to another control, used in redirecting mousewheel events
+		/// http://stackoverflow.com/questions/6036918/how-to-forward-messages-eg-mouse-wheel-to-another-control-without-stealing-fo
+		/// </summary>
+		public class MessageForwarder : IMessageFilter
+		{
+			private Control _control;
+			private Control _previousParent;
+			private HashSet<int> _messages;
+			private bool _isMouseOverControl;
+
+			public MessageForwarder(Control control, int message) : this(control, new int[] { message }) { }
+
+			public MessageForwarder(Control control, IEnumerable<int> messages)
+			{
+				_control = control;
+				_messages = new HashSet<int>(messages);
+				_previousParent = control.Parent;
+				_isMouseOverControl = false;
+
+				control.ParentChanged += new EventHandler(control_ParentChanged);
+				control.MouseEnter += new EventHandler(control_MouseEnter);
+				control.MouseLeave += new EventHandler(control_MouseLeave);
+				control.Leave += new EventHandler(control_Leave);
+
+				if (control.Parent != null)
+				{
+					Application.AddMessageFilter(this);
+				}
+			}
+
+			public bool PreFilterMessage(ref Message m)
+			{
+				if (_messages.Contains(m.Msg) && _control.CanFocus && !_control.Focused && _isMouseOverControl)
+				{
+					try
+					{
+						SendMessage(_control.Handle, (uint)m.Msg, (int)m.WParam, m.LParam);
+					}
+					catch (OverflowException) { }
+					return true;
+				}
+
+				return false;
+			}
+
+			void control_ParentChanged(object sender, EventArgs e)
+			{
+				if (_control.Parent == null)
+				{
+					Application.RemoveMessageFilter(this);
+				}
+				else if (_previousParent == null)
+				{
+					Application.AddMessageFilter(this);
+				}
+				_previousParent = _control.Parent;
+			}
+
+			void control_MouseEnter(object sender, EventArgs e)
+			{
+				_isMouseOverControl = true;
+			}
+
+			void control_MouseLeave(object sender, EventArgs e)
+			{
+				_isMouseOverControl = false;
+			}
+
+			void control_Leave(object sender, EventArgs e)
+			{
+				_isMouseOverControl = false;
+			}
+		}
+
 	}
 
 }

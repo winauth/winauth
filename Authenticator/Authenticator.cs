@@ -172,21 +172,26 @@ namespace WinAuth
 			get
 			{
 				// this is the secretkey
-				//return Authenticator.ByteArrayToString(SecretKey) + "|" + (string.IsNullOrEmpty(Script) == false ? Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(Script)) : string.Empty);
-				return Authenticator.ByteArrayToString(SecretKey);
+				return Authenticator.ByteArrayToString(SecretKey) + "\t" + this.CodeDigits.ToString();
 			}
 			set
 			{
 				if (string.IsNullOrEmpty(value) == false)
 				{
-					string[] parts = value.Split('|');
+					string[] parts = value.Split('|')[0].Split('\t');
 					SecretKey = Authenticator.StringToByteArray(parts[0]);
-					//Script = (parts.Length > 1 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[1])) : null);
+					if (parts.Length > 1)
+					{
+						int digits;
+						if (int.TryParse(parts[1], out digits) == true)
+						{
+							CodeDigits = digits;
+						}
+					}
 				}
 				else
 				{
 					SecretKey = null;
-					//Script = null;
 				}
 			}
 		}
