@@ -154,7 +154,7 @@ namespace WinAuth
     {
 			try
 			{
-				using (var instance = new SingleGlobalInstance(5000))
+				using (var instance = new SingleGlobalInstance(2000))
 				{
 					if (!System.Diagnostics.Debugger.IsAttached)
 					{
@@ -180,7 +180,26 @@ namespace WinAuth
 			}
 			catch (TimeoutException)
 			{
-				// instance already running
+				// find the window or notify window
+				foreach (var process in Process.GetProcesses())
+				{
+					if (process.ProcessName == APPLICATION_NAME)
+					{
+						process.Refresh();
+
+						var hwnd = process.MainWindowHandle;
+						if (hwnd == (IntPtr)0)
+						{
+							hwnd = WinAPI.FindWindow(null, APPLICATION_TITLE);
+						}
+
+						// send it the open message
+						WinAPI.SendMessage(hwnd, WinAPI.WM_USER + 1, 0, (IntPtr)0);
+						return;
+					}
+				}
+
+				// fallback
 				MessageBox.Show(string.Format(strings.AlreadyRunning, APPLICATION_NAME), APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 			}
     }

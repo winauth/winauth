@@ -802,6 +802,14 @@ namespace WinAuth
 					m_hook.KeyCallback(new KeyboardHookEventArgs(key, modifier));
 				}
 			}
+			else if (m.Msg == WinAPI.WM_USER + 1)
+			{
+				// show the main form
+				BringToFront();
+				Show();
+				WindowState = FormWindowState.Normal;
+				Activate();
+			}
 		}
 
 		/// <summary>
