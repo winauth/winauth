@@ -17,6 +17,10 @@ announcement that [Google Code is being shutdown](http://google-opensource.blogs
  * Fixed mouse wheel to scroll authenticators
 
 <img src="https://winauth.com/images/steam.png" alt="WinAuth Supports Steam" />
+
+[Download Latest BETA Version (WinAuth-3.2.1)](https://winauth.com/downloads/3.x/WinAuth-3.2.1.zip)
+
+*This is a pre-release version and should not be used with live accounts. Please make a backup of your current authenticator data first, which is store in c:\Users\<username>\AppData\Roaming\WinAuth\winauth.xml.*
  
 ##WinAuth 3.1 (stable)
 
