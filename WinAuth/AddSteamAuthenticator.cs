@@ -85,8 +85,6 @@ namespace WinAuth
 
 			revocationcodeField.SecretMode = true;
 			revocationcode2Field.SecretMode = true;
-			serialField.SecretMode = true;
-			secretkeyField.SecretMode = true;
 
 			nameField.Focus();
 		}
@@ -324,26 +322,6 @@ namespace WinAuth
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void serialCopy_CheckedChanged(object sender, EventArgs e)
-		{
-			serialField.SecretMode = !serialCopy.Checked;
-		}
-
-		/// <summary>
-		/// Allow the field to be copied
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void secretCopy_CheckedChanged(object sender, EventArgs e)
-		{
-			secretkeyField.SecretMode = !secretCopy.Checked;
-		}
-
-		/// <summary>
-		/// Allow the field to be copied
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
 		private void revocationcode2Copy_CheckedChanged(object sender, EventArgs e)
 		{
 			revocationcode2Field.SecretMode = !revocationcode2Copy.Checked;
@@ -452,8 +430,6 @@ namespace WinAuth
 					ShowTab("addedTab");
 
 					revocationcode2Field.Text = m_enroll.RevocationCode;
-					serialField.Text = m_steamAuthenticator.Serial;
-					secretkeyField.Text = m_enroll.SecretKey;
 					tabs.SelectedTab = tabs.TabPages["addedTab"];
 
 					this.closeButton.Location = this.cancelButton.Location;
@@ -493,6 +469,7 @@ namespace WinAuth
 		}
 
 #endregion
+
 
 	}
 }

@@ -28,7 +28,6 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddSteamAuthenticator));
 			this.loginButton = new MetroFramework.Controls.MetroButton();
 			this.authoriseTabLabel = new MetroFramework.Controls.MetroLabel();
 			this.loginTabLabel = new MetroFramework.Controls.MetroLabel();
@@ -64,14 +63,8 @@
 			this.activationcodeField = new MetroFramework.Controls.MetroTextBox();
 			this.confirmTabLabel = new MetroFramework.Controls.MetroLabel();
 			this.addedTab = new MetroFramework.Controls.MetroTabPage();
-			this.secretCopy = new MetroFramework.Controls.MetroCheckBox();
 			this.revocationcode2Copy = new MetroFramework.Controls.MetroCheckBox();
-			this.serialCopy = new MetroFramework.Controls.MetroCheckBox();
-			this.serialLabel = new MetroFramework.Controls.MetroLabel();
-			this.secretkeyLabel = new MetroFramework.Controls.MetroLabel();
 			this.revocationcode2Label = new MetroFramework.Controls.MetroLabel();
-			this.serialField = new WinAuth.SecretTextBox();
-			this.secretkeyField = new WinAuth.SecretTextBox();
 			this.revocationcode2Field = new WinAuth.SecretTextBox();
 			this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
 			this.closeButton = new MetroFramework.Controls.MetroButton();
@@ -239,14 +232,14 @@
 			// tabs
 			// 
 			this.tabs.Controls.Add(this.loginTab);
+			this.tabs.Controls.Add(this.addedTab);
 			this.tabs.Controls.Add(this.authTab);
 			this.tabs.Controls.Add(this.confirmTab);
-			this.tabs.Controls.Add(this.addedTab);
 			this.tabs.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
 			this.tabs.ItemSize = new System.Drawing.Size(120, 18);
 			this.tabs.Location = new System.Drawing.Point(15, 180);
 			this.tabs.Name = "tabs";
-			this.tabs.SelectedIndex = 0;
+			this.tabs.SelectedIndex = 3;
 			this.tabs.Size = new System.Drawing.Size(464, 327);
 			this.tabs.TabIndex = 0;
 			this.tabs.UseSelectable = true;
@@ -481,14 +474,8 @@
 			// 
 			// addedTab
 			// 
-			this.addedTab.Controls.Add(this.secretCopy);
 			this.addedTab.Controls.Add(this.revocationcode2Copy);
-			this.addedTab.Controls.Add(this.serialCopy);
-			this.addedTab.Controls.Add(this.serialLabel);
-			this.addedTab.Controls.Add(this.secretkeyLabel);
 			this.addedTab.Controls.Add(this.revocationcode2Label);
-			this.addedTab.Controls.Add(this.serialField);
-			this.addedTab.Controls.Add(this.secretkeyField);
 			this.addedTab.Controls.Add(this.revocationcode2Field);
 			this.addedTab.Controls.Add(this.metroLabel1);
 			this.addedTab.HorizontalScrollbarBarColor = true;
@@ -504,21 +491,10 @@
 			this.addedTab.VerticalScrollbarHighlightOnWheel = false;
 			this.addedTab.VerticalScrollbarSize = 10;
 			// 
-			// secretCopy
-			// 
-			this.secretCopy.AutoSize = true;
-			this.secretCopy.Location = new System.Drawing.Point(320, 195);
-			this.secretCopy.Name = "secretCopy";
-			this.secretCopy.Size = new System.Drawing.Size(87, 15);
-			this.secretCopy.TabIndex = 2;
-			this.secretCopy.Text = "Allow copy?";
-			this.secretCopy.UseSelectable = true;
-			this.secretCopy.CheckedChanged += new System.EventHandler(this.secretCopy_CheckedChanged);
-			// 
 			// revocationcode2Copy
 			// 
 			this.revocationcode2Copy.AutoSize = true;
-			this.revocationcode2Copy.Location = new System.Drawing.Point(320, 111);
+			this.revocationcode2Copy.Location = new System.Drawing.Point(320, 127);
 			this.revocationcode2Copy.Name = "revocationcode2Copy";
 			this.revocationcode2Copy.Size = new System.Drawing.Size(87, 15);
 			this.revocationcode2Copy.TabIndex = 0;
@@ -526,67 +502,18 @@
 			this.revocationcode2Copy.UseSelectable = true;
 			this.revocationcode2Copy.CheckedChanged += new System.EventHandler(this.revocationcode2Copy_CheckedChanged);
 			// 
-			// serialCopy
-			// 
-			this.serialCopy.AutoSize = true;
-			this.serialCopy.Location = new System.Drawing.Point(320, 162);
-			this.serialCopy.Name = "serialCopy";
-			this.serialCopy.Size = new System.Drawing.Size(87, 15);
-			this.serialCopy.TabIndex = 1;
-			this.serialCopy.Text = "Allow copy?";
-			this.serialCopy.UseSelectable = true;
-			this.serialCopy.CheckedChanged += new System.EventHandler(this.serialCopy_CheckedChanged);
-			// 
-			// serialLabel
-			// 
-			this.serialLabel.Location = new System.Drawing.Point(20, 156);
-			this.serialLabel.Name = "serialLabel";
-			this.serialLabel.Size = new System.Drawing.Size(111, 25);
-			this.serialLabel.TabIndex = 8;
-			this.serialLabel.Text = "Serial Number";
-			// 
-			// secretkeyLabel
-			// 
-			this.secretkeyLabel.Location = new System.Drawing.Point(20, 189);
-			this.secretkeyLabel.Name = "secretkeyLabel";
-			this.secretkeyLabel.Size = new System.Drawing.Size(111, 25);
-			this.secretkeyLabel.TabIndex = 8;
-			this.secretkeyLabel.Text = "Secret Key";
-			// 
 			// revocationcode2Label
 			// 
-			this.revocationcode2Label.Location = new System.Drawing.Point(20, 105);
+			this.revocationcode2Label.Location = new System.Drawing.Point(20, 121);
 			this.revocationcode2Label.Name = "revocationcode2Label";
 			this.revocationcode2Label.Size = new System.Drawing.Size(111, 25);
 			this.revocationcode2Label.TabIndex = 8;
 			this.revocationcode2Label.Text = "Revocation code";
 			// 
-			// serialField
-			// 
-			this.serialField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-			this.serialField.Location = new System.Drawing.Point(137, 156);
-			this.serialField.Multiline = true;
-			this.serialField.Name = "serialField";
-			this.serialField.SecretMode = false;
-			this.serialField.Size = new System.Drawing.Size(177, 26);
-			this.serialField.SpaceOut = 0;
-			this.serialField.TabIndex = 7;
-			// 
-			// secretkeyField
-			// 
-			this.secretkeyField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-			this.secretkeyField.Location = new System.Drawing.Point(137, 188);
-			this.secretkeyField.Multiline = true;
-			this.secretkeyField.Name = "secretkeyField";
-			this.secretkeyField.SecretMode = false;
-			this.secretkeyField.Size = new System.Drawing.Size(177, 26);
-			this.secretkeyField.SpaceOut = 0;
-			this.secretkeyField.TabIndex = 7;
-			// 
 			// revocationcode2Field
 			// 
 			this.revocationcode2Field.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-			this.revocationcode2Field.Location = new System.Drawing.Point(137, 105);
+			this.revocationcode2Field.Location = new System.Drawing.Point(137, 121);
 			this.revocationcode2Field.Multiline = true;
 			this.revocationcode2Field.Name = "revocationcode2Field";
 			this.revocationcode2Field.SecretMode = false;
@@ -600,7 +527,9 @@
 			this.metroLabel1.Name = "metroLabel1";
 			this.metroLabel1.Size = new System.Drawing.Size(449, 90);
 			this.metroLabel1.TabIndex = 2;
-			this.metroLabel1.Text = resources.GetString("metroLabel1.Text");
+			this.metroLabel1.Text = "Your authenticator has been added to your Steam account.\r\n\r\nPlease make sure you " +
+    "have copied down your revocation code so you can remove your authenticator from " +
+    "your Steam account in the future.\r\n";
 			// 
 			// closeButton
 			// 
@@ -723,12 +652,6 @@
 		private SecretTextBox revocationcodeField;
 		private MetroFramework.Controls.MetroCheckBox revocationCheckbox;
 		private MetroFramework.Controls.MetroLabel revocationcodeLabel;
-		private MetroFramework.Controls.MetroLabel serialLabel;
-		private MetroFramework.Controls.MetroLabel secretkeyLabel;
-		private SecretTextBox serialField;
-		private SecretTextBox secretkeyField;
-		private MetroFramework.Controls.MetroCheckBox secretCopy;
-		private MetroFramework.Controls.MetroCheckBox serialCopy;
 		private MetroFramework.Controls.MetroCheckBox revocationcode2Copy;
 	}
 }

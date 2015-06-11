@@ -117,10 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="metroLabel1.Text" xml:space="preserve">
-    <value>Your authenticator has been added to your Steam account.
-
-Please make sure you have copied down your revocation code and your secret key if you want to import this authenticator into another application.
-</value>
-  </data>
 </root>
