@@ -274,7 +274,11 @@ namespace WinAuth
 
 				NameValueCollection qs = WinAuthHelper.ParseQueryString(match.Groups[3].Value);
 				privatekey = qs["secret"] ?? privatekey;
-				int.TryParse(qs["digits"], out digits);
+				int querydigits;
+				if (int.TryParse(qs["digits"], out querydigits) && querydigits != 0)
+				{
+					digits = querydigits;
+				}
 			}
 
 			// just get the hex chars
