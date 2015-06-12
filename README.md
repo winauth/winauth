@@ -1,6 +1,6 @@
 #Windows Authenticator
 
-*WinAuth is a portable, open-source Authenticator for Windows that provides a time-based RFC 6238 authenticator and common implementations, such as the Google Authenticator. WinAuth can be used with many Bitcoin trading websites as well as supporting Battle.net (World of Warcraft, Hearthstone, Heroes of the Storm, Diablo), Guild Wars 2, Glyph (Rift and ArcheAge), WildStar, RuneScape and Steam.*
+*WinAuth is a portable, open-source Authenticator for Windows that provides a time-based RFC 6238 authenticator and common implementations, such as the Google Authenticator. WinAuth can be used with many Bitcoin trading websites as well as games, supporting Battle.net (World of Warcraft, Hearthstone, Heroes of the Storm, Diablo), Guild Wars 2, Glyph (Rift and ArcheAge), WildStar, RuneScape, SWTOR and Steam.*
 
 ----
 
@@ -33,7 +33,7 @@ WinAuth provides an alternative solution to combine various two-factor authentic
 Features include:
 
   * Support for time-based RFC 6238 authenticators, and common implementations such as Google Authenticator.
-  * Supports Battle.net (World of Warcraft, Hearthstone, Diablo III), GuildWars 2, Trion / Glyph (Rift, ArcheAge), RuneScape and WildStar
+  * Supports Battle.net (World of Warcraft, Hearthstone, Heroes of the Storm, Diablo III), GuildWars 2, Trion / Glyph (Rift, ArcheAge), RuneScape, WildStar, SWTOR and Steam
   * Supports many Bitcoin trading websites such as Bitstamp, BTC-e, Coinbase, Cryptsy
   * Displays multiple authenticators simultaneously
   * Codes displayed and refreshed automatically or on demand
