@@ -14,9 +14,7 @@ announcement that [Google Code is being shutdown](http://google-opensource.blogs
 ####SWTOR Switches Security Key to Standard Authenticator
 
 <img src="https://winauth.com/wp-content/uploads/2015/06/swtor-300x110.png" width="180" height="66" align="left"><img src="data:image/gif;base64,R0lGODlhAQABAIAAANOhk9OhkyH5BAUUAAAALAAAAAABAAEAAAICRAEAOw==" width="20" height="40" align="left"> SWTOR have moved to an RFC 6238 TOTP authenticator that can now be used with WinAuth. [https://winauth.com/2015/06/11/swtor-security-key-google-authenticator/](Read more).
-<br>
-<br>
-<br>
+
 ----
 ##WinAuth 3.2
 
