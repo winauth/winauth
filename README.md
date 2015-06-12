@@ -11,14 +11,27 @@ announcement that [Google Code is being shutdown](http://google-opensource.blogs
 
 ----
 
-##WinAuth 3.2 (beta)
+##WinAuth 3.2
 
- * Added **Steam** authenticator
- * Fixed mouse wheel to scroll authenticators
+The next version of WinAuth is in development. This release will include both the new Steam Guard Mobile Authenticator and integration with YubiKey to enhance your authenticator security.
 
-<img src="https://winauth.com/images/steam.png" alt="WinAuth Supports Steam" />
+####Steam Guard
 
-[Download Latest BETA Version (WinAuth-3.2.1)](https://winauth.com/downloads/3.x/WinAuth-3.2.1.zip)
+WinAuth can be registered as a new mobile device to create a Steam authenticator and displays the appropriate 5 character codes.
+
+<img src="https://winauth.com/wp-content/uploads/2013/07/steam.png" alt="WinAuth Supports Steam" />
+
+Please read about the [Steam Guard Mobile Authenticator](https://winauth.com/2015/06/11/steam-guard-mobile/) for more information.
+
+####YubiKey
+
+Anyone with a YubiKey can now use it with WinAuth to further protect their data. This will help ensure the authenticators’ secret keys cannot be read by anyone even when they have physical access to your computer.
+
+<img src="https://winauth.com/wp-content/uploads/2013/07/yubi1.png" alt="Using YubiKey with WinAuth" />
+
+More information about the requirements will be available shortly but will require a YubiKey Standard or NEO 2.2.x or later.
+
+WinAuth 3.2.1 BETA is available to [download](https://winauth.com/downloads/3.x/WinAuth-3.2.1.zip), which includes the Steam authenticator but not the YubiKey integration.
 
 *This is a pre-release version and should not be used with live accounts. Please make a backup of your current authenticator data first, which is store in c:\Users\<username>\AppData\Roaming\WinAuth\winauth.xml.*
  
