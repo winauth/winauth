@@ -36,29 +36,35 @@
 			this.mainTimer = new System.Windows.Forms.Timer(this.components);
 			this.authenticatorMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.commandPanel = new MetroFramework.Controls.MetroPanel();
-			this.newVersionLink = new MetroFramework.Controls.MetroLink();
-			this.optionsButton = new MetroFramework.Controls.MetroButton();
-			this.addAuthenticatorButton = new MetroFramework.Controls.MetroButton();
-			this.metroStyleManager = new MetroFramework.Components.MetroStyleManager(this.components);
 			this.metroStyleExtender = new MetroFramework.Components.MetroStyleExtender(this.components);
 			this.addAuthenticatorMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.optionsMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
 			this.notifyMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.introLabel = new MetroFramework.Controls.MetroLabel();
+			this.passwordTimer = new System.Windows.Forms.Timer(this.components);
+			this.hotkeyTimer = new System.Windows.Forms.Timer(this.components);
+			this.yubiPanel = new MetroFramework.Controls.MetroPanel();
+			this.yubiRetryButton = new MetroFramework.Controls.MetroButton();
+			this.yubiLabel = new MetroFramework.Controls.MetroLabel();
+			this.yubiImage = new System.Windows.Forms.PictureBox();
 			this.passwordPanel = new MetroFramework.Controls.MetroPanel();
 			this.passwordButton = new MetroFramework.Controls.MetroButton();
 			this.passwordErrorLabel = new MetroFramework.Controls.MetroLabel();
 			this.passwordLabel = new MetroFramework.Controls.MetroLabel();
 			this.passwordField = new MetroFramework.Controls.MetroTextBox();
-			this.passwordTimer = new System.Windows.Forms.Timer(this.components);
+			this.introLabel = new MetroFramework.Controls.MetroLabel();
+			this.commandPanel = new MetroFramework.Controls.MetroPanel();
+			this.newVersionLink = new MetroFramework.Controls.MetroLink();
+			this.optionsButton = new MetroFramework.Controls.MetroButton();
+			this.addAuthenticatorButton = new MetroFramework.Controls.MetroButton();
 			this.authenticatorList = new WinAuth.AuthenticatorListBox();
-			this.hotkeyTimer = new System.Windows.Forms.Timer(this.components);
+			this.metroStyleManager = new MetroFramework.Components.MetroStyleManager(this.components);
 			this.authenticatorMenu.SuspendLayout();
+			this.yubiPanel.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.yubiImage)).BeginInit();
+			this.passwordPanel.SuspendLayout();
 			this.commandPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.metroStyleManager)).BeginInit();
-			this.passwordPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// mainTimer
@@ -79,65 +85,6 @@
 			this.testToolStripMenuItem.Name = "testToolStripMenuItem";
 			this.testToolStripMenuItem.Size = new System.Drawing.Size(96, 22);
 			this.testToolStripMenuItem.Text = "Test";
-			// 
-			// commandPanel
-			// 
-			this.commandPanel.Controls.Add(this.newVersionLink);
-			this.commandPanel.Controls.Add(this.optionsButton);
-			this.commandPanel.Controls.Add(this.addAuthenticatorButton);
-			this.commandPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.commandPanel.HorizontalScrollbarBarColor = true;
-			this.commandPanel.HorizontalScrollbarHighlightOnWheel = false;
-			this.commandPanel.HorizontalScrollbarSize = 10;
-			this.commandPanel.Location = new System.Drawing.Point(20, 128);
-			this.commandPanel.Name = "commandPanel";
-			this.commandPanel.Size = new System.Drawing.Size(380, 32);
-			this.commandPanel.TabIndex = 1;
-			this.commandPanel.VerticalScrollbarBarColor = true;
-			this.commandPanel.VerticalScrollbarHighlightOnWheel = false;
-			this.commandPanel.VerticalScrollbarSize = 10;
-			this.commandPanel.Visible = false;
-			this.commandPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.commandPanel_MouseDown);
-			// 
-			// newVersionLink
-			// 
-			this.newVersionLink.Cursor = System.Windows.Forms.Cursors.Hand;
-			this.newVersionLink.Location = new System.Drawing.Point(90, 10);
-			this.newVersionLink.Name = "newVersionLink";
-			this.newVersionLink.Size = new System.Drawing.Size(225, 23);
-			this.newVersionLink.TabIndex = 2;
-			this.newVersionLink.Text = "New version is available";
-			this.newVersionLink.UseSelectable = true;
-			this.newVersionLink.Visible = false;
-			this.newVersionLink.Click += new System.EventHandler(this.newVersionLink_Click);
-			// 
-			// optionsButton
-			// 
-			this.optionsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.optionsButton.BackColor = System.Drawing.SystemColors.ControlLight;
-			this.optionsButton.BackgroundImage = global::WinAuth.Properties.Resources.OptionsIcon;
-			this.optionsButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-			this.optionsButton.Location = new System.Drawing.Point(352, 9);
-			this.optionsButton.Name = "optionsButton";
-			this.optionsButton.Size = new System.Drawing.Size(28, 23);
-			this.optionsButton.TabIndex = 0;
-			this.optionsButton.UseSelectable = true;
-			this.optionsButton.Click += new System.EventHandler(this.optionsButton_Click);
-			// 
-			// addAuthenticatorButton
-			// 
-			this.addAuthenticatorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.addAuthenticatorButton.Location = new System.Drawing.Point(0, 9);
-			this.addAuthenticatorButton.Name = "addAuthenticatorButton";
-			this.addAuthenticatorButton.Size = new System.Drawing.Size(70, 23);
-			this.addAuthenticatorButton.TabIndex = 0;
-			this.addAuthenticatorButton.Text = "Add";
-			this.addAuthenticatorButton.UseSelectable = true;
-			this.addAuthenticatorButton.Click += new System.EventHandler(this.addAuthenticatorButton_Click);
-			// 
-			// metroStyleManager
-			// 
-			this.metroStyleManager.Owner = this;
 			// 
 			// addAuthenticatorMenu
 			// 
@@ -164,14 +111,59 @@
 			this.notifyMenu.Size = new System.Drawing.Size(61, 4);
 			this.notifyMenu.Opening += new System.ComponentModel.CancelEventHandler(this.notifyMenu_Opening);
 			// 
-			// introLabel
+			// passwordTimer
 			// 
-			this.introLabel.Location = new System.Drawing.Point(23, 76);
-			this.introLabel.Name = "introLabel";
-			this.introLabel.Size = new System.Drawing.Size(377, 35);
-			this.introLabel.TabIndex = 3;
-			this.introLabel.Text = "Click the \"Add\" button to create or import your authenticator";
-			this.introLabel.Visible = false;
+			this.passwordTimer.Interval = 500;
+			this.passwordTimer.Tick += new System.EventHandler(this.passwordTimer_Tick);
+			// 
+			// hotkeyTimer
+			// 
+			this.hotkeyTimer.Interval = 250;
+			this.hotkeyTimer.Tick += new System.EventHandler(this.hotkeyTimer_Tick);
+			// 
+			// yubiPanel
+			// 
+			this.yubiPanel.Controls.Add(this.yubiRetryButton);
+			this.yubiPanel.Controls.Add(this.yubiLabel);
+			this.yubiPanel.Controls.Add(this.yubiImage);
+			this.yubiPanel.HorizontalScrollbarBarColor = true;
+			this.yubiPanel.HorizontalScrollbarHighlightOnWheel = false;
+			this.yubiPanel.HorizontalScrollbarSize = 10;
+			this.yubiPanel.Location = new System.Drawing.Point(20, 60);
+			this.yubiPanel.Name = "yubiPanel";
+			this.yubiPanel.Size = new System.Drawing.Size(380, 100);
+			this.yubiPanel.TabIndex = 5;
+			this.yubiPanel.VerticalScrollbarBarColor = true;
+			this.yubiPanel.VerticalScrollbarHighlightOnWheel = false;
+			this.yubiPanel.VerticalScrollbarSize = 10;
+			// 
+			// yubiRetryButton
+			// 
+			this.yubiRetryButton.Location = new System.Drawing.Point(269, 49);
+			this.yubiRetryButton.Name = "yubiRetryButton";
+			this.yubiRetryButton.Size = new System.Drawing.Size(75, 23);
+			this.yubiRetryButton.TabIndex = 5;
+			this.yubiRetryButton.Text = "OK";
+			this.yubiRetryButton.UseSelectable = true;
+			this.yubiRetryButton.Click += new System.EventHandler(this.yubiRetryButton_Click);
+			// 
+			// yubiLabel
+			// 
+			this.yubiLabel.AutoSize = true;
+			this.yubiLabel.Location = new System.Drawing.Point(13, 6);
+			this.yubiLabel.Name = "yubiLabel";
+			this.yubiLabel.Size = new System.Drawing.Size(324, 19);
+			this.yubiLabel.TabIndex = 4;
+			this.yubiLabel.Text = "Please insert your YubiKey or press the flashing button";
+			// 
+			// yubiImage
+			// 
+			this.yubiImage.Image = ((System.Drawing.Image)(resources.GetObject("yubiImage.Image")));
+			this.yubiImage.Location = new System.Drawing.Point(12, 32);
+			this.yubiImage.Name = "yubiImage";
+			this.yubiImage.Size = new System.Drawing.Size(230, 60);
+			this.yubiImage.TabIndex = 2;
+			this.yubiImage.TabStop = false;
 			// 
 			// passwordPanel
 			// 
@@ -232,10 +224,69 @@
 			this.passwordField.UseSystemPasswordChar = true;
 			this.passwordField.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.passwordField_KeyPress);
 			// 
-			// passwordTimer
+			// introLabel
 			// 
-			this.passwordTimer.Interval = 500;
-			this.passwordTimer.Tick += new System.EventHandler(this.passwordTimer_Tick);
+			this.introLabel.Location = new System.Drawing.Point(23, 76);
+			this.introLabel.Name = "introLabel";
+			this.introLabel.Size = new System.Drawing.Size(377, 35);
+			this.introLabel.TabIndex = 3;
+			this.introLabel.Text = "Click the \"Add\" button to create or import your authenticator";
+			this.introLabel.Visible = false;
+			// 
+			// commandPanel
+			// 
+			this.commandPanel.Controls.Add(this.newVersionLink);
+			this.commandPanel.Controls.Add(this.optionsButton);
+			this.commandPanel.Controls.Add(this.addAuthenticatorButton);
+			this.commandPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.commandPanel.HorizontalScrollbarBarColor = true;
+			this.commandPanel.HorizontalScrollbarHighlightOnWheel = false;
+			this.commandPanel.HorizontalScrollbarSize = 10;
+			this.commandPanel.Location = new System.Drawing.Point(20, 128);
+			this.commandPanel.Name = "commandPanel";
+			this.commandPanel.Size = new System.Drawing.Size(380, 32);
+			this.commandPanel.TabIndex = 1;
+			this.commandPanel.VerticalScrollbarBarColor = true;
+			this.commandPanel.VerticalScrollbarHighlightOnWheel = false;
+			this.commandPanel.VerticalScrollbarSize = 10;
+			this.commandPanel.Visible = false;
+			this.commandPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.commandPanel_MouseDown);
+			// 
+			// newVersionLink
+			// 
+			this.newVersionLink.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.newVersionLink.Location = new System.Drawing.Point(90, 10);
+			this.newVersionLink.Name = "newVersionLink";
+			this.newVersionLink.Size = new System.Drawing.Size(225, 23);
+			this.newVersionLink.TabIndex = 2;
+			this.newVersionLink.Text = "New version is available";
+			this.newVersionLink.UseSelectable = true;
+			this.newVersionLink.Visible = false;
+			this.newVersionLink.Click += new System.EventHandler(this.newVersionLink_Click);
+			// 
+			// optionsButton
+			// 
+			this.optionsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.optionsButton.BackColor = System.Drawing.SystemColors.ControlLight;
+			this.optionsButton.BackgroundImage = global::WinAuth.Properties.Resources.OptionsIcon;
+			this.optionsButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+			this.optionsButton.Location = new System.Drawing.Point(352, 9);
+			this.optionsButton.Name = "optionsButton";
+			this.optionsButton.Size = new System.Drawing.Size(28, 23);
+			this.optionsButton.TabIndex = 0;
+			this.optionsButton.UseSelectable = true;
+			this.optionsButton.Click += new System.EventHandler(this.optionsButton_Click);
+			// 
+			// addAuthenticatorButton
+			// 
+			this.addAuthenticatorButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.addAuthenticatorButton.Location = new System.Drawing.Point(0, 9);
+			this.addAuthenticatorButton.Name = "addAuthenticatorButton";
+			this.addAuthenticatorButton.Size = new System.Drawing.Size(70, 23);
+			this.addAuthenticatorButton.TabIndex = 0;
+			this.addAuthenticatorButton.Text = "Add";
+			this.addAuthenticatorButton.UseSelectable = true;
+			this.addAuthenticatorButton.Click += new System.EventHandler(this.addAuthenticatorButton_Click);
 			// 
 			// authenticatorList
 			// 
@@ -246,7 +297,7 @@
 			this.authenticatorList.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.authenticatorList.CurrentItem = null;
 			this.authenticatorList.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-			this.authenticatorList.Font = new System.Drawing.Font("Arial", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.authenticatorList.Font = new System.Drawing.Font("Arial", 14.25F, System.Drawing.FontStyle.Bold);
 			this.authenticatorList.IntegralHeight = false;
 			this.authenticatorList.ItemHeight = 64;
 			this.authenticatorList.Location = new System.Drawing.Point(20, 60);
@@ -260,10 +311,9 @@
 			this.authenticatorList.ItemRemoved += new WinAuth.AuthenticatorListItemRemovedHandler(this.authenticatorList_ItemRemoved);
 			this.authenticatorList.Reordered += new WinAuth.AuthenticatorListReorderedHandler(this.authenticatorList_Reordered);
 			// 
-			// hotkeyTimer
+			// metroStyleManager
 			// 
-			this.hotkeyTimer.Interval = 250;
-			this.hotkeyTimer.Tick += new System.EventHandler(this.hotkeyTimer_Tick);
+			this.metroStyleManager.Owner = this;
 			// 
 			// WinAuthForm
 			// 
@@ -271,6 +321,7 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BorderStyle = MetroFramework.Forms.MetroFormBorderStyle.FixedSingle;
 			this.ClientSize = new System.Drawing.Size(420, 180);
+			this.Controls.Add(this.yubiPanel);
 			this.Controls.Add(this.passwordPanel);
 			this.Controls.Add(this.introLabel);
 			this.Controls.Add(this.commandPanel);
@@ -291,10 +342,13 @@
 			this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WinAuthForm_MouseDown);
 			this.Resize += new System.EventHandler(this.WinAuthForm_Resize);
 			this.authenticatorMenu.ResumeLayout(false);
-			this.commandPanel.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.metroStyleManager)).EndInit();
+			this.yubiPanel.ResumeLayout(false);
+			this.yubiPanel.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.yubiImage)).EndInit();
 			this.passwordPanel.ResumeLayout(false);
 			this.passwordPanel.PerformLayout();
+			this.commandPanel.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.metroStyleManager)).EndInit();
 			this.ResumeLayout(false);
 
     }
@@ -323,6 +377,10 @@
 		private System.Windows.Forms.ContextMenuStrip notifyMenu;
 		private MetroFramework.Controls.MetroLink newVersionLink;
 		private System.Windows.Forms.Timer hotkeyTimer;
+		private MetroFramework.Controls.MetroPanel yubiPanel;
+		private System.Windows.Forms.PictureBox yubiImage;
+		private MetroFramework.Controls.MetroButton yubiRetryButton;
+		private MetroFramework.Controls.MetroLabel yubiLabel;
 
   }
 }

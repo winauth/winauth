@@ -262,7 +262,14 @@ namespace MetroFramework.Controls
             }
         }
 
-        #endregion
+				[DefaultValue(false)]
+				[Category(MetroDefaults.PropertyCategory.Appearance)]
+				public bool HideHeader
+				{
+					get; set;
+				}
+
+				#endregion
 
         #region Constructor
 
@@ -332,7 +339,10 @@ namespace MetroFramework.Controls
             {
                 if (index != SelectedIndex)
                 {
-                    DrawTab(index, e.Graphics);
+									if (!HideHeader || DesignMode)
+									{
+										DrawTab(index, e.Graphics);
+									}
                 }
             }
             if (SelectedIndex <= -1)
@@ -340,9 +350,12 @@ namespace MetroFramework.Controls
                 return;
             }
 
-            DrawTabBottomBorder(SelectedIndex, e.Graphics);
-            DrawTab(SelectedIndex, e.Graphics);
-            DrawTabSelected(SelectedIndex, e.Graphics);
+						if (!HideHeader || DesignMode)
+						{
+							DrawTabBottomBorder(SelectedIndex, e.Graphics);
+							DrawTab(SelectedIndex, e.Graphics);
+							DrawTabSelected(SelectedIndex, e.Graphics);
+						}
 
             OnCustomPaintForeground(new MetroPaintEventArgs(Color.Empty, Color.Empty, e.Graphics));
         }

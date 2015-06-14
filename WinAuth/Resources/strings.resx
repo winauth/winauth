@@ -509,4 +509,7 @@ If you are happy to send this information please either click Send Error Report 
   <data name="ShowRevocation" xml:space="preserve">
     <value>Show Revocation Code</value>
   </data>
+  <data name="YubikeyInsert" xml:space="preserve">
+    <value>Please insert your YubiKey or press the flashing button</value>
+  </data>
 </root>

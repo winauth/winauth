@@ -39,8 +39,18 @@ namespace WinAuth
 			this.verifyButton = new MetroFramework.Controls.MetroButton();
 			this.codeProgress = new System.Windows.Forms.ProgressBar();
 			this.codeField = new WinAuth.SecretTextBox();
-			this.step3Label = new MetroFramework.Controls.MetroLabel();
+			this.step4Label = new MetroFramework.Controls.MetroLabel();
 			this.timer = new System.Windows.Forms.Timer(this.components);
+			this.step3Label = new MetroFramework.Controls.MetroLabel();
+			this.timeBasedRadio = new MetroFramework.Controls.MetroRadioButton();
+			this.counterBasedRadio = new MetroFramework.Controls.MetroRadioButton();
+			this.timeBasedPanel = new System.Windows.Forms.Panel();
+			this.counterBasedPanel = new System.Windows.Forms.Panel();
+			this.verifyCounterButton = new MetroFramework.Controls.MetroButton();
+			this.counterField = new MetroFramework.Controls.MetroTextBox();
+			this.step3CounterLabel = new MetroFramework.Controls.MetroLabel();
+			this.timeBasedPanel.SuspendLayout();
+			this.counterBasedPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// secretCodeField
@@ -56,10 +66,11 @@ namespace WinAuth
 			this.secretCodeField.Size = new System.Drawing.Size(423, 22);
 			this.secretCodeField.TabIndex = 4;
 			this.secretCodeField.UseSelectable = true;
+			this.secretCodeField.TextChanged += new System.EventHandler(this.secretCodeField_TextChanged);
 			// 
 			// step1Label
 			// 
-			this.step1Label.Location = new System.Drawing.Point(23, 119);
+			this.step1Label.Location = new System.Drawing.Point(25, 120);
 			this.step1Label.Name = "step1Label";
 			this.step1Label.Size = new System.Drawing.Size(425, 48);
 			this.step1Label.TabIndex = 1;
@@ -70,7 +81,7 @@ namespace WinAuth
 			// 
 			this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.okButton.Location = new System.Drawing.Point(292, 347);
+			this.okButton.Location = new System.Drawing.Point(292, 470);
 			this.okButton.Name = "okButton";
 			this.okButton.Size = new System.Drawing.Size(75, 23);
 			this.okButton.TabIndex = 6;
@@ -82,7 +93,7 @@ namespace WinAuth
 			// 
 			this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancelButton.Location = new System.Drawing.Point(373, 347);
+			this.cancelButton.Location = new System.Drawing.Point(373, 470);
 			this.cancelButton.Name = "cancelButton";
 			this.cancelButton.Size = new System.Drawing.Size(75, 23);
 			this.cancelButton.TabIndex = 7;
@@ -113,15 +124,16 @@ namespace WinAuth
 			// 
 			// step2Label
 			// 
-			this.step2Label.Location = new System.Drawing.Point(23, 213);
+			this.step2Label.Location = new System.Drawing.Point(25, 213);
 			this.step2Label.Name = "step2Label";
-			this.step2Label.Size = new System.Drawing.Size(51, 25);
+			this.step2Label.Size = new System.Drawing.Size(423, 49);
 			this.step2Label.TabIndex = 10;
-			this.step2Label.Text = "2. Click";
+			this.step2Label.Text = "2. Choose if this is a time-based or a counter-based authenticator. If you don\'t " +
+    "know, it\'s likely time-based, so just leave the default choice.";
 			// 
 			// verifyButton
 			// 
-			this.verifyButton.Location = new System.Drawing.Point(113, 212);
+			this.verifyButton.Location = new System.Drawing.Point(122, 43);
 			this.verifyButton.Name = "verifyButton";
 			this.verifyButton.Size = new System.Drawing.Size(158, 23);
 			this.verifyButton.TabIndex = 5;
@@ -131,7 +143,7 @@ namespace WinAuth
 			// 
 			// codeProgress
 			// 
-			this.codeProgress.Location = new System.Drawing.Point(113, 310);
+			this.codeProgress.Location = new System.Drawing.Point(124, 433);
 			this.codeProgress.Maximum = 30;
 			this.codeProgress.Minimum = 1;
 			this.codeProgress.Name = "codeProgress";
@@ -144,7 +156,7 @@ namespace WinAuth
 			// codeField
 			// 
 			this.codeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
-			this.codeField.Location = new System.Drawing.Point(113, 282);
+			this.codeField.Location = new System.Drawing.Point(124, 405);
 			this.codeField.Multiline = true;
 			this.codeField.Name = "codeField";
 			this.codeField.SecretMode = false;
@@ -152,20 +164,108 @@ namespace WinAuth
 			this.codeField.SpaceOut = 3;
 			this.codeField.TabIndex = 12;
 			// 
-			// step3Label
+			// step4Label
 			// 
-			this.step3Label.AutoSize = true;
-			this.step3Label.Location = new System.Drawing.Point(23, 251);
-			this.step3Label.Name = "step3Label";
-			this.step3Label.Size = new System.Drawing.Size(293, 19);
-			this.step3Label.TabIndex = 11;
-			this.step3Label.Text = "3. Verify the following code matches your service";
+			this.step4Label.AutoSize = true;
+			this.step4Label.Location = new System.Drawing.Point(25, 373);
+			this.step4Label.Name = "step4Label";
+			this.step4Label.Size = new System.Drawing.Size(293, 19);
+			this.step4Label.TabIndex = 11;
+			this.step4Label.Text = "4. Verify the following code matches your service";
 			// 
 			// timer
 			// 
 			this.timer.Enabled = true;
 			this.timer.Interval = 500;
 			this.timer.Tick += new System.EventHandler(this.timer_Tick);
+			// 
+			// step3Label
+			// 
+			this.step3Label.Location = new System.Drawing.Point(23, 12);
+			this.step3Label.Name = "step3Label";
+			this.step3Label.Size = new System.Drawing.Size(423, 28);
+			this.step3Label.TabIndex = 10;
+			this.step3Label.Text = "3. Click the Verify button to check the first code.";
+			// 
+			// timeBasedRadio
+			// 
+			this.timeBasedRadio.AutoSize = true;
+			this.timeBasedRadio.Checked = true;
+			this.timeBasedRadio.Location = new System.Drawing.Point(43, 265);
+			this.timeBasedRadio.Name = "timeBasedRadio";
+			this.timeBasedRadio.Size = new System.Drawing.Size(86, 15);
+			this.timeBasedRadio.TabIndex = 14;
+			this.timeBasedRadio.TabStop = true;
+			this.timeBasedRadio.Text = "Time-based";
+			this.timeBasedRadio.UseSelectable = true;
+			this.timeBasedRadio.CheckedChanged += new System.EventHandler(this.timeBasedRadio_CheckedChanged);
+			// 
+			// counterBasedRadio
+			// 
+			this.counterBasedRadio.AutoSize = true;
+			this.counterBasedRadio.Location = new System.Drawing.Point(146, 265);
+			this.counterBasedRadio.Name = "counterBasedRadio";
+			this.counterBasedRadio.Size = new System.Drawing.Size(102, 15);
+			this.counterBasedRadio.TabIndex = 14;
+			this.counterBasedRadio.Text = "Counter-based";
+			this.counterBasedRadio.UseSelectable = true;
+			this.counterBasedRadio.CheckedChanged += new System.EventHandler(this.counterBasedRadio_CheckedChanged);
+			// 
+			// timeBasedPanel
+			// 
+			this.timeBasedPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.timeBasedPanel.Controls.Add(this.step3Label);
+			this.timeBasedPanel.Controls.Add(this.verifyButton);
+			this.timeBasedPanel.Location = new System.Drawing.Point(2, 286);
+			this.timeBasedPanel.Name = "timeBasedPanel";
+			this.timeBasedPanel.Size = new System.Drawing.Size(464, 84);
+			this.timeBasedPanel.TabIndex = 15;
+			// 
+			// counterBasedPanel
+			// 
+			this.counterBasedPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.counterBasedPanel.Controls.Add(this.verifyCounterButton);
+			this.counterBasedPanel.Controls.Add(this.counterField);
+			this.counterBasedPanel.Controls.Add(this.step3CounterLabel);
+			this.counterBasedPanel.Location = new System.Drawing.Point(2, 286);
+			this.counterBasedPanel.Name = "counterBasedPanel";
+			this.counterBasedPanel.Size = new System.Drawing.Size(464, 84);
+			this.counterBasedPanel.TabIndex = 16;
+			this.counterBasedPanel.Visible = false;
+			// 
+			// verifyCounterButton
+			// 
+			this.verifyCounterButton.Location = new System.Drawing.Point(207, 43);
+			this.verifyCounterButton.Name = "verifyCounterButton";
+			this.verifyCounterButton.Size = new System.Drawing.Size(158, 23);
+			this.verifyCounterButton.TabIndex = 17;
+			this.verifyCounterButton.Text = "Verify Authenticator";
+			this.verifyCounterButton.UseSelectable = true;
+			this.verifyCounterButton.Click += new System.EventHandler(this.verifyButton_Click);
+			// 
+			// counterField
+			// 
+			this.counterField.AllowDrop = true;
+			this.counterField.CausesValidation = false;
+			this.counterField.Location = new System.Drawing.Point(122, 43);
+			this.counterField.MaxLength = 32767;
+			this.counterField.Name = "counterField";
+			this.counterField.PasswordChar = '\0';
+			this.counterField.ScrollBars = System.Windows.Forms.ScrollBars.None;
+			this.counterField.SelectedText = "";
+			this.counterField.Size = new System.Drawing.Size(74, 20);
+			this.counterField.TabIndex = 11;
+			this.counterField.UseSelectable = true;
+			// 
+			// step3CounterLabel
+			// 
+			this.step3CounterLabel.Location = new System.Drawing.Point(23, 12);
+			this.step3CounterLabel.Name = "step3CounterLabel";
+			this.step3CounterLabel.Size = new System.Drawing.Size(423, 28);
+			this.step3CounterLabel.TabIndex = 10;
+			this.step3CounterLabel.Text = "3. Enter the initial counter value if known. Click the Verify button.";
 			// 
 			// AddAuthenticator
 			// 
@@ -174,12 +274,15 @@ namespace WinAuth
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BorderStyle = MetroFramework.Forms.MetroFormBorderStyle.FixedSingle;
 			this.CancelButton = this.cancelButton;
-			this.ClientSize = new System.Drawing.Size(471, 393);
+			this.ClientSize = new System.Drawing.Size(471, 516);
+			this.Controls.Add(this.counterBasedPanel);
+			this.Controls.Add(this.timeBasedPanel);
+			this.Controls.Add(this.counterBasedRadio);
+			this.Controls.Add(this.timeBasedRadio);
 			this.Controls.Add(this.codeProgress);
 			this.Controls.Add(this.codeField);
-			this.Controls.Add(this.step3Label);
+			this.Controls.Add(this.step4Label);
 			this.Controls.Add(this.step2Label);
-			this.Controls.Add(this.verifyButton);
 			this.Controls.Add(this.cancelButton);
 			this.Controls.Add(this.okButton);
 			this.Controls.Add(this.secretCodeField);
@@ -192,6 +295,8 @@ namespace WinAuth
 			this.ShowIcon = false;
 			this.Text = "Add Authenticator";
 			this.Load += new System.EventHandler(this.AddAuthenticator_Load);
+			this.timeBasedPanel.ResumeLayout(false);
+			this.counterBasedPanel.ResumeLayout(false);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -209,7 +314,15 @@ namespace WinAuth
 		private MetroFramework.Controls.MetroButton verifyButton;
 		private System.Windows.Forms.ProgressBar codeProgress;
 		private SecretTextBox codeField;
-		private MetroFramework.Controls.MetroLabel step3Label;
+		private MetroFramework.Controls.MetroLabel step4Label;
 		private System.Windows.Forms.Timer timer;
+		private MetroFramework.Controls.MetroLabel step3Label;
+		private MetroFramework.Controls.MetroRadioButton timeBasedRadio;
+		private MetroFramework.Controls.MetroRadioButton counterBasedRadio;
+		private System.Windows.Forms.Panel timeBasedPanel;
+		private System.Windows.Forms.Panel counterBasedPanel;
+		private MetroFramework.Controls.MetroLabel step3CounterLabel;
+		private MetroFramework.Controls.MetroTextBox counterField;
+		private MetroFramework.Controls.MetroButton verifyCounterButton;
 	}
 }

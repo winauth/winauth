@@ -234,18 +234,31 @@ namespace MetroFramework.Controls
                 base.ForeColor = value;
             }
         }
-        
-        [Browsable(false)]
+
+				[Browsable(true)]
+				public string OnText
+				{
+					get; set;
+				}
+
+				[Browsable(true)]
+				public string OffText
+				{
+					get;
+					set;
+				}
+				
+				[Browsable(false)]
         public override string Text
         {
             get
             {
                 if (Checked)
                 {
-                    return metroLocalize.translate("StatusOn");
+									return string.IsNullOrEmpty(OnText) == false ? OnText : metroLocalize.translate("StatusOn");
                 }
 
-                return metroLocalize.translate("StatusOff");
+								return string.IsNullOrEmpty(OffText) == false ? OffText : metroLocalize.translate("StatusOff");
             }
         }
 

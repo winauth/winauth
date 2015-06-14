@@ -945,6 +945,14 @@ namespace WinAuth
 				{
 					encryptedTypes.Append("m");
 				}
+				if ((PasswordType & Authenticator.PasswordTypes.YubiKeySlot1) != 0)
+				{
+					encryptedTypes.Append("a");
+				}
+				if ((PasswordType & Authenticator.PasswordTypes.YubiKeySlot2) != 0)
+				{
+					encryptedTypes.Append("b");
+				}
 				writer.WriteAttributeString("encrypted", encryptedTypes.ToString());
 				
 				string data;

@@ -102,9 +102,12 @@ namespace WinAuth
 	/// </summary>
 	public class BadPasswordException : AuthenticatorException
 	{
-		public BadPasswordException() : base() { }
+		public BadPasswordException(string msg = null, Exception ex = null) : base(msg, ex) { }
+	}
 
-		public BadPasswordException(string msg, Exception ex) : base(msg, ex) { }
+	public class BadYubiKeyException : BadPasswordException
+	{
+		public BadYubiKeyException(string msg = null, Exception ex = null) : base(msg, ex) { }
 	}
 
 	public class InvalidRestoreResponseException : AuthenticatorException

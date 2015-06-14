@@ -38,6 +38,24 @@
     <StartupObject>
     </StartupObject>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Crypto, Version=1.7.4137.9688, Culture=neutral, PublicKeyToken=a4292a325f69b123, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -65,12 +83,14 @@
     <Compile Include="BattleNetAuthenticator.cs" />
     <Compile Include="Authenticator.cs" />
     <Compile Include="Base32.cs" />
+    <Compile Include="HOTPAuthenticator.cs" />
     <Compile Include="SteamAuthenticator.cs" />
     <Compile Include="TrionAuthenticator.cs" />
     <Compile Include="GoogleAuthenticator.cs" />
     <Compile Include="GuildWarsAuthenticator.cs" />
     <Compile Include="MicrosoftAuthenticator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="YubiKey.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

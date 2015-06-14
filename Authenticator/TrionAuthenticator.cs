@@ -289,12 +289,19 @@ namespace WinAuth
 		/// </summary>
 		/// <param name="resyncTime">flag to resync time</param>
 		/// <returns>authenticator code</returns>
-		protected override string CalculateCode(bool resyncTime)
+		protected override string CalculateCode(bool resyncTime = false, long interval = -1)
 		{
 			// sync time if required
 			if (resyncTime == true || ServerTimeDiff == 0)
 			{
-				Sync();
+				if (interval > 0)
+				{
+					ServerTimeDiff = (interval * 30000L) - CurrentTime;
+				}
+				else
+				{
+					Sync();
+				}
 			}
 
 			HMac hmac = new HMac(new Sha1Digest());

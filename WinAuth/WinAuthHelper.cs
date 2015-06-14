@@ -277,18 +277,10 @@ namespace WinAuth
           config.WriteXmlString(writer);
         }
 
-				// if no config file yet, use defaault
+				// if no config file yet, use default
 				if (string.IsNullOrEmpty(config.Filename) == true)
 				{
-					string configDirectory;
-					//if (config.Portable == true)
-					//{
-					//	configDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-					//}
-					//else
-					//{
-						configDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuthMain.APPLICATION_NAME);
-					//}
+					string configDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuthMain.APPLICATION_NAME);
 					Directory.CreateDirectory(configDirectory);
 					config.Filename = Path.Combine(configDirectory, DEFAULT_AUTHENTICATOR_FILE_NAME);
 				}

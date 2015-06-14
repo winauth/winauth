@@ -42,6 +42,16 @@ namespace WinAuth
 	public partial class AddAuthenticator : ResourceForm
 	{
 		/// <summary>
+		/// HOTP string
+		/// </summary>
+		private const string HOTP = "hotp";
+
+		/// <summary>
+		/// TOTP string
+		/// </summary>
+		private const string TOTP = "totp";
+
+		/// <summary>
 		/// Form instantiation
 		/// </summary>
 		public AddAuthenticator()
@@ -79,7 +89,7 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void timer_Tick(object sender, EventArgs e)
 		{
-			if (this.Authenticator.AuthenticatorData != null && codeProgress.Visible == true)
+			if (this.Authenticator.AuthenticatorData != null && !(this.Authenticator.AuthenticatorData is HOTPAuthenticator) && codeProgress.Visible == true)
 			{
 				int time = (int)(this.Authenticator.AuthenticatorData.ServerTime / 1000L) % 30;
 				codeProgress.Value = time + 1;
@@ -130,7 +140,7 @@ namespace WinAuth
 				this.DialogResult = System.Windows.Forms.DialogResult.None;
 				return;
 			}
-			bool first = !this.codeProgress.Visible;
+			bool first = (this.Authenticator.AuthenticatorData == null);
 			if (verifyAuthenticator(privatekey) == false)
 			{
 				this.DialogResult = System.Windows.Forms.DialogResult.None;
@@ -140,6 +150,12 @@ namespace WinAuth
 			{
 				this.DialogResult = System.Windows.Forms.DialogResult.None;
 				return;
+			}
+
+			// if this is a htop we reduce the counter because we are going to immediate get the code and increment
+			if (this.Authenticator.AuthenticatorData is HOTPAuthenticator)
+			{
+				((HOTPAuthenticator)this.Authenticator.AuthenticatorData).Counter--;
 			}
 		}
 
@@ -157,6 +173,70 @@ namespace WinAuth
 				return;
 			}
 			verifyAuthenticator(privatekey);
+		}
+
+		/// <summary>
+		/// Select the time-based authenticator
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void timeBasedRadio_CheckedChanged(object sender, EventArgs e)
+		{
+			counterBasedRadio.Checked = !timeBasedRadio.Checked;
+			if (timeBasedRadio.Checked == true)
+			{
+				timeBasedPanel.Visible = true;
+				counterBasedPanel.Visible = false;
+			}
+		}
+
+		/// <summary>
+		/// Select the counter-based authenticator
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void counterBasedRadio_CheckedChanged(object sender, EventArgs e)
+		{
+			timeBasedRadio.Checked = !counterBasedRadio.Checked;
+			if (counterBasedRadio.Checked == true)
+			{
+				counterBasedPanel.Visible = true;
+				timeBasedPanel.Visible = false;
+			}
+		}
+
+		/// <summary>
+		/// Watch the field for a otpauth url with a counter or time based
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void secretCodeField_TextChanged(object sender, EventArgs e)
+		{
+			var match = Regex.Match(secretCodeField.Text, @"otpauth://([^/]+)/([^?]+)\?(.*)", RegexOptions.IgnoreCase);
+			if (match.Success == true)
+			{
+				string authtype = match.Groups[1].Value.ToLower();
+				if (authtype == HOTP)
+				{
+					counterBasedRadio.Checked = true;
+
+					NameValueCollection qs = WinAuthHelper.ParseQueryString(match.Groups[3].Value);
+					if (qs["counter"] != null)
+					{
+						long counter;
+						if (long.TryParse(qs["counter"], out counter) == true)
+						{
+							counterField.Text = counter.ToString();
+						}
+					}
+				}
+				else if (authtype == TOTP)
+				{
+					timeBasedRadio.Checked = true;
+					counterField.Text = string.Empty;
+				}
+			}
+
 		}
 
 #endregion
@@ -196,7 +276,9 @@ namespace WinAuth
 
 			int digits = (this.Authenticator.AuthenticatorData != null ? this.Authenticator.AuthenticatorData.CodeDigits : GoogleAuthenticator.DEFAULT_CODE_DIGITS);
 
-			string authtype = "totp";
+			string authtype = timeBasedRadio.Checked == true ? TOTP : HOTP;
+
+			long counter = 0;
 
 			// if this is a URL, pull it down
 			Uri uri;
@@ -265,7 +347,8 @@ namespace WinAuth
 			match = Regex.Match(privatekey, @"otpauth://([^/]+)/([^?]+)\?(.*)", RegexOptions.IgnoreCase);
 			if (match.Success == true)
 			{
-				authtype = match.Groups[1].Value; // @todo we only handle totp (not hotp)
+				authtype = match.Groups[1].Value.ToLower();
+
 				string label = match.Groups[2].Value;
 				if (string.IsNullOrEmpty(label) == false)
 				{
@@ -279,6 +362,10 @@ namespace WinAuth
 				{
 					digits = querydigits;
 				}
+				if (qs["counter"] != null)
+				{
+					long.TryParse(qs["counter"], out counter);
+				}
 			}
 
 			// just get the hex chars
@@ -291,19 +378,41 @@ namespace WinAuth
 
 			try
 			{
-				GoogleAuthenticator auth = new GoogleAuthenticator();
-				auth.Enroll(privatekey);
+				Authenticator auth;
+				if (authtype == TOTP)
+				{
+					auth = new GoogleAuthenticator();
+					((GoogleAuthenticator)auth).Enroll(privatekey);
+					timer.Enabled = true;
+					codeProgress.Visible = true;
+				}
+				else if (authtype == HOTP)
+				{
+					auth = new HOTPAuthenticator();
+					if (counterField.Text.Trim().Length != 0)
+					{
+						long.TryParse(counterField.Text.Trim(), out counter);
+					}
+					((HOTPAuthenticator)auth).Enroll(privatekey, counter - 1); // first get code will increment
+					timer.Enabled = false;
+					codeProgress.Visible = false;
+				}
+				else
+				{
+					WinAuthForm.ErrorDialog(this.Owner, "Only TOTP or HOTP authenticators are supported");
+					return false;
+				}
+
 				auth.CodeDigits = digits;
 				this.Authenticator.AuthenticatorData = auth;
 
-				codeProgress.Visible = true;
 				codeField.SpaceOut = digits / 2;
 
 				string key = Base32.getInstance().Encode(this.Authenticator.AuthenticatorData.SecretKey);
-				this.secretCodeField.Text = Regex.Replace(key, ".{3}", "$0 ").Trim();
+				//this.secretCodeField.Text = Regex.Replace(key, ".{3}", "$0 ").Trim();
 				this.codeField.Text = auth.CurrentCode;
 
-				if (auth.ServerTimeDiff == 0L && SyncErrorWarned == false)
+				if (!(auth is HOTPAuthenticator) && auth.ServerTimeDiff == 0L && SyncErrorWarned == false)
 				{
 					SyncErrorWarned = true;
 					MessageBox.Show(this, string.Format(strings.AuthenticatorSyncError, "Google"), WinAuthMain.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -319,6 +428,8 @@ namespace WinAuth
 		}
 
 #endregion
+
+
 
 	}
 }

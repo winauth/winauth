@@ -1154,5 +1154,14 @@ namespace WinAuth.Resources {
                 return ResourceManager.GetString("UnknownError", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please insert your YubiKey or press the flashing button.
+        /// </summary>
+        internal static string YubikeyInsert {
+            get {
+                return ResourceManager.GetString("YubikeyInsert", resourceCulture);
+            }
+        }
     }
 }

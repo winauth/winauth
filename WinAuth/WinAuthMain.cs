@@ -94,6 +94,10 @@ namespace WinAuth
 			{new Tuple<string,string>("s2e", string.Empty)},
 			{new Tuple<string,string>("Steam", "SteamAuthenticatorIcon.png")},
 			{new Tuple<string,string>("Steam (2)", "SteamIcon.png")},
+			{new Tuple<string,string>("s2e", string.Empty)},
+			{new Tuple<string,string>("SWTOR", "Swtor.png")},
+			{new Tuple<string,string>("SWTOR (Empire)", "SwtorEmpire.png")},
+			{new Tuple<string,string>("SWTOR (Republic)", "SwtorRepublic.png")},
 			{new Tuple<string,string>("+Software", "MicrosoftAuthenticatorIcon.png")},
 			{new Tuple<string,string>("Microsoft", "MicrosoftAuthenticatorIcon.png")},
 			{new Tuple<string,string>("Windows 8", "Windows8Icon.png")},
@@ -266,6 +270,8 @@ namespace WinAuth
 				System.Threading.Thread.CurrentThread.CurrentCulture = ci;
 				System.Threading.Thread.CurrentThread.CurrentUICulture = ci;
 			}
+
+			strings.Culture = System.Threading.Thread.CurrentThread.CurrentUICulture;
 
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);

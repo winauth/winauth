@@ -157,11 +157,26 @@ namespace WinAuth
     {
       get
       {
-        return _autoRefresh;
+				if (this.AuthenticatorData != null && this.AuthenticatorData is HOTPAuthenticator)
+				{
+					return false;
+				}
+				else
+				{
+					return _autoRefresh;
+				}
       }
       set
       {
-        _autoRefresh = value;
+				// HTOP must always be false
+				if (this.AuthenticatorData != null && this.AuthenticatorData is HOTPAuthenticator)
+				{
+					_autoRefresh = false;
+				}
+				else
+				{
+					_autoRefresh = value;
+				}
 				if (OnWinAuthAuthenticatorChanged != null)
         {
 					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("AutoRefresh"));
@@ -510,7 +525,7 @@ namespace WinAuth
 							{
 								// no action needed
 							}
-							catch (BadPasswordException )
+							catch (BadPasswordException)
 							{
 								// no action needed
 							}

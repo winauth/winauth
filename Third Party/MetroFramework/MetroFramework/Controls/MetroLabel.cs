@@ -298,7 +298,7 @@ namespace MetroFramework.Controls
                         }
                         else
                         {
-                            foreColor = MetroPaint.ForeColor.Label.Normal(Theme);
+                            foreColor = MetroPaint.ForeColor.Label.Disabled(Theme);
                         }
                     }
                     else

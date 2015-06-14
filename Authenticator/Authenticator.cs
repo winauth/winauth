@@ -112,7 +112,9 @@ namespace WinAuth
 			None = 0,
 			Explicit = 1,
 			User = 2,
-			Machine = 4
+			Machine = 4,
+			YubiKeySlot1 = 8,
+			YubiKeySlot2 = 16
 		}
 
 		#region Authenticator data
@@ -273,12 +275,19 @@ namespace WinAuth
 		/// </summary>
 		/// <param name="resyncTime">flag to resync time</param>
 		/// <returns>authenticator code</returns>
-		protected virtual string CalculateCode(bool resyncTime)
+		protected virtual string CalculateCode(bool resync = false, long interval = -1)
 		{
 			// sync time if required
-			if (resyncTime == true || ServerTimeDiff == 0)
+			if (resync == true || ServerTimeDiff == 0)
 			{
-				Sync();
+				if (interval > 0)
+				{
+					ServerTimeDiff = (interval * 30000L) - CurrentTime;
+				}
+				else
+				{
+					Sync();
+				}
 			}
 
 			HMac hmac = new HMac(new Sha1Digest());
@@ -420,6 +429,12 @@ namespace WinAuth
 						break;
 					case 'y':
 						passwordType |= PasswordTypes.Explicit;
+						break;
+					case 'a':
+						passwordType |= PasswordTypes.YubiKeySlot1;
+						break;
+					case 'b':
+						passwordType |= PasswordTypes.YubiKeySlot2;
 						break;
 					default:
 						break;
@@ -915,54 +930,76 @@ namespace WinAuth
       return data;
     }
 
-		//public static void Log(string message)
-		//{
-		//	try
-		//	{
-		//		string dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-		//		File.AppendAllText(Path.Combine(dir, "winauth.log"), message);
-		//	}
-		//	catch (Exception) { }
-		//}
-
 		private static string DecryptSequenceNoHash(string data, PasswordTypes encryptedTypes, string password, bool decode = false)
 		{
 			try
 			{
 				// reverse order they were encrypted
+				if ((encryptedTypes & PasswordTypes.YubiKeySlot1) != 0 || (encryptedTypes & PasswordTypes.YubiKeySlot2) != 0)
+				{
+					YubiKey yubi = new YubiKey();
+
+					// wait for it to load the library
+					long waittill = DateTime.Now.AddMilliseconds(10000).Ticks;
+					while (yubi.Loading != null && yubi.Loading.Status == System.Threading.Tasks.TaskStatus.Running && DateTime.Now.Ticks < waittill)
+					{
+						System.Threading.Thread.Sleep(100);
+					}
+
+					// wait for the keypress if appropriate
+					waittill = DateTime.Now.AddMilliseconds(10000).Ticks;
+					while (yubi.Info.Status.VersionMajor == 0 && string.IsNullOrEmpty(yubi.Info.Error) == true && DateTime.Now.Ticks < waittill)
+					{
+						System.Threading.Thread.Sleep(100);
+					}
+					if (string.IsNullOrEmpty(yubi.Info.Error) == false)
+					{
+						throw new BadYubiKeyException("Unable to detect YubiKey");
+					}
+					if (yubi.Info.Status.VersionMajor == 0)
+					{
+						throw new BadYubiKeyException("Please insert your YubiKey");
+					}
+					int slot = ((encryptedTypes & PasswordTypes.YubiKeySlot1) != 0 ? 1 : 2);
+
+					string salt = data.Substring(0, SALT_LENGTH * 2);
+					data = data.Substring(salt.Length);
+					byte[] key = yubi.ChallengeResponse(slot, StringToByteArray(salt));
+
+					data = Authenticator.Decrypt(data, key);
+					if (decode == true)
+					{
+						byte[] plain = Authenticator.StringToByteArray(data);
+						data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+					}
+				}
 				if ((encryptedTypes & PasswordTypes.Machine) != 0)
 				{
 					// we are going to decrypt with the Windows local machine key
 					byte[] cipher = Authenticator.StringToByteArray(data);
-					//Log("Decrypt Machine: " + data + Environment.NewLine);
 					byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
 					if (decode == true)
 					{
-						//Log("Decode Machine: " + ByteArrayToString(plain) + Environment.NewLine);
 						data = Encoding.UTF8.GetString(plain, 0, plain.Length);
 					}
 					else
 					{
 						data = ByteArrayToString(plain);
 					}
-					//Log("Decrypted Machine: " + data + Environment.NewLine);
 				}
 				if ((encryptedTypes & PasswordTypes.User) != 0)
 				{
 					// we are going to decrypt with the Windows User account key
 					byte[] cipher = StringToByteArray(data);
-					//Log("Decrypt User: " + data + Environment.NewLine);
 					byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.CurrentUser);
 					if (decode == true)
 					{
-						//Log("Decode User: " + ByteArrayToString(plain) + Environment.NewLine);
 						data = Encoding.UTF8.GetString(plain, 0, plain.Length);
 					}
 					else
 					{
 						data = ByteArrayToString(plain);
 					}
-					//Log("Decrypted User: " + data + Environment.NewLine);
 				}
 				if ((encryptedTypes & PasswordTypes.Explicit) != 0)
 				{
@@ -971,20 +1008,25 @@ namespace WinAuth
 					{
 						throw new EncrpytedSecretDataException();
 					}
-					///Log("Decrypt Explicit: " + password + " " + data + Environment.NewLine);
 					data = Authenticator.Decrypt(data, password, true);
-					//Log("Decrypted Explicit: " + data + Environment.NewLine);
 					if (decode == true)
 					{
 						byte[] plain = Authenticator.StringToByteArray(data);
 						data = Encoding.UTF8.GetString(plain, 0, plain.Length);
-						//Log("Decode Explicit: " + data + Environment.NewLine);
 					}
 				}
 			}
 			catch (EncrpytedSecretDataException)
 			{
 				throw;
+			}
+			catch (BadYubiKeyException )
+			{
+				throw;
+			}
+			catch (ChallengeResponseException ex)
+			{
+				throw new BadYubiKeyException("Please check your YubiKey or touch the flashing button", ex);
 			}
 			catch (Exception ex)
 			{
@@ -1037,6 +1079,23 @@ namespace WinAuth
         byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.LocalMachine);
         data = ByteArrayToString(cipher);
       }
+			if ((passwordType & PasswordTypes.YubiKeySlot1) != 0 || (passwordType & PasswordTypes.YubiKeySlot2) != 0)
+			{
+				// we encrypt the data using the hash of a random string from the YubiKey slot 1
+				YubiKey yubi = new YubiKey();
+				int slot = ((passwordType & PasswordTypes.YubiKeySlot1) != 0 ? 1 : 2);
+				byte[] key = yubi.ChallengeResponse(slot, StringToByteArray(salt));
+
+				string encrypted = Encrypt(data, key);
+
+				// test the encryption
+				string decrypted = Decrypt(encrypted, key);
+				if (string.Compare(data, decrypted) != 0)
+				{
+					throw new InvalidEncryptionException(data, password, encrypted, decrypted);
+				}
+				data = salt + encrypted;
+			}
 
 			// prepend the salt + hash
 			return ENCRYPTION_HEADER + salt + hash + data;
@@ -1046,11 +1105,10 @@ namespace WinAuth
 		/// Encrypt a string with a given key
 		/// </summary>
 		/// <param name="plain">data to encrypt - hex representation of byte array</param>
-		/// <param name="key">key to use to encrypt</param>
+		/// <param name="password">key to use to encrypt</param>
 		/// <returns>hex coded encrypted string</returns>
 		public static string Encrypt(string plain, string password)
 		{
-			byte[] inBytes = Authenticator.StringToByteArray(plain);
 			byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
 
 			// build a new salt
@@ -1066,6 +1124,19 @@ namespace WinAuth
 			Rfc2898DeriveBytes kg = new Rfc2898DeriveBytes(passwordBytes, saltbytes, PBKDF2_ITERATIONS);
 #endif
 			byte[] key = kg.GetBytes(PBKDF2_KEYSIZE);
+
+			return salt + Encrypt(plain, key);
+		}
+
+		/// <summary>
+		/// Encrypt a string with a byte array key
+		/// </summary>
+		/// <param name="plain">data to encrypt - hex representation of byte array</param>
+		/// <param name="passwordBytes">key to use to encrypt</param>
+		/// <returns>hex coded encrypted string</returns>
+		public static string Encrypt(string plain, byte[] key)
+		{
+			byte[] inBytes = Authenticator.StringToByteArray(plain);
 
 			// get our cipher
 			BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new BlowfishEngine(), new ISO10126d2Padding());
@@ -1084,7 +1155,7 @@ namespace WinAuth
 			}
 
 			// return encoded byte->hex string
-			return salt + Authenticator.ByteArrayToString(outBytes);
+			return Authenticator.ByteArrayToString(outBytes);
 		}
 
 		/// <summary>
@@ -1156,7 +1227,46 @@ namespace WinAuth
 		}
 
 		/// <summary>
-		/// Wrapped TryParse for compatability with NETCF35 to simulate long.TryParse
+		/// Decrypt a hex-encoded string with a byte array key
+		/// </summary>
+		/// <param name="data">hex-encoded string</param>
+		/// <param name="key">key for decryption</param>
+		/// <returns>hex-encoded plain text</returns>
+		public static string Decrypt(string data, byte[] key)
+		{
+			// the actual data to be decrypted
+			byte[] inBytes = Authenticator.StringToByteArray(data);
+
+			// get cipher
+			BufferedBlockCipher cipher = new PaddedBufferedBlockCipher(new BlowfishEngine(), new ISO10126d2Padding());
+			cipher.Init(false, new KeyParameter(key));
+
+			// decrypt the data
+			int osize = cipher.GetOutputSize(inBytes.Length);
+			byte[] outBytes = new byte[osize];
+			try
+			{
+				int olen = cipher.ProcessBytes(inBytes, 0, inBytes.Length, outBytes, 0);
+				olen += cipher.DoFinal(outBytes, olen);
+				if (olen < osize)
+				{
+					byte[] t = new byte[olen];
+					Array.Copy(outBytes, 0, t, 0, olen);
+					outBytes = t;
+				}
+			}
+			catch (Exception)
+			{
+				// an exception is due to bad password
+				throw new BadPasswordException();
+			}
+
+			// return encoded string
+			return Authenticator.ByteArrayToString(outBytes);
+		}
+
+		/// <summary>
+		/// Wrapped TryParse for compatibility with NETCF35 to simulate long.TryParse
 		/// </summary>
 		/// <param name="s">string of value to parse</param>
 		/// <param name="val">out long value</param>

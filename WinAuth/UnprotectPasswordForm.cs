@@ -91,6 +91,14 @@ namespace WinAuth
 					Authenticator.MarkChanged();
 				}
 			}
+			catch (BadYubiKeyException)
+			{
+				invalidPasswordLabel.Text = "Please insert your YubiKey";
+				invalidPasswordLabel.Visible = true;
+				invalidPasswordTimer.Enabled = true;
+				this.DialogResult = System.Windows.Forms.DialogResult.None;
+				return;
+			}
 			catch (BadPasswordException)
 			{
 				invalidPasswordLabel.Text = strings.InvalidPassword;

@@ -1101,7 +1101,9 @@ namespace WinAuth
 			menuitem.Click += ContextMenu_Click;
 			this.ContextMenuStrip.Items.Add(menuitem);
 			//
-			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
+			ToolStripSeparator sepitem = new ToolStripSeparator();
+			sepitem.Name = "syncMenuSep";
+			this.ContextMenuStrip.Items.Add(sepitem);
 			//
 			menuitem = new ToolStripMenuItem(strings.SyncTime);
 			menuitem.Name = "syncMenuItem";
@@ -1139,7 +1141,7 @@ namespace WinAuth
 			menuitem.Visible = (auth.AuthenticatorData is BattleNetAuthenticator);
 			//
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showGoogleSecretMenuItem").FirstOrDefault() as ToolStripMenuItem;
-			menuitem.Visible = (auth.AuthenticatorData is GoogleAuthenticator);
+			menuitem.Visible = (auth.AuthenticatorData is GoogleAuthenticator || auth.AuthenticatorData is HOTPAuthenticator);
 			//
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showTrionSecretMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Visible = (auth.AuthenticatorData is TrionAuthenticator);
@@ -1148,6 +1150,7 @@ namespace WinAuth
 			menuitem.Visible = (auth.AuthenticatorData is SteamAuthenticator);
 			//
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "autoRefreshMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem.Visible = !(auth.AuthenticatorData is HOTPAuthenticator);
 			menuitem.CheckState = (auth.AutoRefresh == true ? CheckState.Checked : CheckState.Unchecked);
 			menuitem.Enabled = (auth.AuthenticatorData.RequiresPassword == false && auth.AuthenticatorData.PasswordType != Authenticator.PasswordTypes.Explicit);
 			//
@@ -1175,6 +1178,14 @@ namespace WinAuth
 						iconmenuitem.CheckState = CheckState.Unchecked;
 					}
 				}
+			}
+			//
+			if (auth.AuthenticatorData is HOTPAuthenticator)
+			{
+				ToolStripItem sepitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "syncMenuSep").FirstOrDefault() as ToolStripItem;
+				sepitem.Visible = false;
+				menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "syncMenuItem").FirstOrDefault() as ToolStripMenuItem;
+				menuitem.Visible = false;
 			}
 		}
 
@@ -1263,7 +1274,7 @@ namespace WinAuth
 				}
 				try
 				{
-					auth.CopyCodeToClipboard(this.Parent as Form, null, true);
+					auth.CopyCodeToClipboard(this.Parent as Form, item.LastCode, true);
 				}
 				finally
 				{
@@ -1824,7 +1835,7 @@ namespace WinAuth
 								}
 							}
 							item.LastCode = code;
-							if (code.Length > 5)
+							if (code != null && code.Length > 5)
 							{
 								code = code.Insert(code.Length / 2, " ");
 							}

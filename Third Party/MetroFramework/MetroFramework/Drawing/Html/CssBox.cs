@@ -1924,7 +1924,7 @@ namespace MetroFramework.Drawing.Html
         #region Properties
 
         /// <summary>
-        /// Gets the • box
+        /// Gets the box
         /// </summary>
         public CssBox ListItemBox
         {
@@ -2350,7 +2350,7 @@ namespace MetroFramework.Drawing.Html
                     }
                     else
                     {
-                        _listItemBox.Text = "•";
+                        _listItemBox.Text = "-";
                     }
                     
                     _listItemBox.MeasureBounds(g);
@@ -2931,8 +2931,8 @@ namespace MetroFramework.Drawing.Html
             {
                 b.OffsetTop(amount);
             }
-            //TODO: Aquí me quede: no se mueve bien todo (probar con las tablas rojas)
-            Location = new PointF(Location.X, Location.Y + amount);
+
+						Location = new PointF(Location.X, Location.Y + amount);
         }
 
         /// <summary>

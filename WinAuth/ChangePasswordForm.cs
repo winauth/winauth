@@ -21,10 +21,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using MetroFramework.Controls;
 using WinAuth.Resources;
 
 namespace WinAuth
@@ -34,6 +38,9 @@ namespace WinAuth
 	/// </summary>
 	public partial class ChangePasswordForm : WinAuth.ResourceForm
 	{
+		private const int PBKDF2_ITERATIONS = 2048;
+		private const int PBKDF2_KEYSIZE = 20;
+
 		/// <summary>
 		/// Create the form
 		/// </summary>
@@ -51,6 +58,10 @@ namespace WinAuth
 		/// Current and new password
 		/// </summary>
 		public string Password { get; set; }
+
+		private List<string> _seedWords = new List<string>();
+
+		private int YubikeySlot { get; set; }
 
 		/// <summary>
 		/// Load the form and pretick checkboxes
@@ -73,6 +84,20 @@ namespace WinAuth
 			{
 				passwordCheckbox.Checked = true;
 			}
+
+			yubiPanelConfigure.Visible = false;
+			yubiPanelIntro.Visible = true;
+			yubiPanelExists.Visible = false;
+			if ((PasswordType & Authenticator.PasswordTypes.YubiKeySlot1) != 0 || (PasswordType & Authenticator.PasswordTypes.YubiKeySlot2) != 0)
+			{
+				yubiPanelIntro.Visible = false;
+				yubiPanelExists.Visible = true;
+				yubiPanelExists.Size = yubiPanelIntro.Size;
+				yubiPanelExists.Location = yubiPanelIntro.Location;
+				yubikeyBox.Checked = true;
+			}
+
+
 		}
 
 		/// <summary>
@@ -112,6 +137,61 @@ namespace WinAuth
 		{
 		}
 
+		private YubiKey _yubikey;
+
+		private void yubikeyBox_CheckedChanged(object sender, EventArgs e)
+		{
+			if (yubikeyBox.Checked == true)
+			{
+				if ((PasswordType & Authenticator.PasswordTypes.YubiKeySlot1) != 0 || (PasswordType & Authenticator.PasswordTypes.YubiKeySlot2) != 0)
+				{
+					yubiPanelIntro.Enabled = false;
+					yubiPanelIntro.Visible = false;
+					yubiPanelConfigure.Visible = false;
+					yubiPanelExists.Visible = true;
+					yubiPanelExists.Location = yubiPanelIntro.Location;
+					yubiPanelExists.Size = yubiPanelIntro.Size;
+					return;
+				}
+
+				yubikeyStatusLabel.Text = "Initialising YubiKey...";
+				yubikeyStatusLabel.Visible = true;
+
+				if (_yubikey == null)
+				{
+					_yubikey = new YubiKey();
+				}
+				_yubikey.Loading.ContinueWith((task) =>
+					{
+						if (string.IsNullOrEmpty(_yubikey.Info.Error) == false)
+						{
+							yubikeyStatusLabel.Text = _yubikey.Info.Error;
+						}
+						else if (_yubikey.Info.Status.VersionMajor == 0)
+						{
+							yubikeyStatusLabel.Text = "Please insert your YubiKey";
+						}
+						else
+						{
+							yubikeyStatusLabel.Text = string.Format("YubiKey {0}.{1}.{2} (Serial {3})", _yubikey.Info.Status.VersionMajor, _yubikey.Info.Status.VersionMinor, _yubikey.Info.Status.VersionBuild, _yubikey.Info.Serial);
+							yubiPanelIntro.Enabled = true;
+						}
+
+					}, TaskScheduler.FromCurrentSynchronizationContext()
+				);
+			}
+			else
+			{
+				yubiPanelIntro.Enabled = false;
+				yubiPanelIntro.Visible = true;
+				yubiPanelConfigure.Visible = false;
+				yubikeyStatusLabel.Text = string.Empty;
+				yubikeyStatusLabel.Visible = false;
+
+				PasswordType &= ~(Authenticator.PasswordTypes.YubiKeySlot1 | Authenticator.PasswordTypes.YubiKeySlot2);
+			}
+		}
+
 		/// <summary>
 		/// Password encrpytion is ticked
 		/// </summary>
@@ -147,6 +227,12 @@ namespace WinAuth
 				this.DialogResult = System.Windows.Forms.DialogResult.None;
 				return;
 			}
+			if (yubikeyBox.Checked == true && YubikeySlot == 0)
+			{
+				WinAuthForm.ErrorDialog(this, "Please verify your YubiKey using the Use Slot or Configure Slot buttons.");
+				this.DialogResult = System.Windows.Forms.DialogResult.None;
+				return;
+			}
 
 			// set the valid password type property
 			PasswordType = Authenticator.PasswordTypes.None;
@@ -164,7 +250,176 @@ namespace WinAuth
 				PasswordType |= Authenticator.PasswordTypes.Explicit;
 				Password = this.passwordField.Text.Trim();
 			}
+			if (yubikeyBox.Checked == true)
+			{
+				if (YubikeySlot == 1)
+				{
+					PasswordType |= Authenticator.PasswordTypes.YubiKeySlot1;
+				}
+				else if (YubikeySlot == 2)
+				{
+					PasswordType |= Authenticator.PasswordTypes.YubiKeySlot2;
+				}
+			}
+		}
+
+		private string GetSeed(int wordCount)
+		{
+			if (_seedWords.Count == 0)
+			{
+				using (var s = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("WinAuth.Resources.SeedWords.txt")))
+				{
+					string line;
+					while ((line = s.ReadLine()) != null)
+					{
+						if (line.Length != 0)
+						{
+							_seedWords.Add(line);
+						}
+					}
+				}
+			}
+
+			List<string> words = new List<string>();
+			RNGCryptoServiceProvider random = new RNGCryptoServiceProvider();
+			byte[] buffer = new byte[4];
+			for (var i = 0; i < wordCount; i++)
+			{
+				random.GetBytes(buffer);
+				int pos = (int)(BitConverter.ToUInt32(buffer, 0) % (uint)_seedWords.Count());
+
+				// check for duplicates
+				var word = _seedWords[pos].ToLower();
+				if (words.IndexOf(word) != -1)
+				{
+					i--;
+					continue;
+				}
+				words.Add(word);
+			}
+
+			return string.Join(" ", words);
+		}
+
+		private void yubiCreateSecretButton_Click(object sender, EventArgs e)
+		{
+			yubiSecretField.Text = GetSeed(12);
+		}
+
+		private void yubikeyCreateButton_Click(object sender, EventArgs e)
+		{
+			yubiPanelConfigure.Visible = true;
+		}
+
+		private void yubiSecretUpdateButton_Click(object sender, EventArgs e)
+		{
+			if (yubiSecretField.Text.Trim().Length == 0)
+			{
+				WinAuthForm.ErrorDialog(this, "Please enter a secret phase or password");
+				return;
+			}
+
+			if (WinAuthForm.ConfirmDialog(this,
+				"This will overwrite any existing data on your YubiKey.\n\nAre you sure you want to continue?",
+				MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes)
+			{
+				return;
+			}
+
+			int slot = (yubiSlotToggle.Checked == true ? 2 : 1);
+			bool press = yubiPressToggle.Checked;
+
+			// calculate the actual key. This is a byte version of the string, salt="mnemonic"(+user password TBD), PBKDF 2048 times, return 20byte/160bit key
+			byte[] bytes = Encoding.UTF8.GetBytes(yubiSecretField.Text.Trim());
+			string salt = "mnemonic";
+			byte[] saltbytes = Encoding.UTF8.GetBytes(salt);
+			Rfc2898DeriveBytes kg = new Rfc2898DeriveBytes(bytes, saltbytes, PBKDF2_ITERATIONS);
+			byte[] key = kg.GetBytes(PBKDF2_KEYSIZE);
+
+			//yubiSecretHexField.Text = Authenticator.ByteArrayToString(key);
+
+			//byte[] key = Authenticator.StringToByteArray(yubiSecretHexField.Text.Trim());
+			try
+			{
+				_yubikey.SetChallengeResponse(slot, key, key.Length, press);
+			}
+			catch (YubKeyException ex)
+			{
+				WinAuthForm.ErrorDialog(this, ex.Message, ex);
+				return;
+			}
+
+			if (press == true)
+			{
+				if (WinAuthForm.ConfirmDialog(this,
+					"Your YubiKey slot will now be verified. Please click its button when it flashes." + Environment.NewLine + Environment.NewLine + "Continue?",
+					MessageBoxButtons.YesNo,
+					MessageBoxIcon.Warning) != System.Windows.Forms.DialogResult.Yes)
+				{
+					WinAuthForm.ErrorDialog(this, "Your YubiKey has been updated. Please verify it before continuing.");
+					return;
+				}
+			}
+
+			try
+			{
+				byte[] challenge = Encoding.ASCII.GetBytes("WinAuth");
+				using (var hmac = new HMACSHA1(key))
+				{
+					// try the hash here
+					byte[] checkhash = hmac.ComputeHash(challenge);
+					// get the hash from the key
+					byte[] hash = _yubikey.ChallengeResponse(slot, challenge);
+					// compare
+					for (var i = 0; i < checkhash.Length; i++)
+					{
+						if (hash[i] != checkhash[i])
+						{
+							throw new ApplicationException("verification failed");
+						}
+					}
+				}
+			}
+			catch (ApplicationException ex)
+			{
+				WinAuthForm.ErrorDialog(this, "The YubiKey test failed. Please try configuring it again or doing it manually. (" + ex.Message + ")");
+				return;
+			}
+
+			YubikeySlot = slot;
+
+			WinAuthForm.ErrorDialog(this, "Your YubiKey has been successfully updated.");
+		}
+
+		private void yubikeyCheckButton_Click(object sender, EventArgs e)
+		{
+			if (WinAuthForm.ConfirmDialog(this,
+				"Your YubiKey slot will now be verified. If it requires you to press the button, please press when the light starts flashing." + Environment.NewLine + Environment.NewLine + "Continue?",
+				MessageBoxButtons.YesNo,
+				MessageBoxIcon.Warning) != System.Windows.Forms.DialogResult.Yes)
+			{
+				return;
+			}
+
+			int slot = (yubiSlotToggle.Checked == true ? 2 : 1);
+
+			try
+			{
+				byte[] challenge = Encoding.ASCII.GetBytes("WinAuth");
+				// get the hash from the key
+				byte[] hash = _yubikey.ChallengeResponse(slot, challenge);
+			}
+			catch (ApplicationException ex)
+			{
+				WinAuthForm.ErrorDialog(this, "The YubiKey test failed. Please check the configuration is for Challenge-Response in HMAC-SHA1 mode with Variable Input. (" + ex.Message + ")");
+				return;
+			}
+
+			YubikeySlot = slot;
+
+			WinAuthForm.ErrorDialog(this, "Your YubiKey has been successfully tested.");
 		}
 
 	}
+
 }

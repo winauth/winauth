@@ -13,6 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <IsWebBootstrapper>true</IsWebBootstrapper>
+    <AssemblyVersion>3.2.1.52</AssemblyVersion>
     <PublishUrl>C:\Users\cdm\Projects\WinAuth\winauth.com\downloads\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -39,7 +40,6 @@
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <AssemblyVersion>3.2.1.2</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -340,6 +340,9 @@
     <EmbeddedResource Include="AddSteamAuthenticator.resx">
       <DependentUpon>AddSteamAuthenticator.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\strings.zh-CN.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="ShowSteamSecretForm.resx">
       <DependentUpon>ShowSteamSecretForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -471,6 +474,10 @@
     <EmbeddedResource Include="Resources\SteamAuthenticatorIcon.png" />
     <EmbeddedResource Include="Resources\SteamIcon.png" />
     <None Include="images\spinner24.gif" />
+    <EmbeddedResource Include="Resources\SeedWords.txt" />
+    <EmbeddedResource Include="Resources\Swtor.png" />
+    <EmbeddedResource Include="Resources\SwtorEmpire.png" />
+    <EmbeddedResource Include="Resources\SwtorRepublic.png" />
     <Content Include="winauth.ico" />
   </ItemGroup>
   <ItemGroup>

@@ -204,51 +204,59 @@ namespace WinAuth
 		{
 			string configFile = _startupConfigFile;
 
-			// load config data
-			bool retry = false;
-			do
-			{
-				try
+			//Task.Factory.StartNew(() =>
+			//{
+				// load config data
+				bool retry = false;
+				do
 				{
-					WinAuthConfig config = WinAuthHelper.LoadConfig(this, configFile, password);
-					if (config == null)
+					try
 					{
-						System.Diagnostics.Process.GetCurrentProcess().Kill();
-						return;
-					}
+						WinAuthConfig config = WinAuthHelper.LoadConfig(this, configFile, password);
+						if (config == null)
+						{
+							System.Diagnostics.Process.GetCurrentProcess().Kill();
+							return;
+						}
 
-					// check for a v2 config file if this is a new config
-					if (config.Count == 0 && string.IsNullOrEmpty(config.Filename) == true)
+						// check for a v2 config file if this is a new config
+						if (config.Count == 0 && string.IsNullOrEmpty(config.Filename) == true)
+						{
+							_existingv2Config = WinAuthHelper.GetLastV2Config();
+						}
+
+						this.Config = config;
+						this.Config.OnConfigChanged += new ConfigChangedHandler(OnConfigChanged);
+
+						InitializeForm();
+					}
+					catch (EncrpytedSecretDataException)
 					{
-						_existingv2Config = WinAuthHelper.GetLastV2Config();
+						passwordPanel.Visible = true;
 					}
-
-					this.Config = config;
-					this.Config.OnConfigChanged += new ConfigChangedHandler(OnConfigChanged);
-
-					InitializeForm();
-				}
-				catch (EncrpytedSecretDataException)
-				{
-					passwordPanel.Visible = true;
-				}
-				catch (BadPasswordException)
-				{
-					passwordPanel.Visible = true;
-					this.passwordErrorLabel.Text = strings.InvalidPassword;
-					this.passwordErrorLabel.Tag = DateTime.Now.AddSeconds(3);
-					this.passwordTimer.Enabled = true;
-				}
-				catch (Exception ex)
-				{
-					if (ErrorDialog(this, strings.UnknownError + ": " + ex.Message, ex, MessageBoxButtons.RetryCancel) == System.Windows.Forms.DialogResult.Cancel)
+					catch (BadYubiKeyException)
 					{
-						this.Close();
-						return;
+						yubiPanel.Visible = true;
+						this.yubiLabel.Text = strings.YubikeyInsert;
 					}
-					retry = true;
-				}
-			} while (retry == true);
+					catch (BadPasswordException)
+					{
+						passwordPanel.Visible = true;
+						this.passwordErrorLabel.Text = strings.InvalidPassword;
+						this.passwordErrorLabel.Tag = DateTime.Now.AddSeconds(3);
+						this.passwordTimer.Enabled = true;
+					}
+					catch (Exception ex)
+					{
+						if (ErrorDialog(this, strings.UnknownError + ": " + ex.Message, ex, MessageBoxButtons.RetryCancel) == System.Windows.Forms.DialogResult.Cancel)
+						{
+							this.Close();
+							return;
+						}
+						retry = true;
+					}
+				} while (retry == true);
+			//});
 		}
 
 		/// <summary>
@@ -321,7 +329,10 @@ namespace WinAuth
 						this.Config.PasswordType = form.PasswordType;
 						if ((this.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
 						{
-							this.Config.Password = form.Password;
+							if (string.IsNullOrEmpty(form.Password) == false)
+							{
+								this.Config.Password = form.Password;
+							}
 						}
 						else
 						{
@@ -424,6 +435,11 @@ namespace WinAuth
 					needPassword = true;
 					invalidPassword = false;
 				}
+				catch (BadYubiKeyException)
+				{
+					needPassword = true;
+					invalidPassword = false;
+				}
 				catch (BadPasswordException)
 				{
 					needPassword = true;
@@ -516,6 +532,7 @@ namespace WinAuth
 			loadOptionsMenu(this.optionsMenu);
 			loadNotifyMenu(this.notifyMenu);
 			passwordPanel.Visible = false;
+			yubiPanel.Visible = false;
 			commandPanel.Visible = true;
 			introLabel.Visible = (this.Config.Count == 0);
 			authenticatorList.Visible = (this.Config.Count != 0);
@@ -1583,6 +1600,16 @@ namespace WinAuth
 		}
 
 		/// <summary>
+		/// Click the button to check the YubiKey again
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void yubiRetryButton_Click(object sender, EventArgs e)
+		{
+			loadConfig(this.passwordField.Text);
+		}
+
+		/// <summary>
 		/// If click the new version status link
 		/// </summary>
 		/// <param name="sender"></param>
@@ -2164,6 +2191,8 @@ namespace WinAuth
 				Authenticator = auth;
 			}
 		}
+
+
 
   }
 }
