@@ -1,6 +1,6 @@
 #Windows Authenticator
 
-*WinAuth is a portable, open-source Authenticator for Windows that provides a time-based RFC 6238 authenticator and common implementations, such as the Google Authenticator. WinAuth can be used with many Bitcoin trading websites as well as supporting Battle.net (World of Warcraft, Hearthstone, Heroes of the Storm, Diablo), Guild Wars 2, Glyph (Rift and ArcheAge), WildStar, RuneScape and Steam.*
+*WinAuth is a portable, open-source Authenticator for Windows that provides a time-based RFC 6238 authenticator and common implementations, such as the Google Authenticator. WinAuth can be used with many Bitcoin trading websites as well as games, supporting Battle.net (World of Warcraft, Hearthstone, Heroes of the Storm, Diablo), Guild Wars 2, Glyph (Rift and ArcheAge), WildStar, RuneScape, SWTOR and Steam.*
 
 ----
 
@@ -11,14 +11,32 @@ announcement that [Google Code is being shutdown](http://google-opensource.blogs
 
 ----
 
-##WinAuth 3.2 (beta)
+####SWTOR Switches Security Key to Standard Authenticator
 
- * Added **Steam** authenticator
- * Fixed mouse wheel to scroll authenticators
+<img src="https://winauth.com/wp-content/uploads/2015/06/swtor-300x110.png" width="180" height="66" align="left"><img src="data:image/gif;base64,R0lGODlhAQABAIAAANOhk9OhkyH5BAUUAAAALAAAAAABAAEAAAICRAEAOw==" width="20" height="40" align="left"> SWTOR have moved to an RFC 6238 TOTP authenticator that can now be used with WinAuth. [Read more](https://winauth.com/2015/06/11/swtor-security-key-google-authenticator/).
+<p>&nbsp;</p>
+----
+##WinAuth 3.2
 
-<img src="https://winauth.com/images/steam.png" alt="WinAuth Supports Steam" />
+The next version of WinAuth is in development. This release will include both the new Steam Guard Mobile Authenticator and integration with YubiKey to enhance your authenticator security.
 
-[Download Latest BETA Version (WinAuth-3.2.1)](https://winauth.com/downloads/3.x/WinAuth-3.2.1.zip)
+####Steam Guard
+
+WinAuth can be registered as a new mobile device to create a Steam authenticator and displays the appropriate 5 character codes.
+
+<img src="https://winauth.com/wp-content/uploads/2013/07/steam.png" alt="WinAuth Supports Steam" />
+
+Please read about the [Steam Guard Mobile Authenticator](https://winauth.com/2015/06/11/steam-guard-mobile/) for more information.
+
+####YubiKey
+
+Anyone with a YubiKey can now use it with WinAuth to further protect their data. This will help ensure the authenticators’ secret keys cannot be read by anyone even when they have physical access to your computer.
+
+<img src="https://winauth.com/wp-content/uploads/2013/07/yubi1.png" alt="Using YubiKey with WinAuth" />
+
+More information about the requirements will be available shortly but will require a YubiKey Standard or NEO 2.2.x or later.
+
+WinAuth 3.2.1 BETA is available to [download](https://winauth.com/downloads/3.x/WinAuth-3.2.1.zip), which includes the Steam authenticator but not the YubiKey integration.
 
 *This is a pre-release version and should not be used with live accounts. Please make a backup of your current authenticator data first, which is store in c:\Users\<username>\AppData\Roaming\WinAuth\winauth.xml.*
  
@@ -33,7 +51,7 @@ WinAuth provides an alternative solution to combine various two-factor authentic
 Features include:
 
   * Support for time-based RFC 6238 authenticators, and common implementations such as Google Authenticator.
-  * Supports Battle.net (World of Warcraft, Hearthstone, Diablo III), GuildWars 2, Trion / Glyph (Rift, ArcheAge), RuneScape and WildStar
+  * Supports Battle.net (World of Warcraft, Hearthstone, Heroes of the Storm, Diablo III), GuildWars 2, Trion / Glyph (Rift, ArcheAge), RuneScape, WildStar, SWTOR and Steam
   * Supports many Bitcoin trading websites such as Bitstamp, BTC-e, Coinbase, Cryptsy
   * Displays multiple authenticators simultaneously
   * Codes displayed and refreshed automatically or on demand
