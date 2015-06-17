@@ -212,7 +212,41 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void secretCodeField_TextChanged(object sender, EventArgs e)
 		{
-			var match = Regex.Match(secretCodeField.Text, @"otpauth://([^/]+)/([^?]+)\?(.*)", RegexOptions.IgnoreCase);
+			Uri uri;
+			Match match;
+
+			if (Regex.IsMatch(secretCodeField.Text, "https?://.*") == true && Uri.TryCreate(secretCodeField.Text, UriKind.Absolute, out uri) == true)
+			{
+				try
+				{
+					var request = (HttpWebRequest)WebRequest.Create(uri);
+					request.AllowAutoRedirect = true;
+					request.Timeout = 20000;
+					request.UserAgent = "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)";
+					using (var response = (HttpWebResponse)request.GetResponse())
+					{
+						if (response.StatusCode == HttpStatusCode.OK && response.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase) == true)
+						{
+							using (Bitmap bitmap = (Bitmap)Bitmap.FromStream(response.GetResponseStream()))
+							{
+								IBarcodeReader reader = new BarcodeReader();
+								var result = reader.Decode(bitmap);
+								if (result != null && string.IsNullOrEmpty(result.Text) == false)
+								{
+									secretCodeField.Text = HttpUtility.UrlDecode(result.Text);
+								}
+							}
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					WinAuthForm.ErrorDialog(this.Owner, "Cannot load QR code image from " + secretCodeField.Text, ex);
+					return;
+				}
+			}
+
+			match = Regex.Match(secretCodeField.Text, @"otpauth://([^/]+)/([^?]+)\?(.*)", RegexOptions.IgnoreCase);
 			if (match.Success == true)
 			{
 				string authtype = match.Groups[1].Value.ToLower();
@@ -385,6 +419,7 @@ namespace WinAuth
 					((GoogleAuthenticator)auth).Enroll(privatekey);
 					timer.Enabled = true;
 					codeProgress.Visible = true;
+					timeBasedRadio.Checked = true;
 				}
 				else if (authtype == HOTP)
 				{
@@ -396,6 +431,7 @@ namespace WinAuth
 					((HOTPAuthenticator)auth).Enroll(privatekey, counter - 1); // first get code will increment
 					timer.Enabled = false;
 					codeProgress.Visible = false;
+					counterBasedRadio.Checked = true;
 				}
 				else
 				{
