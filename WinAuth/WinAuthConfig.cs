@@ -23,6 +23,8 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -65,7 +67,12 @@ namespace WinAuth
 		/// <summary>
 		/// Save password for re-saving and encrypting file
 		/// </summary>
-		public string Password { private get; set; }
+		public string Password { protected get; set; }
+
+		/// <summary>
+		/// Save Yubi key for re-saving and encrypting file
+		/// </summary>
+		private YubikeyData YubiData { get; set; }
 
 		/// <summary>
 		/// Current encryption type
@@ -435,6 +442,11 @@ namespace WinAuth
 		public bool IsPassword(string password)
 		{
 			return (string.Compare(password, this.Password) == 0);
+			//using (var sha1 = SHA1Managed.Create())
+			//{
+				//var test = Authenticator.ByteArrayToString(sha1.ComputeHash(Encoding.UTF8.GetBytes(password)));
+				//return (string.Compare(test, PasswordHash) == 0);
+			//}
 		}
 
     #endregion
@@ -652,6 +664,7 @@ namespace WinAuth
     {
       Version = CURRENTVERSION;
 			AutoSize = true;
+			YubiData = new YubikeyData();
     }
 
 		public void OnWinAuthAuthenticatorChanged(WinAuthAuthenticator sender, WinAuthAuthenticatorChangedEventArgs e)
@@ -734,7 +747,7 @@ namespace WinAuth
         // read the encrypted text from the node
         string data = reader.ReadElementContentAsString();
         // decrypt
-				data = Authenticator.DecryptSequence(data, this.PasswordType, password);
+				data = Authenticator.DecryptSequence(data, this.PasswordType, password, YubiData);
 
 				using (MemoryStream ms = new MemoryStream(Authenticator.StringToByteArray(data)))
 				{
@@ -772,7 +785,39 @@ namespace WinAuth
 							changed = ReadXmlInternal(reader, password) || changed;
 							break;
 
-            case "alwaysontop":
+						// 3.2 has new layout 
+						case "data":
+							{
+								encrypted = reader.GetAttribute("encrypted");
+								this.PasswordType = Authenticator.DecodePasswordTypes(encrypted);
+								if (this.PasswordType != Authenticator.PasswordTypes.None)
+								{
+									string md5 = reader.GetAttribute("md5");
+									// read the encrypted text from the node
+									string data = reader.ReadElementContentAsString();
+
+									using (var hasher = new MD5CryptoServiceProvider())
+									{
+										hasher.ComputeHash(Authenticator.StringToByteArray(data));
+									}
+
+									// decrypt
+									data = Authenticator.DecryptSequence(data, this.PasswordType, password, this.YubiData);
+									byte[] plain = Authenticator.StringToByteArray(data);
+
+									using (MemoryStream ms = new MemoryStream(plain))
+									{
+										var datareader = XmlReader.Create(ms);
+										changed = ReadXmlInternal(datareader, password) || changed;
+									}
+
+									this.PasswordType = Authenticator.DecodePasswordTypes(encrypted);
+									this.Password = password;
+								}
+							}
+							break;
+						
+						case "alwaysontop":
               _alwaysOnTop = reader.ReadElementContentAsBoolean();
               break;
 
@@ -928,65 +973,6 @@ namespace WinAuth
       //
       writer.WriteStartElement("WinAuth");
       writer.WriteAttributeString("version", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(2));
-      if (PasswordType != Authenticator.PasswordTypes.None)
-      {
-				writer.WriteStartElement("config");
-
-				StringBuilder encryptedTypes = new StringBuilder();
-				if ((PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
-				{
-					encryptedTypes.Append("y");
-				}
-				if ((PasswordType & Authenticator.PasswordTypes.User) != 0)
-				{
-					encryptedTypes.Append("u");
-				}
-				if ((PasswordType & Authenticator.PasswordTypes.Machine) != 0)
-				{
-					encryptedTypes.Append("m");
-				}
-				if ((PasswordType & Authenticator.PasswordTypes.YubiKeySlot1) != 0)
-				{
-					encryptedTypes.Append("a");
-				}
-				if ((PasswordType & Authenticator.PasswordTypes.YubiKeySlot2) != 0)
-				{
-					encryptedTypes.Append("b");
-				}
-				writer.WriteAttributeString("encrypted", encryptedTypes.ToString());
-				
-				string data;
-        using (MemoryStream ms = new MemoryStream())
-        {
-          XmlWriterSettings settings = new XmlWriterSettings();
-          settings.Indent = true;
-          settings.Encoding = Encoding.UTF8;
-          using (XmlWriter encryptedwriter = XmlWriter.Create(ms, settings))
-          {
-            Authenticator.PasswordTypes savedpasswordType = PasswordType;
-            PasswordType = Authenticator.PasswordTypes.None;
-            WriteXmlString(encryptedwriter, includeFilename, false);
-            PasswordType = savedpasswordType;
-          }
-          data = Authenticator.ByteArrayToString(ms.ToArray());
-        }
-
-				data = Authenticator.EncryptSequence(data, PasswordType, Password);
-				writer.WriteString(data);
-				writer.WriteEndElement();
-
-				if (includeSettings == true && _settings.Count != 0)
-				{
-					XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
-					ns.Add(string.Empty, string.Empty);
-					XmlSerializer serializer = new XmlSerializer(typeof(setting[]), new XmlRootAttribute() { ElementName = "settings" });
-					serializer.Serialize(writer, _settings.Select(e => new setting { Key = e.Key, Value = e.Value }).ToArray(), ns);
-				}
-
-				writer.WriteEndElement();
-
-        return;
-      }
       //
       writer.WriteStartElement("alwaysontop");
       writer.WriteValue(this.AlwaysOnTop);
@@ -1028,7 +1014,76 @@ namespace WinAuth
 				writer.WriteValue(this.ShadowType);
 				writer.WriteEndElement();
 			}
-			//
+
+			if (PasswordType != Authenticator.PasswordTypes.None)
+			{
+				writer.WriteStartElement("data");
+
+				StringBuilder encryptedTypes = new StringBuilder();
+				if ((PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
+				{
+					encryptedTypes.Append("y");
+				}
+				if ((PasswordType & Authenticator.PasswordTypes.User) != 0)
+				{
+					encryptedTypes.Append("u");
+				}
+				if ((PasswordType & Authenticator.PasswordTypes.Machine) != 0)
+				{
+					encryptedTypes.Append("m");
+				}
+				if ((PasswordType & Authenticator.PasswordTypes.YubiKeySlot1) != 0)
+				{
+					encryptedTypes.Append("a");
+				}
+				if ((PasswordType & Authenticator.PasswordTypes.YubiKeySlot2) != 0)
+				{
+					encryptedTypes.Append("b");
+				}
+				writer.WriteAttributeString("encrypted", encryptedTypes.ToString());
+
+				byte[] data;
+				using (MemoryStream ms = new MemoryStream())
+				{
+					XmlWriterSettings settings = new XmlWriterSettings();
+					settings.Indent = true;
+					settings.Encoding = Encoding.UTF8;
+					using (XmlWriter encryptedwriter = XmlWriter.Create(ms, settings))
+					{
+						//Authenticator.PasswordTypes savedpasswordType = PasswordType;
+						//PasswordType = Authenticator.PasswordTypes.None;
+						//WriteXmlString(encryptedwriter, includeFilename, false);
+						//PasswordType = savedpasswordType;
+
+						encryptedwriter.WriteStartElement("config");
+						foreach (WinAuthAuthenticator wa in this)
+						{
+							wa.WriteXmlString(encryptedwriter);
+						}
+						encryptedwriter.WriteEndElement();
+					}
+
+					data = ms.ToArray();
+				}
+
+				using (var hasher = new MD5CryptoServiceProvider())
+				{
+					string encdata = Authenticator.EncryptSequence(Authenticator.ByteArrayToString(data), PasswordType, Password, YubiData);
+					string enchash = Authenticator.ByteArrayToString(hasher.ComputeHash(Authenticator.StringToByteArray(encdata)));
+					writer.WriteAttributeString("md5", enchash);
+					writer.WriteString(encdata);
+				}
+		
+				writer.WriteEndElement();
+			}
+			else
+			{
+				foreach (WinAuthAuthenticator wa in this)
+				{
+					wa.WriteXmlString(writer);
+				}
+			}
+
 			if (includeSettings == true && _settings.Count != 0)
 			{
 				XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
@@ -1036,11 +1091,6 @@ namespace WinAuth
 				XmlSerializer serializer = new XmlSerializer(typeof(setting[]), new XmlRootAttribute() { ElementName = "settings" });
 				serializer.Serialize(writer, _settings.Select(e => new setting { Key = e.Key, Value = e.Value }).ToArray(), ns);
 			}
-
-      foreach (WinAuthAuthenticator wa in this)
-      {
-        wa.WriteXmlString(writer);
-      }
 
       // close WinAuth
       writer.WriteEndElement();
