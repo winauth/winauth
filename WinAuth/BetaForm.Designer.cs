@@ -50,7 +50,7 @@ namespace WinAuth
 			this.ckAgree.AutoSize = true;
 			this.ckAgree.Location = new System.Drawing.Point(23, 360);
 			this.ckAgree.Name = "ckAgree";
-			this.ckAgree.Size = new System.Drawing.Size(350, 15);
+			this.ckAgree.Size = new System.Drawing.Size(340, 15);
 			this.ckAgree.TabIndex = 1;
 			this.ckAgree.Text = "I understand and accept the conditions of this BETA version.";
 			this.ckAgree.UseSelectable = true;

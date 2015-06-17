@@ -18,7 +18,7 @@ announcement that [Google Code is being shutdown](http://google-opensource.blogs
 ----
 ##WinAuth 3.2
 
-The next version of WinAuth is in development. This release will include both the new Steam Guard Mobile Authenticator and integration with YubiKey to enhance your authenticator security.
+The next version of WinAuth is in development. This release will include both the new Steam Guard Mobile Authenticator, integration with YubiKey to enhance your authenticator security and a HOTP implementation.
 
 ####Steam Guard
 
@@ -36,9 +36,9 @@ Anyone with a YubiKey can now use it with WinAuth to further protect their data.
 
 More information about the requirements will be available shortly but will require a YubiKey Standard or NEO 2.2.x or later.
 
-WinAuth 3.2.1 BETA is available to [download](https://winauth.com/downloads/3.x/WinAuth-3.2.1.zip), which includes the Steam authenticator but not the YubiKey integration.
+WinAuth 3.2.3 BETA is available to [download](https://winauth.com/downloads/3.x/WinAuth-3.2.3.zip).
 
-*This is a pre-release version and should not be used with live accounts. Please make a backup of your current authenticator data first, which is store in c:\Users\<username>\AppData\Roaming\WinAuth\winauth.xml.*
+*_This is a pre-release version and should not be used with live accounts. The configuration file updated by 3.2 is not backward compatible with 3.1. Please make a backup of your current authenticator data first, which is store in c:\Users\<username>\AppData\Roaming\WinAuth\winauth.xml._*
  
 ##WinAuth 3.1 (stable)
 

@@ -920,7 +920,7 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Change Protection.
+        ///   Looks up a localized string similar to Change Password.
         /// </summary>
         internal static string MenuChangeProtection {
             get {
