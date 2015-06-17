@@ -212,8 +212,17 @@ namespace WinAuth
 		public const int WM_SYSKEYUP = 0x105;
 		public const int WM_SETREDRAW = 0x0b;
 		public const int WM_MOUSEWHEEL = 0x020A;
+		public const int WM_DEVICECHANGE = 0x0219;
 		public const int WM_HOTKEY = 0x0312;
 		public const int WM_USER = 0x0400;
+
+		/// <summary>
+		/// USB Detection
+		/// </summary>
+		public const int DBT_DEVICEARRIVAL = 0x8000;
+		public const int DBT_DEVICEREMOVED = 0x8004;
+		private const int DbtDevtypDeviceinterface = 5;
+		private static readonly Guid GuidDevinterfaceUSBDevice = new Guid("A5DCBF10-6530-11D2-901F-00C04FB951ED"); // USB devices
 
 		/// <summary>
 		/// Windows constants for capturing scroll events
@@ -335,6 +344,16 @@ namespace WinAuth
 			public System.Drawing.Rectangle rcNormalPosition;
 		}
 
+		[StructLayout(LayoutKind.Sequential)]
+		private struct DevBroadcastDeviceinterface
+		{
+			internal int Size;
+			internal int DeviceType;
+			internal int Reserved;
+			internal Guid ClassGuid;
+			internal short Name;
+		}
+
 		/// <summary>
 		/// Native Windows calls
 		/// </summary>
@@ -398,6 +417,44 @@ namespace WinAuth
 		internal static extern int GetWindowTextLength(IntPtr hWnd);
 		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
 		internal static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		private static extern IntPtr RegisterDeviceNotification(IntPtr recipient, IntPtr notificationFilter, int flags);
+		[DllImport("user32.dll")]
+		private static extern bool UnregisterDeviceNotification(IntPtr handle);
+
+		[DllImport("cfgmgr32.dll")]
+		public static extern int CMP_WaitNoPendingInstallEvents(UInt32 timeOut);
+
+		/// <summary>
+		/// Register a window handle to receive device change notifications
+		/// </summary>
+		/// <param name="hWnd">window handle</param>
+		/// <returns>handle for unregistering</returns>
+		public static IntPtr RegisterUsbDeviceNotification(IntPtr hWnd)
+		{
+			DevBroadcastDeviceinterface dbi = new DevBroadcastDeviceinterface
+			{
+				DeviceType = DbtDevtypDeviceinterface,
+				Reserved = 0,
+				ClassGuid = GuidDevinterfaceUSBDevice,
+				Name = 0
+			};
+
+			dbi.Size = Marshal.SizeOf(dbi);
+			IntPtr buffer = Marshal.AllocHGlobal(dbi.Size);
+			Marshal.StructureToPtr(dbi, buffer, true);
+
+			return RegisterDeviceNotification(hWnd, buffer, 0);
+		}
+
+		/// <summary>
+		/// Unregisters the window for USB device notifications
+		/// </summary>
+		public static void UnregisterUsbDeviceNotification(IntPtr handle)
+		{
+			UnregisterDeviceNotification(handle);
+		}
 
 		public static WINDOWPLACEMENT GetPlacement(IntPtr hwnd)
 		{

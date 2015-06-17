@@ -322,9 +322,9 @@
 			// 
 			// yubikeyStatusLabel
 			// 
-			this.yubikeyStatusLabel.Location = new System.Drawing.Point(367, 489);
+			this.yubikeyStatusLabel.Location = new System.Drawing.Point(187, 489);
 			this.yubikeyStatusLabel.Name = "yubikeyStatusLabel";
-			this.yubikeyStatusLabel.Size = new System.Drawing.Size(251, 27);
+			this.yubikeyStatusLabel.Size = new System.Drawing.Size(431, 27);
 			this.yubikeyStatusLabel.TabIndex = 1;
 			this.yubikeyStatusLabel.Text = "Status";
 			this.yubikeyStatusLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;

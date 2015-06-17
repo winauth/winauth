@@ -72,6 +72,9 @@ namespace WinAuth
 			this.errorLabel.Text = string.Format(this.errorLabel.Text, (ErrorException != null ? ErrorException.Message : strings.UnknownError));
 
 			// build data
+#if DEBUG
+			dataText.Text = string.Format("{0}\n\n{1}", this.ErrorException.Message, new System.Diagnostics.StackTrace(this.ErrorException).ToString());
+#else
 			try
 			{
 				dataText.Text = WinAuthHelper.PGPEncrypt(BuildDiagnostics(), WinAuthHelper.WINAUTH_PGP_PUBLICKEY);
@@ -80,6 +83,7 @@ namespace WinAuth
 			{
 				dataText.Text = string.Format("{0}\n\n{1}", ex.Message, new System.Diagnostics.StackTrace(ex).ToString());
 			}
+#endif
 		}
 
 		/// <summary>

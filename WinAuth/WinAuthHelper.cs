@@ -174,10 +174,11 @@ namespace WinAuth
       // if no config file when one was specified; report an error
       if (File.Exists(configFile) == false)
       {
-        MessageBox.Show(form,
-          strings.CannotFindConfigurationFile + ": " + configFile,
-          form.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-        return config;
+        //MessageBox.Show(form,
+        // strings.CannotFindConfigurationFile + ": " + configFile,
+        //  form.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+        // return config;
+				throw new ApplicationException(strings.CannotFindConfigurationFile + ": " + configFile);
       }
 
 			// check if readonly
@@ -221,9 +222,10 @@ namespace WinAuth
 				// we require a password
 				throw;
 			}
-			catch (Exception ex)
+			catch (Exception )
 			{
-				MessageBox.Show(form, string.Format(strings.CannotLoadAuthenticator, configFile) + ": " + ex.Message, WinAuthMain.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				throw;
+				//MessageBox.Show(form, string.Format(strings.CannotLoadAuthenticator, configFile) + ": " + ex.Message, WinAuthMain.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 
 			SaveToRegistry(config);
@@ -297,7 +299,7 @@ namespace WinAuth
 							fs.Write(data, 0, data.Length);
 						}
 					}
-					catch (UnauthorizedAccessException ex)
+					catch (UnauthorizedAccessException )
 					{
 						// fail silently if read only
 						if (fi.IsReadOnly)
@@ -306,7 +308,7 @@ namespace WinAuth
 							return;
 						}
 
-						throw ex;
+						throw;
 					}
 				}
       }
@@ -468,7 +470,7 @@ namespace WinAuth
 								continue;
 							}
 
-							throw ex;
+							throw;
 						}
 						finally
 						{

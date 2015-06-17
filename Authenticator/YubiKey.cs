@@ -17,6 +17,8 @@
  */
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -36,6 +38,54 @@ namespace WinAuth
 	public class YubiKey
 	{
 		/// <summary>
+		/// USB Device Vendor and Product IDs for YubiKeys
+		/// </summary>
+		public const int VENDOR_ID = 0x1050;	/* Global vendor ID */
+		public const int YUBIKEY_PID = 0x0010;	/* Yubikey (version 1 and 2) */
+		public const int NEO_OTP_PID = 0x0110;	/* Yubikey NEO - OTP only */
+		public const int NEO_OTP_CCID_PID = 0x0111;	/* Yubikey NEO - OTP and CCID */
+		public const int NEO_CCID_PID = 0x0112;	/* Yubikey NEO - CCID only */
+		public const int NEO_U2F_PID = 0x0113;	/* Yubikey NEO - U2F only */
+		public const int NEO_OTP_U2F_PID = 0x0114;	/* Yubikey NEO - OTP and U2F */
+		public const int NEO_U2F_CCID_PID = 0x0115;	/* Yubikey NEO - U2F and CCID */
+		public const int NEO_OTP_U2F_CCID_PID = 0x0116;	/* Yubikey NEO - OTP, U2F and CCID */
+		public const int YK4_OTP_PID = 0x0401;	/* Yubikey 4 - OTP only */
+		public const int YK4_U2F_PID = 0x0402;	/* Yubikey 4 - U2F only */
+		public const int YK4_OTP_U2F_PID = 0x0403;	/* Yubikey 4 - OTP and U2F */
+		public const int YK4_CCID_PID = 0x0404;	/* Yubikey 4 - CCID only */
+		public const int YK4_OTP_CCID_PID = 0x0405;	/* Yubikey 4 - OTP and CCID */
+		public const int YK4_U2F_CCID_PID = 0x0406;	/* Yubikey 4 - U2F and CCID */
+		public const int YK4_OTP_U2F_CCID_PID = 0x0407;	/* Yubikey 4 - OTP, U2F and CCID */
+		public const int PLUS_U2F_OTP_PID = 0x0410;	/* Yubikey plus - OTP+U2F */
+
+		/// <summary>
+		/// Array of valid product IDs
+		/// </summary>
+		public static int[] DEVICE_IDS = new int[] {
+			YUBIKEY_PID,
+			NEO_OTP_PID,
+			NEO_OTP_CCID_PID,
+			NEO_CCID_PID,
+			NEO_U2F_PID,
+			NEO_OTP_U2F_PID,
+			NEO_U2F_CCID_PID,
+			NEO_OTP_U2F_CCID_PID,
+			YK4_OTP_PID,
+			YK4_U2F_PID,
+			YK4_OTP_U2F_PID,
+			YK4_CCID_PID,
+			YK4_OTP_CCID_PID,
+			YK4_U2F_CCID_PID,
+			YK4_OTP_U2F_CCID_PID,
+			PLUS_U2F_OTP_PID
+		};
+
+		/// <summary>
+		/// USDB device GUID for keyboard
+		/// </summary>
+		public static Guid GUID_DEVINTERFACE_KEYBOARD = new Guid("884b96c3-56ef-11d1-bc8c-00a0c91405dd");
+
+		/// <summary>
 		/// Name of AppData folder
 		/// </summary>
 		public const string APPDATAFOLDER = "WinAuth";
@@ -43,12 +93,17 @@ namespace WinAuth
 		/// <summary>
 		/// Name of our native x86 YubiKey DLL
 		/// </summary>
-		private const string YUBI_LIBRARY_NAME_X86 = "YubiKeyx86.dll";
+		private const string YUBI_LIBRARY_NAME_X86 = "WinAuth.YubiKey.x86.dll";
 
 		/// <summary>
 		/// Name of our native x64 YubiKey DLL
 		/// </summary>
-		private const string YUBI_LIBRARY_NAME_X64 = "YubiKeyx64.dll";
+		private const string YUBI_LIBRARY_NAME_X64 = "WinAuth.YubiKey.x64.dll";
+
+		/// <summary>
+		/// Download Website for YubiKey DLLs
+		/// </summary>
+		private const string YUBI_DOWNLOAD_WEBSITE = "https://winauth.com/";
 
 		/// <summary>
 		/// Download URL for YubiKey DLLs
@@ -75,6 +130,21 @@ namespace WinAuth
 		};
 
 		/// <summary>
+		/// Handle to loaded pinvoke library
+		/// </summary>
+		private IntPtr _library;
+
+		/// <summary>
+		/// Current loading Task
+		/// </summary>
+		public Task Loading { get; set; }
+
+		/// <summary>
+		/// Current YubiKey info
+		/// </summary>
+		public INFO Info { get; set; }
+
+		/// <summary>
 		/// Native calls
 		/// </summary>
 		[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
@@ -84,11 +154,53 @@ namespace WinAuth
 		private static extern bool FreeLibrary(IntPtr hModule);
 		[DllImport("kernel32.dll", CharSet = CharSet.Ansi)]
 		private static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+		delegate int LastErrorDelegate();
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+		delegate bool IsInsertedDelegate();
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+		delegate int GetInfoDelegate([MarshalAs(UnmanagedType.Struct)] out INFO status);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+		delegate int SetChallengeResponseDelegate(
+			[MarshalAs(UnmanagedType.U4)] int slot,
+			byte[] secret,
+			[MarshalAs(UnmanagedType.U4)] int keysize,
+			[MarshalAs(UnmanagedType.Bool)] bool userpress,
+			byte[] access_code);
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+		delegate int ChallengeResponseDelegate(
+			[MarshalAs(UnmanagedType.U4)] int slot,
+			[MarshalAs(UnmanagedType.Bool)] bool may_block,
+			byte[] challenge,
+			[MarshalAs(UnmanagedType.U4)] int challenge_len,
+			byte[] response,
+			[MarshalAs(UnmanagedType.U4)] int response_len);
 
 		/// <summary>
-		/// Handle to loaded pinvoke library
+		/// Create the YubiKey instance
 		/// </summary>
-		private IntPtr _library;
+		public YubiKey()
+		{
+			// load library and load info
+			Loading = LoadLibrary().ContinueWith((loaded) =>
+			{
+				INFO info = new INFO();
+				if (loaded.Result != null)
+				{
+					info.Error = loaded.Result.Message;
+					Info = info;
+					return;
+				}
+
+				GetInfoDelegate f = GetFunction<GetInfoDelegate>("GetInfo");
+				int ret = f(out info);
+				if (ret > 1)
+				{
+					info.Error = string.Format("Error {0}", ret);
+				}
+				Info = info;
+			});
+		}
 
 		/// <summary>
 		/// Kludge for .net 4.0 to return immediate task result
@@ -119,7 +231,7 @@ namespace WinAuth
 			var name = (IntPtr.Size == 4 ? YUBI_LIBRARY_NAME_X86 : YUBI_LIBRARY_NAME_X64);
 
 			// get the current exe path
-			var exedir = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
+			var exedir = Path.GetDirectoryName(new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).AbsolutePath);
 
 			// check if we can find the library in the current path, appdata and %path%
 			string path = Environment.CurrentDirectory;
@@ -172,7 +284,7 @@ namespace WinAuth
 				int error = Marshal.GetLastWin32Error();
 				if (downloadIfNeeded == false)
 				{
-					return FromResult<Exception>(new LibraryNotFoundException("Download YubiKey AddOn from " + YUBI_DOWNLOAD_BASEURL));
+					return FromResult<Exception>(new LibraryNotFoundException("Download the YubiKey AddOn from " + YUBI_DOWNLOAD_WEBSITE));
 				}
 
 				var task = Task.Factory.StartNew<Exception>(() =>
@@ -187,7 +299,7 @@ namespace WinAuth
 					}
 					catch (WebException ex)
 					{
-						return new ApplicationException("Please the YubiKey plugin from https://winauth.com.", ex);
+						return new ApplicationException("Download the YubiKey AddOn from " + YUBI_DOWNLOAD_WEBSITE, ex);
 					}
 				});
 
@@ -216,68 +328,6 @@ namespace WinAuth
 			object obj = f;
 
 			return (TDelegate)obj;
-		}
-
-		/// <summary>
-		/// Native Yubikey DLL API
-		/// </summary>
-		/// <returns></returns>
-		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-		delegate int LastErrorDelegate();
-		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-		delegate bool IsInsertedDelegate();
-		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-		delegate int GetInfoDelegate([MarshalAs(UnmanagedType.Struct)] out INFO status);
-		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-		delegate int SetChallengeResponseDelegate(
-			[MarshalAs(UnmanagedType.U4)] int slot,
-			byte[] secret,
-			[MarshalAs(UnmanagedType.U4)] int keysize,
-			[MarshalAs(UnmanagedType.Bool)] bool userpress,
-			byte[] access_code);
-		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-		delegate int ChallengeResponseDelegate(
-			[MarshalAs(UnmanagedType.U4)] int slot,
-			[MarshalAs(UnmanagedType.Bool)] bool may_block,
-			byte[] challenge,
-			[MarshalAs(UnmanagedType.U4)] int challenge_len,
-			byte[] response,
-			[MarshalAs(UnmanagedType.U4)] int response_len);
-
-		/// <summary>
-		/// Current loading Task
-		/// </summary>
-		public Task Loading { get; set; }
-
-		/// <summary>
-		/// Current YubiKey info
-		/// </summary>
-		public INFO Info { get; set; }
-
-		/// <summary>
-		/// Create the YubiKey instance
-		/// </summary>
-		public YubiKey()
-		{
-			// load library and load info
-			Loading = LoadLibrary().ContinueWith((loaded) =>
-			{
-				INFO info = new INFO();
-				if (loaded.Result != null)
-				{
-					info.Error = loaded.Result.Message;
-					Info = info;
-					return;
-				}
-
-				GetInfoDelegate f = GetFunction<GetInfoDelegate>("GetInfo");
-				int ret = f(out info);
-				if (ret != 0)
-				{
-					info.Error = string.Format("Error {0}", ret);
-				}
-				Info = info;
-			});
 		}
 
 		/// <summary>
@@ -321,7 +371,7 @@ namespace WinAuth
 		/// <param name="challenge">challenge array, up to 64 bytes</param>
 		/// <param name="allowBlock">if we are allow to block (i.e. if keypress = true)</param>
 		/// <param name="hash">to save returned hash</param>
-		/// <returns>hash result or challengeresponse</returns>
+		/// <returns>hash result of challengeresponse</returns>
 		public byte[] ChallengeResponse(int slot, byte[] challenge, bool allowBlock = true, byte[] hash = null)
 		{
 			var loaded = LoadLibrary(false);
@@ -333,7 +383,7 @@ namespace WinAuth
 			byte[] maxhash = new byte[64];
 			ChallengeResponseDelegate f = GetFunction<ChallengeResponseDelegate>("ChallengeResponse");
 			int hashret = f(slot, allowBlock, challenge, challenge.Length, maxhash, maxhash.Length);
-			if (hashret != 0)
+			if (hashret != 0) 
 			{
 				int lasterror = LastError();
 				throw new ChallengeResponseException(string.Format("Cannot perform ChallengeResponse. Error {0}:{1}.", hashret, lasterror));

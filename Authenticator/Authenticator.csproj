@@ -83,6 +83,7 @@
     <Compile Include="BattleNetAuthenticator.cs" />
     <Compile Include="Authenticator.cs" />
     <Compile Include="Base32.cs" />
+    <Compile Include="HIDDevice.cs" />
     <Compile Include="HOTPAuthenticator.cs" />
     <Compile Include="SteamAuthenticator.cs" />
     <Compile Include="TrionAuthenticator.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="GuildWarsAuthenticator.cs" />
     <Compile Include="MicrosoftAuthenticator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="YubiData.cs" />
     <Compile Include="YubiKey.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -37,6 +37,7 @@ using Org.BouncyCastle.Crypto.Paddings;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Generators;
 using System.Collections;
+using System.Security;
 
 #if NUNIT
 using NUnit.Framework;
@@ -74,35 +75,9 @@ namespace WinAuth
 		private static string ENCRYPTION_HEADER = Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes("WINAUTH3"));
 
 		/// <summary>
-		/// Default config version for loading an unknown file
-		/// </summary>
-		//public const decimal DEAFULT_CONFIG_VERSION = (decimal)3.0;
-
-		/// <summary>
-		/// Name attribute of the "string" hash element in the Battle.net Mobile Authenticator file
-		/// </summary>
-		//private const string BMA_HASH_NAME = "com.blizzard.bma.AUTH_STORE.HASH";
-
-		/// <summary>
-		/// Name attribute of the "long" offset element in the Battle.net Mobile Authenticator file
-		/// </summary>
-		//private const string BMA_OFFSET_NAME = "com.blizzard.bma.AUTH_STORE.CLOCK_OFFSET";
-
-		/// <summary>
 		/// Default number of digits in code
 		/// </summary>
 		public const int DEFAULT_CODE_DIGITS = 6;
-
-		/// <summary>
-		/// Private encrpytion key used to encrypt Battle.net mobile authenticator data.
-		/// </summary>
-    //private static byte[] MOBILE_AUTHENTICATOR_KEY = new byte[]
-    //  {
-    //    0x39,0x8e,0x27,0xfc,0x50,0x27,0x6a,0x65,0x60,0x65,0xb0,0xe5,0x25,0xf4,0xc0,0x6c,
-    //    0x04,0xc6,0x10,0x75,0x28,0x6b,0x8e,0x7a,0xed,0xa5,0x9d,0xa9,0x81,0x3b,0x5d,0xd6,
-    //    0xc8,0x0d,0x2f,0xb3,0x80,0x68,0x77,0x3f,0xa5,0x9b,0xa4,0x7c,0x17,0xca,0x6c,0x64,
-    //    0x79,0x01,0x5c,0x1d,0x5b,0x8b,0x8f,0x6b,0x9a
-    //  };
 
 		/// <summary>
 		/// Type of password to use to encrypt secret data
@@ -376,7 +351,7 @@ namespace WinAuth
               if (passwordType != PasswordTypes.None)
               {
 								// this is an old version so there is no hash
-								data = DecryptSequence(data, passwordType, password);
+								data = DecryptSequence(data, passwordType, password, null);
               }
 
               authenticator.PasswordType = PasswordTypes.None;
@@ -407,6 +382,11 @@ namespace WinAuth
 			return false;
 		}
 
+		/// <summary>
+		/// Convert the string password types into the PasswordTypes type
+		/// </summary>
+		/// <param name="passwordTypes">string version of password types</param>
+		/// <returns>PasswordTypes value</returns>
 		public static PasswordTypes DecodePasswordTypes(string passwordTypes)
 		{
 			PasswordTypes passwordType = PasswordTypes.None;
@@ -444,6 +424,11 @@ namespace WinAuth
 			return passwordType;
 		}
 
+		/// <summary>
+		/// Encode the PasswordTypes type into a string for storing in config
+		/// </summary>
+		/// <param name="passwordType">PasswordTypes value</param>
+		/// <returns>string version</returns>
 		public static string EncodePasswordTypes(PasswordTypes passwordType)
 		{
 			StringBuilder encryptedTypes = new StringBuilder();
@@ -511,7 +496,7 @@ namespace WinAuth
 					}
 
 					// encrypt
-					this.EncryptedData = Authenticator.EncryptSequence(data, passwordType, password);
+					this.EncryptedData = Authenticator.EncryptSequence(data, passwordType, password, null);
 					this.PasswordType = passwordType;
 					if (this.PasswordType == PasswordTypes.Explicit)
 					{
@@ -558,7 +543,7 @@ namespace WinAuth
 			bool changed = false;
 			try
 			{
-				string data = Authenticator.DecryptSequence(this.EncryptedData, this.PasswordType, password);
+				string data = Authenticator.DecryptSequence(this.EncryptedData, this.PasswordType, password, null);
 				using (MemoryStream ms = new MemoryStream(Authenticator.StringToByteArray(data)))
 				{
 					XmlReader reader = XmlReader.Create(ms);
@@ -595,7 +580,7 @@ namespace WinAuth
 						}
 
 						// encrypt
-						this.EncryptedData = Authenticator.EncryptSequence(encrypteddata, passwordType, password);
+						this.EncryptedData = Authenticator.EncryptSequence(encrypteddata, passwordType, password, null);
 					}
 				}
 
@@ -688,7 +673,12 @@ namespace WinAuth
 			}
 
 			// check if we need to sync, or if it's been a day
-			if (ServerTimeDiff == 0 || LastServerTime == 0 || LastServerTime < DateTime.Now.AddHours(-24).Ticks)
+			if (this is HOTPAuthenticator)
+			{
+				// no time sync
+				return true;
+			}
+			else if (ServerTimeDiff == 0 || LastServerTime == 0 || LastServerTime < DateTime.Now.AddHours(-24).Ticks)
 			{
 				Sync();
 				return true;
@@ -894,12 +884,21 @@ namespace WinAuth
 			return BitConverter.ToString(bytes).Replace("-", string.Empty);
 		}
 
-		public static string DecryptSequence(string data, PasswordTypes encryptedTypes, string password, bool decode = false)
+		/// <summary>
+		/// Decrypt a string sequence using the selected encryption types
+		/// </summary>
+		/// <param name="data">hex coded string sequence to decrypt</param>
+		/// <param name="encryptedTypes">Encryption types</param>
+		/// <param name="password">optional password</param>
+		/// <param name="yubidata">optional yubi data</param>
+		/// <param name="decode"></param>
+		/// <returns>decrypted string sequence</returns>
+		public static string DecryptSequence(string data, PasswordTypes encryptedTypes, string password, YubikeyData yubidata, bool decode = false)
     {
 			// check for encrpytion header
 			if (data.Length < ENCRYPTION_HEADER.Length || data.IndexOf(ENCRYPTION_HEADER) != 0)
 			{
-				return DecryptSequenceNoHash(data, encryptedTypes, password, decode);
+				return DecryptSequenceNoHash(data, encryptedTypes, password, yubidata, decode);
 			}
 
 			// extract salt and hash
@@ -916,7 +915,7 @@ namespace WinAuth
 				// decrypt encrypt content and try again
 				//char[] encTypes = encryptedTypes.ToCharArray();
 
-				data = DecryptSequenceNoHash(data, encryptedTypes, password);
+				data = DecryptSequenceNoHash(data, encryptedTypes, password, yubidata);
 
 				// check the hash
 				byte[] compareplain = StringToByteArray(salt + data);
@@ -930,7 +929,16 @@ namespace WinAuth
       return data;
     }
 
-		private static string DecryptSequenceNoHash(string data, PasswordTypes encryptedTypes, string password, bool decode = false)
+		/// <summary>
+		/// Decrypt a string sequence using the selected encryption types
+		/// </summary>
+		/// <param name="data">hex coded string sequence to decrypt</param>
+		/// <param name="encryptedTypes">Encryption types</param>
+		/// <param name="password">optional password</param>
+		/// <param name="yubidata">optional yubi data</param>
+		/// <param name="decode"></param>
+		/// <returns>decrypted string sequence</returns>
+		private static string DecryptSequenceNoHash(string data, PasswordTypes encryptedTypes, string password, YubikeyData yubidata, bool decode = false)
 		{
 			try
 			{
@@ -962,15 +970,21 @@ namespace WinAuth
 					}
 					int slot = ((encryptedTypes & PasswordTypes.YubiKeySlot1) != 0 ? 1 : 2);
 
-					string salt = data.Substring(0, SALT_LENGTH * 2);
-					data = data.Substring(salt.Length);
-					byte[] key = yubi.ChallengeResponse(slot, StringToByteArray(salt));
+					string seed = data.Substring(0, SALT_LENGTH * 2);
+					data = data.Substring(seed.Length);
+					byte[] key = yubi.ChallengeResponse(slot, StringToByteArray(seed));
 
 					data = Authenticator.Decrypt(data, key);
 					if (decode == true)
 					{
 						byte[] plain = Authenticator.StringToByteArray(data);
 						data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+					}
+
+					if (yubidata != null)
+					{
+						yubidata.Seed = seed;
+						yubidata.Data = key;
 					}
 				}
 				if ((encryptedTypes & PasswordTypes.Machine) != 0)
@@ -1036,7 +1050,7 @@ namespace WinAuth
 			return data;
 		}
 
-		public static string EncryptSequence(string data, PasswordTypes passwordType, string password)
+		public static string EncryptSequence(string data, PasswordTypes passwordType, string password, YubikeyData yubikeyKey)
     {
 			// get hash of original
 			string salt;
@@ -1081,11 +1095,22 @@ namespace WinAuth
       }
 			if ((passwordType & PasswordTypes.YubiKeySlot1) != 0 || (passwordType & PasswordTypes.YubiKeySlot2) != 0)
 			{
-				// we encrypt the data using the hash of a random string from the YubiKey slot 1
-				YubiKey yubi = new YubiKey();
-				int slot = ((passwordType & PasswordTypes.YubiKeySlot1) != 0 ? 1 : 2);
-				byte[] key = yubi.ChallengeResponse(slot, StringToByteArray(salt));
+				if (yubikeyKey.Length == 0)
+				{
+					byte[] seed = new byte[SALT_LENGTH];
+					using (var random = new RNGCryptoServiceProvider())
+					{
+						random.GetBytes(seed);
+					}
 
+					// we encrypt the data using the hash of a random string from the YubiKey slot 1
+					YubiKey yubi = new YubiKey();
+					int slot = ((passwordType & PasswordTypes.YubiKeySlot1) != 0 ? 1 : 2);
+					yubikeyKey.Data = yubi.ChallengeResponse(slot, seed);
+					yubikeyKey.Seed = Authenticator.ByteArrayToString(seed);
+				}
+
+				byte[] key = yubikeyKey.Data;
 				string encrypted = Encrypt(data, key);
 
 				// test the encryption
@@ -1094,7 +1119,7 @@ namespace WinAuth
 				{
 					throw new InvalidEncryptionException(data, password, encrypted, decrypted);
 				}
-				data = salt + encrypted;
+				data = yubikeyKey.Seed + encrypted;
 			}
 
 			// prepend the salt + hash

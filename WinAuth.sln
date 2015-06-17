@@ -10,14 +10,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MetroFramework.Design", "Th
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InputSimulator", "Third Party\InputSimulator\InputSimulator.csproj", "{3549CD6F-80F8-450F-B99E-CF0A736B1F2A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YubiKeyx86", "YubiKeyx86\YubiKeyx86.vcxproj", "{B472CF36-4B45-466C-886F-4DA65387A520}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinAuth.YubiKey.x86", "WinAuth.YubiKey\WinAuth.YubiKey.x86.vcxproj", "{B472CF36-4B45-466C-886F-4DA65387A520}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YubiKeyx64", "YubiKeyx86\YubiKeyx64.vcxproj", "{E42AFBF9-68B8-42B2-B9B0-AD13496D0D9B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinAuth.YubiKey.x64", "WinAuth.YubiKey\WinAuth.YubiKey.x64.vcxproj", "{E42AFBF9-68B8-42B2-B9B0-AD13496D0D9B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YubiKeyx86.Test", "YubiKeyx86.Test\YubiKeyx86.Test.vcxproj", "{561B1EF0-C0A0-4F28-B79B-326FE91C02BB}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B472CF36-4B45-466C-886F-4DA65387A520} = {B472CF36-4B45-466C-886F-4DA65387A520}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YubiKeyx64.Test", "YubiKeyx86.Test\YubiKeyx64.Test.vcxproj", "{A65996F2-6396-4D37-AAD3-779886DDD160}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -160,6 +162,24 @@ Global
 		{561B1EF0-C0A0-4F28-B79B-326FE91C02BB}.Release|x64.Build.0 = Release|x64
 		{561B1EF0-C0A0-4F28-B79B-326FE91C02BB}.Release|x86.ActiveCfg = Release|Win32
 		{561B1EF0-C0A0-4F28-B79B-326FE91C02BB}.Release|x86.Build.0 = Release|Win32
+		{A65996F2-6396-4D37-AAD3-779886DDD160}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{A65996F2-6396-4D37-AAD3-779886DDD160}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{A65996F2-6396-4D37-AAD3-779886DDD160}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{A65996F2-6396-4D37-AAD3-779886DDD160}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A65996F2-6396-4D37-AAD3-779886DDD160}.Debug|Win32.Build.0 = Debug|Win32
+		{A65996F2-6396-4D37-AAD3-779886DDD160}.Debug|x64.ActiveCfg = Debug|x64
+		{A65996F2-6396-4D37-AAD3-779886DDD160}.Debug|x64.Build.0 = Debug|x64
+		{A65996F2-6396-4D37-AAD3-779886DDD160}.Debug|x86.ActiveCfg = Debug|Win32
+		{A65996F2-6396-4D37-AAD3-779886DDD160}.Debug|x86.Build.0 = Debug|Win32
+		{A65996F2-6396-4D37-AAD3-779886DDD160}.Release|Any CPU.ActiveCfg = Release|Win32
+		{A65996F2-6396-4D37-AAD3-779886DDD160}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{A65996F2-6396-4D37-AAD3-779886DDD160}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{A65996F2-6396-4D37-AAD3-779886DDD160}.Release|Win32.ActiveCfg = Release|Win32
+		{A65996F2-6396-4D37-AAD3-779886DDD160}.Release|Win32.Build.0 = Release|Win32
+		{A65996F2-6396-4D37-AAD3-779886DDD160}.Release|x64.ActiveCfg = Release|x64
+		{A65996F2-6396-4D37-AAD3-779886DDD160}.Release|x64.Build.0 = Release|x64
+		{A65996F2-6396-4D37-AAD3-779886DDD160}.Release|x86.ActiveCfg = Release|Win32
+		{A65996F2-6396-4D37-AAD3-779886DDD160}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

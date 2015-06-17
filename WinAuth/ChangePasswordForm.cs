@@ -38,8 +38,20 @@ namespace WinAuth
 	/// </summary>
 	public partial class ChangePasswordForm : WinAuth.ResourceForm
 	{
-		private const int PBKDF2_ITERATIONS = 2048;
-		private const int PBKDF2_KEYSIZE = 20;
+		/// <summary>
+		/// Used to show a filled password box
+		/// </summary>
+		private const string EXISTING_PASSWORD = "******";
+
+		/// <summary>
+		/// Number of iterations of PBKDF2 for our yubikey phrase
+		/// </summary>
+		private const int YUBIKEY_PBKDF2_ITERATIONS = 2048;
+
+		/// <summary>
+		/// Size of Yubikey secret key
+		/// </summary>
+		private const int YUBIKEY_PBKDF2_KEYSIZE = 20;
 
 		/// <summary>
 		/// Create the form
@@ -59,9 +71,20 @@ namespace WinAuth
 		/// </summary>
 		public string Password { get; set; }
 
+		/// <summary>
+		/// List of seedwords
+		/// </summary>
 		private List<string> _seedWords = new List<string>();
 
+		/// <summary>
+		/// Chosen slot for yubikey
+		/// </summary>
 		private int YubikeySlot { get; set; }
+
+		/// <summary>
+		/// Current YubiKey info
+		/// </summary>
+		private YubiKey _yubikey;
 
 		/// <summary>
 		/// Load the form and pretick checkboxes
@@ -83,6 +106,8 @@ namespace WinAuth
 			if ((PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
 			{
 				passwordCheckbox.Checked = true;
+				passwordField.Text = EXISTING_PASSWORD;
+				verifyField.Text = EXISTING_PASSWORD;
 			}
 
 			yubiPanelConfigure.Visible = false;
@@ -137,8 +162,6 @@ namespace WinAuth
 		{
 		}
 
-		private YubiKey _yubikey;
-
 		private void yubikeyBox_CheckedChanged(object sender, EventArgs e)
 		{
 			if (yubikeyBox.Checked == true)
@@ -166,10 +189,14 @@ namespace WinAuth
 						if (string.IsNullOrEmpty(_yubikey.Info.Error) == false)
 						{
 							yubikeyStatusLabel.Text = _yubikey.Info.Error;
+							yubikeyBox.Checked = false;
+							_yubikey = null;
 						}
 						else if (_yubikey.Info.Status.VersionMajor == 0)
 						{
 							yubikeyStatusLabel.Text = "Please insert your YubiKey";
+							yubikeyBox.Checked = false;
+							_yubikey = null;
 						}
 						else
 						{
@@ -182,11 +209,13 @@ namespace WinAuth
 			}
 			else
 			{
+				_yubikey = null;
+
 				yubiPanelIntro.Enabled = false;
 				yubiPanelIntro.Visible = true;
 				yubiPanelConfigure.Visible = false;
-				yubikeyStatusLabel.Text = string.Empty;
-				yubikeyStatusLabel.Visible = false;
+				//yubikeyStatusLabel.Text = string.Empty;
+				//yubikeyStatusLabel.Visible = false;
 
 				PasswordType &= ~(Authenticator.PasswordTypes.YubiKeySlot1 | Authenticator.PasswordTypes.YubiKeySlot2);
 			}
@@ -248,7 +277,10 @@ namespace WinAuth
 			if (passwordCheckbox.Checked == true)
 			{
 				PasswordType |= Authenticator.PasswordTypes.Explicit;
-				Password = this.passwordField.Text.Trim();
+				if (this.passwordField.Text != EXISTING_PASSWORD)
+				{
+					Password = this.passwordField.Text.Trim();
+				}
 			}
 			if (yubikeyBox.Checked == true)
 			{
@@ -329,16 +361,27 @@ namespace WinAuth
 			int slot = (yubiSlotToggle.Checked == true ? 2 : 1);
 			bool press = yubiPressToggle.Checked;
 
+			// bug in YubiKey 3.2.x (and below?) where using keypress doesn't always work
+			// see http://forum.yubico.com/viewtopic.php?f=26&t=1571
+			if (press == true
+				&& (_yubikey.Info.Status.VersionMajor < 3
+					|| (_yubikey.Info.Status.VersionMajor == 3 && _yubikey.Info.Status.VersionMinor <= 3)))
+			{
+				if (WinAuthForm.ConfirmDialog(this,
+					"This is a known issue using \"Require button press\" with YubiKeys that have firmware version 3.3 and below. It can cause intermittent problems when reading the Challenge-Response. You can contact Yubico and may be able to get a free replacement.\n\nDo you want to continue anyway?",
+					MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes)
+				{
+					return;
+				}
+			}
+
 			// calculate the actual key. This is a byte version of the string, salt="mnemonic"(+user password TBD), PBKDF 2048 times, return 20byte/160bit key
 			byte[] bytes = Encoding.UTF8.GetBytes(yubiSecretField.Text.Trim());
 			string salt = "mnemonic";
 			byte[] saltbytes = Encoding.UTF8.GetBytes(salt);
-			Rfc2898DeriveBytes kg = new Rfc2898DeriveBytes(bytes, saltbytes, PBKDF2_ITERATIONS);
-			byte[] key = kg.GetBytes(PBKDF2_KEYSIZE);
+			Rfc2898DeriveBytes kg = new Rfc2898DeriveBytes(bytes, saltbytes, YUBIKEY_PBKDF2_ITERATIONS);
+			byte[] key = kg.GetBytes(YUBIKEY_PBKDF2_KEYSIZE);
 
-			//yubiSecretHexField.Text = Authenticator.ByteArrayToString(key);
-
-			//byte[] key = Authenticator.StringToByteArray(yubiSecretHexField.Text.Trim());
 			try
 			{
 				_yubikey.SetChallengeResponse(slot, key, key.Length, press);
