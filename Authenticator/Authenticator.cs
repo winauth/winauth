@@ -142,6 +142,11 @@ namespace WinAuth
 		public int CodeDigits { get; set; }
 
 		/// <summary>
+		/// Name of issuer
+		/// </summary>
+		public virtual string Issuer { get; set; }
+
+		/// <summary>
 		/// Get/set the combined secret data value
 		/// </summary>
 		public virtual string SecretData

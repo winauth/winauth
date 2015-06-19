@@ -69,7 +69,14 @@ namespace WinAuth
 			string key = Base32.getInstance().Encode(CurrentAuthenticator.AuthenticatorData.SecretKey);
 			this.secretKeyField.Text = Regex.Replace(key, ".{3}", "$0 ").Trim();
 
-			string url = "otpauth://totp/" + WinAuthHelper.HtmlEncode(CurrentAuthenticator.Name) + "?secret=" + key;
+			string type = CurrentAuthenticator.AuthenticatorData is HOTPAuthenticator ? "hotp" : "totp";
+			long counter = (CurrentAuthenticator.AuthenticatorData is HOTPAuthenticator ? ((HOTPAuthenticator)CurrentAuthenticator.AuthenticatorData).Counter : 0);
+			string issuer = CurrentAuthenticator.AuthenticatorData.Issuer;
+			string url = "otpauth://" + type + "/" + WinAuthHelper.HtmlEncode(CurrentAuthenticator.Name)
+				+ "?secret=" + key
+				+ "&digits=" + CurrentAuthenticator.AuthenticatorData.CodeDigits
+				+ (counter != 0 ? "&counter=" + counter : string.Empty)
+				+ (string.IsNullOrEmpty(issuer) == false ? "&issuer=" + WinAuthHelper.HtmlEncode(issuer) : string.Empty);
 
 			BarcodeWriter writer = new BarcodeWriter();
 			writer.Format = BarcodeFormat.QR_CODE;

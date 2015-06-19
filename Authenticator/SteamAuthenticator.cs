@@ -78,6 +78,11 @@ namespace WinAuth
 		private const int INVALID_ACTIVATION_CODE = 89;
 
 		/// <summary>
+		/// Steam issuer for KeyUri
+		/// </summary>
+		private const string STEAM_ISSUER = "Steam";
+
+		/// <summary>
 		/// URLs for all mobile services
 		/// </summary>
 		private static string COMMUNITY_BASE = "https://steamcommunity.com";
@@ -158,6 +163,7 @@ namespace WinAuth
 		public SteamAuthenticator()
 			: base(CODE_DIGITS)
 		{
+			Issuer = STEAM_ISSUER;
 		}
 
 		/// <summary>

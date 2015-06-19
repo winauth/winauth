@@ -67,6 +67,11 @@ namespace WinAuth
 		private const int CODE_DIGITS = 8;
 
 		/// <summary>
+		/// Name of issuer for export
+		/// </summary>
+		private const string TRION_ISSUER = "Trion";
+
+		/// <summary>
 		/// URLs for all mobile services
 		/// </summary>
 		private static string ENROLL_URL = "https://rift.trionworlds.com/external/create-device-key";
@@ -134,6 +139,7 @@ namespace WinAuth
 		public TrionAuthenticator()
 			: base(CODE_DIGITS)
 		{
+			Issuer = TRION_ISSUER;
 		}
 
 		/// <summary>

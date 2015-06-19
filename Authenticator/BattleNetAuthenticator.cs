@@ -110,6 +110,8 @@ namespace WinAuth
 		/// </summary>
 		private const int SYNC_ERROR_MINUTES = 5;
 
+		private const string BATTLENET_ISSUER = "BattleNet";
+
 		/// <summary>
 		/// URLs for all mobile services
 		/// </summary>
@@ -241,6 +243,7 @@ namespace WinAuth
 		public BattleNetAuthenticator()
 			: base(CODE_DIGITS)
 		{
+			Issuer = BATTLENET_ISSUER;
 		}
 
 		/// <summary>
