@@ -404,7 +404,7 @@ namespace WinAuth
 							return;
 						}
 
-						item.LastCode = item.Authenticator.AuthenticatorData.CurrentCode;
+						item.LastCode = item.Authenticator.CurrentCode;
 						item.LastUpdate = DateTime.Now;
 						item.DisplayUntil = DateTime.Now.AddSeconds(10);
 
@@ -1259,7 +1259,7 @@ namespace WinAuth
 					ProtectAuthenticator(item);
 				}
 
-				item.LastCode = auth.AuthenticatorData.CurrentCode;
+				item.LastCode = auth.CurrentCode;
 				item.LastUpdate = DateTime.Now;
 				item.DisplayUntil = DateTime.Now.AddSeconds(10);
 				RefreshCurrentItem();
@@ -1599,7 +1599,7 @@ namespace WinAuth
 			}
 
 			try {
-				return auth.AuthenticatorData.CurrentCode;
+				return auth.CurrentCode;
 			}
 			finally
 			{
@@ -1818,7 +1818,7 @@ namespace WinAuth
 							{
 								if (item.LastCode == null)
 								{
-									code = auth.AuthenticatorData.CurrentCode;
+									code = auth.CurrentCode;
 								}
 								else
 								{
@@ -1827,7 +1827,7 @@ namespace WinAuth
 							}
 							else
 							{
-								code = auth.AuthenticatorData.CurrentCode;
+								code = auth.CurrentCode;
 								if (code != item.LastCode && auth.CopyOnCode == true)
 								{
 									// code has changed - copy to clipboard

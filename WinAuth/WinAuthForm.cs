@@ -749,15 +749,6 @@ namespace WinAuth
 		}
 
 		/// <summary>
-		/// Event for an authenticator being changed
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		void OnWinAuthAuthenticatorChanged(object sender, WinAuthAuthenticatorChangedEventArgs e)
-		{
-		}
-
-		/// <summary>
 		/// Save the current config immediately or delay it for a few seconds so we can make more changes
 		/// </summary>
 		private void SaveConfig(bool immediate = false)
@@ -1040,7 +1031,7 @@ namespace WinAuth
 			string code = null;
 			try
 			{
-				code = auth.AuthenticatorData.CurrentCode;
+				code = auth.CurrentCode;
 			}
 			catch (EncrpytedSecretDataException)
 			{

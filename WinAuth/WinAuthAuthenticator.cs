@@ -349,6 +349,29 @@ namespace WinAuth
 			}
 		}
 
+		public string CurrentCode
+		{
+			get
+			{
+				if (this.AuthenticatorData == null)
+				{
+					return null;
+				}
+
+				string code = this.AuthenticatorData.CurrentCode;
+		
+				if (this.AuthenticatorData is HOTPAuthenticator)
+				{
+					if (OnWinAuthAuthenticatorChanged != null)
+					{
+						OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("HOTP", this.AuthenticatorData));
+					}
+				}
+
+				return code;
+			}
+		}
+
 		/// <summary>
 		/// Sync the current authenticator's time with its server
 		/// </summary>
@@ -374,7 +397,7 @@ namespace WinAuth
 		{
 			if (code == null)
 			{
-				code = AuthenticatorData.CurrentCode;
+				code = this.CurrentCode;
 			}
 
 			bool clipRetry = false;
@@ -656,25 +679,29 @@ namespace WinAuth
 		/// See https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
 		/// </summary>
 		/// <returns>string</returns>
-		public string ToUrl()
+		public virtual string ToUrl()
 		{
+			string type = "totp";
 			string extraparams = string.Empty;
-			string issuer = string.Empty;
-			if (this.AuthenticatorData is BattleNetAuthenticator)
-			{
-				issuer = "BattleNet";
-				extraparams += "&serial=" + HttpUtility.UrlEncode(((BattleNetAuthenticator)this.AuthenticatorData).Serial.Replace("-", ""));
-			}
-			else if (this.AuthenticatorData is TrionAuthenticator)
-			{
-				issuer = "Trion";
-			}
-			string label = HttpUtility.UrlEncode(this.Name);
-			string secret = HttpUtility.UrlEncode(Base32.getInstance().Encode(this.AuthenticatorData.SecretKey));
-			if (issuer.Length != 0)
+
+			string issuer = this.AuthenticatorData.Issuer;
+			if (string.IsNullOrEmpty(issuer) == false)
 			{
 				extraparams += "&issuer=" + HttpUtility.UrlEncode(issuer);
 			}
+
+			if (this.AuthenticatorData is BattleNetAuthenticator)
+			{
+				extraparams += "&serial=" + HttpUtility.UrlEncode(((BattleNetAuthenticator)this.AuthenticatorData).Serial.Replace("-", ""));
+			}
+			else if (this.AuthenticatorData is HOTPAuthenticator)
+			{
+				type = "hotp";
+				extraparams += "&counter=" + ((HOTPAuthenticator)this.AuthenticatorData).Counter;
+			}
+
+			string label = HttpUtility.UrlEncode(this.Name);
+			string secret = HttpUtility.UrlEncode(Base32.getInstance().Encode(this.AuthenticatorData.SecretKey));
 
 			// add the skin
 			if (string.IsNullOrEmpty(this.Skin) == false)
@@ -691,8 +718,8 @@ namespace WinAuth
 				}
 			}
 
-			var url = string.Format("otpauth://totp/{0}?secret={1}&digits={2}{3}",
-				(issuer.Length != 0 ? issuer + ":" + label : label),
+			var url = string.Format("otpauth://" + type + "/{0}?secret={1}&digits={2}{3}",
+				(string.IsNullOrEmpty(issuer) == false ? issuer + ":" + label : label),
 				secret,
 				this.AuthenticatorData.CodeDigits,
 				extraparams);
@@ -715,13 +742,15 @@ namespace WinAuth
   public class WinAuthAuthenticatorChangedEventArgs : EventArgs
   {
 		public string Property { get; private set; }
+		public Authenticator Authenticator { get; private set; }
 
     /// <summary>
     /// Default constructor
     /// </summary>
-    public WinAuthAuthenticatorChangedEventArgs(string property = null)
+    public WinAuthAuthenticatorChangedEventArgs(string property = null, Authenticator authenticator = null)
     {
 			Property = property;
+			Authenticator = authenticator;
     }
 
 	}
