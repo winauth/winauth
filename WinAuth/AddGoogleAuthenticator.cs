@@ -307,6 +307,12 @@ namespace WinAuth
 			if (match.Success == true)
 			{
 				authtype = match.Groups[1].Value; // @todo we only handle totp (not hotp)
+				if (string.Compare(authtype, "totp", true) != 0)
+				{
+					WinAuthForm.ErrorDialog(this.Owner, "Only time-based (TOTP) authenticators are supported when adding a Google Authenticator. Use the general \"Add Authenticator\" for counter-based (HOTP) authenticators.");
+					return false;
+				}
+
 				string label = match.Groups[2].Value;
 				if (string.IsNullOrEmpty(label) == false)
 				{
