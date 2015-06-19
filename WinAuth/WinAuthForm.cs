@@ -736,7 +736,7 @@ namespace WinAuth
 			foreach (var auth in Config)
 			{
 				var ali = new AuthenticatorListitem(auth, index);
-				if (added != null && added == auth && auth.AutoRefresh == false)
+				if (added != null && added == auth && auth.AutoRefresh == false && !(auth.AuthenticatorData is HOTPAuthenticator))
 				{
 					ali.LastUpdate = DateTime.Now;
 					ali.DisplayUntil = DateTime.Now.AddSeconds(10);

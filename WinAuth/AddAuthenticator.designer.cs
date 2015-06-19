@@ -49,6 +49,7 @@ namespace WinAuth
 			this.verifyCounterButton = new MetroFramework.Controls.MetroButton();
 			this.counterField = new MetroFramework.Controls.MetroTextBox();
 			this.step3CounterLabel = new MetroFramework.Controls.MetroLabel();
+			this.secretCodeButton = new MetroFramework.Controls.MetroButton();
 			this.timeBasedPanel.SuspendLayout();
 			this.counterBasedPanel.SuspendLayout();
 			this.SuspendLayout();
@@ -57,16 +58,15 @@ namespace WinAuth
 			// 
 			this.secretCodeField.AllowDrop = true;
 			this.secretCodeField.CausesValidation = false;
-			this.secretCodeField.Location = new System.Drawing.Point(25, 171);
+			this.secretCodeField.Location = new System.Drawing.Point(43, 171);
 			this.secretCodeField.MaxLength = 32767;
 			this.secretCodeField.Name = "secretCodeField";
 			this.secretCodeField.PasswordChar = '\0';
 			this.secretCodeField.ScrollBars = System.Windows.Forms.ScrollBars.None;
 			this.secretCodeField.SelectedText = "";
-			this.secretCodeField.Size = new System.Drawing.Size(423, 22);
-			this.secretCodeField.TabIndex = 4;
+			this.secretCodeField.Size = new System.Drawing.Size(311, 22);
+			this.secretCodeField.TabIndex = 1;
 			this.secretCodeField.UseSelectable = true;
-			this.secretCodeField.TextChanged += new System.EventHandler(this.secretCodeField_TextChanged);
 			// 
 			// step1Label
 			// 
@@ -136,7 +136,7 @@ namespace WinAuth
 			this.verifyButton.Location = new System.Drawing.Point(122, 43);
 			this.verifyButton.Name = "verifyButton";
 			this.verifyButton.Size = new System.Drawing.Size(158, 23);
-			this.verifyButton.TabIndex = 5;
+			this.verifyButton.TabIndex = 0;
 			this.verifyButton.Text = "Verify Authenticator";
 			this.verifyButton.UseSelectable = true;
 			this.verifyButton.Click += new System.EventHandler(this.verifyButton_Click);
@@ -162,7 +162,7 @@ namespace WinAuth
 			this.codeField.SecretMode = false;
 			this.codeField.Size = new System.Drawing.Size(158, 26);
 			this.codeField.SpaceOut = 3;
-			this.codeField.TabIndex = 12;
+			this.codeField.TabIndex = 5;
 			// 
 			// step4Label
 			// 
@@ -194,7 +194,7 @@ namespace WinAuth
 			this.timeBasedRadio.Location = new System.Drawing.Point(43, 265);
 			this.timeBasedRadio.Name = "timeBasedRadio";
 			this.timeBasedRadio.Size = new System.Drawing.Size(86, 15);
-			this.timeBasedRadio.TabIndex = 14;
+			this.timeBasedRadio.TabIndex = 3;
 			this.timeBasedRadio.TabStop = true;
 			this.timeBasedRadio.Text = "Time-based";
 			this.timeBasedRadio.UseSelectable = true;
@@ -206,7 +206,7 @@ namespace WinAuth
 			this.counterBasedRadio.Location = new System.Drawing.Point(146, 265);
 			this.counterBasedRadio.Name = "counterBasedRadio";
 			this.counterBasedRadio.Size = new System.Drawing.Size(102, 15);
-			this.counterBasedRadio.TabIndex = 14;
+			this.counterBasedRadio.TabIndex = 4;
 			this.counterBasedRadio.Text = "Counter-based";
 			this.counterBasedRadio.UseSelectable = true;
 			this.counterBasedRadio.CheckedChanged += new System.EventHandler(this.counterBasedRadio_CheckedChanged);
@@ -237,10 +237,10 @@ namespace WinAuth
 			// 
 			// verifyCounterButton
 			// 
-			this.verifyCounterButton.Location = new System.Drawing.Point(207, 43);
+			this.verifyCounterButton.Location = new System.Drawing.Point(207, 58);
 			this.verifyCounterButton.Name = "verifyCounterButton";
 			this.verifyCounterButton.Size = new System.Drawing.Size(158, 23);
-			this.verifyCounterButton.TabIndex = 17;
+			this.verifyCounterButton.TabIndex = 1;
 			this.verifyCounterButton.Text = "Verify Authenticator";
 			this.verifyCounterButton.UseSelectable = true;
 			this.verifyCounterButton.Click += new System.EventHandler(this.verifyButton_Click);
@@ -249,23 +249,34 @@ namespace WinAuth
 			// 
 			this.counterField.AllowDrop = true;
 			this.counterField.CausesValidation = false;
-			this.counterField.Location = new System.Drawing.Point(122, 43);
+			this.counterField.Location = new System.Drawing.Point(122, 58);
 			this.counterField.MaxLength = 32767;
 			this.counterField.Name = "counterField";
 			this.counterField.PasswordChar = '\0';
 			this.counterField.ScrollBars = System.Windows.Forms.ScrollBars.None;
 			this.counterField.SelectedText = "";
 			this.counterField.Size = new System.Drawing.Size(74, 20);
-			this.counterField.TabIndex = 11;
+			this.counterField.TabIndex = 0;
 			this.counterField.UseSelectable = true;
 			// 
 			// step3CounterLabel
 			// 
 			this.step3CounterLabel.Location = new System.Drawing.Point(23, 12);
 			this.step3CounterLabel.Name = "step3CounterLabel";
-			this.step3CounterLabel.Size = new System.Drawing.Size(423, 28);
+			this.step3CounterLabel.Size = new System.Drawing.Size(423, 43);
 			this.step3CounterLabel.TabIndex = 10;
-			this.step3CounterLabel.Text = "3. Enter the initial counter value if known. Click the Verify button.";
+			this.step3CounterLabel.Text = "3. Enter the initial counter value if known. Click the Verify button that will sh" +
+    "ow the last code that was used.";
+			// 
+			// secretCodeButton
+			// 
+			this.secretCodeButton.Location = new System.Drawing.Point(360, 171);
+			this.secretCodeButton.Name = "secretCodeButton";
+			this.secretCodeButton.Size = new System.Drawing.Size(75, 23);
+			this.secretCodeButton.TabIndex = 2;
+			this.secretCodeButton.Text = "Decode";
+			this.secretCodeButton.UseSelectable = true;
+			this.secretCodeButton.Click += new System.EventHandler(this.secretCodeButton_Click);
 			// 
 			// AddAuthenticator
 			// 
@@ -275,6 +286,7 @@ namespace WinAuth
 			this.BorderStyle = MetroFramework.Forms.MetroFormBorderStyle.FixedSingle;
 			this.CancelButton = this.cancelButton;
 			this.ClientSize = new System.Drawing.Size(471, 516);
+			this.Controls.Add(this.secretCodeButton);
 			this.Controls.Add(this.counterBasedPanel);
 			this.Controls.Add(this.timeBasedPanel);
 			this.Controls.Add(this.counterBasedRadio);
@@ -324,5 +336,6 @@ namespace WinAuth
 		private MetroFramework.Controls.MetroLabel step3CounterLabel;
 		private MetroFramework.Controls.MetroTextBox counterField;
 		private MetroFramework.Controls.MetroButton verifyCounterButton;
+		private MetroFramework.Controls.MetroButton secretCodeButton;
 	}
 }

@@ -206,11 +206,11 @@ namespace WinAuth
 		}
 
 		/// <summary>
-		/// Watch the field for a otpauth url with a counter or time based
+		/// Click the button to convert any secret code
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void secretCodeField_TextChanged(object sender, EventArgs e)
+		private void secretCodeButton_Click(object sender, EventArgs e)
 		{
 			Uri uri;
 			Match match;
@@ -250,6 +250,8 @@ namespace WinAuth
 			if (match.Success == true)
 			{
 				string authtype = match.Groups[1].Value.ToLower();
+				string label = match.Groups[2].Value;
+
 				if (authtype == HOTP)
 				{
 					counterBasedRadio.Checked = true;
@@ -263,6 +265,14 @@ namespace WinAuth
 							counterField.Text = counter.ToString();
 						}
 					}
+
+					string issuer = qs["issuer"];
+					if (string.IsNullOrEmpty(issuer) == false)
+					{
+						label = issuer + (string.IsNullOrEmpty(label) == false ? " (" + label + ")" : string.Empty);
+					}
+
+					this.nameField.Text = label;
 				}
 				else if (authtype == TOTP)
 				{
@@ -270,7 +280,6 @@ namespace WinAuth
 					counterField.Text = string.Empty;
 				}
 			}
-
 		}
 
 #endregion
@@ -382,12 +391,7 @@ namespace WinAuth
 			if (match.Success == true)
 			{
 				authtype = match.Groups[1].Value.ToLower();
-
 				string label = match.Groups[2].Value;
-				if (string.IsNullOrEmpty(label) == false)
-				{
-					this.Authenticator.Name = this.nameField.Text = label;
-				}
 
 				NameValueCollection qs = WinAuthHelper.ParseQueryString(match.Groups[3].Value);
 				privatekey = qs["secret"] ?? privatekey;
@@ -399,6 +403,16 @@ namespace WinAuth
 				if (qs["counter"] != null)
 				{
 					long.TryParse(qs["counter"], out counter);
+				}
+				string issuer = qs["issuer"];
+				if (string.IsNullOrEmpty(issuer) == false)
+				{
+					label = issuer + (string.IsNullOrEmpty(label) == false ? " (" + label + ")" : string.Empty);
+				}
+
+				if (string.IsNullOrEmpty(label) == false)
+				{
+					this.Authenticator.Name = this.nameField.Text = label;
 				}
 			}
 
@@ -428,7 +442,7 @@ namespace WinAuth
 					{
 						long.TryParse(counterField.Text.Trim(), out counter);
 					}
-					((HOTPAuthenticator)auth).Enroll(privatekey, counter - 1); // first get code will increment
+					((HOTPAuthenticator)auth).Enroll(privatekey, counter); // start with the next code
 					timer.Enabled = false;
 					codeProgress.Visible = false;
 					counterBasedRadio.Checked = true;
@@ -464,7 +478,6 @@ namespace WinAuth
 		}
 
 #endregion
-
 
 
 	}
