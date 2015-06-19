@@ -135,6 +135,11 @@ namespace WinAuth
 		private string _shadowType;
 
 		/// <summary>
+		/// User's own PGPKey for backups
+		/// </summary>
+		private string _pgpKey;
+
+		/// <summary>
 		/// Class used to serialize the settings inside the Xml config file
 		/// </summary>
 		[XmlRoot(ElementName="settings")]
@@ -333,6 +338,17 @@ namespace WinAuth
 				{
 					OnConfigChanged(this, new ConfigChangedEventArgs("ShadowType"));
 				}
+			}
+		}
+
+		/// <summary>
+		/// Get user's own PGP key
+		/// </summary>
+		public string PGPKey
+		{
+			get
+			{
+				return _pgpKey;
 			}
 		}
 
@@ -853,6 +869,10 @@ namespace WinAuth
 							_shadowType = reader.ReadElementContentAsString();
 							break;
 
+						case "pgpkey":
+							_pgpKey = reader.ReadElementContentAsString();
+							break;
+
 						case "settings":
 							XmlSerializer serializer = new XmlSerializer(typeof(setting[]), new XmlRootAttribute() { ElementName = "settings" });
 							_settings = ((setting[])serializer.Deserialize(reader)).ToDictionary(e => e.Key, e => e.Value);
@@ -1012,6 +1032,13 @@ namespace WinAuth
 			{
 				writer.WriteStartElement("shadowtype");
 				writer.WriteValue(this.ShadowType);
+				writer.WriteEndElement();
+			}
+			//
+			if (string.IsNullOrEmpty(this.PGPKey) == false)
+			{
+				writer.WriteStartElement("pgpkey");
+				writer.WriteCData(this.PGPKey);
 				writer.WriteEndElement();
 			}
 
