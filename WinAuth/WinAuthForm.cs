@@ -884,6 +884,8 @@ namespace WinAuth
 								this.authenticatorList.Items.Clear();
 								this.Size = m_initialSize;
 								this.Config = null;
+								loadNotifyMenu(this.notifyMenu);
+								UnhookHotkeys();
 								loadConfig(string.Empty);
 							}
 						}
@@ -900,6 +902,8 @@ namespace WinAuth
 							this.authenticatorList.Items.Clear();
 							this.Size = m_initialSize;
 							this.Config = null;
+							loadNotifyMenu(this.notifyMenu);
+							UnhookHotkeys();
 							loadConfig(string.Empty);
 						}
 					}
@@ -1845,12 +1849,15 @@ namespace WinAuth
 				menu.Items.Add(separator);
 			}
 
-			menuitem = new ToolStripMenuItem(strings.MenuUseSystemTrayIcon);
-			menuitem.Name = "useSystemTrayIconOptionsMenuItem";
-			menuitem.Click += useSystemTrayIconOptionsMenuItem_Click;
-			menu.Items.Add(menuitem);
+			if (this.Config != null)
+			{
+				menuitem = new ToolStripMenuItem(strings.MenuUseSystemTrayIcon);
+				menuitem.Name = "useSystemTrayIconOptionsMenuItem";
+				menuitem.Click += useSystemTrayIconOptionsMenuItem_Click;
+				menu.Items.Add(menuitem);
 
-			menu.Items.Add(new ToolStripSeparator());
+				menu.Items.Add(new ToolStripSeparator());
+			}
 
 			menuitem = new ToolStripMenuItem(strings.MenuAbout + "...");
 			menuitem.Name = "aboutOptionsMenuItem";

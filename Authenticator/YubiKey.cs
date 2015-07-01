@@ -94,7 +94,7 @@ namespace WinAuth
 	/// <summary>
 	/// Class wrapping API around pinvoke YubiKey DLL
 	/// </summary>
-	public class YubiKey
+	public class YubiKey : IDisposable
 	{
 		/// <summary>
 		/// USB Device Vendor and Product IDs for YubiKeys
@@ -181,7 +181,12 @@ namespace WinAuth
 		/// <summary>
 		/// Handle to loaded pinvoke library
 		/// </summary>
-		private static IntPtr _library;
+		private IntPtr _library;
+
+		/// <summary>
+		/// Path of file for native library
+		/// </summary>
+		private string _libraryPath;
 
 		/// <summary>
 		/// Current YubiKey info
@@ -226,6 +231,52 @@ namespace WinAuth
 		protected YubiKey()
 		{
 			YubiData = new YubikeyData();
+		}
+
+		/// <summary>
+		/// Finalizer
+		/// </summary>
+		~YubiKey()
+		{
+			Dispose(false);
+		}
+
+		/// <summary>
+		/// Dispose this object
+		/// </summary>
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Dispose any resources
+		/// </summary>
+		/// <param name="disposing">called via Dispose</param>
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				// free managed resources
+			}
+
+			// free native resources
+			if (_library != IntPtr.Zero)
+			{
+				FreeLibrary(_library);
+				_library = IntPtr.Zero;
+			}
+			// delete temp library file
+			if (string.IsNullOrEmpty(_libraryPath) == false && File.Exists(_libraryPath) == true)
+			{
+				try
+				{
+					File.Delete(_libraryPath);
+				}
+				catch (Exception) { }
+				_libraryPath = null;
+			}
 		}
 
 		/// <summary>
@@ -282,7 +333,7 @@ namespace WinAuth
 		/// Load the 32 or 64 bit native YubiKey DLL depending on current platform, or download from winauth servers
 		/// </summary>
 		/// <param name="downloadIfNeeded">option to download DLL if required</param>
-		private static void LoadLibrary()
+		private void LoadLibrary()
 		{
 			if (_library != IntPtr.Zero)
 			{
@@ -293,14 +344,14 @@ namespace WinAuth
 			var libraryname = (IntPtr.Size == 4 ? YUBI_LIBRARY_NAME_X86 : YUBI_LIBRARY_NAME_X64);
 
 			// create temp file
-			string path = Path.GetTempFileName();
-			File.Delete(path);
-			path += ".dll";
+			_libraryPath = Path.GetTempFileName();
+			File.Delete(_libraryPath);
+			_libraryPath += ".dll";
 
 			// extract the DLL from our resources
 			using (var ins = typeof(Authenticator).Assembly.GetManifestResourceStream("WinAuth.Resources." + libraryname))
 			{
-				using (var outs = new FileStream(path, FileMode.Create, FileAccess.Write))
+				using (var outs = new FileStream(_libraryPath, FileMode.Create, FileAccess.Write))
 				{
 					var buffer = new byte[4096];
 					int read;
@@ -312,7 +363,7 @@ namespace WinAuth
 			}
 
 			// load the library
-			_library = LoadLibrary(path);
+			_library = LoadLibrary(_libraryPath);
 			if (_library == IntPtr.Zero)
 			{
 				int error = Marshal.GetLastWin32Error();
@@ -326,7 +377,7 @@ namespace WinAuth
 		/// <typeparam name="TDelegate">delegate we require</typeparam>
 		/// <param name="name">name of function</param>
 		/// <returns>function delegate</returns>
-		private static TDelegate GetFunction<TDelegate>(string name) where TDelegate : class
+		private TDelegate GetFunction<TDelegate>(string name) where TDelegate : class
 		{
 			IntPtr p = GetProcAddress(_library, name);
 			if (p == IntPtr.Zero)
