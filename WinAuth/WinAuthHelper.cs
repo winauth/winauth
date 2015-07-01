@@ -139,6 +139,10 @@ namespace WinAuth
     public static WinAuthConfig LoadConfig(Form form, string configFile, string password = null)
     {
       WinAuthConfig config = new WinAuthConfig();
+			if (string.IsNullOrEmpty(password) == false)
+			{
+				config.Password = password;
+			}
 
       if (string.IsNullOrEmpty(configFile) == true)
       {

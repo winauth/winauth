@@ -59,12 +59,16 @@
 			this.addAuthenticatorButton = new MetroFramework.Controls.MetroButton();
 			this.authenticatorList = new WinAuth.AuthenticatorListBox();
 			this.metroStyleManager = new MetroFramework.Components.MetroStyleManager(this.components);
+			this.loadingPanel = new MetroFramework.Controls.MetroPanel();
+			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this.authenticatorMenu.SuspendLayout();
 			this.yubiPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.yubiImage)).BeginInit();
 			this.passwordPanel.SuspendLayout();
 			this.commandPanel.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.metroStyleManager)).BeginInit();
+			this.loadingPanel.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// mainTimer
@@ -315,12 +319,36 @@
 			// 
 			this.metroStyleManager.Owner = this;
 			// 
+			// loadingPanel
+			// 
+			this.loadingPanel.Controls.Add(this.pictureBox1);
+			this.loadingPanel.HorizontalScrollbarBarColor = true;
+			this.loadingPanel.HorizontalScrollbarHighlightOnWheel = false;
+			this.loadingPanel.HorizontalScrollbarSize = 10;
+			this.loadingPanel.Location = new System.Drawing.Point(20, 60);
+			this.loadingPanel.Name = "loadingPanel";
+			this.loadingPanel.Size = new System.Drawing.Size(380, 100);
+			this.loadingPanel.TabIndex = 6;
+			this.loadingPanel.VerticalScrollbarBarColor = true;
+			this.loadingPanel.VerticalScrollbarHighlightOnWheel = false;
+			this.loadingPanel.VerticalScrollbarSize = 10;
+			// 
+			// pictureBox1
+			// 
+			this.pictureBox1.Image = global::WinAuth.Properties.Resources.spinner24;
+			this.pictureBox1.Location = new System.Drawing.Point(178, 36);
+			this.pictureBox1.Name = "pictureBox1";
+			this.pictureBox1.Size = new System.Drawing.Size(25, 25);
+			this.pictureBox1.TabIndex = 2;
+			this.pictureBox1.TabStop = false;
+			// 
 			// WinAuthForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BorderStyle = MetroFramework.Forms.MetroFormBorderStyle.FixedSingle;
 			this.ClientSize = new System.Drawing.Size(420, 180);
+			this.Controls.Add(this.loadingPanel);
 			this.Controls.Add(this.yubiPanel);
 			this.Controls.Add(this.passwordPanel);
 			this.Controls.Add(this.introLabel);
@@ -349,6 +377,8 @@
 			this.passwordPanel.PerformLayout();
 			this.commandPanel.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.metroStyleManager)).EndInit();
+			this.loadingPanel.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			this.ResumeLayout(false);
 
     }
@@ -381,6 +411,8 @@
 		private System.Windows.Forms.PictureBox yubiImage;
 		private MetroFramework.Controls.MetroButton yubiRetryButton;
 		private MetroFramework.Controls.MetroLabel yubiLabel;
+		private MetroFramework.Controls.MetroPanel loadingPanel;
+		private System.Windows.Forms.PictureBox pictureBox1;
 
   }
 }

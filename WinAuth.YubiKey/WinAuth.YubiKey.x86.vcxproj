@@ -155,6 +155,7 @@
     <ClCompile Include="ykcore.c" />
     <ClCompile Include="ykcore_windows.c" />
     <ClCompile Include="ykcrc.c" />
+    <ClCompile Include="ykhex.c" />
     <ClCompile Include="yubikey.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

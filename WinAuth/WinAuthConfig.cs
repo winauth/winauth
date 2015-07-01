@@ -72,12 +72,41 @@ namespace WinAuth
 		/// <summary>
 		/// Save Yubi key for re-saving and encrypting file
 		/// </summary>
-		private YubikeyData YubiData { get; set; }
+		public YubiKey Yubi { get; set; }
 
 		/// <summary>
 		/// Current encryption type
 		/// </summary>
-		public Authenticator.PasswordTypes PasswordType = Authenticator.PasswordTypes.None;
+		private Authenticator.PasswordTypes _passwordType = Authenticator.PasswordTypes.None;
+
+		/// <summary>
+		/// Get/set the encryption type
+		/// </summary>
+		public Authenticator.PasswordTypes PasswordType
+		{
+			get
+			{
+				return _passwordType;
+			}
+			set
+			{
+				_passwordType = value;
+
+				if ((_passwordType & Authenticator.PasswordTypes.Explicit) == 0)
+				{
+					this.Password = null;
+				}
+				if ((_passwordType & (Authenticator.PasswordTypes.YubiKeySlot1 | Authenticator.PasswordTypes.YubiKeySlot2)) == 0)
+				{
+					this.Yubi = null;
+				}
+				//if ((_passwordType & (Authenticator.PasswordTypes.YubiKeySlot1 | Authenticator.PasswordTypes.YubiKeySlot2)) != 0 && this.Yubi == null)
+				//{
+				//	this.Yubi = YubiKey.CreateInstance(15000);
+				//}
+			}
+		}
+
 
     /// <summary>
     /// All authenticators
@@ -458,11 +487,6 @@ namespace WinAuth
 		public bool IsPassword(string password)
 		{
 			return (string.Compare(password, this.Password) == 0);
-			//using (var sha1 = SHA1Managed.Create())
-			//{
-				//var test = Authenticator.ByteArrayToString(sha1.ComputeHash(Encoding.UTF8.GetBytes(password)));
-				//return (string.Compare(test, PasswordHash) == 0);
-			//}
 		}
 
     #endregion
@@ -680,7 +704,6 @@ namespace WinAuth
     {
       Version = CURRENTVERSION;
 			AutoSize = true;
-			YubiData = new YubikeyData();
     }
 
 		public void OnWinAuthAuthenticatorChanged(WinAuthAuthenticator sender, WinAuthAuthenticatorChangedEventArgs e)
@@ -763,7 +786,12 @@ namespace WinAuth
         // read the encrypted text from the node
         string data = reader.ReadElementContentAsString();
         // decrypt
-				data = Authenticator.DecryptSequence(data, this.PasswordType, password, YubiData);
+				YubiKey yubi = null;
+				if ((this.PasswordType & (Authenticator.PasswordTypes.YubiKeySlot1 | Authenticator.PasswordTypes.YubiKeySlot2)) != 0 /* && this.Yubi == null */)
+				{
+					yubi = YubiKey.CreateInstance();
+				}
+				data = Authenticator.DecryptSequence(data, this.PasswordType, password, yubi);
 
 				using (MemoryStream ms = new MemoryStream(Authenticator.StringToByteArray(data)))
 				{
@@ -773,6 +801,7 @@ namespace WinAuth
 
 				this.PasswordType = Authenticator.DecodePasswordTypes(encrypted);
 				this.Password = password;
+				this.Yubi = yubi;
 
         return changed;
       }
@@ -818,7 +847,12 @@ namespace WinAuth
 									}
 
 									// decrypt
-									data = Authenticator.DecryptSequence(data, this.PasswordType, password, this.YubiData);
+									YubiKey yubi = null;
+									if ((this.PasswordType & (Authenticator.PasswordTypes.YubiKeySlot1 | Authenticator.PasswordTypes.YubiKeySlot2)) != 0 /* && this.Yubi == null */)
+									{
+										yubi = YubiKey.CreateInstance();
+									}
+									data = Authenticator.DecryptSequence(data, this.PasswordType, password, yubi);
 									byte[] plain = Authenticator.StringToByteArray(data);
 
 									using (MemoryStream ms = new MemoryStream(plain))
@@ -829,6 +863,7 @@ namespace WinAuth
 
 									this.PasswordType = Authenticator.DecodePasswordTypes(encrypted);
 									this.Password = password;
+									this.Yubi = yubi;
 								}
 							}
 							break;
@@ -1077,11 +1112,6 @@ namespace WinAuth
 					settings.Encoding = Encoding.UTF8;
 					using (XmlWriter encryptedwriter = XmlWriter.Create(ms, settings))
 					{
-						//Authenticator.PasswordTypes savedpasswordType = PasswordType;
-						//PasswordType = Authenticator.PasswordTypes.None;
-						//WriteXmlString(encryptedwriter, includeFilename, false);
-						//PasswordType = savedpasswordType;
-
 						encryptedwriter.WriteStartElement("config");
 						foreach (WinAuthAuthenticator wa in this)
 						{
@@ -1095,7 +1125,7 @@ namespace WinAuth
 
 				using (var hasher = new MD5CryptoServiceProvider())
 				{
-					string encdata = Authenticator.EncryptSequence(Authenticator.ByteArrayToString(data), PasswordType, Password, YubiData);
+					string encdata = Authenticator.EncryptSequence(Authenticator.ByteArrayToString(data), PasswordType, Password, this.Yubi);
 					string enchash = Authenticator.ByteArrayToString(hasher.ComputeHash(Authenticator.StringToByteArray(encdata)));
 					writer.WriteAttributeString("md5", enchash);
 					writer.WriteString(encdata);

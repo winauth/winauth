@@ -57,26 +57,6 @@ typedef struct config_st YK_CONFIG;
 
 int _lastError = 0;
 
-#ifdef _DEBUG
-void _trace(wchar_t *format, ...)
-{
-   wchar_t buffer[1000];
-	 wchar_t newline[2] = {10,0};
-	 FILE* f;
-
-   va_list argptr;
-   va_start(argptr, format);
-   wvsprintf(buffer, format, argptr);
-   va_end(argptr);
-
-   OutputDebugString(buffer);
-	 fopen_s(&f, "yubikey.log", "a");
-	 fwprintf(f, buffer);
-	 fwprintf(f, newline);
-	 fclose(f);
-}
-#endif
-
 ///
 /// Initialize the underlying library
 ///
@@ -150,11 +130,6 @@ __declspec(dllexport) int IsSlotConfigured(int slot, bool* result)
 
 	return 0;
 }
-
-//__declspec(dllexport) int GetStatus(YK_KEY *k, YK_STATUS *status)
-//{
-//	return yk_get_status(k, status);
-//}
 
 ///
 /// Perform a ChallengeResponse operation on specified slot

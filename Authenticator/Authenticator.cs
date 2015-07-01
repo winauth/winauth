@@ -898,12 +898,12 @@ namespace WinAuth
 		/// <param name="yubidata">optional yubi data</param>
 		/// <param name="decode"></param>
 		/// <returns>decrypted string sequence</returns>
-		public static string DecryptSequence(string data, PasswordTypes encryptedTypes, string password, YubikeyData yubidata, bool decode = false)
+		public static string DecryptSequence(string data, PasswordTypes encryptedTypes, string password, YubiKey yubi, bool decode = false)
     {
 			// check for encrpytion header
 			if (data.Length < ENCRYPTION_HEADER.Length || data.IndexOf(ENCRYPTION_HEADER) != 0)
 			{
-				return DecryptSequenceNoHash(data, encryptedTypes, password, yubidata, decode);
+				return DecryptSequenceNoHash(data, encryptedTypes, password, yubi, decode);
 			}
 
 			// extract salt and hash
@@ -917,10 +917,7 @@ namespace WinAuth
 				datastart += hash.Length;
 				data = data.Substring(datastart);
 
-				// decrypt encrypt content and try again
-				//char[] encTypes = encryptedTypes.ToCharArray();
-
-				data = DecryptSequenceNoHash(data, encryptedTypes, password, yubidata);
+				data = DecryptSequenceNoHash(data, encryptedTypes, password, yubi);
 
 				// check the hash
 				byte[] compareplain = StringToByteArray(salt + data);
@@ -943,55 +940,11 @@ namespace WinAuth
 		/// <param name="yubidata">optional yubi data</param>
 		/// <param name="decode"></param>
 		/// <returns>decrypted string sequence</returns>
-		private static string DecryptSequenceNoHash(string data, PasswordTypes encryptedTypes, string password, YubikeyData yubidata, bool decode = false)
+		private static string DecryptSequenceNoHash(string data, PasswordTypes encryptedTypes, string password, YubiKey yubi, bool decode = false)
 		{
 			try
 			{
 				// reverse order they were encrypted
-				if ((encryptedTypes & PasswordTypes.YubiKeySlot1) != 0 || (encryptedTypes & PasswordTypes.YubiKeySlot2) != 0)
-				{
-					YubiKey yubi = new YubiKey();
-
-					// wait for it to load the library
-					long waittill = DateTime.Now.AddMilliseconds(10000).Ticks;
-					while (yubi.Loading != null && yubi.Loading.Status == System.Threading.Tasks.TaskStatus.Running && DateTime.Now.Ticks < waittill)
-					{
-						System.Threading.Thread.Sleep(100);
-					}
-
-					// wait for the keypress if appropriate
-					waittill = DateTime.Now.AddMilliseconds(10000).Ticks;
-					while (yubi.Info.Status.VersionMajor == 0 && string.IsNullOrEmpty(yubi.Info.Error) == true && DateTime.Now.Ticks < waittill)
-					{
-						System.Threading.Thread.Sleep(100);
-					}
-					if (string.IsNullOrEmpty(yubi.Info.Error) == false)
-					{
-						throw new BadYubiKeyException("Unable to detect YubiKey");
-					}
-					if (yubi.Info.Status.VersionMajor == 0)
-					{
-						throw new BadYubiKeyException("Please insert your YubiKey");
-					}
-					int slot = ((encryptedTypes & PasswordTypes.YubiKeySlot1) != 0 ? 1 : 2);
-
-					string seed = data.Substring(0, SALT_LENGTH * 2);
-					data = data.Substring(seed.Length);
-					byte[] key = yubi.ChallengeResponse(slot, StringToByteArray(seed));
-
-					data = Authenticator.Decrypt(data, key);
-					if (decode == true)
-					{
-						byte[] plain = Authenticator.StringToByteArray(data);
-						data = Encoding.UTF8.GetString(plain, 0, plain.Length);
-					}
-
-					if (yubidata != null)
-					{
-						yubidata.Seed = seed;
-						yubidata.Data = key;
-					}
-				}
 				if ((encryptedTypes & PasswordTypes.Machine) != 0)
 				{
 					// we are going to decrypt with the Windows local machine key
@@ -1034,6 +987,32 @@ namespace WinAuth
 						data = Encoding.UTF8.GetString(plain, 0, plain.Length);
 					}
 				}
+				if ((encryptedTypes & PasswordTypes.YubiKeySlot1) != 0 || (encryptedTypes & PasswordTypes.YubiKeySlot2) != 0)
+				{
+					if (string.IsNullOrEmpty(yubi.Info.Error) == false)
+					{
+						throw new BadYubiKeyException("Unable to detect YubiKey");
+					}
+					if (yubi.Info.Status.VersionMajor == 0)
+					{
+						throw new BadYubiKeyException("Please insert your YubiKey");
+					}
+					int slot = ((encryptedTypes & PasswordTypes.YubiKeySlot1) != 0 ? 1 : 2);
+
+					string seed = data.Substring(0, SALT_LENGTH * 2);
+					data = data.Substring(seed.Length);
+					byte[] key = yubi.ChallengeResponse(slot, StringToByteArray(seed));
+
+					data = Authenticator.Decrypt(data, key);
+					if (decode == true)
+					{
+						byte[] plain = Authenticator.StringToByteArray(data);
+						data = Encoding.UTF8.GetString(plain, 0, plain.Length);
+					}
+
+					yubi.YubiData.Seed = seed;
+					yubi.YubiData.Data = key;
+				}
 			}
 			catch (EncrpytedSecretDataException)
 			{
@@ -1055,7 +1034,7 @@ namespace WinAuth
 			return data;
 		}
 
-		public static string EncryptSequence(string data, PasswordTypes passwordType, string password, YubikeyData yubikeyKey)
+		public static string EncryptSequence(string data, PasswordTypes passwordType, string password, YubiKey yubi)
     {
 			// get hash of original
 			string salt;
@@ -1072,7 +1051,34 @@ namespace WinAuth
 				hash = ByteArrayToString(sha.ComputeHash(plain));
 			}
 
-      if ((passwordType & PasswordTypes.Explicit) != 0)
+			if ((passwordType & PasswordTypes.YubiKeySlot1) != 0 || (passwordType & PasswordTypes.YubiKeySlot2) != 0)
+			{
+				if (yubi.YubiData.Length == 0)
+				{
+					byte[] seed = new byte[SALT_LENGTH];
+					using (var random = new RNGCryptoServiceProvider())
+					{
+						random.GetBytes(seed);
+					}
+
+					// we encrypt the data using the hash of a random string from the YubiKey
+					int slot = ((passwordType & PasswordTypes.YubiKeySlot1) != 0 ? 1 : 2);
+					yubi.YubiData.Data = yubi.ChallengeResponse(slot, seed);
+					yubi.YubiData.Seed = Authenticator.ByteArrayToString(seed);
+				}
+
+				byte[] key = yubi.YubiData.Data;
+				string encrypted = Encrypt(data, key);
+
+				// test the encryption
+				string decrypted = Decrypt(encrypted, key);
+				if (string.Compare(data, decrypted) != 0)
+				{
+					throw new InvalidEncryptionException(data, password, encrypted, decrypted);
+				}
+				data = yubi.YubiData.Seed + encrypted;
+			}
+			if ((passwordType & PasswordTypes.Explicit) != 0)
       {
         string encrypted = Encrypt(data, password);
 
@@ -1098,34 +1104,6 @@ namespace WinAuth
         byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.LocalMachine);
         data = ByteArrayToString(cipher);
       }
-			if ((passwordType & PasswordTypes.YubiKeySlot1) != 0 || (passwordType & PasswordTypes.YubiKeySlot2) != 0)
-			{
-				if (yubikeyKey.Length == 0)
-				{
-					byte[] seed = new byte[SALT_LENGTH];
-					using (var random = new RNGCryptoServiceProvider())
-					{
-						random.GetBytes(seed);
-					}
-
-					// we encrypt the data using the hash of a random string from the YubiKey slot 1
-					YubiKey yubi = new YubiKey();
-					int slot = ((passwordType & PasswordTypes.YubiKeySlot1) != 0 ? 1 : 2);
-					yubikeyKey.Data = yubi.ChallengeResponse(slot, seed);
-					yubikeyKey.Seed = Authenticator.ByteArrayToString(seed);
-				}
-
-				byte[] key = yubikeyKey.Data;
-				string encrypted = Encrypt(data, key);
-
-				// test the encryption
-				string decrypted = Decrypt(encrypted, key);
-				if (string.Compare(data, decrypted) != 0)
-				{
-					throw new InvalidEncryptionException(data, password, encrypted, decrypted);
-				}
-				data = yubikeyKey.Seed + encrypted;
-			}
 
 			// prepend the salt + hash
 			return ENCRYPTION_HEADER + salt + hash + data;

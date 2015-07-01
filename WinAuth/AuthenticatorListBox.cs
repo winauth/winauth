@@ -1180,13 +1180,10 @@ namespace WinAuth
 				}
 			}
 			//
-			if (auth.AuthenticatorData is HOTPAuthenticator)
-			{
-				ToolStripItem sepitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "syncMenuSep").FirstOrDefault() as ToolStripItem;
-				sepitem.Visible = false;
-				menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "syncMenuItem").FirstOrDefault() as ToolStripMenuItem;
-				menuitem.Visible = false;
-			}
+			ToolStripItem sepitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "syncMenuSep").FirstOrDefault() as ToolStripItem;
+			sepitem.Visible = !(auth.AuthenticatorData is HOTPAuthenticator);
+			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "syncMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem.Visible = !(auth.AuthenticatorData is HOTPAuthenticator);
 		}
 
 		/// <summary>

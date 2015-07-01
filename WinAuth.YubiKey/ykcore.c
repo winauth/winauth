@@ -61,8 +61,6 @@ typedef struct info_st YK_INFO;
  */
 #define WAIT_FOR_WRITE_FLAG	1150
 
-extern void _trace(wchar_t *format, ...);
-
 int yk_init(void)
 {
 	return _ykusb_start();

@@ -102,7 +102,6 @@
 			this.userCheckbox.TabIndex = 4;
 			this.userCheckbox.Text = "And only by the current user on this computer";
 			this.userCheckbox.UseSelectable = true;
-			this.userCheckbox.CheckedChanged += new System.EventHandler(this.userCheckbox_CheckedChanged);
 			// 
 			// passwordCheckbox
 			// 

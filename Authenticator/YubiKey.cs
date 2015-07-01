@@ -29,9 +29,68 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Text;
 using System.Security.Cryptography;
+using System.Resources;
+using System.Threading;
 
 namespace WinAuth
 {
+	/// <summary>
+	/// Store the current YubiKey data and seed from original decryption. This is so
+	/// we can update the config file without requiring the user key press (if enabled)
+	/// from the yubi. Although DP is used, pretty pointless since it is put into managed
+	/// memory anyway.
+	/// </summary>
+	public class YubikeyData
+	{
+		/// <summary>
+		/// Length of key
+		/// </summary>
+		public int Length;
+
+		/// <summary>
+		/// Random seed
+		/// </summary>
+		public string Seed;
+
+		/// <summary>
+		/// Protected data block
+		/// </summary>
+		private byte[] _data;
+
+		/// <summary>
+		/// Get/set the protected data into a managed array
+		/// </summary>
+		public byte[] Data
+		{
+			get
+			{
+				if (Length == 0)
+				{
+					return null;
+				}
+
+				byte[] b = new byte[_data.Length];
+				Array.Copy(_data, b, _data.Length);
+				return ProtectedData.Unprotect(b, null, DataProtectionScope.CurrentUser);
+			}
+			set
+			{
+				if (value == null)
+				{
+					_data = null;
+					Length = 0;
+				}
+				else
+				{
+					Length = value.Length;
+					byte[] b = new byte[value.Length];
+					Array.Copy(value, b, value.Length);
+					_data = ProtectedData.Protect(b, null, DataProtectionScope.CurrentUser);
+				}
+			}
+		}
+	}
+
 	/// <summary>
 	/// Class wrapping API around pinvoke YubiKey DLL
 	/// </summary>
@@ -101,16 +160,6 @@ namespace WinAuth
 		private const string YUBI_LIBRARY_NAME_X64 = "WinAuth.YubiKey.x64.dll";
 
 		/// <summary>
-		/// Download Website for YubiKey DLLs
-		/// </summary>
-		private const string YUBI_DOWNLOAD_WEBSITE = "https://winauth.com/";
-
-		/// <summary>
-		/// Download URL for YubiKey DLLs
-		/// </summary>
-		private const string YUBI_DOWNLOAD_BASEURL = "https://winauth.com/downloads/3.x/";
-
-		/// <summary>
 		/// Fix Status stuct returned from Yubkey DLLs
 		/// </summary>
 		public struct STATUS
@@ -132,12 +181,7 @@ namespace WinAuth
 		/// <summary>
 		/// Handle to loaded pinvoke library
 		/// </summary>
-		private IntPtr _library;
-
-		/// <summary>
-		/// Current loading Task
-		/// </summary>
-		public Task Loading { get; set; }
+		private static IntPtr _library;
 
 		/// <summary>
 		/// Current YubiKey info
@@ -179,19 +223,51 @@ namespace WinAuth
 		/// <summary>
 		/// Create the YubiKey instance
 		/// </summary>
-		public YubiKey()
+		protected YubiKey()
 		{
-			// load library and load info
-			Loading = LoadLibrary().ContinueWith((loaded) =>
+			YubiData = new YubikeyData();
+		}
+
+		/// <summary>
+		/// Mutex for the init method
+		/// </summary>
+		private object _initLock = new object();
+
+		/// <summary>
+		/// Stored data for Yubikey
+		/// </summary>
+		public YubikeyData YubiData { get; set; }
+
+		/// <summary>
+		/// Create a new Yubikey instance and initialise
+		/// </summary>
+		/// <param name="waitms"></param>
+		/// <returns></returns>
+		public static YubiKey CreateInstance()
+		{
+			YubiKey instance = new YubiKey();
+
+			instance.Init();
+
+			return instance;
+		}
+
+		/// <summary>
+		/// Initialise the Yubikey and get its status
+		/// </summary>
+		/// <param name="waitms"></param>
+		public void Init()
+		{
+			lock (_initLock)
 			{
-				INFO info = new INFO();
-				if (loaded.Result != null)
+				if (Info.Status.VersionMajor != 0)
 				{
-					info.Error = loaded.Result.Message;
-					Info = info;
 					return;
 				}
 
+				// load library and load info
+				LoadLibrary();
+				INFO info = new INFO();
 				GetInfoDelegate f = GetFunction<GetInfoDelegate>("GetInfo");
 				int ret = f(out info);
 				if (ret > 1)
@@ -199,114 +275,49 @@ namespace WinAuth
 					info.Error = string.Format("Error {0}", ret);
 				}
 				Info = info;
-			});
-		}
-
-		/// <summary>
-		/// Kludge for .net 4.0 to return immediate task result
-		/// </summary>
-		/// <typeparam name="TResult"></typeparam>
-		/// <param name="result"></param>
-		/// <returns></returns>
-		public static Task<TResult> FromResult<TResult>(TResult result)
-		{
-			var completionSource = new TaskCompletionSource<TResult>();
-			completionSource.SetResult(result);
-			return completionSource.Task;
+			}
 		}
 
 		/// <summary>
 		/// Load the 32 or 64 bit native YubiKey DLL depending on current platform, or download from winauth servers
 		/// </summary>
 		/// <param name="downloadIfNeeded">option to download DLL if required</param>
-		/// <returns>Task when DLL is loaded</returns>
-		private Task<Exception> LoadLibrary(bool downloadIfNeeded = true)
+		private static void LoadLibrary()
 		{
 			if (_library != IntPtr.Zero)
 			{
-				return FromResult<Exception>(null);
+				return;
 			}
 
 			// load the library
-			var name = (IntPtr.Size == 4 ? YUBI_LIBRARY_NAME_X86 : YUBI_LIBRARY_NAME_X64);
+			var libraryname = (IntPtr.Size == 4 ? YUBI_LIBRARY_NAME_X86 : YUBI_LIBRARY_NAME_X64);
 
-			// get the current exe path
-			var exedir = Path.GetDirectoryName(new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).AbsolutePath);
+			// create temp file
+			string path = Path.GetTempFileName();
+			File.Delete(path);
+			path += ".dll";
 
-			// check if we can find the library in the current path, appdata and %path%
-			string path = Environment.CurrentDirectory;
-			FileInfo fi = new FileInfo(Path.Combine(path, name));
-			if (fi.Exists == false)
+			// extract the DLL from our resources
+			using (var ins = typeof(Authenticator).Assembly.GetManifestResourceStream("WinAuth.Resources." + libraryname))
 			{
-				// look in the exe's folder
-				fi = new FileInfo(Path.Combine(exedir, name));
-			}
-			if (fi.Exists == false)
-			{
-				// look in the config folder
-				path = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), APPDATAFOLDER);
-				fi = new FileInfo(Path.Combine(path, name));
-			}
-			if (fi.Exists == false)
-			{
-				// check the path
-				var paths = Environment.GetEnvironmentVariable("PATH");
-				foreach (var p in paths.Split(';'))
+				using (var outs = new FileStream(path, FileMode.Create, FileAccess.Write))
 				{
-					fi = new FileInfo(Path.Combine(p, name));
-					if (fi.Exists == true)
+					var buffer = new byte[4096];
+					int read;
+					while ((read = ins.Read(buffer, 0, buffer.Length)) != 0)
 					{
-						path = p;
-						break;
+						outs.Write(buffer, 0, read);
 					}
 				}
 			}
-			// if we found it update the name to be the full name
-			if (fi.Exists == true)
-			{
-				name = Path.Combine(path, name);
-			}
-			else if (Directory.Exists(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)) == true)
-			{
-				// we will put in the AppData folder
-				name = Path.Combine(Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), APPDATAFOLDER), name);
-			}
-			else
-			{
-				// we will put in the exe folder
-				name = Path.Combine(exedir, name);
-			}
 
 			// load the library
-			_library = LoadLibrary(name);
+			_library = LoadLibrary(path);
 			if (_library == IntPtr.Zero)
 			{
 				int error = Marshal.GetLastWin32Error();
-				if (downloadIfNeeded == false)
-				{
-					return FromResult<Exception>(new LibraryNotFoundException("Download the YubiKey AddOn from " + YUBI_DOWNLOAD_WEBSITE));
-				}
-
-				var task = Task.Factory.StartNew<Exception>(() =>
-				{
-					try
-					{
-						using (WebClient web = new WebClient())
-						{
-							web.DownloadFile(YUBI_DOWNLOAD_BASEURL + (IntPtr.Size == 4 ? YUBI_LIBRARY_NAME_X86 : YUBI_LIBRARY_NAME_X64), name);
-							return LoadLibrary(false).Result;
-						}
-					}
-					catch (WebException ex)
-					{
-						return new ApplicationException("Download the YubiKey AddOn from " + YUBI_DOWNLOAD_WEBSITE, ex);
-					}
-				});
-
-				return task;
+				throw new LibraryNotFoundException("Cannot load the YubiKey AddOn: " + error);
 			}
-
-			return FromResult<Exception>(null);
 		}
 
 		/// <summary>
@@ -315,7 +326,7 @@ namespace WinAuth
 		/// <typeparam name="TDelegate">delegate we require</typeparam>
 		/// <param name="name">name of function</param>
 		/// <returns>function delegate</returns>
-		private TDelegate GetFunction<TDelegate>(string name) where TDelegate : class
+		private static TDelegate GetFunction<TDelegate>(string name) where TDelegate : class
 		{
 			IntPtr p = GetProcAddress(_library, name);
 			if (p == IntPtr.Zero)
@@ -350,11 +361,7 @@ namespace WinAuth
 		/// <param name="accesscode">current access code if required</param>
 		public void SetChallengeResponse(int slot, byte[] key, int keysize, bool press, byte[] accesscode = null)
 		{
-			var loaded = LoadLibrary(false);
-			if (loaded.Result != null)
-			{
-				throw loaded.Result;
-			}
+			LoadLibrary();
 
 			SetChallengeResponseDelegate f = GetFunction<SetChallengeResponseDelegate>("SetChallengeResponse");
 			int ret = f(slot, key, keysize, press, accesscode);
@@ -374,11 +381,7 @@ namespace WinAuth
 		/// <returns>hash result of challengeresponse</returns>
 		public byte[] ChallengeResponse(int slot, byte[] challenge, bool allowBlock = true, byte[] hash = null)
 		{
-			var loaded = LoadLibrary(false);
-			if (loaded.Result != null)
-			{
-				throw loaded.Result;
-			}
+			LoadLibrary();
 
 			byte[] maxhash = new byte[64];
 			ChallengeResponseDelegate f = GetFunction<ChallengeResponseDelegate>("ChallengeResponse");

@@ -231,74 +231,39 @@ namespace WinAuth
 		{
 			string configFile = _startupConfigFile;
 
+			loadingPanel.Visible = true;
+			passwordPanel.Visible = false;
+			yubiPanel.Visible = false;
+
 			Task.Factory.StartNew<Tuple<WinAuthConfig, Exception>>(() =>
 			{
-				//bool retry = false;
-				//do
-				//{
-					try
-					{
-						WinAuthConfig config = WinAuthHelper.LoadConfig(this, configFile, password);
-						return new Tuple<WinAuthConfig,Exception>(config, null);
-
-						//if (config == null)
-						//{
-						//	System.Diagnostics.Process.GetCurrentProcess().Kill();
-						//	return null;
-						//}
-
-						//// check for a v2 config file if this is a new config
-						//if (config.Count == 0 && string.IsNullOrEmpty(config.Filename) == true)
-						//{
-						//	_existingv2Config = WinAuthHelper.GetLastV2Config();
-						//}
-
-						//this.Config = config;
-						//this.Config.OnConfigChanged += new ConfigChangedHandler(OnConfigChanged);
-
-						//InitializeForm();
-					}
-					catch (Exception ex)
-					{
-						return new Tuple<WinAuthConfig, Exception>(null, ex);
-					}
-					//catch (EncrpytedSecretDataException)
-					//{
-					//	passwordPanel.Visible = true;
-					//}
-					//catch (BadYubiKeyException)
-					//{
-					//	yubiPanel.Visible = true;
-					//	this.yubiLabel.Text = strings.YubikeyInsert;
-					//}
-					//catch (BadPasswordException)
-					//{
-					//	passwordPanel.Visible = true;
-					//	this.passwordErrorLabel.Text = strings.InvalidPassword;
-					//	this.passwordErrorLabel.Tag = DateTime.Now.AddSeconds(3);
-					//	this.passwordTimer.Enabled = true;
-					//}
-					//catch (Exception ex)
-					//{
-					//	if (ErrorDialog(this, strings.UnknownError + ": " + ex.Message, ex, MessageBoxButtons.RetryCancel) == System.Windows.Forms.DialogResult.Cancel)
-					//	{
-					//		this.Close();
-					//		return null;
-					//	}
-					//	retry = true;
-					//}
-				//} while (retry == true);
+				try
+				{
+					// use previous config if we have one
+					WinAuthConfig config = WinAuthHelper.LoadConfig(this, configFile, password);
+					return new Tuple<WinAuthConfig,Exception>(config, null);
+				}
+				catch (Exception ex)
+				{
+					return new Tuple<WinAuthConfig, Exception>(null, ex);
+				}
 			}).ContinueWith((configTask) =>
 			{
 				Exception ex = configTask.Result.Item2;
 				if (ex is EncrpytedSecretDataException)
 				{
+					loadingPanel.Visible = false;
 					passwordPanel.Visible = true;
 					yubiPanel.Visible = false;
+
+					this.passwordButton.Focus();
+					this.passwordField.Focus();
+
 					return;
 				}
 				else if (ex is BadYubiKeyException)
 				{
+					loadingPanel.Visible = false;
 					passwordPanel.Visible = false;
 					yubiPanel.Visible = true;
 					this.yubiLabel.Text = strings.YubikeyInsert;
@@ -306,6 +271,7 @@ namespace WinAuth
 				}
 				else if (ex is BadPasswordException)
 				{
+					loadingPanel.Visible = false;
 					yubiPanel.Visible = false;
 					passwordPanel.Visible = true;
 					this.passwordErrorLabel.Text = strings.InvalidPassword;
@@ -411,20 +377,11 @@ namespace WinAuth
 					form.PasswordType = Authenticator.PasswordTypes.Explicit;
 					if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 					{
+						this.Config.Yubi = form.Yubikey;
 						this.Config.PasswordType = form.PasswordType;
-						if ((this.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
+						if ((this.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0 && string.IsNullOrEmpty(form.Password) == false)
 						{
-							if (string.IsNullOrEmpty(form.Password) == false)
-							{
-								if (string.IsNullOrEmpty(form.Password) == false)
-								{
-									this.Config.Password = form.Password;
-								}
-							}
-						}
-						else
-						{
-							this.Config.Password = null;
+							this.Config.Password = form.Password;
 						}
 					}
 				}
@@ -491,17 +448,11 @@ namespace WinAuth
 						form.PasswordType = Authenticator.PasswordTypes.Explicit;
 						if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 						{
+							this.Config.Yubi = form.Yubikey;
 							this.Config.PasswordType = form.PasswordType;
-							if ((this.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
+							if ((this.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0 && string.IsNullOrEmpty(form.Password) == false)
 							{
-								if (string.IsNullOrEmpty(form.Password) == false)
-								{
-									this.Config.Password = form.Password;
-								}
-							}
-							else
-							{
-								this.Config.Password = null;
+								this.Config.Password = form.Password;
 							}
 						}
 					}
@@ -641,6 +592,7 @@ namespace WinAuth
 			LoadAddAuthenticatorTypes();
 			loadOptionsMenu(this.optionsMenu);
 			loadNotifyMenu(this.notifyMenu);
+			loadingPanel.Visible = false;
 			passwordPanel.Visible = false;
 			yubiPanel.Visible = false;
 			commandPanel.Visible = true;
@@ -942,7 +894,6 @@ namespace WinAuth
 					if (this.Config != null && (this.Config.PasswordType & (Authenticator.PasswordTypes.YubiKeySlot1 | Authenticator.PasswordTypes.YubiKeySlot2)) != 0)
 					{
 						// check if YubiKey still present
-						//var usbs = HIDDevice.GetAllDevices(YubiKey.GUID_DEVINTERFACE_KEYBOARD, YubiKey.VENDOR_ID);
 						m_yubis = HIDDevice.GetAllDevices(YubiKey.VENDOR_ID);
 						if (m_yubis.Count == 0)
 						{
@@ -1473,17 +1424,11 @@ namespace WinAuth
 						form.PasswordType = Authenticator.PasswordTypes.Explicit;
 						if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 						{
+							this.Config.Yubi = form.Yubikey;
 							this.Config.PasswordType = form.PasswordType;
-							if ((this.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
+							if ((this.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0 && string.IsNullOrEmpty(form.Password) == false)
 							{
-								if (string.IsNullOrEmpty(form.Password) == false)
-								{
-									this.Config.Password = form.Password;
-								}
-							}
-							else
-							{
-								this.Config.Password = null;
+								this.Config.Password = form.Password;
 							}
 						}
 					}
@@ -1799,12 +1744,6 @@ namespace WinAuth
 
 			menu.Items.Clear();
 
-			//menuitem = new ToolStripMenuItem(strings.MenuOpen);
-			//menuitem.Name = "openOptionsMenuItem";
-			//menuitem.Click += openOptionsMenuItem_Click;
-			//menu.Items.Add(menuitem);
-			//menu.Items.Add(new ToolStripSeparator() { Name = "openOptionsSeparatorItem" });
-
 			if (this.Config == null || this.Config.IsReadOnly == false)
 			{
 				menuitem = new ToolStripMenuItem(strings.MenuChangeProtection + "...");
@@ -2041,12 +1980,6 @@ namespace WinAuth
 				item.Visible = (this.Config.UseTrayIcon == true && this.Visible == false);
 			}
 
-			//for (int i = 1; i <= this.Config.Count; i++)
-			//{
-			//	menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "authenticatorOptionsMenuItem_" + i).FirstOrDefault() as ToolStripMenuItem;
-			//}
-			//item = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "authenticatorOptionsSeparatorItem").FirstOrDefault();
-
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "useSystemTrayIconOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			if (menuitem != null)
 			{
@@ -2093,16 +2026,13 @@ namespace WinAuth
 					retry = false;
 
 					this.Config.PasswordType = form.PasswordType;
-					if ((this.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
+					if ((this.Config.PasswordType & (Authenticator.PasswordTypes.YubiKeySlot1 | Authenticator.PasswordTypes.YubiKeySlot2)) != 0 && form.Yubikey != null)
 					{
-						if (string.IsNullOrEmpty(form.Password) == false)
-						{
-							this.Config.Password = form.Password;
-						}
+						this.Config.Yubi = form.Yubikey;
 					}
-					else
+					if ((this.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0 && string.IsNullOrEmpty(form.Password) == false)
 					{
-						this.Config.Password = null;
+						this.Config.Password = form.Password;
 					}
 
 					try
