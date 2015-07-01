@@ -220,7 +220,7 @@ Would you like to import your previous authenticator now?</value>
     <value>Auto Size</value>
   </data>
   <data name="MenuChangeProtection" xml:space="preserve">
-    <value>Change Password</value>
+    <value>Change Protection</value>
   </data>
   <data name="MenuExit" xml:space="preserve">
     <value>Exit</value>

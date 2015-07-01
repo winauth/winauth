@@ -111,6 +111,7 @@ namespace WinAuth
 			}
 
 			yubiPanelConfigure.Visible = false;
+			yubiConfigureIntroLabel.Visible = false;
 			yubiPanelIntro.Visible = true;
 			yubiPanelExists.Visible = false;
 			if ((PasswordType & Authenticator.PasswordTypes.YubiKeySlot1) != 0 || (PasswordType & Authenticator.PasswordTypes.YubiKeySlot2) != 0)
@@ -173,6 +174,7 @@ namespace WinAuth
 					yubiPanelIntro.Enabled = false;
 					yubiPanelIntro.Visible = false;
 					yubiPanelConfigure.Visible = false;
+					yubiConfigureIntroLabel.Visible = false;
 					yubiPanelExists.Visible = true;
 					yubiPanelExists.Location = yubiPanelIntro.Location;
 					yubiPanelExists.Size = yubiPanelIntro.Size;
@@ -220,6 +222,7 @@ namespace WinAuth
 				yubiPanelIntro.Enabled = false;
 				yubiPanelIntro.Visible = true;
 				yubiPanelConfigure.Visible = false;
+				yubiConfigureIntroLabel.Visible = false;
 
 				PasswordType &= ~(Authenticator.PasswordTypes.YubiKeySlot1 | Authenticator.PasswordTypes.YubiKeySlot2);
 			}
@@ -360,6 +363,7 @@ namespace WinAuth
 		private void yubikeyCreateButton_Click(object sender, EventArgs e)
 		{
 			yubiPanelConfigure.Visible = true;
+			yubiConfigureIntroLabel.Visible = true;
 		}
 
 		/// <summary>
