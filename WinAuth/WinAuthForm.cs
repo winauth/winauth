@@ -1650,6 +1650,7 @@ namespace WinAuth
 			}
 
 			loadConfig(this.passwordField.Text);
+			this.passwordField.Text = string.Empty;
 		}
 
 		/// <summary>
