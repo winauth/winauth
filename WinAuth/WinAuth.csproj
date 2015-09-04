@@ -13,7 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <AssemblyVersion>3.2.11.1</AssemblyVersion>
+    <AssemblyVersion>3.2.11.2</AssemblyVersion>
     <PublishUrl>C:\Users\cdm\Projects\WinAuth\winauth.com\downloads\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>

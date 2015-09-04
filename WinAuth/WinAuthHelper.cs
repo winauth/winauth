@@ -347,7 +347,7 @@ namespace WinAuth
 				string authkey = Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(wa.AuthenticatorData.SecretData)));
 
 				// save the PGP encrypted key
-				using (StringWriter sw = new StringWriter())
+				using (EncodedStringWriter sw = new EncodedStringWriter(Encoding.UTF8))
 				{
 					XmlWriterSettings xmlsettings = new XmlWriterSettings();
 					xmlsettings.Indent = true;
@@ -1297,4 +1297,26 @@ namespace WinAuth
 
 	}
 
+	/// <summary>
+	/// Helper class to make a StreamWriter use an Encoding else it will default to UTF-16
+	/// </summary>
+	class EncodedStringWriter : StringWriter
+	{
+		private readonly Encoding _encoding;
+
+		public EncodedStringWriter(Encoding encoding)
+		{
+			_encoding = encoding;
+		}
+
+		public override Encoding Encoding
+		{
+			get
+			{
+				return _encoding;
+			}
+		}
+
+
+	}
 }
