@@ -20,6 +20,7 @@ using System;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Cache;
 using System.Security.Cryptography;
@@ -208,7 +209,7 @@ namespace WinAuth
 		/// <param name="data">Name-data pairs</param>
 		/// <param name="cookies">current cookie container</param>
 		/// <returns>response body</returns>
-		private string Request(string url, string method, NameValueCollection data = null, CookieContainer cookies = null)
+		private string Request(string url, string method, NameValueCollection data = null, CookieContainer cookies = null, NameValueCollection headers = null)
 		{
 			// create form-encoded data for query or body
 			string query = (data == null ? string.Empty : string.Join("&", Array.ConvertAll(data.AllKeys, key => String.Format("{0}={1}", HttpUtility.UrlEncode(key), HttpUtility.UrlEncode(data[key])))));
@@ -220,13 +221,20 @@ namespace WinAuth
 			// call the server
 			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
 			request.Method = method;
-			request.Accept = "application/json, text/javascript, text/html, application/xml, text/xml, */*";
+			request.Accept = "text/javascript, text/html, application/xml, text/xml, */*";
 			request.ServicePoint.Expect100Continue = false;
-			request.UserAgent = "Mozilla/5.0 (Linux; Android 4.4.4; en-us; Nexus 4 Build/JOP40D) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2307.2 Mobile Safari/537.36";
-			//request.UserAgent = "Steam App / Android / 1.1.10 / 2767532";
-			request.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
+			request.UserAgent = "Mozilla/5.0 (Linux; U; Android 4.1.1; en-us; Google Nexus 4 - 4.1.1 - API 16 - 768x1280 Build/JRO03S) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30";
 			request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
-			request.Referer = COMMUNITY_BASE + "/mobilelogin";
+			request.Referer = COMMUNITY_BASE + "/mobilelogin?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client";
+			if (headers != null)
+			{
+				request.Headers.Add(headers);
+			}
+
+			if (cookies != null)
+			{
+				request.CookieContainer = cookies;
+			}
 
 			if (string.Compare(method, "POST", true) == 0)
 			{
@@ -236,11 +244,6 @@ namespace WinAuth
 				StreamWriter requestStream = new StreamWriter(request.GetRequestStream());
 				requestStream.Write(query);
 				requestStream.Close();
-			}
-
-			if (cookies != null)
-			{
-				request.CookieContainer = cookies;
 			}
 
 			try {
@@ -292,7 +295,21 @@ namespace WinAuth
 				if (string.IsNullOrEmpty(state.OAuthToken) == true)
 				{
 					// get session
-					response = Request(COMMUNITY_BASE + "/login/home?goto=0", "GET", null, cookies);
+					if (cookies.Count == 0)
+					{
+						cookies.Add(new Cookie("mobileClientVersion", "2944155+%282.0.30%29", "/", ".steamcommunity.com"));
+						cookies.Add(new Cookie("mobileClient", "android", "/", ".steamcommunity.com"));
+						cookies.Add(new Cookie("steamid", "", "/", ".steamcommunity.com"));
+						cookies.Add(new Cookie("forceMobile", "1", "/", ".steamcommunity.com"));
+						cookies.Add(new Cookie("steamLogin", "", "/", ".steamcommunity.com"));
+						cookies.Add(new Cookie("Steam_Language", "english", "/", ".steamcommunity.com"));
+						cookies.Add(new Cookie("dob", "", "/", ".steamcommunity.com"));
+
+						NameValueCollection headers = new NameValueCollection();
+						headers.Add("X-Requested-With", "com.valvesoftware.android.steam.community");
+
+						response = Request("https://steamcommunity.com/mobilelogin?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client", "GET", null, cookies, headers);
+					}
 
 					// get the user's RSA key
 					data.Add("username", state.Username);
@@ -395,9 +412,9 @@ namespace WinAuth
 
 					// get the OAuth token - is stringified json
 					string oauth = (string)loginresponse["oauth"];
-					var oauthjson = JObject.Parse(oauth);
-					state.OAuthToken = oauthjson.SelectToken("oauth_token").Value<string>();
-				}
+						var oauthjson = JObject.Parse(oauth);
+						state.OAuthToken = oauthjson.SelectToken("oauth_token").Value<string>();
+					}
 
 				// login to webapi
 				data.Clear();
