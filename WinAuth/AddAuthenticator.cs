@@ -386,12 +386,21 @@ namespace WinAuth
 				}
 			}
 
+			string issuer = null;
+			string serial = null;
+
 			// check for otpauth://, e.g. "otpauth://totp/dc3bf64c-2fd4-40fe-a8cf-83315945f08b@blockchain.info?secret=IHZJDKAEEC774BMUK3GX6SA"
 			match = Regex.Match(privatekey, @"otpauth://([^/]+)/([^?]+)\?(.*)", RegexOptions.IgnoreCase);
 			if (match.Success == true)
 			{
 				authtype = match.Groups[1].Value.ToLower();
 				string label = match.Groups[2].Value;
+				int p = label.IndexOf(":");
+				if (p != -1)
+				{
+					issuer = label.Substring(0, p);
+					label = label.Substring(p + 1);
+				}
 
 				NameValueCollection qs = WinAuthHelper.ParseQueryString(match.Groups[3].Value);
 				privatekey = qs["secret"] ?? privatekey;
@@ -404,11 +413,12 @@ namespace WinAuth
 				{
 					long.TryParse(qs["counter"], out counter);
 				}
-				string issuer = qs["issuer"];
+				issuer = qs["issuer"];
 				if (string.IsNullOrEmpty(issuer) == false)
 				{
 					label = issuer + (string.IsNullOrEmpty(label) == false ? " (" + label + ")" : string.Empty);
 				}
+				serial = qs["serial"];
 
 				if (string.IsNullOrEmpty(label) == false)
 				{
@@ -429,8 +439,40 @@ namespace WinAuth
 				Authenticator auth;
 				if (authtype == TOTP)
 				{
-					auth = new GoogleAuthenticator();
-					((GoogleAuthenticator)auth).Enroll(privatekey);
+					if (string.Compare(issuer, "BattleNet", true) == 0)
+					{
+						if (string.IsNullOrEmpty(serial) == true)
+						{
+							throw new ApplicationException("Battle.net Authenticator does not have a serial");
+						}
+						serial = serial.ToUpper();
+						if (Regex.IsMatch(serial, @"^[A-Z]{2}-?[\d]{4}-?[\d]{4}-?[\d]{4}$") == false)
+						{
+							throw new ApplicationException("Invalid serial for Battle.net Authenticator");
+						}
+						auth = new BattleNetAuthenticator();
+						((BattleNetAuthenticator)auth).SecretKey = Base32.getInstance().Decode(privatekey);
+						((BattleNetAuthenticator)auth).Serial = serial;
+
+						issuer = string.Empty;
+					}
+					else if (issuer == "Steam")
+					{
+						auth = new SteamAuthenticator();
+						((SteamAuthenticator)auth).SecretKey = Base32.getInstance().Decode(privatekey);
+						((SteamAuthenticator)auth).Serial = string.Empty;
+						((SteamAuthenticator)auth).DeviceId = string.Empty;
+						((SteamAuthenticator)auth).RevocationCode = string.Empty;
+
+						this.Authenticator.Skin = null;
+
+						issuer = string.Empty;
+					}
+					else
+					{
+						auth = new GoogleAuthenticator();
+						((GoogleAuthenticator)auth).Enroll(privatekey);
+					}
 					timer.Enabled = true;
 					codeProgress.Visible = true;
 					timeBasedRadio.Checked = true;
@@ -456,10 +498,16 @@ namespace WinAuth
 				auth.CodeDigits = digits;
 				this.Authenticator.AuthenticatorData = auth;
 
-				codeField.SpaceOut = digits / 2;
+				if (digits > 5)
+				{
+					codeField.SpaceOut = digits / 2;
+				}
+				else
+				{
+					codeField.SpaceOut = 0;
+				}
 
-				string key = Base32.getInstance().Encode(this.Authenticator.AuthenticatorData.SecretKey);
-				//this.secretCodeField.Text = Regex.Replace(key, ".{3}", "$0 ").Trim();
+				//string key = Base32.getInstance().Encode(this.Authenticator.AuthenticatorData.SecretKey);
 				this.codeField.Text = auth.CurrentCode;
 
 				if (!(auth is HOTPAuthenticator) && auth.ServerTimeDiff == 0L && SyncErrorWarned == false)

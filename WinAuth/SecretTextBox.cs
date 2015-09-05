@@ -142,6 +142,10 @@ namespace WinAuth
 					StringBuilder sb = new StringBuilder();
 					for (int i = 0; i < m_text.Length; i += m_spaceOut)
 					{
+						if (i <= m_text.Length)
+						{
+							break;
+						}
 						sb.Append(m_text.Substring(i, m_spaceOut)).Append(" ");
 					}
 					text = sb.ToString().Trim();
