@@ -106,6 +106,32 @@ namespace WinAuth
 		}
 
 		/// <summary>
+		/// Click the cancel button and show a warning
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void cancelButton_Click(object sender, EventArgs e)
+		{
+			if (this.Authenticator.AuthenticatorData != null)
+			{
+				DialogResult result = WinAuthForm.ConfirmDialog(this.Owner,
+					"WARNING: Your authenticator has not been saved." + Environment.NewLine + Environment.NewLine
+					+ "If you have added this authenticator to your account, you will not be able to login in the future, and you need to click YES to save it." + Environment.NewLine + Environment.NewLine
+					+ "Do you want to save this authenticator?", MessageBoxButtons.YesNoCancel);
+				if (result == System.Windows.Forms.DialogResult.Yes)
+				{
+					this.DialogResult = System.Windows.Forms.DialogResult.OK;
+					return;
+				}
+				else if (result == System.Windows.Forms.DialogResult.Cancel)
+				{
+					this.DialogResult = System.Windows.Forms.DialogResult.None;
+					return;
+				}
+			}
+		}
+
+		/// <summary>
 		/// Click the OK button to verify and add the authenticator
 		/// </summary>
 		/// <param name="sender"></param>
@@ -216,7 +242,6 @@ namespace WinAuth
 		}
 
 #endregion
-
 
 	}
 }
