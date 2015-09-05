@@ -24,6 +24,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Web;
 using System.Windows;
@@ -684,7 +685,18 @@ namespace WinAuth
 			string type = "totp";
 			string extraparams = string.Empty;
 
+			Match match;
 			string issuer = this.AuthenticatorData.Issuer;
+			string label = this.Name;
+			if (string.IsNullOrEmpty(issuer) == true && (match = Regex.Match(label, @"^([^\(]+)\s+\((.*?)\)(.*)")).Success == true)
+			{
+				issuer = match.Groups[1].Value;
+				label = match.Groups[2].Value + match.Groups[3].Value;
+			}
+			if (string.IsNullOrEmpty(issuer) == false && (match = Regex.Match(label, @"^" + issuer + @"\s+\((.*?)\)(.*)")).Success == true)
+			{
+				label = match.Groups[1].Value + match.Groups[2].Value;
+			}
 			if (string.IsNullOrEmpty(issuer) == false)
 			{
 				extraparams += "&issuer=" + HttpUtility.UrlEncode(issuer);
@@ -700,7 +712,6 @@ namespace WinAuth
 				extraparams += "&counter=" + ((HOTPAuthenticator)this.AuthenticatorData).Counter;
 			}
 
-			string label = HttpUtility.UrlEncode(this.Name);
 			string secret = HttpUtility.UrlEncode(Base32.getInstance().Encode(this.AuthenticatorData.SecretKey));
 
 			// add the skin
@@ -719,7 +730,7 @@ namespace WinAuth
 			}
 
 			var url = string.Format("otpauth://" + type + "/{0}?secret={1}&digits={2}{3}",
-				(string.IsNullOrEmpty(issuer) == false ? issuer + ":" + label : label),
+				(string.IsNullOrEmpty(issuer) == false ? issuer + ":" + HttpUtility.UrlEncode(label) : HttpUtility.UrlEncode(label)),
 				secret,
 				this.AuthenticatorData.CodeDigits,
 				extraparams);

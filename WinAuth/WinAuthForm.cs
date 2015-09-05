@@ -363,7 +363,7 @@ namespace WinAuth
 				string importedName = authenticator.Name;
 				while (this.Config.Where(a => a.Name == importedName).Count() != 0)
 				{
-					importedName = authenticator.Name + " (" + (++rename) + ")";
+					importedName = authenticator.Name + " " + (++rename);
 				}
 				authenticator.Name = importedName;
 

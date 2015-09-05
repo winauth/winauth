@@ -550,9 +550,9 @@ namespace WinAuth
 							throw new ApplicationException("Import only supports otpauth://");
 						}
 						// we only support totp (not hotp)
-						if (uri.Host != "totp")
+						if (uri.Host != "totp" && uri.Host != "hotp")
 						{
-							throw new ApplicationException("Import only supports otpauth://totp/");
+							throw new ApplicationException("Import only supports otpauth://totp/ or otpauth://hotp/");
 						}
 
 						// get the label and optional issuer
@@ -572,6 +572,12 @@ namespace WinAuth
 						if (string.IsNullOrEmpty(secret) == true)
 						{
 							throw new ApplicationException("Authenticator does not contain secret");
+						}
+
+						string counter = query["counter"];
+						if (uri.Host == "hotp" && string.IsNullOrEmpty(counter) == true)
+						{
+							throw new ApplicationException("HOTP authenticator should have a counter");
 						}
 
 						WinAuthAuthenticator importedAuthenticator = new WinAuthAuthenticator();
@@ -610,6 +616,17 @@ namespace WinAuth
 							((SteamAuthenticator)auth).RevocationCode = string.Empty;
 							issuer = string.Empty;
 						}
+						else if (uri.Host == "hotp")
+						{
+							auth = new HOTPAuthenticator();
+							((HOTPAuthenticator)auth).SecretKey = Base32.getInstance().Decode(secret);
+							((HOTPAuthenticator)auth).Counter = int.Parse(counter);
+							
+							if (string.IsNullOrEmpty(issuer) == false)
+							{
+								auth.Issuer = issuer;
+							}
+						}
 						else // if (string.Compare(issuer, "Google", true) == 0)
 						{
 							auth = new GoogleAuthenticator();
@@ -618,6 +635,10 @@ namespace WinAuth
 							if (string.Compare(issuer, "Google", true) == 0)
 							{
 								issuer = string.Empty;
+							}
+							else if (string.IsNullOrEmpty(issuer) == false)
+							{
+								auth.Issuer = issuer;
 							}
 						}
 						//
@@ -630,7 +651,7 @@ namespace WinAuth
 						//
 						if (label.Length != 0)
 						{
-							importedAuthenticator.Name = label + (issuer.Length != 0 ? " (" + issuer + ")" : string.Empty);
+							importedAuthenticator.Name = (issuer.Length != 0 ? issuer + " (" + label + ")" : label);
 						}
 						else if (issuer.Length != 0)
 						{
