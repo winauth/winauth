@@ -4,21 +4,15 @@
 
 ----
 
-####Notice about Google Code
+##Download Latest Version
 
-This project was formally at https://code.google.com/p/winauth but has been migrated to GitHub following Google's
-announcement that [Google Code is being shutdown](http://google-opensource.blogspot.com/2015/03/farewell-to-google-code.html).
+The latest stable version is WinAuth 3.1.8, and is available to download from this source repository to compile yourself, or as a pre-compiled binary from [WinAuth downloads](https://winauth.com/download).
 
 ----
 
-####SWTOR Switches Security Key to Standard Authenticator
+##WinAuth 3.2 (development)
 
-<img src="https://winauth.com/wp-content/uploads/2015/06/swtor-300x110.png" width="180" height="66" align="left"><img src="data:image/gif;base64,R0lGODlhAQABAIAAANOhk9OhkyH5BAUUAAAALAAAAAABAAEAAAICRAEAOw==" width="20" height="40" align="left"> SWTOR have moved to an RFC 6238 TOTP authenticator that can now be used with WinAuth. [Read more](https://winauth.com/2015/06/11/swtor-security-key-google-authenticator/).
-<p>&nbsp;</p>
-----
-##WinAuth 3.2
-
-The next version of WinAuth is in development. This release will include both the new Steam Guard Mobile Authenticator, integration with YubiKey to enhance your authenticator security and a HOTP implementation.
+The next version of WinAuth is in development. This release includes both the new Steam Guard Mobile Authenticator, integration with YubiKey to enhance your authenticator security and a HOTP implementation.
 
 ####Steam Guard
 
@@ -34,9 +28,9 @@ Anyone with a YubiKey can now use it with WinAuth to further protect their data.
 
 <img src="https://winauth.com/wp-content/uploads/2013/07/yubi1.png" alt="Using YubiKey with WinAuth" />
 
-More information about the requirements will be available shortly but will require a YubiKey Standard or NEO 2.2.x or later.
+A YubiKey Standard / NEO 2.2.x or later is required.
 
-WinAuth 3.2.10 BETA is available to [download](https://winauth.com/downloads/3.x/WinAuth-3.2.10.zip).
+WinAuth 3.2.12 is available to [download](https://winauth.com/downloads/3.x/WinAuth-3.2.12.zip).
 
 *_This is a pre-release version and should not be used with live accounts. The configuration file updated by 3.2 is not backward compatible with 3.1. Please make a backup of your current authenticator data first, which is store in c:\Users\<username>\AppData\Roaming\WinAuth\winauth.xml._*
  
