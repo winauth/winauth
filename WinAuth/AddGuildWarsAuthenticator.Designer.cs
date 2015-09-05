@@ -78,7 +78,7 @@ namespace WinAuth
 			// 
 			// codeField
 			// 
-			this.codeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.codeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
 			this.codeField.Location = new System.Drawing.Point(83, 395);
 			this.codeField.Multiline = true;
 			this.codeField.Name = "codeField";
@@ -159,6 +159,7 @@ namespace WinAuth
 			this.cancelButton.TabIndex = 7;
 			this.cancelButton.Text = "Cancel";
 			this.cancelButton.UseSelectable = true;
+			this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
 			// 
 			// icon2RadioButton
 			// 
