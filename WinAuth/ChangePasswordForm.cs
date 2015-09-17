@@ -72,6 +72,11 @@ namespace WinAuth
 		public string Password { get; set; }
 
 		/// <summary>
+		/// If have a current password
+		/// </summary>
+		public bool HasPassword { get; set; }
+
+		/// <summary>
 		/// List of seedwords
 		/// </summary>
 		private List<string> _seedWords = new List<string>();
@@ -106,8 +111,11 @@ namespace WinAuth
 			if ((PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
 			{
 				passwordCheckbox.Checked = true;
-				passwordField.Text = EXISTING_PASSWORD;
-				verifyField.Text = EXISTING_PASSWORD;
+				if (HasPassword == true)
+				{
+					passwordField.Text = EXISTING_PASSWORD;
+					verifyField.Text = EXISTING_PASSWORD;
+				}
 			}
 
 			yubiPanelConfigure.Visible = false;

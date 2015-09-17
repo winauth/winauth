@@ -2025,6 +2025,7 @@ namespace WinAuth
 
 			ChangePasswordForm form = new ChangePasswordForm();
 			form.PasswordType = this.Config.PasswordType;
+			form.HasPassword = ((this.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0);
 			if (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK)
 			{
 				bool retry;
