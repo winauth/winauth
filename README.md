@@ -30,7 +30,7 @@ Anyone with a YubiKey can now use it with WinAuth to further protect their data.
 
 A YubiKey Standard / NEO 2.2.x or later is required.
 
-WinAuth 3.2.15 is available to [download](https://winauth.com/downloads/3.x/WinAuth-3.2.15.zip).
+WinAuth 3.2.16 is available to [download](https://winauth.com/downloads/3.x/WinAuth-3.2.16.zip).
 
 *_This is a pre-release version and should not be used with live accounts. The configuration file updated by 3.2 is not backward compatible with 3.1. Please make a backup of your current authenticator data first, which is store in c:\Users\<username>\AppData\Roaming\WinAuth\winauth.xml._*
  
