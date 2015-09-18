@@ -750,6 +750,7 @@ namespace WinAuth
         {
           switch (reader.Name)
           {
+						// v2 file
             case "WinAuth":
               changed = ReadXmlInternal(reader, password);
               break;

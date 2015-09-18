@@ -353,7 +353,10 @@ namespace WinAuth
 					xmlsettings.Indent = true;
 					using (XmlWriter xw = XmlWriter.Create(sw, xmlsettings))
 					{
+						xw.WriteStartElement("WinAuth");
+						xw.WriteAttributeString("version", System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(2));
 						wa.WriteXmlString(xw);
+						xw.WriteEndElement();
 					}
 
 					string pgpkey = string.IsNullOrEmpty(config.PGPKey) == false ? config.PGPKey : WinAuthHelper.WINAUTH_PGP_PUBLICKEY;
