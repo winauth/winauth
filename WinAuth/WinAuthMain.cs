@@ -22,6 +22,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Forms;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Resources;
@@ -263,6 +264,9 @@ namespace WinAuth
 
 		private static void main()
 		{
+			// Fix #226: set to use TLS1.2
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+		
 			// Issue #53: set a default culture
 			if (System.Threading.Thread.CurrentThread.CurrentCulture == null || System.Threading.Thread.CurrentThread.CurrentUICulture == null)
 			{
