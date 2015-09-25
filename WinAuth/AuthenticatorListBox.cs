@@ -1119,7 +1119,7 @@ namespace WinAuth
 			var menu = this.ContextMenuStrip;
 			var item = this.CurrentItem;
 			WinAuthAuthenticator auth = null;
-			if (item == null || (auth = item.Authenticator) == null)
+			if (item == null || (auth = item.Authenticator) == null || auth.AuthenticatorData == null)
 			{
 				return;
 			}
