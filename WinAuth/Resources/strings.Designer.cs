@@ -714,6 +714,15 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your authenticators were saved with newer a version of WinAuth and so cannot be loaded. Please use WinAuth {0} or later..
+        /// </summary>
+        internal static string ConfigIsNewer {
+            get {
+                return ResourceManager.GetString("ConfigIsNewer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Copy Code.
         /// </summary>
         internal static string CopyCode {
@@ -1152,6 +1161,17 @@ namespace WinAuth.Resources {
         internal static string UnknownError {
             get {
                 return ResourceManager.GetString("UnknownError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For the best security it is recommended that you upgrade Microsoft .Net to version 4.5.
+        ///
+        ///Would you like to go to the Microsoft .Net download page (open your browser)?.
+        /// </summary>
+        internal static string UpgradeDotNet {
+            get {
+                return ResourceManager.GetString("UpgradeDotNet", resourceCulture);
             }
         }
         

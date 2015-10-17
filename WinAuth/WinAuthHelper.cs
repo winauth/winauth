@@ -148,32 +148,32 @@ namespace WinAuth
       {
         // check for file in current directory
         configFile = Path.Combine(Environment.CurrentDirectory, DEFAULT_AUTHENTICATOR_FILE_NAME);
-				if (File.Exists(configFile) == false)
-				{
-					configFile = null;
+					if (File.Exists(configFile) == false)
+					{
+						configFile = null;
+					}
 				}
-      }
       if (string.IsNullOrEmpty(configFile) == true)
       {
         // check for file in exe directory
         configFile = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), DEFAULT_AUTHENTICATOR_FILE_NAME);
-        if (File.Exists(configFile) == false)
-        {
-          configFile = null;
-        }
-      }
+					if (File.Exists(configFile) == false)
+					{
+						configFile = null;
+					}
+				}
       if (string.IsNullOrEmpty(configFile) == true)
       {
         // do we have a file specific in the registry?
         string configDirectory = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuthMain.APPLICATION_NAME);
         // check for default authenticator
         configFile = Path.Combine(configDirectory, DEFAULT_AUTHENTICATOR_FILE_NAME);
-        // if no config file, just return a blank config
-        if (File.Exists(configFile) == false)
-        {
-          return config;
-        }
-      }
+					// if no config file, just return a blank config
+					if (File.Exists(configFile) == false)
+					{
+						return config;
+					}
+				}
 
       // if no config file when one was specified; report an error
       if (File.Exists(configFile) == false)

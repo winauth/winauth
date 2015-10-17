@@ -778,7 +778,13 @@ namespace WinAuth
       if (decimal.TryParse(reader.GetAttribute("version"), out version) == true)
       {
         Version = version;
-      }
+
+				if (version > WinAuthConfig.CURRENTVERSION)
+				{
+					// ensure we don't overwrite a newer config
+					throw new WinAuthInvalidNewerConfigException(string.Format(strings.ConfigIsNewer, version));
+				}
+			}
 
       string encrypted = reader.GetAttribute("encrypted");
 			this.PasswordType = Authenticator.DecodePasswordTypes(encrypted);
@@ -1197,5 +1203,12 @@ namespace WinAuth
     {
     }
   }
+	public class WinAuthInvalidNewerConfigException : ApplicationException
+	{
+		public WinAuthInvalidNewerConfigException(string msg)
+			: base(msg)
+		{
+		}
+	}
 
 }

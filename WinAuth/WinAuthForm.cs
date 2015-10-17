@@ -252,7 +252,13 @@ namespace WinAuth
 			}).ContinueWith((configTask) =>
 			{
 				Exception ex = configTask.Result.Item2;
-				if (ex is EncrpytedSecretDataException)
+				if (ex is WinAuthInvalidNewerConfigException)
+				{
+					MessageBox.Show(this, ex.Message, WinAuthMain.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					System.Diagnostics.Process.GetCurrentProcess().Kill();
+					return;
+				}
+				else if (ex is EncrpytedSecretDataException)
 				{
 					loadingPanel.Visible = false;
 					passwordPanel.Visible = true;
