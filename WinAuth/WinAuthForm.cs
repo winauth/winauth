@@ -194,8 +194,6 @@ namespace WinAuth
         }
       }
 
-			proxy = "127.0.0.1:8888";
-
 			// set the default web proxy
 			if (string.IsNullOrEmpty(proxy) == false)
 			{
