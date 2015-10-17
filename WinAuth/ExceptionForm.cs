@@ -101,20 +101,27 @@ namespace WinAuth
 			}
 
 			// add winauth log
-			string dir = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuthMain.APPLICATION_NAME);
-			string winauthlog = Path.Combine(dir, "winauth.log");
-			if (File.Exists(winauthlog) == true)
+			try
 			{
-				diag.Append("--WINAUTH.LOG--").Append(Environment.NewLine);
-				diag.Append(File.ReadAllText(winauthlog)).Append(Environment.NewLine).Append(Environment.NewLine);
-			}
+				string dir = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuthMain.APPLICATION_NAME);
+				if (Directory.Exists(dir) == true)
+				{
+					string winauthlog = Path.Combine(dir, "winauth.log");
+					if (File.Exists(winauthlog) == true)
+					{
+						diag.Append("--WINAUTH.LOG--").Append(Environment.NewLine);
+						diag.Append(File.ReadAllText(winauthlog)).Append(Environment.NewLine).Append(Environment.NewLine);
+					}
 
-			// add authenticator.xml
-			foreach (string file in Directory.GetFiles(dir, "*.xml"))
-			{
-				diag.Append("--" + file + "--").Append(Environment.NewLine);
-				diag.Append(File.ReadAllText(file)).Append(Environment.NewLine).Append(Environment.NewLine);
+					// add authenticator.xml
+					foreach (string file in Directory.GetFiles(dir, "*.xml"))
+					{
+						diag.Append("--" + file + "--").Append(Environment.NewLine);
+						diag.Append(File.ReadAllText(file)).Append(Environment.NewLine).Append(Environment.NewLine);
+					}
+				}
 			}
+			catch (Exception) { }
 
 			// add the current config
 			if (this.Config != null)
