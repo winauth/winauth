@@ -723,6 +723,19 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to WinAuth has upgraded your authenticators to version {0}.
+        ///
+        ///Do NOT run an older version of WinAuth as this could overwrite them.
+        ///
+        ///Now is a good time to make a backup. Click the Options icon and choose Export..
+        /// </summary>
+        internal static string ConfigUpgraded {
+            get {
+                return ResourceManager.GetString("ConfigUpgraded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Copy Code.
         /// </summary>
         internal static string CopyCode {

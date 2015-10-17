@@ -80,7 +80,7 @@ namespace WinAuth
 		/// <summary>
 		/// Period when the poller thread will check if it needs to check for a new version
 		/// </summary>
-		protected const int UPDATECHECKTHREAD_SLEEP = 15 * 60 * 1000; // 15 minutes to check if we need to check
+		protected const int UPDATECHECKTHREAD_SLEEP = 6 * 60 * 60 * 1000; // 6 hrs to check if we need to check
 
 		/// <summary>
 		/// Registry key value name for when we last checked for a new version
@@ -248,7 +248,7 @@ namespace WinAuth
 					try
 					{
 						var latest = GetLatestVersion();
-						if (latest.Version > this.CurrentVersion)
+						if (latest != null && latest.Version > this.CurrentVersion)
 						{
 							callback(latest.Version);
 						}
@@ -280,29 +280,37 @@ namespace WinAuth
 				}
 			}
 			catch (Exception) { }
-			using (WebClient web = new WebClient())
+			try
 			{
-				web.Headers.Add("User-Agent", "WinAuth-" + this.CurrentVersion.ToString());
-				if (callback == null)
+				using (WebClient web = new WebClient())
 				{
-					// immediate request
-					string result = web.DownloadString(updateUrl);
-					WinAuthVersionInfo latestVersion = ParseGetLatestVersion(result);
-					if (latestVersion != null)
+					web.Headers.Add("User-Agent", "WinAuth-" + this.CurrentVersion.ToString());
+					if (callback == null)
 					{
-						// update local values
-						LastKnownLatestVersion = latestVersion.Version;
-						Config.WriteSetting(WINAUTHREGKEY_LATESTVERSION, latestVersion.Version.ToString(3));
+						// immediate request
+						string result = web.DownloadString(updateUrl);
+						WinAuthVersionInfo latestVersion = ParseGetLatestVersion(result);
+						if (latestVersion != null)
+						{
+							// update local values
+							LastKnownLatestVersion = latestVersion.Version;
+							Config.WriteSetting(WINAUTHREGKEY_LATESTVERSION, latestVersion.Version.ToString(3));
+						}
+						return latestVersion;
 					}
-					return latestVersion;
+					else
+					{
+						// initiate async operation
+						web.DownloadStringCompleted += new DownloadStringCompletedEventHandler(GetLatestVersionDownloadCompleted);
+						web.DownloadStringAsync(new Uri(updateUrl), callback);
+						return null;
+					}
 				}
-				else
-				{
-					// initiate async operation
-					web.DownloadStringCompleted += new DownloadStringCompletedEventHandler(GetLatestVersionDownloadCompleted);
-					web.DownloadStringAsync(new Uri(updateUrl), callback);
-					return null;
-				}
+			}
+			catch (Exception )
+			{
+				// don't fail if we can't get latest version
+				return null;
 			}
 		}
 

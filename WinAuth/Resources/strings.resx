@@ -520,4 +520,11 @@ If you are happy to send this information please either click Send Error Report 
 
 Would you like to go to the Microsoft .Net download page (open your browser)?</value>
   </data>
+  <data name="ConfigUpgraded" xml:space="preserve">
+    <value>WinAuth has upgraded your authenticators to version {0}.
+
+Do NOT run an older version of WinAuth as this could overwrite them.
+
+Now is a good time to make a backup. Click the Options icon and choose Export.</value>
+  </data>
 </root>

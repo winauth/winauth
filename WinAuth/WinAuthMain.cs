@@ -263,7 +263,17 @@ namespace WinAuth
 		private static WinAuthForm _form;
 
 		private static void main()
-		{	
+		{
+			// Fix #226: set to use TLS1.2
+			try
+			{
+				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+			}
+			catch (Exception)
+			{
+				// not 4.5 installed - we could prompt, but not for now
+			}
+
 			// Issue #53: set a default culture
 			if (System.Threading.Thread.CurrentThread.CurrentCulture == null || System.Threading.Thread.CurrentThread.CurrentUICulture == null)
 			{
@@ -276,16 +286,6 @@ namespace WinAuth
 
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-
-			// Fix #226: set to use TLS1.2
-			try
-			{
-				ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
-			}
-			catch (Exception )
-			{
-				// not 4.5 installed - we could prompt, but not for now
-			}
 
 			_form = new WinAuthForm();
 			Application.Run(_form);

@@ -205,10 +205,16 @@ namespace WinAuth
 
 				if (config.Version < WinAuthConfig.CURRENTVERSION)
 				{
+					// set new created values
 					foreach (WinAuthAuthenticator wa in config)
 					{
 						wa.Created = fi.CreationTime;
 					}
+
+					// display warning
+					WinAuthForm.ErrorDialog(form, string.Format(strings.ConfigUpgraded, WinAuthConfig.CURRENTVERSION));
+
+					changed = true;
 				}
 
 				if (changed == true && config.IsReadOnly == false)
