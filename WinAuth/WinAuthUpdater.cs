@@ -282,6 +282,7 @@ namespace WinAuth
 			catch (Exception) { }
 			using (WebClient web = new WebClient())
 			{
+				web.Headers.Add("User-Agent", "WinAuth-" + this.CurrentVersion.ToString());
 				if (callback == null)
 				{
 					// immediate request
@@ -390,7 +391,7 @@ namespace WinAuth
 		/// <summary>
 		/// Set the interval for automatic update checks. Null is disabled. Zero is every time.
 		/// </summary>
-		/// <param name="interval">new interval or null to disvble</param>
+		/// <param name="interval">new interval or null to disable</param>
 		public void SetUpdateInterval(TimeSpan? interval)
 		{
 			// get the next check time
