@@ -381,6 +381,14 @@ namespace WinAuth
 		internal static extern IntPtr FindWindow(string className, string windowName);
 		[DllImport("user32.dll", SetLastError = true)]
 		internal static extern IntPtr GetForegroundWindow();
+
+		internal delegate bool EnumWindowProc(IntPtr hwnd, IntPtr lParam);
+		[DllImport("user32.Dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		internal static extern bool EnumChildWindows(IntPtr parentHandle, EnumWindowProc callback, IntPtr lParam);
+		[DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
+		internal static extern IntPtr GetParent(IntPtr hWnd);
+
 		[DllImport("user32.dll", SetLastError = true)]
 		internal static extern UInt32 SendInput(UInt32 numberOfInputs, INPUT[] inputs, Int32 sizeOfInputStructure);
 		[DllImport("user32.dll", SetLastError = true)]
@@ -462,6 +470,62 @@ namespace WinAuth
 			placement.length = Marshal.SizeOf(placement);
 			GetWindowPlacement(hwnd, ref placement);
 			return placement;
+		}
+
+		/// <summary>
+		/// Returns a list of child windows
+		/// </summary>
+		/// <param name="parent">Parent of the windows to return</param>
+		/// <returns>List of child windows</returns>
+		public static List<IntPtr> GetChildWindows(IntPtr parent, bool onlyDirect = false)
+		{
+			List<IntPtr> result = new List<IntPtr>();
+			GCHandle listHandle = GCHandle.Alloc(result);
+			try
+			{
+				EnumWindowProc childProc = new EnumWindowProc(EnumWindow);
+				EnumChildWindows(parent, childProc, GCHandle.ToIntPtr(listHandle));
+			}
+			finally
+			{
+				if (listHandle.IsAllocated)
+				{
+					listHandle.Free();
+				}
+			}
+
+			if (onlyDirect == true)
+			{
+				foreach (var h in result.ToArray())
+				{
+					if (GetParent(h) != parent)
+					{
+						result.Remove(h);
+					}
+				}
+			}
+
+			return result;
+		}
+
+
+		/// <summary>
+		/// Callback method to be used when enumerating windows.
+		/// </summary>
+		/// <param name="handle">Handle of the next window</param>
+		/// <param name="pointer">Pointer to a GCHandle that holds a reference to the list to fill</param>
+		/// <returns>True to continue the enumeration, false to bail</returns>
+		private static bool EnumWindow(IntPtr handle, IntPtr pointer)
+		{
+			GCHandle gch = GCHandle.FromIntPtr(pointer);
+			List<IntPtr> list = gch.Target as List<IntPtr>;
+			if (list == null)
+			{
+				throw new InvalidCastException("GCHandle Target could not be cast as List<IntPtr>");
+			}
+			list.Add(handle);
+			//  You can modify this to check to see if you want to cancel the operation, then return a null here
+			return true;
 		}
 
 		/// <summary>
