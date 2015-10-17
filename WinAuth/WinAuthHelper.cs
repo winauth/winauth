@@ -211,10 +211,7 @@ namespace WinAuth
 						wa.Created = fi.CreationTime;
 					}
 
-					// display warning
-					WinAuthForm.ErrorDialog(form, string.Format(strings.ConfigUpgraded, WinAuthConfig.CURRENTVERSION));
-
-					changed = true;
+					config.Upgraded = true;
 				}
 
 				if (changed == true && config.IsReadOnly == false)
@@ -235,7 +232,6 @@ namespace WinAuth
 			catch (Exception )
 			{
 				throw;
-				//MessageBox.Show(form, string.Format(strings.CannotLoadAuthenticator, configFile) + ": " + ex.Message, WinAuthMain.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 
 			SaveToRegistry(config);

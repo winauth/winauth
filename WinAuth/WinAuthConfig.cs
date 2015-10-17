@@ -75,6 +75,11 @@ namespace WinAuth
 		public YubiKey Yubi { get; set; }
 
 		/// <summary>
+		/// If the config was upgraded
+		/// </summary>
+		public bool Upgraded { get; set; }
+
+		/// <summary>
 		/// Current encryption type
 		/// </summary>
 		private Authenticator.PasswordTypes _passwordType = Authenticator.PasswordTypes.None;
@@ -100,10 +105,6 @@ namespace WinAuth
 				{
 					this.Yubi = null;
 				}
-				//if ((_passwordType & (Authenticator.PasswordTypes.YubiKeySlot1 | Authenticator.PasswordTypes.YubiKeySlot2)) != 0 && this.Yubi == null)
-				//{
-				//	this.Yubi = YubiKey.CreateInstance(15000);
-				//}
 			}
 		}
 

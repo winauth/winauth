@@ -312,6 +312,13 @@ namespace WinAuth
 				this.Config = config;
 				this.Config.OnConfigChanged += new ConfigChangedHandler(OnConfigChanged);
 
+				if (config.Upgraded == true)
+				{
+					SaveConfig(true);
+					// display warning
+					WinAuthForm.ErrorDialog(this, string.Format(strings.ConfigUpgraded, WinAuthConfig.CURRENTVERSION));
+				}
+
 				InitializeForm();
 			}, TaskScheduler.FromCurrentSynchronizationContext());
 		}
