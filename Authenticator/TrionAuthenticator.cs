@@ -79,6 +79,16 @@ namespace WinAuth
 		private static string SECURITYQUESTIONS_URL = "https://rift.trionworlds.com/external/get-account-security-questions.action";
 		private static string RESTORE_URL = "https://rift.trionworlds.com/external/retrieve-device-key.action";
 
+		/// <summary>
+		/// Number of minutes to ignore syncing if network error
+		/// </summary>
+		private const int SYNC_ERROR_MINUTES = 60;
+ 
+		/// <summary>
+		/// Time of last Sync error
+		/// </summary>
+		private static DateTime _lastSyncError = DateTime.MinValue;
+
 		#region Authenticator data
 
 		/// <summary>
@@ -257,35 +267,52 @@ namespace WinAuth
 				throw new EncrpytedSecretDataException();
 			}
 
-			// create a connection to time sync server
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(SYNC_URL);
-			request.Method = "GET";
-
-			// get response
-			string responseData;
-			using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+			// don't retry for 5 minutes
+			if (_lastSyncError >= DateTime.Now.AddMinutes(0 - SYNC_ERROR_MINUTES))
 			{
-				// OK?
-				if (response.StatusCode != HttpStatusCode.OK)
-				{
-					throw new ApplicationException(string.Format("{0}: {1}", (int)response.StatusCode, response.StatusDescription));
-				}
-
-				// load the response
-				using (StreamReader responseStream = new StreamReader(response.GetResponseStream()))
-				{
-					responseData = responseStream.ReadToEnd();
-				}
+				return;
 			}
 
-			// return data is string version of time in milliseconds since epoch
+			try
+			{
+				// create a connection to time sync server
+				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(SYNC_URL);
+				request.Method = "GET";
 
-			// get the difference between the server time and our current time
-			long serverTimeDiff = long.Parse(responseData) - CurrentTime;
+				// get response
+				string responseData;
+				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+				{
+					// OK?
+					if (response.StatusCode != HttpStatusCode.OK)
+					{
+						throw new ApplicationException(string.Format("{0}: {1}", (int)response.StatusCode, response.StatusDescription));
+					}
 
-			// update the Data object
-			ServerTimeDiff = serverTimeDiff;
-			LastServerTime = DateTime.Now.Ticks;
+					// load the response
+					using (StreamReader responseStream = new StreamReader(response.GetResponseStream()))
+					{
+						responseData = responseStream.ReadToEnd();
+					}
+				}
+
+				// return data is string version of time in milliseconds since epoch
+
+				// get the difference between the server time and our current time
+				long serverTimeDiff = long.Parse(responseData) - CurrentTime;
+
+				// update the Data object
+				ServerTimeDiff = serverTimeDiff;
+				LastServerTime = DateTime.Now.Ticks;
+
+				// clear any sync error
+				_lastSyncError = DateTime.MinValue;
+			}
+			catch (Exception)
+			{
+				// don't retry for a while after error
+				_lastSyncError = DateTime.Now;
+			}
 		}
 
 		/// <summary>

@@ -66,7 +66,7 @@ namespace WinAuth
 		/// <summary>
 		/// Number of minutes to ignore syncing if network error
 		/// </summary>
-		private const int SYNC_ERROR_MINUTES = 5;
+		private const int SYNC_ERROR_MINUTES = 60;
 
 		/// <summary>
 		/// Number of attempts to activate
@@ -569,13 +569,13 @@ namespace WinAuth
 				// clear any sync error
 				_lastSyncError = DateTime.MinValue;
 			}
-			catch (InvalidRequestException )
+			catch (Exception ex)
 			{
 				// don't retry for a while after error
 				_lastSyncError = DateTime.Now;
 
 				// set to zero to force reset
-				ServerTimeDiff = 0;
+				//ServerTimeDiff = 0;
 			}
 		}
 
