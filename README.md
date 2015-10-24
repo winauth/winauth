@@ -44,6 +44,9 @@ Download [WinAuth-3.3.0.zip](https://winauth.com/downloads/3.x/WinAuth-3.3.0.zip
 Requires [Microsoft .Net 4.5](http://www.microsoft.com/en-us/download/details.aspx?id=30653)
 
 To use:
+  * Download the latest stable version of WinAuth
+  * There is no installation required, just open the zip file and extract the WinAuth.exe file to anywhere on your computer
+  * Double-click or run WinAuth.exe
   * Click the Add button to add or import an authenticator
   * Right-click any authenticator to bring up context menu
   * Click the icon on the right to show the current code, if auto-refresh is not enabled
