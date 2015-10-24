@@ -1,12 +1,12 @@
 #Windows Authenticator
 
-*WinAuth is a portable, open-source Authenticator for Windows that provides a time-based RFC 6238 authenticator and common implementations, such as the Google Authenticator. WinAuth can be used with many Bitcoin trading websites as well as games, supporting Battle.net (World of Warcraft, Hearthstone, Heroes of the Storm, Diablo), Guild Wars 2, Glyph (Rift and ArcheAge), WildStar, RuneScape, SWTOR and Steam.*
+*WinAuth is a portable, open-source Authenticator for Windows that provides counter or time-based RFC 6238 authenticators and common implementations, such as the Google Authenticator. WinAuth can be used with many Bitcoin trading websites as well as games, supporting Battle.net (World of Warcraft, Hearthstone, Heroes of the Storm, Diablo), Guild Wars 2, Glyph (Rift and ArcheAge), WildStar, RuneScape, SWTOR and Steam.*
 
 ----
 
 ##Download Latest Version
 
-The latest stable version is WinAuth 3.3.0, and is available to download from this source repository to compile yourself, or as a pre-compiled binary from [WinAuth downloads](https://winauth.com/download).
+The latest stable version is WinAuth 3.3.0 and is available to download from this source repository, or as a pre-compiled binary from [WinAuth downloads](https://winauth.com/download).
 
 ----
 
@@ -74,7 +74,11 @@ WinAuth can now be used with a YubiKey to further protect the data. This will he
 
 <img src="https://winauth.com/wp-content/uploads/2013/07/yubi1.png" alt="Using YubiKey with WinAuth" />
 
-A YubiKey Standard / NEO 2.2.x or later is required.
+Clicking the options (cog) icon, and choosing "Change Protection...", has a new option to "Lock with a YubiKey". Ticking this will check your system for a compatible YubiKey and walk you through setting it up. You can either use an existing slot's configuration or have WinAuth generate a random secret to store on the YubiKey.
+
+You must keep your YubiKey plugged in while using WinAuth. There will be no way to recover your authenticator data if your YubiKey is lost or damaged without programming another YubiKey with the same secret, or restoring from backups.
+
+*YubiKey Standard / NEO 2.2.x or later is required.*
 
 ----
 
