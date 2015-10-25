@@ -776,7 +776,7 @@ namespace WinAuth
 			bool changed = false;
 
       decimal version;
-      if (decimal.TryParse(reader.GetAttribute("version"), out version) == true)
+			if (decimal.TryParse(reader.GetAttribute("version"), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out version) == true)
       {
         Version = version;
 
