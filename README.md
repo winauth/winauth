@@ -73,7 +73,7 @@ Please read about the [Steam Guard Mobile Authenticator](https://winauth.com/201
 
 ####YubiKey
 
-WinAuth can now be used with a YubiKey to further protect the data. This will help ensure the authenticators’ secret keys cannot be read by anyone even when they have physical access to your computer.
+WinAuth can now be used with a YubiKey to further protect the data. This will help ensure the authenticatorsâ€™ secret keys cannot be read by anyone even when they have physical access to your computer.
 
 <img src="https://winauth.com/wp-content/uploads/2013/07/yubi1.png" alt="Using YubiKey with WinAuth" />
 
