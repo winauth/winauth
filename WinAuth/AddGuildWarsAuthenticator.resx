@@ -119,10 +119,10 @@
   </resheader>
   <data name="step1Label.Text" xml:space="preserve">
     <value>1. Login to your GuildWars2 account.
-2. Click the "Security" option
-3. Click the "Set Up The App" button
+2. Click the "Security" option.
+3. Click the "Set Up The App" button.
 4. Optionally, add the app to your smartphone (if you want it there too). Click Next.
-5. Enter your Secret Code below</value>
+5. Enter your Secret Code below:</value>
   </data>
   <metadata name="newAuthenticatorTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>

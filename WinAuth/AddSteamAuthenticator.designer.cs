@@ -421,7 +421,7 @@
 			this.revocationcodeText.Name = "revocationcodeText";
 			this.revocationcodeText.Size = new System.Drawing.Size(442, 65);
 			this.revocationcodeText.TabIndex = 17;
-			this.revocationcodeText.Text = "This is your Revocation code.  It can be used to remove the authenticator from yo" +
+			this.revocationcodeText.Text = "This is your Revocation code. It can be used to remove the authenticator from yo" +
     "ur account if you ever lose it. Please write it down now and put it somewhere sa" +
     "fe.";
 			// 
@@ -470,7 +470,7 @@
 			this.confirmTabLabel.Name = "confirmTabLabel";
 			this.confirmTabLabel.Size = new System.Drawing.Size(449, 34);
 			this.confirmTabLabel.TabIndex = 2;
-			this.confirmTabLabel.Text = "Enter the activation code you should receive by email. ";
+			this.confirmTabLabel.Text = "Enter the activation code you should receive by email:";
 			// 
 			// addedTab
 			// 

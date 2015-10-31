@@ -73,7 +73,7 @@ namespace WinAuth
 			this.step1Label.Name = "step1Label";
 			this.step1Label.Size = new System.Drawing.Size(425, 48);
 			this.step1Label.TabIndex = 1;
-			this.step1Label.Text = "1. Enter the Secret Code for your authenticator. Spaces don\'t matter. If have a Q" +
+			this.step1Label.Text = "1. Enter the Secret Code for your authenticator. Spaces don\'t matter. If you have a Q" +
     "R code, you can paste the URL of the image instead.\r\n";
 			// 
 			// okButton
@@ -204,7 +204,7 @@ namespace WinAuth
 			this.step2Label.Name = "step2Label";
 			this.step2Label.Size = new System.Drawing.Size(51, 25);
 			this.step2Label.TabIndex = 10;
-			this.step2Label.Text = "2. Click";
+			this.step2Label.Text = "2. Click:";
 			// 
 			// verifyButton
 			// 
@@ -246,7 +246,7 @@ namespace WinAuth
 			this.step3Label.Name = "step3Label";
 			this.step3Label.Size = new System.Drawing.Size(293, 19);
 			this.step3Label.TabIndex = 11;
-			this.step3Label.Text = "3. Verify the following code matches your service";
+			this.step3Label.Text = "3. Verify the following code matches your service:";
 			// 
 			// timer
 			// 

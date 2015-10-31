@@ -221,8 +221,8 @@
 			this.metroLabel1.Name = "metroLabel1";
 			this.metroLabel1.Size = new System.Drawing.Size(484, 50);
 			this.metroLabel1.TabIndex = 1;
-			this.metroLabel1.Text = "Select the file to be saved. This will be a \".zip\" file if you have used a passwo" +
-    "rd, a .pgp file if you have used a PGP key, otherwise a plain .txt file";
+			this.metroLabel1.Text = "Select the file to be saved. This will be a .zip file if you have used a passwo" +
+    "rd, a .pgp file if you have used a PGP key, otherwise a plain .txt file.";
 			// 
 			// browseButton
 			// 

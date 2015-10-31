@@ -106,7 +106,7 @@
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(51, 25);
 			this.label3.TabIndex = 1;
-			this.label3.Text = "3. Click";
+			this.label3.Text = "3. Click:";
 			// 
 			// label8
 			// 
@@ -131,7 +131,7 @@
 			this.label1.Size = new System.Drawing.Size(431, 58);
 			this.label1.TabIndex = 0;
 			this.label1.Text = "1. Go to www.trionworlds.com and login to your account.\r\n2. Click the Security ta" +
-    "b, and \"Add the RIFT Moble Authenticator\". You must have already added your secr" +
+    "b, and \"Add the RIFT Mobile Authenticator\". You must have already added your secr" +
     "et questions and answers.";
 			// 
 			// restoreAnswer2Field
@@ -264,7 +264,7 @@
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(413, 19);
 			this.label4.TabIndex = 1;
-			this.label4.Text = "2. Enter the Device ID you saved when you created your authenticator.";
+			this.label4.Text = "2. Enter the Device ID you saved when you created your authenticator:";
 			// 
 			// label9
 			// 
@@ -273,7 +273,7 @@
 			this.label9.Name = "label9";
 			this.label9.Size = new System.Drawing.Size(251, 19);
 			this.label9.TabIndex = 1;
-			this.label9.Text = "1. Enter your account email and password";
+			this.label9.Text = "1. Enter your account email and password:";
 			// 
 			// okButton
 			// 

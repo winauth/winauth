@@ -149,7 +149,7 @@
 			this.lnewLabel4.Name = "lnewLabel4";
 			this.lnewLabel4.Size = new System.Drawing.Size(51, 25);
 			this.lnewLabel4.TabIndex = 1;
-			this.lnewLabel4.Text = "4. Click";
+			this.lnewLabel4.Text = "4. Click:";
 			// 
 			// label2
 			// 
@@ -159,7 +159,7 @@
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(435, 25);
 			this.label2.TabIndex = 1;
-			this.label2.Text = "5. You will need to add the following details to your account.";
+			this.label2.Text = "5. You will need to add the following details to your account:";
 			// 
 			// newLabel1
 			// 
@@ -223,7 +223,7 @@
 			this.label9.Name = "label9";
 			this.label9.Size = new System.Drawing.Size(436, 53);
 			this.label9.TabIndex = 1;
-			this.label9.Text = "Enter your Serial Number and Restore Code from your previous authenticator.";
+			this.label9.Text = "Enter your Serial Number and Restore Code from your previous authenticator:";
 			// 
 			// importPrivateKeyField
 			// 
@@ -496,7 +496,7 @@
 			this.label13.Name = "label13";
 			this.label13.Size = new System.Drawing.Size(436, 55);
 			this.label13.TabIndex = 2;
-			this.label13.Text = "Enter the private key that has been exported from another authenticator program.";
+			this.label13.Text = "Enter the Private Key that has been exported from another authenticator program:";
 			// 
 			// pictureBox2
 			// 
