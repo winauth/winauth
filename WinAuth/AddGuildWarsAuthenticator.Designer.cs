@@ -118,7 +118,7 @@ namespace WinAuth
 			this.step8Label.Name = "step8Label";
 			this.step8Label.Size = new System.Drawing.Size(428, 56);
 			this.step8Label.TabIndex = 1;
-			this.step8Label.Text = "8. IMPORTANT: Write down you Secret Code and store it somewhere safe and secure. " +
+			this.step8Label.Text = "8. IMPORTANT: Write down your Secret Code and store it somewhere safe and secure. " +
     "You will need it if you ever need to restore your authenticator.";
 			// 
 			// step7Label
@@ -127,7 +127,7 @@ namespace WinAuth
 			this.step7Label.Name = "step7Label";
 			this.step7Label.Size = new System.Drawing.Size(428, 26);
 			this.step7Label.TabIndex = 1;
-			this.step7Label.Text = "7. Enter the follow code to verify it is working";
+			this.step7Label.Text = "7. Enter the following code to verify it is working:";
 			// 
 			// step1Label
 			// 
@@ -247,7 +247,7 @@ namespace WinAuth
 			this.step6Label.Name = "step6Label";
 			this.step6Label.Size = new System.Drawing.Size(51, 25);
 			this.step6Label.TabIndex = 11;
-			this.step6Label.Text = "6. Click";
+			this.step6Label.Text = "6. Click:";
 			// 
 			// AddGuildWarsAuthenticator
 			// 
