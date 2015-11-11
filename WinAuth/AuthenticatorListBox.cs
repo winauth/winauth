@@ -906,7 +906,7 @@ namespace WinAuth
 
 			// if there is no protection return None
 			WinAuthAuthenticator auth = item.Authenticator;
-			if (auth.AuthenticatorData.RequiresPassword == false)
+			if (auth.AuthenticatorData == null || auth.AuthenticatorData.RequiresPassword == false)
 			{
 				return DialogResult.None;
 			}
@@ -950,6 +950,10 @@ namespace WinAuth
 
 			// reprotect the authenticator
 			WinAuthAuthenticator auth = item.Authenticator;
+			if (auth.AuthenticatorData == null)
+			{
+				return;
+			}
 			auth.AuthenticatorData.Protect();
 			item.UnprotectCount = 0;
 		}
