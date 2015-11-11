@@ -49,10 +49,6 @@
 			this.passwordField = new MetroFramework.Controls.MetroTextBox();
 			this.passwordLabel = new MetroFramework.Controls.MetroLabel();
 			this.usernameLabel = new MetroFramework.Controls.MetroLabel();
-			this.authTab = new MetroFramework.Controls.MetroTabPage();
-			this.authcodeLabel = new MetroFramework.Controls.MetroLabel();
-			this.authcodeButton = new MetroFramework.Controls.MetroButton();
-			this.authcodeField = new MetroFramework.Controls.MetroTextBox();
 			this.confirmTab = new MetroFramework.Controls.MetroTabPage();
 			this.revocationCheckbox = new MetroFramework.Controls.MetroCheckBox();
 			this.revocationcodeCopy = new MetroFramework.Controls.MetroCheckBox();
@@ -67,6 +63,10 @@
 			this.revocationcode2Label = new MetroFramework.Controls.MetroLabel();
 			this.revocationcode2Field = new WinAuth.SecretTextBox();
 			this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
+			this.authTab = new MetroFramework.Controls.MetroTabPage();
+			this.authcodeLabel = new MetroFramework.Controls.MetroLabel();
+			this.authcodeButton = new MetroFramework.Controls.MetroButton();
+			this.authcodeField = new MetroFramework.Controls.MetroTextBox();
 			this.closeButton = new MetroFramework.Controls.MetroButton();
 			this.steamIcon = new System.Windows.Forms.PictureBox();
 			this.steamAuthenticatorIcon = new System.Windows.Forms.PictureBox();
@@ -74,9 +74,9 @@
 			this.loginTab.SuspendLayout();
 			this.captchaGroup.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.captchaBox)).BeginInit();
-			this.authTab.SuspendLayout();
 			this.confirmTab.SuspendLayout();
 			this.addedTab.SuspendLayout();
+			this.authTab.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.steamIcon)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.steamAuthenticatorIcon)).BeginInit();
 			this.SuspendLayout();
@@ -232,14 +232,14 @@
 			// tabs
 			// 
 			this.tabs.Controls.Add(this.loginTab);
-			this.tabs.Controls.Add(this.addedTab);
 			this.tabs.Controls.Add(this.authTab);
 			this.tabs.Controls.Add(this.confirmTab);
+			this.tabs.Controls.Add(this.addedTab);
 			this.tabs.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
 			this.tabs.ItemSize = new System.Drawing.Size(120, 18);
 			this.tabs.Location = new System.Drawing.Point(15, 180);
 			this.tabs.Name = "tabs";
-			this.tabs.SelectedIndex = 3;
+			this.tabs.SelectedIndex = 1;
 			this.tabs.Size = new System.Drawing.Size(464, 327);
 			this.tabs.TabIndex = 0;
 			this.tabs.UseSelectable = true;
@@ -320,55 +320,6 @@
 			this.usernameLabel.TabIndex = 1;
 			this.usernameLabel.Text = "Username";
 			// 
-			// authTab
-			// 
-			this.authTab.Controls.Add(this.authcodeLabel);
-			this.authTab.Controls.Add(this.authcodeButton);
-			this.authTab.Controls.Add(this.authcodeField);
-			this.authTab.Controls.Add(this.authoriseTabLabel);
-			this.authTab.HorizontalScrollbarBarColor = true;
-			this.authTab.HorizontalScrollbarHighlightOnWheel = false;
-			this.authTab.HorizontalScrollbarSize = 10;
-			this.authTab.Location = new System.Drawing.Point(4, 22);
-			this.authTab.Name = "authTab";
-			this.authTab.Size = new System.Drawing.Size(456, 301);
-			this.authTab.TabIndex = 2;
-			this.authTab.Tag = "";
-			this.authTab.Text = "Authorise";
-			this.authTab.VerticalScrollbarBarColor = true;
-			this.authTab.VerticalScrollbarHighlightOnWheel = false;
-			this.authTab.VerticalScrollbarSize = 10;
-			// 
-			// authcodeLabel
-			// 
-			this.authcodeLabel.Location = new System.Drawing.Point(18, 60);
-			this.authcodeLabel.Name = "authcodeLabel";
-			this.authcodeLabel.Size = new System.Drawing.Size(80, 25);
-			this.authcodeLabel.TabIndex = 2;
-			this.authcodeLabel.Text = "Code";
-			// 
-			// authcodeButton
-			// 
-			this.authcodeButton.Location = new System.Drawing.Point(104, 101);
-			this.authcodeButton.Name = "authcodeButton";
-			this.authcodeButton.Size = new System.Drawing.Size(110, 24);
-			this.authcodeButton.TabIndex = 1;
-			this.authcodeButton.Text = "Continue";
-			this.authcodeButton.UseSelectable = true;
-			this.authcodeButton.Click += new System.EventHandler(this.authcodeButton_Click);
-			// 
-			// authcodeField
-			// 
-			this.authcodeField.Location = new System.Drawing.Point(104, 60);
-			this.authcodeField.MaxLength = 32767;
-			this.authcodeField.Name = "authcodeField";
-			this.authcodeField.PasswordChar = '\0';
-			this.authcodeField.ScrollBars = System.Windows.Forms.ScrollBars.None;
-			this.authcodeField.SelectedText = "";
-			this.authcodeField.Size = new System.Drawing.Size(206, 22);
-			this.authcodeField.TabIndex = 0;
-			this.authcodeField.UseSelectable = true;
-			// 
 			// confirmTab
 			// 
 			this.confirmTab.Controls.Add(this.revocationCheckbox);
@@ -446,11 +397,11 @@
 			// 
 			// activationcodeLabel
 			// 
-			this.activationcodeLabel.Location = new System.Drawing.Point(20, 49);
+			this.activationcodeLabel.Location = new System.Drawing.Point(4, 49);
 			this.activationcodeLabel.Name = "activationcodeLabel";
-			this.activationcodeLabel.Size = new System.Drawing.Size(111, 25);
+			this.activationcodeLabel.Size = new System.Drawing.Size(127, 25);
 			this.activationcodeLabel.TabIndex = 5;
-			this.activationcodeLabel.Text = "Activation code";
+			this.activationcodeLabel.Text = "Confirmation code";
 			// 
 			// activationcodeField
 			// 
@@ -470,7 +421,7 @@
 			this.confirmTabLabel.Name = "confirmTabLabel";
 			this.confirmTabLabel.Size = new System.Drawing.Size(449, 34);
 			this.confirmTabLabel.TabIndex = 2;
-			this.confirmTabLabel.Text = "Enter the activation code you should receive by email. ";
+			this.confirmTabLabel.Text = "Enter the confirmation code you received by SMS to your phone.";
 			// 
 			// addedTab
 			// 
@@ -530,6 +481,55 @@
 			this.metroLabel1.Text = "Your authenticator has been added to your Steam account.\r\n\r\nPlease make sure you " +
     "have copied down your revocation code so you can remove your authenticator from " +
     "your Steam account in the future.\r\n";
+			// 
+			// authTab
+			// 
+			this.authTab.Controls.Add(this.authcodeLabel);
+			this.authTab.Controls.Add(this.authcodeButton);
+			this.authTab.Controls.Add(this.authcodeField);
+			this.authTab.Controls.Add(this.authoriseTabLabel);
+			this.authTab.HorizontalScrollbarBarColor = true;
+			this.authTab.HorizontalScrollbarHighlightOnWheel = false;
+			this.authTab.HorizontalScrollbarSize = 10;
+			this.authTab.Location = new System.Drawing.Point(4, 22);
+			this.authTab.Name = "authTab";
+			this.authTab.Size = new System.Drawing.Size(456, 301);
+			this.authTab.TabIndex = 2;
+			this.authTab.Tag = "";
+			this.authTab.Text = "Authorise";
+			this.authTab.VerticalScrollbarBarColor = true;
+			this.authTab.VerticalScrollbarHighlightOnWheel = false;
+			this.authTab.VerticalScrollbarSize = 10;
+			// 
+			// authcodeLabel
+			// 
+			this.authcodeLabel.Location = new System.Drawing.Point(18, 60);
+			this.authcodeLabel.Name = "authcodeLabel";
+			this.authcodeLabel.Size = new System.Drawing.Size(80, 25);
+			this.authcodeLabel.TabIndex = 2;
+			this.authcodeLabel.Text = "Code";
+			// 
+			// authcodeButton
+			// 
+			this.authcodeButton.Location = new System.Drawing.Point(104, 101);
+			this.authcodeButton.Name = "authcodeButton";
+			this.authcodeButton.Size = new System.Drawing.Size(110, 24);
+			this.authcodeButton.TabIndex = 1;
+			this.authcodeButton.Text = "Continue";
+			this.authcodeButton.UseSelectable = true;
+			this.authcodeButton.Click += new System.EventHandler(this.authcodeButton_Click);
+			// 
+			// authcodeField
+			// 
+			this.authcodeField.Location = new System.Drawing.Point(104, 60);
+			this.authcodeField.MaxLength = 32767;
+			this.authcodeField.Name = "authcodeField";
+			this.authcodeField.PasswordChar = '\0';
+			this.authcodeField.ScrollBars = System.Windows.Forms.ScrollBars.None;
+			this.authcodeField.SelectedText = "";
+			this.authcodeField.Size = new System.Drawing.Size(206, 22);
+			this.authcodeField.TabIndex = 0;
+			this.authcodeField.UseSelectable = true;
 			// 
 			// closeButton
 			// 
@@ -597,11 +597,11 @@
 			this.captchaGroup.ResumeLayout(false);
 			this.captchaGroup.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.captchaBox)).EndInit();
-			this.authTab.ResumeLayout(false);
 			this.confirmTab.ResumeLayout(false);
 			this.confirmTab.PerformLayout();
 			this.addedTab.ResumeLayout(false);
 			this.addedTab.PerformLayout();
+			this.authTab.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.steamIcon)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.steamAuthenticatorIcon)).EndInit();
 			this.ResumeLayout(false);

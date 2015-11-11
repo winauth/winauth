@@ -249,12 +249,14 @@ namespace WinAuth
 			try {
 				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
 				{
+#if DEBUG
+					string s = response.ToString();
+					LogRequest(method, url, cookies, data, response);
+#endif
+
 					// OK?
 					if (response.StatusCode != HttpStatusCode.OK)
 					{
-#if DEBUG
-						LogRequest(method, url, cookies, data, response);
-#endif
 						throw new InvalidRequestException(string.Format("{0}: {1}", (int)response.StatusCode, response.StatusDescription));
 					}
 
@@ -265,6 +267,7 @@ namespace WinAuth
 #if DEBUG
 						LogRequest(method, url, cookies, data, responseData);
 #endif
+
 						return responseData;
 					}
 				}
@@ -297,10 +300,9 @@ namespace WinAuth
 					// get session
 					if (cookies.Count == 0)
 					{
-						cookies.Add(new Cookie("mobileClientVersion", "2944155+%282.0.30%29", "/", ".steamcommunity.com"));
-						cookies.Add(new Cookie("mobileClient", "android", "/", ".steamcommunity.com"));
+						cookies.Add(new Cookie("mobileClientVersion", "3067969+%282.1.3%29", "/", ".steamcommunity.com")); 
+            cookies.Add(new Cookie("mobileClient", "android", "/", ".steamcommunity.com"));
 						cookies.Add(new Cookie("steamid", "", "/", ".steamcommunity.com"));
-						cookies.Add(new Cookie("forceMobile", "1", "/", ".steamcommunity.com"));
 						cookies.Add(new Cookie("steamLogin", "", "/", ".steamcommunity.com"));
 						cookies.Add(new Cookie("Steam_Language", "english", "/", ".steamcommunity.com"));
 						cookies.Add(new Cookie("dob", "", "/", ".steamcommunity.com"));
@@ -308,7 +310,7 @@ namespace WinAuth
 						NameValueCollection headers = new NameValueCollection();
 						headers.Add("X-Requested-With", "com.valvesoftware.android.steam.community");
 
-						response = Request("https://steamcommunity.com/mobilelogin?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client", "GET", null, cookies, headers);
+						response = Request("https://steamcommunity.com/login?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client", "GET", null, cookies, headers);
 					}
 
 					// get the user's RSA key
@@ -349,7 +351,7 @@ namespace WinAuth
 					data.Add("oauth_client_id", "DE45CD61");
 					data.Add("oauth_scope", "read_profile write_profile read_client write_client");
 					data.Add("donotache", new DateTime().ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds.ToString());
-					response = Request(COMMUNITY_BASE + "/mobilelogin/dologin/", "POST", data, cookies);
+					response = Request(COMMUNITY_BASE + "/login/dologin/", "POST", data, cookies);
 					Dictionary<string, object> loginresponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
 
 					// require captcha
@@ -414,7 +416,7 @@ namespace WinAuth
 					string oauth = (string)loginresponse["oauth"];
 						var oauthjson = JObject.Parse(oauth);
 						state.OAuthToken = oauthjson.SelectToken("oauth_token").Value<string>();
-					}
+				}
 
 				// login to webapi
 				data.Clear();
@@ -423,6 +425,23 @@ namespace WinAuth
 
 				if (state.RequiresActivation == false)
 				{
+					data.Clear();
+					data.Add("op", "has_phone");
+					data.Add("arg", "null");
+					response = Request(COMMUNITY_BASE + "/steamguard/phoneajax", "GET", data, cookies);
+					var jsonresponse = JObject.Parse(response);
+					var hasPhone = jsonresponse.SelectToken("has_phone").Value<Boolean>();
+					if (hasPhone == false)
+					{
+						state.OAuthToken = null; // force new login
+						state.RequiresLogin = true;
+						state.Cookies = null;
+						state.Error = "Your Steam account must have a SMS-capable phone number attached. Go into Account Details of the Steam client or Steam website and click Add a Phone Number.";
+						return false;
+					}
+
+					response = Request(COMMUNITY_BASE + "/steamguard/phone_checksms?bForTwoFactor=1&bRevoke2fOnCancel=", "GET", null, cookies);
+
 					// add a new authenticator
 					data.Clear();
 					string deviceId = BuildRandomId();
@@ -430,9 +449,19 @@ namespace WinAuth
 					data.Add("steamid", state.SteamId);
 					data.Add("authenticator_type", "1");
 					data.Add("device_identifier", deviceId);
+					data.Add("sms_phone_id", "1");
 					response = Request(WEBAPI_BASE + "/ITwoFactorService/AddAuthenticator/v0001", "POST", data);
 					var tfaresponse = JObject.Parse(response);
-					if (response.IndexOf("revocation_code") == -1)
+					if (response.IndexOf("status") == -1 && tfaresponse.SelectToken("response.status").Value<int>() == 84)
+					{
+						// invalid response
+						state.OAuthToken = null; // force new login
+						state.RequiresLogin = true;
+						state.Cookies = null;
+						state.Error = "Unable to send SMS. Check your phone is registered on your Steam account.";
+						return false;
+					}
+					if (response.IndexOf("shared_secret") == -1)
 					{
 						// invalid response
 						state.OAuthToken = null; // force new login
@@ -441,7 +470,7 @@ namespace WinAuth
 						state.Error = "Invalid response from Steam: " + response;
 						return false;
 					}
-					
+
 					// save data into this authenticator
 					var secret = tfaresponse.SelectToken("response.shared_secret").Value<string>();
 					this.SecretKey = Convert.FromBase64String(secret);
@@ -455,12 +484,36 @@ namespace WinAuth
 					LastServerTime = DateTime.Now.Ticks;
 
 					// send authorisation email
-					data.Clear();
-					data.Add("access_token", state.OAuthToken);
-					data.Add("steamid", state.SteamId);
-					data.Add("email_type", "1");
-					data.Add("include_activation", "1");
-					response = Request(WEBAPI_BASE + "/ITwoFactorService/SendEmail/v0001", "POST", data);
+					//data.Clear();
+					//data.Add("access_token", state.OAuthToken);
+					//data.Add("steamid", state.SteamId);
+					//data.Add("email_type", "1");
+					//data.Add("include_activation_code", "1");
+					//response = Request(WEBAPI_BASE + "/ITwoFactorService/SendEmail/v0001", "POST", data, cookies);
+
+					// resend sms
+					//data.Clear();
+					//data.Add("op", "send_sms_code");
+					//data.Add("arg", "true");
+					//response = Request(COMMUNITY_BASE + "/steamguard/phoneajax", "GET", data, cookies);
+					//jsonresponse = JObject.Parse(response);
+					//if (jsonresponse.SelectToken("success").Value<Boolean>() == false)
+					//{
+					//	state.Error = "Steam was unable to send SMS to phone";
+					//	return false;
+					//}
+
+					//data.Clear();
+					//data.Add("op", "check_sms_code");
+					//string sms = "123456";
+					//data.Add("arg", sms);
+					//response = Request(COMMUNITY_BASE + "/steamguard/phoneajax", "GET", data, cookies);
+					//jsonresponse = JObject.Parse(response);
+					//if (jsonresponse.SelectToken("success").Value<Boolean>() == false)
+					//{
+					//	return false;
+					//}
+					//response = Request(COMMUNITY_BASE + "/steamguard/twofactor_recoverycode", "GET", null, cookies);
 
 					state.RequiresActivation = true;
 
@@ -474,7 +527,6 @@ namespace WinAuth
 				data.Add("activation_code", state.ActivationCode);
 
 				// try and authorise
-				ServerTimeDiff -= 40000; // start at previous interval
 				var retries = 0;
 				while (state.RequiresActivation == true && retries < ENROLL_ACTIVATE_RETRIES)
 				{
@@ -569,7 +621,7 @@ namespace WinAuth
 				// clear any sync error
 				_lastSyncError = DateTime.MinValue;
 			}
-			catch (Exception ex)
+			catch (Exception )
 			{
 				// don't retry for a while after error
 				_lastSyncError = DateTime.Now;
@@ -723,7 +775,10 @@ namespace WinAuth
 				}
 				data.Append(" ");
 			}
-			System.Diagnostics.Trace.TraceWarning(@"{0} {1} {2} {3}", method, url, data.ToString(), response ?? string.Empty);
+			
+			string message = string.Format(@"{0} {1} {2} {3} {4}", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"), method, url, data.ToString(), (response != null ? response.Replace("\n", "\\n").Replace("\r", "") : string.Empty));
+
+			System.Diagnostics.Trace.TraceWarning(message);
 		}
 #endif
 
