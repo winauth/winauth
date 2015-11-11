@@ -14,9 +14,13 @@ The latest stable version is WinAuth 3.3 and is available to download from this 
 
 WinAuth provides an alternative solution to combine various two-factor authenticator services in one convenient place.
 
-[Download Latest Version (WinAuth-3.3.1)](https://winauth.com/downloads/3.x/WinAuth-3.3.1.zip)
+[Latest Version (WinAuth-3.3.3)](https://winauth.com/downloads/3.x/WinAuth-3.3.3.zip)
 
 <img src="https://winauth.com/images/winauth3-preview.png" alt="WinAuth3 Preview" />
+
+Updates:
+
+  * 3.3.3 - Issue [236](https://github.com/winauth/winauth/issues/236): Steam enrollment requires SMS activation code
 
 Features include:
 
@@ -35,11 +39,9 @@ Features include:
 
 Visit [WinAuth.com](https://winauth.com) for more information.
 
-###Download Latest Version
+###How To Use
 
 Use the following link to download the latest version of WinAuth, or go to the [downloads](https://winauth.com/download) page on winauth.com.
-
-Download [WinAuth-3.3.1.zip](https://winauth.com/downloads/3.x/WinAuth-3.3.1.zip)
 
 Requires [Microsoft .Net 4.5](http://www.microsoft.com/en-us/download/details.aspx?id=30653)
 
@@ -68,6 +70,8 @@ Version 3.3 includes the new SteamGuard Mobile Authenticator, integration with Y
 WinAuth can be registered as a new mobile device to create a Steam authenticator and displays the appropriate 5 character codes.
 
 <img src="https://winauth.com/wp-content/uploads/2013/07/steam.png" alt="WinAuth Supports Steam" />
+
+You MUST attach an SMS-capable phone number to your account before your activate your Steam authenticator, since the confirmation code are no longer sent by email, only over SMS.
 
 Please read about the [Steam Guard Mobile Authenticator](https://winauth.com/2015/06/11/steam-guard-mobile/) for more information.
 
