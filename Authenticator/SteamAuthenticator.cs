@@ -321,7 +321,7 @@ namespace WinAuth
 					{
 						throw new InvalidEnrollResponseException("Cannot get steam information for user: " + state.Username);
 					}
-					state.SteamId = rsaresponse.SelectToken("steamid").Value<string>();
+					//state.SteamId = rsaresponse.SelectToken("steamid").Value<string>();
 
 					// encrypt password with RSA key
 					RNGCryptoServiceProvider random = new RNGCryptoServiceProvider();
@@ -345,7 +345,7 @@ namespace WinAuth
 					data.Add("loginfriendlyname", "#login_emailauth_friendlyname_mobile");
 					data.Add("captchagid", (state.CaptchaId != null ? state.CaptchaId : "-1"));
 					data.Add("captcha_text", (state.CaptchaText != null ? state.CaptchaText : "enter above characters"));
-					data.Add("emailsteamid", (state.EmailAuthText != null ? state.SteamId : string.Empty));
+					data.Add("emailsteamid", (state.EmailAuthText != null ? state.SteamId ?? string.Empty: string.Empty));
 					data.Add("rsatimestamp", rsaresponse.SelectToken("timestamp").Value<string>());
 					data.Add("remember_login", "false");
 					data.Add("oauth_client_id", "DE45CD61");
@@ -353,6 +353,11 @@ namespace WinAuth
 					data.Add("donotache", new DateTime().ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds.ToString());
 					response = Request(COMMUNITY_BASE + "/login/dologin/", "POST", data, cookies);
 					Dictionary<string, object> loginresponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
+
+					if (loginresponse.ContainsKey("emailsteamid") == true)
+					{
+						state.SteamId = loginresponse["emailsteamid"] as string;
+					}
 
 					// require captcha
 					if (loginresponse.ContainsKey("captcha_needed") == true && (bool)loginresponse["captcha_needed"] == true)

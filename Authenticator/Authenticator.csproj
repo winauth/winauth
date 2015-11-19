@@ -113,9 +113,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\WinAuth.YubiKey.x64.dll" />
+  <ItemGroup Condition="'$(Platform)' == 'Win32'">
     <EmbeddedResource Include="Resources\WinAuth.YubiKey.x86.dll" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Platform)' == 'x64'">
+    <EmbeddedResource Include="Resources\WinAuth.YubiKey.x64.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
