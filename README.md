@@ -10,17 +10,18 @@ The latest stable version is WinAuth 3.3 and is available to download from this 
 
 ----
 
-##WinAuth 3.3 (stable)
+##WinAuth 3.3
 
 WinAuth provides an alternative solution to combine various two-factor authenticator services in one convenient place.
 
-[Latest Version (WinAuth-3.3.3)](https://winauth.com/downloads/3.x/WinAuth-3.3.3.zip)
+[Latest Version (WinAuth-3.3.5)](https://winauth.com/downloads/3.x/WinAuth-3.3.5.zip)
 
 <img src="https://winauth.com/images/winauth3-preview.png" alt="WinAuth3 Preview" />
 
 Updates:
 
-  * 3.3.3 - Issue [236](https://github.com/winauth/winauth/issues/236): Steam enrollment requires SMS activation code
+  * 3.3.5 - Issue [244](https://github.com/winauth/winauth/issues/244): Crash when creating new Steam authenticator
+  * 3.3.3 - Issue [236](https://github.com/winauth/winauth/issues/236): Steam requires SMS activation code
 
 Features include:
 
