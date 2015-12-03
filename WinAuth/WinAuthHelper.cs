@@ -618,7 +618,7 @@ namespace WinAuth
 							((SteamAuthenticator)auth).SecretKey = Base32.getInstance().Decode(secret);
 							((SteamAuthenticator)auth).Serial = string.Empty;
 							((SteamAuthenticator)auth).DeviceId = string.Empty;
-							((SteamAuthenticator)auth).RevocationCode = string.Empty;
+							((SteamAuthenticator)auth).SteamData = string.Empty;
 							issuer = string.Empty;
 						}
 						else if (uri.Host == "hotp")

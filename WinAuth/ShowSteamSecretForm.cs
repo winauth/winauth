@@ -25,6 +25,9 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 namespace WinAuth
 {
 	/// <summary>
@@ -63,9 +66,26 @@ namespace WinAuth
 		private void ShowSteamSecretForm_Load(object sender, EventArgs e)
 		{
 			this.revocationcodeField.SecretMode = true;
+			this.deviceidField.SecretMode = true;
+			this.steamdataField.SecretMode = false;
 
 			SteamAuthenticator authenticator = CurrentAuthenticator.AuthenticatorData as SteamAuthenticator;
-			this.revocationcodeField.Text = authenticator.RevocationCode;
+
+			this.deviceidField.Text = authenticator.DeviceId;
+			if (string.IsNullOrEmpty(authenticator.SteamData) == false && authenticator.SteamData[0] == '{')
+			{
+				this.revocationcodeField.Text = JObject.Parse(authenticator.SteamData).SelectToken("revocation_code").Value<string>();
+				if (authenticator.SteamData.IndexOf("shared_secret") != -1)
+				{
+					this.steamdataField.SecretMode = true;
+					this.steamdataField.Text = authenticator.SteamData;
+					this.steamdataField.ForeColor = SystemColors.ControlText;
+        }
+			}
+			else
+			{
+				this.revocationcodeField.Text = authenticator.SteamData;
+			}
 		}
 
 		/// <summary>
@@ -76,6 +96,8 @@ namespace WinAuth
 		private void allowCopyCheckBox_CheckedChanged(object sender, EventArgs e)
 		{
 			this.revocationcodeField.SecretMode = !allowCopyCheckBox.Checked;
+			this.deviceidField.SecretMode = !allowCopyCheckBox.Checked;
+			this.steamdataField.SecretMode = !allowCopyCheckBox.Checked;
 		}
 
 	}

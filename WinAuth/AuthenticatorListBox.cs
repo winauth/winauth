@@ -1152,7 +1152,7 @@ namespace WinAuth
 			//
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showSteamSecretMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Visible = (auth.AuthenticatorData is SteamAuthenticator);
-			menuitem.Enabled = (auth.AuthenticatorData is SteamAuthenticator && string.IsNullOrEmpty(((SteamAuthenticator)auth.AuthenticatorData).RevocationCode) == false);
+			menuitem.Enabled = (auth.AuthenticatorData is SteamAuthenticator && string.IsNullOrEmpty(((SteamAuthenticator)auth.AuthenticatorData).SteamData) == false);
 			//
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "autoRefreshMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Visible = !(auth.AuthenticatorData is HOTPAuthenticator);
@@ -1449,9 +1449,35 @@ namespace WinAuth
 				{
 					return;
 				}
+
 				try
 				{
-					// show the secret key for Steam authenticator				
+					if (wasprotected != DialogResult.OK)
+					{
+						// confirm current main password
+						var mainform = this.Parent as WinAuthForm;
+						if ((mainform.Config.PasswordType & Authenticator.PasswordTypes.Explicit) != 0)
+						{
+							bool invalidPassword = false;
+							while (true)
+							{
+								GetPasswordForm checkform = new GetPasswordForm();
+								checkform.InvalidPassword = invalidPassword;
+								var result = checkform.ShowDialog(this);
+								if (result == DialogResult.Cancel)
+								{
+									return;
+								}
+								if (mainform.Config.IsPassword(checkform.Password) == true)
+								{
+									break;
+								}
+								invalidPassword = true;
+							}
+						}
+					}
+
+					// show the secret key for Google authenticator				
 					ShowSteamSecretForm form = new ShowSteamSecretForm();
 					form.CurrentAuthenticator = auth;
 					form.ShowDialog(this.Parent as Form);

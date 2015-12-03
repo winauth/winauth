@@ -462,7 +462,8 @@ namespace WinAuth
 						((SteamAuthenticator)auth).SecretKey = Base32.getInstance().Decode(privatekey);
 						((SteamAuthenticator)auth).Serial = string.Empty;
 						((SteamAuthenticator)auth).DeviceId = string.Empty;
-						((SteamAuthenticator)auth).RevocationCode = string.Empty;
+						//((SteamAuthenticator)auth).RevocationCode = string.Empty;
+						((SteamAuthenticator)auth).SteamData = string.Empty;
 
 						this.Authenticator.Skin = null;
 
