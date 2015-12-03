@@ -706,6 +706,11 @@ namespace WinAuth
 			{
 				extraparams += "&serial=" + HttpUtility.UrlEncode(((BattleNetAuthenticator)this.AuthenticatorData).Serial.Replace("-", ""));
 			}
+			else if (this.AuthenticatorData is SteamAuthenticator)
+			{
+				extraparams += "&deviceid=" + HttpUtility.UrlEncode(((SteamAuthenticator)this.AuthenticatorData).DeviceId);
+				extraparams += "&data=" + HttpUtility.UrlEncode(((SteamAuthenticator)this.AuthenticatorData).SteamData);
+			}
 			else if (this.AuthenticatorData is HOTPAuthenticator)
 			{
 				type = "hotp";
