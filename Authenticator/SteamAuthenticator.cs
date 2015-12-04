@@ -523,7 +523,14 @@ namespace WinAuth
 					this.Serial = tfaresponse.SelectToken("response.serial_number").Value<string>();
 					this.DeviceId = deviceId;
 					state.RevocationCode = tfaresponse.SelectToken("response.revocation_code").Value<string>();
-					this.SteamData = tfaresponse.SelectToken("response").ToString(Newtonsoft.Json.Formatting.None);
+
+					// add the steamid into the data
+					var steamdata = JObject.Parse(tfaresponse.SelectToken("response").ToString());
+					if (steamdata.SelectToken("steamid") == null)
+					{
+						steamdata.Add("steamid", state.SteamId);
+					}
+          this.SteamData = steamdata.ToString(Newtonsoft.Json.Formatting.None);
 
 					// calculate server drift
 					long servertime = tfaresponse.SelectToken("response.server_time").Value<long>() * 1000;
@@ -734,7 +741,6 @@ namespace WinAuth
 			return code.ToString();
 		}
 
-/*
 		/// <summary>
 		/// Enroll the authenticator with the server
 		/// </summary>
@@ -877,6 +883,14 @@ namespace WinAuth
 					if (oauthjson.SelectToken("steamid") != null)
 					{
 						state.SteamId = oauthjson.SelectToken("steamid").Value<string>();
+
+						// add the steamid into the data if missing
+						var steamdata = JObject.Parse(this.SteamData);
+						if (steamdata.SelectToken("steamid") == null)
+						{
+							steamdata.Add("steamid", state.SteamId);
+							this.SteamData = steamdata.ToString(Newtonsoft.Json.Formatting.None);
+						}
 					}
 				}
 
@@ -937,7 +951,6 @@ namespace WinAuth
 
 			return Convert.ToBase64String(hash, Base64FormattingOptions.None);
 		}
-*/
 
 		/// <summary>
 		/// Create a random Device ID string for Enrolling
@@ -945,15 +958,7 @@ namespace WinAuth
 		/// <returns>Random string</returns>
 		private static string BuildRandomId()
 		{
-			using (var sha1 = new SHA1Managed())
-			{
-				RNGCryptoServiceProvider random = new RNGCryptoServiceProvider();
-				byte[] buffer = new byte[4];
-				random.GetBytes(buffer);
-
-				byte[] hash = sha1.ComputeHash(buffer);
-				return "android:" + Authenticator.ByteArrayToString(hash);
-			}
+			return "android:" + Guid.NewGuid().ToString();
 		}
 
 #if DEBUG

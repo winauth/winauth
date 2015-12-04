@@ -617,8 +617,8 @@ namespace WinAuth
 							auth = new SteamAuthenticator();
 							((SteamAuthenticator)auth).SecretKey = Base32.getInstance().Decode(secret);
 							((SteamAuthenticator)auth).Serial = string.Empty;
-							((SteamAuthenticator)auth).DeviceId = string.Empty;
-							((SteamAuthenticator)auth).SteamData = string.Empty;
+							((SteamAuthenticator)auth).DeviceId = query["deviceid"] ?? string.Empty;
+							((SteamAuthenticator)auth).SteamData = query["data"] ?? string.Empty;
 							issuer = string.Empty;
 						}
 						else if (uri.Host == "hotp")
