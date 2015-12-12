@@ -20,7 +20,7 @@ WinAuth provides an alternative solution to combine various two-factor authentic
 
 Updates:
 
-  * 3.3.7 - Issue [257](https://github.com/winauth/winauth/issues/244): Fix Steam change causing crash when creating new Steam authenticator. Added view of complete Steam data for exporting.
+  * 3.3.7 - Issue [257](https://github.com/winauth/winauth/issues/257): Fix Steam change causing crash when creating new Steam authenticator. Added view of complete Steam data for exporting.
 
 Features include:
 
