@@ -1014,6 +1014,11 @@ namespace WinAuth
 			menuitem.Click += ContextMenu_Click;
 			this.ContextMenuStrip.Items.Add(menuitem);
 			//
+			//menuitem = new ToolStripMenuItem(strings.ConfirmTrades + "...");
+			//menuitem.Name = "showSteamTradesMenuItem";
+			//menuitem.Click += ContextMenu_Click;
+			//this.ContextMenuStrip.Items.Add(menuitem);
+			//
 			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
 			//
 			menuitem = new ToolStripMenuItem(strings.Delete);
@@ -1153,6 +1158,10 @@ namespace WinAuth
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showSteamSecretMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Visible = (auth.AuthenticatorData is SteamAuthenticator);
 			menuitem.Enabled = (auth.AuthenticatorData is SteamAuthenticator && string.IsNullOrEmpty(((SteamAuthenticator)auth.AuthenticatorData).SteamData) == false);
+			//
+			//menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showSteamTradesMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			//menuitem.Visible = (auth.AuthenticatorData is SteamAuthenticator);
+			//menuitem.Enabled = (auth.AuthenticatorData is SteamAuthenticator && string.IsNullOrEmpty(((SteamAuthenticator)auth.AuthenticatorData).SteamData) == false);
 			//
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "autoRefreshMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Visible = !(auth.AuthenticatorData is HOTPAuthenticator);
@@ -1480,6 +1489,30 @@ namespace WinAuth
 					// show the secret key for Google authenticator				
 					ShowSteamSecretForm form = new ShowSteamSecretForm();
 					form.CurrentAuthenticator = auth;
+					form.ShowDialog(this.Parent as Form);
+				}
+				finally
+				{
+					if (wasprotected == DialogResult.OK)
+					{
+						ProtectAuthenticator(item);
+					}
+				}
+			}
+			else if (menuitem.Name == "showSteamTradesMenuItem")
+			{
+				// check if the authenticator is still protected
+				DialogResult wasprotected = UnprotectAuthenticator(item);
+				if (wasprotected == DialogResult.Cancel)
+				{
+					return;
+				}
+
+				try
+				{
+					// show the Steam trades dialog
+					ShowSteamTradesForm form = new ShowSteamTradesForm();
+					form.Authenticator = auth.AuthenticatorData as SteamAuthenticator;
 					form.ShowDialog(this.Parent as Form);
 				}
 				finally

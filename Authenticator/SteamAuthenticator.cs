@@ -129,7 +129,7 @@ namespace WinAuth
 			public string Error { get; set; }
 		}
 
-		public class TradeState
+		public class SteamSession
 		{
 			public string Username { get; set; }
 			public string Password { get; set; }
@@ -149,8 +149,99 @@ namespace WinAuth
 			public bool Requires2FA { get; set; }
 			public bool RequiresEmailAuth { get; set; }
 
-			public bool Success { get; set; }
 			public string Error { get; set; }
+
+			public SteamSession()
+			{
+				this.Cookies = new CookieContainer();
+			}
+
+			public byte[] GetData(string url)
+			{
+				return Request(url, "GET");
+			}
+
+			public string GetString(string url)
+			{
+				byte[] data = Request(url, "GET");
+				if (data == null || data.Length == 0)
+				{
+					return string.Empty;
+				}
+				else
+				{
+					return Encoding.UTF8.GetString(data);
+				}
+			}
+
+			public byte[] Request(string url, string method, NameValueCollection data = null, NameValueCollection headers = null)
+			{
+				// create form-encoded data for query or body
+				string query = (data == null ? string.Empty : string.Join("&", Array.ConvertAll(data.AllKeys, key => String.Format("{0}={1}", HttpUtility.UrlEncode(key), HttpUtility.UrlEncode(data[key])))));
+				if (string.Compare(method, "GET", true) == 0)
+				{
+					url += (url.IndexOf("?") == -1 ? "?" : "&") + query;
+				}
+
+				// call the server
+				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+				request.Method = method;
+				request.Accept = "text/javascript, text/html, application/xml, text/xml, */*";
+				request.ServicePoint.Expect100Continue = false;
+				request.UserAgent = "Mozilla/5.0 (Linux; U; Android 4.1.1; en-us; Google Nexus 4 - 4.1.1 - API 16 - 768x1280 Build/JRO03S) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30";
+				request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
+				request.Referer = COMMUNITY_BASE; // + "/mobilelogin?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client";
+				if (headers != null)
+				{
+					request.Headers.Add(headers);
+				}
+
+				request.CookieContainer = this.Cookies;
+
+				if (string.Compare(method, "POST", true) == 0)
+				{
+					request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
+					request.ContentLength = query.Length;
+
+					StreamWriter requestStream = new StreamWriter(request.GetRequestStream());
+					requestStream.Write(query);
+					requestStream.Close();
+				}
+
+				try
+				{
+					using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+					{
+						// OK?
+						if (response.StatusCode != HttpStatusCode.OK)
+						{
+							throw new InvalidRequestException(string.Format("{0}: {1}", (int)response.StatusCode, response.StatusDescription));
+						}
+
+						// load the response
+						using (MemoryStream ms = new MemoryStream())
+						{
+							byte[] buffer = new byte[4096];
+							int read;
+							while ((read = response.GetResponseStream().Read(buffer, 0, 4096)) > 0)
+							{
+								ms.Write(buffer, 0, read);
+							}
+
+							return ms.ToArray();
+						}
+      //      using (var responseStream = new StreamReader(response.GetResponseStream()))
+						//{
+						//	string responseData = responseStream.ReadToEnd();
+						//	return responseData;
+						//}
+					}
+				}
+				catch (Exception ex)
+				{
+					throw new InvalidRequestException(ex.Message, ex);
+				}
+			}
 		}
 
 		#region Authenticator data
@@ -469,12 +560,15 @@ namespace WinAuth
 				data.Add("access_token", state.OAuthToken);
 				response = Request(WEBAPI_BASE + "/ISteamWebUserPresenceOAuth/Logon/v0001", "POST", data);
 
+				var sessionid = cookies.GetCookies(new Uri(COMMUNITY_BASE + "/"))["sessionid"].Value;
+
 				if (state.RequiresActivation == false)
 				{
 					data.Clear();
 					data.Add("op", "has_phone");
 					data.Add("arg", "null");
-					response = Request(COMMUNITY_BASE + "/steamguard/phoneajax", "GET", data, cookies);
+					data.Add("sessionid", sessionid);
+					response = Request(COMMUNITY_BASE + "/steamguard/phoneajax", "POST", data, cookies);
 					var jsonresponse = JObject.Parse(response);
 					var hasPhone = jsonresponse.SelectToken("has_phone").Value<Boolean>();
 					if (hasPhone == false)
@@ -530,44 +624,16 @@ namespace WinAuth
 					{
 						steamdata.Add("steamid", state.SteamId);
 					}
-          this.SteamData = steamdata.ToString(Newtonsoft.Json.Formatting.None);
+					if (steamdata.SelectToken("steamguard_scheme") == null)
+					{
+						steamdata.Add("steamguard_scheme", "2");
+					}
+					this.SteamData = steamdata.ToString(Newtonsoft.Json.Formatting.None);
 
 					// calculate server drift
 					long servertime = tfaresponse.SelectToken("response.server_time").Value<long>() * 1000;
 					ServerTimeDiff = servertime - CurrentTime;
 					LastServerTime = DateTime.Now.Ticks;
-
-					// send authorisation email
-					//data.Clear();
-					//data.Add("access_token", state.OAuthToken);
-					//data.Add("steamid", state.SteamId);
-					//data.Add("email_type", "1");
-					//data.Add("include_activation_code", "1");
-					//response = Request(WEBAPI_BASE + "/ITwoFactorService/SendEmail/v0001", "POST", data, cookies);
-
-					// resend sms
-					//data.Clear();
-					//data.Add("op", "send_sms_code");
-					//data.Add("arg", "true");
-					//response = Request(COMMUNITY_BASE + "/steamguard/phoneajax", "GET", data, cookies);
-					//jsonresponse = JObject.Parse(response);
-					//if (jsonresponse.SelectToken("success").Value<Boolean>() == false)
-					//{
-					//	state.Error = "Steam was unable to send SMS to phone";
-					//	return false;
-					//}
-
-					//data.Clear();
-					//data.Add("op", "check_sms_code");
-					//string sms = "123456";
-					//data.Add("arg", sms);
-					//response = Request(COMMUNITY_BASE + "/steamguard/phoneajax", "GET", data, cookies);
-					//jsonresponse = JObject.Parse(response);
-					//if (jsonresponse.SelectToken("success").Value<Boolean>() == false)
-					//{
-					//	return false;
-					//}
-					//response = Request(COMMUNITY_BASE + "/steamguard/twofactor_recoverycode", "GET", null, cookies);
 
 					state.RequiresActivation = true;
 
@@ -742,9 +808,11 @@ namespace WinAuth
 		}
 
 		/// <summary>
-		/// Enroll the authenticator with the server
+		/// Load the trade confirmations
 		/// </summary>
-		private bool Trading(TradeState state)
+		/// <param name="state">current Steam session</param>
+		/// <returns></returns>
+		public string LoadTrades(SteamSession state)
 		{
 			// clear error
 			state.Error = null;
@@ -779,12 +847,12 @@ namespace WinAuth
 					var rsaresponse = JObject.Parse(response);
 					if (rsaresponse.SelectToken("success").Value<bool>() != true)
 					{
-						throw new InvalidEnrollResponseException("Cannot get steam information for user: " + state.Username);
+						throw new InvalidTradesResponseException("Cannot get steam information for user: " + state.Username);
 					}
 
 					// encrypt password with RSA key
 					RNGCryptoServiceProvider random = new RNGCryptoServiceProvider();
-					byte[] encryptedPassword;
+					string encryptedPassword64;
 					using (var rsa = new RSACryptoServiceProvider())
 					{
 						var passwordBytes = Encoding.ASCII.GetBytes(state.Password);
@@ -792,12 +860,13 @@ namespace WinAuth
 						p.Exponent = Authenticator.StringToByteArray(rsaresponse.SelectToken("publickey_exp").Value<string>());
 						p.Modulus = Authenticator.StringToByteArray(rsaresponse.SelectToken("publickey_mod").Value<string>());
 						rsa.ImportParameters(p);
-						encryptedPassword = rsa.Encrypt(passwordBytes, false);
+						byte[] encryptedPassword = rsa.Encrypt(passwordBytes, false);
+						encryptedPassword64 = Convert.ToBase64String(encryptedPassword);
 					}
 
 					// login request
 					data = new NameValueCollection();
-					data.Add("password", Convert.ToBase64String(encryptedPassword));
+					data.Add("password", encryptedPassword64);
 					data.Add("username", state.Username);
 					data.Add("twofactorcode", state.AuthCode ?? string.Empty);
 					data.Add("emailauth", (state.EmailAuthText != null ? state.EmailAuthText : string.Empty));
@@ -873,7 +942,8 @@ namespace WinAuth
 						{
 							state.Error = (string)loginresponse["message"];
 						}
-						return false;
+
+						return null;
 					}
 
 					// get the OAuth token
@@ -912,15 +982,55 @@ namespace WinAuth
 				data.Add("t", servertime.ToString());
 				data.Add("m", "android");
 				data.Add("tag", "conf");
-				response = Request(COMMUNITY_BASE + "/mobileconf/conf", "GET", data, state.Cookies);
 
-
-				return true;
+				return Request(COMMUNITY_BASE + "/mobileconf/conf", "GET", data, state.Cookies);
 			}
 			catch (InvalidRequestException ex)
 			{
-				//throw new InvalidEnrollResponseException("Error trading", ex);
-				return false;
+				state.Error = ex.Message;
+				throw new InvalidTradesResponseException("Error trading", ex);
+			}
+		}
+
+		/// <summary>
+		/// Confirm or reject a specific trade confirmation
+		/// </summary>
+		/// <param name="state">Steam state</param>
+		/// <param name="id">id of trade</param>
+		/// <param name="key">key for trade</param>
+		/// <param name="accept">true to accept, false to reject</param>
+		/// <returns>response data</returns>
+		public string ConfirmTrade(SteamSession state, string id, string key, bool accept)
+		{
+			// clear error
+			state.Error = null;
+
+			try
+			{
+				// get servertime
+				long servertime = (CurrentTime + ServerTimeDiff) / 1000L;
+
+				var jids = JObject.Parse(this.SteamData).SelectToken("identity_secret");
+				string ids = (jids != null ? jids.Value<string>() : string.Empty);
+				var timehash = CreateTimeHash(servertime, "conf", ids);
+
+				var data = new NameValueCollection();
+				data.Add("op", accept ? "allow" : "cancel");
+				data.Add("p", this.DeviceId);
+				data.Add("a", state.SteamId);
+				data.Add("k", timehash);
+				data.Add("t", servertime.ToString());
+				data.Add("m", "android");
+				data.Add("tag", "conf");
+				//
+				data.Add("cid", id);
+				data.Add("ck", key);
+				return Request(COMMUNITY_BASE + "/mobileconf/ajaxop", "GET", data, state.Cookies);
+			}
+			catch (InvalidRequestException ex)
+			{
+				state.Error = ex.Message;
+				throw new InvalidTradesResponseException("Error trading", ex);
 			}
 		}
 

@@ -736,6 +736,15 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Trades.
+        /// </summary>
+        internal static string ConfirmTrades {
+            get {
+                return ResourceManager.GetString("ConfirmTrades", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Copy Code.
         /// </summary>
         internal static string CopyCode {

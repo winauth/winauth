@@ -82,6 +82,14 @@ namespace WinAuth
 	}
 
 	/// <summary>
+	/// Exception for error or unexpected return from server for trades
+	/// </summary>
+	public class InvalidTradesResponseException : AuthenticatorException
+	{
+		public InvalidTradesResponseException(string msg = null, Exception ex = null) : base(msg, ex) { }
+	}
+
+	/// <summary>
 	/// Exception for error or unexpected return from server for sync
 	/// </summary>
 	public class InvalidSyncResponseException : AuthenticatorException
