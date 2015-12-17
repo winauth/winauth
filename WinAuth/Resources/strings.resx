@@ -528,6 +528,6 @@ Do NOT run an older version of WinAuth as this could overwrite them.
 Now is a good time to make a backup. Click the Options icon and choose Export.</value>
   </data>
   <data name="ConfirmTrades" xml:space="preserve">
-    <value>Trades</value>
+    <value>Confirmations</value>
   </data>
 </root>

@@ -1014,10 +1014,12 @@ namespace WinAuth
 			menuitem.Click += ContextMenu_Click;
 			this.ContextMenuStrip.Items.Add(menuitem);
 			//
-			//menuitem = new ToolStripMenuItem(strings.ConfirmTrades + "...");
-			//menuitem.Name = "showSteamTradesMenuItem";
-			//menuitem.Click += ContextMenu_Click;
-			//this.ContextMenuStrip.Items.Add(menuitem);
+			this.ContextMenuStrip.Items.Add(new ToolStripSeparator { Name = "steamSeperator" });
+			//
+			menuitem = new ToolStripMenuItem(strings.ConfirmTrades + "...");
+			menuitem.Name = "showSteamTradesMenuItem";
+			menuitem.Click += ContextMenu_Click;
+			this.ContextMenuStrip.Items.Add(menuitem);
 			//
 			this.ContextMenuStrip.Items.Add(new ToolStripSeparator());
 			//
@@ -1159,9 +1161,12 @@ namespace WinAuth
 			menuitem.Visible = (auth.AuthenticatorData is SteamAuthenticator);
 			menuitem.Enabled = (auth.AuthenticatorData is SteamAuthenticator && string.IsNullOrEmpty(((SteamAuthenticator)auth.AuthenticatorData).SteamData) == false);
 			//
-			//menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showSteamTradesMenuItem").FirstOrDefault() as ToolStripMenuItem;
-			//menuitem.Visible = (auth.AuthenticatorData is SteamAuthenticator);
-			//menuitem.Enabled = (auth.AuthenticatorData is SteamAuthenticator && string.IsNullOrEmpty(((SteamAuthenticator)auth.AuthenticatorData).SteamData) == false);
+			ToolStripItem sepitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "steamSeperator").FirstOrDefault() as ToolStripItem;
+			sepitem.Visible = (auth.AuthenticatorData is SteamAuthenticator);
+			//
+			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showSteamTradesMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem.Visible = (auth.AuthenticatorData is SteamAuthenticator);
+			menuitem.Enabled = (auth.AuthenticatorData is SteamAuthenticator && string.IsNullOrEmpty(((SteamAuthenticator)auth.AuthenticatorData).SteamData) == false);
 			//
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "autoRefreshMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Visible = !(auth.AuthenticatorData is HOTPAuthenticator);
@@ -1194,7 +1199,7 @@ namespace WinAuth
 				}
 			}
 			//
-			ToolStripItem sepitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "syncMenuSep").FirstOrDefault() as ToolStripItem;
+			sepitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "syncMenuSep").FirstOrDefault() as ToolStripItem;
 			sepitem.Visible = !(auth.AuthenticatorData is HOTPAuthenticator);
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "syncMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Visible = !(auth.AuthenticatorData is HOTPAuthenticator);

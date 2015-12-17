@@ -736,7 +736,7 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Trades.
+        ///   Looks up a localized string similar to Confirmations.
         /// </summary>
         internal static string ConfirmTrades {
             get {
