@@ -16,7 +16,7 @@ Please download 3.3. if you are just looking for WinAuth and not wanting to test
 
 This version adds support for Steam trading confirmations.
 
-<img src="https://winauth.com/wp-content/uploads/2013/07/steamconf.png" alt="WinAuth 3.4 Steam Trading">
+<img src="https://winauth.com/wp-content/uploads/2013/07/steamconf1.png" alt="WinAuth 3.4 Steam Trading">
 
 ##WinAuth 3.3 (latest stable)
 
