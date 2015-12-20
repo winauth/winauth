@@ -1518,7 +1518,11 @@ namespace WinAuth
 					// show the Steam trades dialog
 					ShowSteamTradesForm form = new ShowSteamTradesForm();
 					form.Authenticator = auth.AuthenticatorData as SteamAuthenticator;
-					form.ShowDialog(this.Parent as Form);
+					var result = form.ShowDialog(this.Parent as Form);
+					if (result != DialogResult.Cancel && string.IsNullOrEmpty(((SteamAuthenticator)auth.AuthenticatorData).SessionData) == false && ((SteamAuthenticator)auth.AuthenticatorData).PermSession == true)
+					{
+						auth.MarkChanged();
+					}
 				}
 				finally
 				{

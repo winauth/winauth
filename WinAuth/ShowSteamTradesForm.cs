@@ -371,6 +371,7 @@ namespace WinAuth
 						{
 							Authenticator.SessionData = m_steam.Session.ToString();
 						}
+						Authenticator.PermSession = (rememberBox.Checked == true && rememberPermBox.Checked == true);
 					}
 
 					m_trades = m_steam.GetConfirmations();
@@ -642,5 +643,9 @@ namespace WinAuth
 
 		#endregion
 
+		private void rememberBox_CheckedChanged(object sender, EventArgs e)
+		{
+			rememberPermBox.Visible = rememberBox.Checked;
+		}
 	}
 }

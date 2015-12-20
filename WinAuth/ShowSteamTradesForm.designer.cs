@@ -55,6 +55,7 @@
 			this.tradesEmptyLabel = new MetroFramework.Controls.MetroLabel();
 			this.browserContainer = new System.Windows.Forms.Panel();
 			this.closeButton = new MetroFramework.Controls.MetroButton();
+			this.rememberPermBox = new MetroFramework.Controls.MetroCheckBox();
 			this.tabs.SuspendLayout();
 			this.loginTab.SuspendLayout();
 			this.captchaGroup.SuspendLayout();
@@ -150,7 +151,7 @@
 			this.tabs.ItemSize = new System.Drawing.Size(120, 18);
 			this.tabs.Location = new System.Drawing.Point(15, 63);
 			this.tabs.Name = "tabs";
-			this.tabs.SelectedIndex = 1;
+			this.tabs.SelectedIndex = 0;
 			this.tabs.Size = new System.Drawing.Size(464, 406);
 			this.tabs.TabIndex = 0;
 			this.tabs.UseSelectable = true;
@@ -159,6 +160,7 @@
 			// loginTab
 			// 
 			this.loginTab.BackColor = System.Drawing.SystemColors.Control;
+			this.loginTab.Controls.Add(this.rememberPermBox);
 			this.loginTab.Controls.Add(this.rememberBox);
 			this.loginTab.Controls.Add(this.captchaGroup);
 			this.loginTab.Controls.Add(this.loginButton);
@@ -191,6 +193,7 @@
 			this.rememberBox.TabIndex = 2;
 			this.rememberBox.Text = "remember me?";
 			this.rememberBox.UseSelectable = true;
+			this.rememberBox.CheckedChanged += new System.EventHandler(this.rememberBox_CheckedChanged);
 			// 
 			// captchaGroup
 			// 
@@ -391,6 +394,17 @@
 			this.closeButton.Visible = false;
 			this.closeButton.Click += new System.EventHandler(this.closeButton_Click);
 			// 
+			// rememberPermBox
+			// 
+			this.rememberPermBox.AutoSize = true;
+			this.rememberPermBox.Location = new System.Drawing.Point(224, 97);
+			this.rememberPermBox.Name = "rememberPermBox";
+			this.rememberPermBox.Size = new System.Drawing.Size(95, 15);
+			this.rememberPermBox.TabIndex = 2;
+			this.rememberPermBox.Text = "permanently?";
+			this.rememberPermBox.UseSelectable = true;
+			this.rememberPermBox.Visible = false;
+			// 
 			// ShowSteamTradesForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -453,5 +467,6 @@
 		private System.Windows.Forms.Panel browserContainer;
 		private System.Windows.Forms.Panel tradesContainer;
 		private MetroFramework.Controls.MetroCheckBox rememberBox;
+		private MetroFramework.Controls.MetroCheckBox rememberPermBox;
 	}
 }
