@@ -27,6 +27,11 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Xml;
+using System.Xml.XPath;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace WinAuth
 {
@@ -63,7 +68,7 @@ namespace WinAuth
 		/// </summary>
 		private Dictionary<string, TabPage> m_tabPages = new Dictionary<string, TabPage>();
 
-#region Form Events
+		#region Form Events
 
 		/// <summary>
 		/// Load the form
@@ -74,7 +79,7 @@ namespace WinAuth
 		{
 			nameField.Text = this.Authenticator.Name;
 
-			for (var i=0; i<tabs.TabPages.Count; i++)
+			for (var i = 0; i < tabs.TabPages.Count; i++)
 			{
 				m_tabPages.Add(tabs.TabPages[i].Name, tabs.TabPages[i]);
 			}
@@ -252,6 +257,16 @@ namespace WinAuth
 		private void closeButton_Click(object sender, EventArgs e)
 		{
 			this.Authenticator.Name = nameField.Text;
+
+			if (tabs.SelectedTab.Name == "importTab")
+			{
+				if (ImportSteamGuard() == false)
+				{
+					this.DialogResult = System.Windows.Forms.DialogResult.None;
+					return;
+				}
+			}
+
 			this.DialogResult = System.Windows.Forms.DialogResult.OK;
 			this.Close();
 		}
@@ -285,6 +300,10 @@ namespace WinAuth
 					case "confirmTab":
 						e.Handled = true;
 						confirmButton_Click(sender, new EventArgs());
+						break;
+					case "importTab":
+						e.Handled = true;
+						closeButton_Click(sender, new EventArgs());
 						break;
 					default:
 						e.Handled = false;
@@ -327,9 +346,118 @@ namespace WinAuth
 			revocationcode2Field.SecretMode = !revocationcode2Copy.Checked;
 		}
 
-#endregion
+		/// <summary>
+		/// When changing tabs, set the correct buttons
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void tabs_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (tabs.SelectedTab.Name == "importTab")
+			{
+				closeButton.Text = "OK";
+				closeButton.Visible = true;
+			}
+			else
+			{
+				closeButton.Text = "Close";
+				closeButton.Visible = false;
+			}
+		}
 
-#region Private methods
+		#endregion
+
+		#region Private methods
+
+		/// <summary>
+		/// Import an authenticator from the uuid and steamguard files
+		/// </summary>
+		/// <returns>true if successful</returns>
+		private bool ImportSteamGuard()
+		{
+			string uuid = importUuid.Text.Trim();
+			if (uuid.Length == 0)
+			{
+				WinAuthForm.ErrorDialog(this, "Please enter the contents of the steam.uuid.xml file or your DeviceId");
+				return false;
+			}
+			string steamguard = this.importSteamguard.Text.Trim();
+			if (steamguard.Length == 0)
+			{
+				WinAuthForm.ErrorDialog(this, "Please enter the contents of your SteamGuard file");
+				return false;
+			}
+
+			// check the deviceid
+			string deviceId;
+			if (uuid.IndexOf("?xml") != -1)
+			{
+				try
+				{
+					XmlDocument doc = new XmlDocument();
+					doc.LoadXml(uuid);
+					var node = doc.SelectSingleNode("//string[@name='uuidKey']");
+					if (node == null)
+					{
+						WinAuthForm.ErrorDialog(this, "Cannot find uuidKey in xml");
+						return false;
+					}
+
+					deviceId = node.InnerText;
+				}
+				catch (Exception ex)
+				{
+					WinAuthForm.ErrorDialog(this, "Invalid uuid xml: " + ex.Message);
+					return false;
+				}
+			}
+			else
+			{
+				deviceId = uuid;
+			}
+			if (string.IsNullOrEmpty(deviceId) || Regex.IsMatch(deviceId, @"android:[0-9abcdef-]+", RegexOptions.Singleline | RegexOptions.IgnoreCase) == false)
+			{
+				WinAuthForm.ErrorDialog(this, "Invalid deviceid, expecting \"android:NNNN...\"");
+				return false;
+			}
+
+			// check the steamguard
+			byte[] secret;
+			string serial;
+			try
+			{
+				var json = JObject.Parse(steamguard);
+
+				var node = json.SelectToken("shared_secret");
+				if (node == null)
+				{
+					throw new ApplicationException("no shared_secret");
+				}			
+				secret = Convert.FromBase64String(node.Value<string>());
+
+				node = json.SelectToken("serial_number");
+				if (node == null)
+				{
+					throw new ApplicationException("no serial_number");
+				}
+				serial = node.Value<string>();
+			}
+			catch (Exception ex)
+			{
+				WinAuthForm.ErrorDialog(this, "Invalid SteamGuard JSON contents: " + ex.Message);
+				return false;
+			}
+
+			SteamAuthenticator auth = new SteamAuthenticator();
+			auth.SecretKey = secret;
+			auth.Serial = serial;
+			auth.SteamData = steamguard;
+			auth.DeviceId = deviceId;
+
+			this.Authenticator.AuthenticatorData = auth;
+
+			return true;
+		}
 
 		/// <summary>
 		/// Process the enrolling calling the authenticator method, checking the state and displaying appropriate tab
@@ -468,8 +596,8 @@ namespace WinAuth
 			tabs.SelectedTab = tabs.TabPages[name];
 		}
 
-#endregion
 
+		#endregion
 
 	}
 }

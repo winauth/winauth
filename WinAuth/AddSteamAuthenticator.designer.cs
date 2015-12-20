@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddSteamAuthenticator));
 			this.loginButton = new MetroFramework.Controls.MetroButton();
 			this.authoriseTabLabel = new MetroFramework.Controls.MetroLabel();
 			this.loginTabLabel = new MetroFramework.Controls.MetroLabel();
@@ -49,6 +50,10 @@
 			this.passwordField = new MetroFramework.Controls.MetroTextBox();
 			this.passwordLabel = new MetroFramework.Controls.MetroLabel();
 			this.usernameLabel = new MetroFramework.Controls.MetroLabel();
+			this.authTab = new MetroFramework.Controls.MetroTabPage();
+			this.authcodeLabel = new MetroFramework.Controls.MetroLabel();
+			this.authcodeButton = new MetroFramework.Controls.MetroButton();
+			this.authcodeField = new MetroFramework.Controls.MetroTextBox();
 			this.confirmTab = new MetroFramework.Controls.MetroTabPage();
 			this.revocationCheckbox = new MetroFramework.Controls.MetroCheckBox();
 			this.revocationcodeCopy = new MetroFramework.Controls.MetroCheckBox();
@@ -63,10 +68,12 @@
 			this.revocationcode2Label = new MetroFramework.Controls.MetroLabel();
 			this.revocationcode2Field = new WinAuth.SecretTextBox();
 			this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
-			this.authTab = new MetroFramework.Controls.MetroTabPage();
-			this.authcodeLabel = new MetroFramework.Controls.MetroLabel();
-			this.authcodeButton = new MetroFramework.Controls.MetroButton();
-			this.authcodeField = new MetroFramework.Controls.MetroTextBox();
+			this.importTab = new MetroFramework.Controls.MetroTabPage();
+			this.importSteamguard = new MetroFramework.Controls.MetroTextBox();
+			this.metroLabel4 = new MetroFramework.Controls.MetroLabel();
+			this.importUuid = new MetroFramework.Controls.MetroTextBox();
+			this.metroLabel2 = new MetroFramework.Controls.MetroLabel();
+			this.metroLabel3 = new MetroFramework.Controls.MetroLabel();
 			this.closeButton = new MetroFramework.Controls.MetroButton();
 			this.steamIcon = new System.Windows.Forms.PictureBox();
 			this.steamAuthenticatorIcon = new System.Windows.Forms.PictureBox();
@@ -74,9 +81,10 @@
 			this.loginTab.SuspendLayout();
 			this.captchaGroup.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.captchaBox)).BeginInit();
+			this.authTab.SuspendLayout();
 			this.confirmTab.SuspendLayout();
 			this.addedTab.SuspendLayout();
-			this.authTab.SuspendLayout();
+			this.importTab.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.steamIcon)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.steamAuthenticatorIcon)).BeginInit();
 			this.SuspendLayout();
@@ -235,15 +243,17 @@
 			this.tabs.Controls.Add(this.authTab);
 			this.tabs.Controls.Add(this.confirmTab);
 			this.tabs.Controls.Add(this.addedTab);
+			this.tabs.Controls.Add(this.importTab);
 			this.tabs.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
 			this.tabs.ItemSize = new System.Drawing.Size(120, 18);
 			this.tabs.Location = new System.Drawing.Point(15, 180);
 			this.tabs.Name = "tabs";
-			this.tabs.SelectedIndex = 1;
+			this.tabs.SelectedIndex = 0;
 			this.tabs.Size = new System.Drawing.Size(464, 327);
 			this.tabs.TabIndex = 0;
 			this.tabs.UseSelectable = true;
 			this.tabs.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.tabControl1_DrawItem);
+			this.tabs.SelectedIndexChanged += new System.EventHandler(this.tabs_SelectedIndexChanged);
 			// 
 			// loginTab
 			// 
@@ -319,6 +329,55 @@
 			this.usernameLabel.Size = new System.Drawing.Size(80, 25);
 			this.usernameLabel.TabIndex = 1;
 			this.usernameLabel.Text = "Username";
+			// 
+			// authTab
+			// 
+			this.authTab.Controls.Add(this.authcodeLabel);
+			this.authTab.Controls.Add(this.authcodeButton);
+			this.authTab.Controls.Add(this.authcodeField);
+			this.authTab.Controls.Add(this.authoriseTabLabel);
+			this.authTab.HorizontalScrollbarBarColor = true;
+			this.authTab.HorizontalScrollbarHighlightOnWheel = false;
+			this.authTab.HorizontalScrollbarSize = 10;
+			this.authTab.Location = new System.Drawing.Point(4, 22);
+			this.authTab.Name = "authTab";
+			this.authTab.Size = new System.Drawing.Size(456, 301);
+			this.authTab.TabIndex = 2;
+			this.authTab.Tag = "";
+			this.authTab.Text = "Authorise";
+			this.authTab.VerticalScrollbarBarColor = true;
+			this.authTab.VerticalScrollbarHighlightOnWheel = false;
+			this.authTab.VerticalScrollbarSize = 10;
+			// 
+			// authcodeLabel
+			// 
+			this.authcodeLabel.Location = new System.Drawing.Point(18, 60);
+			this.authcodeLabel.Name = "authcodeLabel";
+			this.authcodeLabel.Size = new System.Drawing.Size(80, 25);
+			this.authcodeLabel.TabIndex = 2;
+			this.authcodeLabel.Text = "Code";
+			// 
+			// authcodeButton
+			// 
+			this.authcodeButton.Location = new System.Drawing.Point(104, 101);
+			this.authcodeButton.Name = "authcodeButton";
+			this.authcodeButton.Size = new System.Drawing.Size(110, 24);
+			this.authcodeButton.TabIndex = 1;
+			this.authcodeButton.Text = "Continue";
+			this.authcodeButton.UseSelectable = true;
+			this.authcodeButton.Click += new System.EventHandler(this.authcodeButton_Click);
+			// 
+			// authcodeField
+			// 
+			this.authcodeField.Location = new System.Drawing.Point(104, 60);
+			this.authcodeField.MaxLength = 32767;
+			this.authcodeField.Name = "authcodeField";
+			this.authcodeField.PasswordChar = '\0';
+			this.authcodeField.ScrollBars = System.Windows.Forms.ScrollBars.None;
+			this.authcodeField.SelectedText = "";
+			this.authcodeField.Size = new System.Drawing.Size(206, 22);
+			this.authcodeField.TabIndex = 0;
+			this.authcodeField.UseSelectable = true;
 			// 
 			// confirmTab
 			// 
@@ -482,54 +541,74 @@
     "have copied down your revocation code so you can remove your authenticator from " +
     "your Steam account in the future.\r\n";
 			// 
-			// authTab
+			// importTab
 			// 
-			this.authTab.Controls.Add(this.authcodeLabel);
-			this.authTab.Controls.Add(this.authcodeButton);
-			this.authTab.Controls.Add(this.authcodeField);
-			this.authTab.Controls.Add(this.authoriseTabLabel);
-			this.authTab.HorizontalScrollbarBarColor = true;
-			this.authTab.HorizontalScrollbarHighlightOnWheel = false;
-			this.authTab.HorizontalScrollbarSize = 10;
-			this.authTab.Location = new System.Drawing.Point(4, 22);
-			this.authTab.Name = "authTab";
-			this.authTab.Size = new System.Drawing.Size(456, 301);
-			this.authTab.TabIndex = 2;
-			this.authTab.Tag = "";
-			this.authTab.Text = "Authorise";
-			this.authTab.VerticalScrollbarBarColor = true;
-			this.authTab.VerticalScrollbarHighlightOnWheel = false;
-			this.authTab.VerticalScrollbarSize = 10;
+			this.importTab.Controls.Add(this.importSteamguard);
+			this.importTab.Controls.Add(this.metroLabel4);
+			this.importTab.Controls.Add(this.importUuid);
+			this.importTab.Controls.Add(this.metroLabel2);
+			this.importTab.Controls.Add(this.metroLabel3);
+			this.importTab.HorizontalScrollbarBarColor = true;
+			this.importTab.HorizontalScrollbarHighlightOnWheel = false;
+			this.importTab.HorizontalScrollbarSize = 10;
+			this.importTab.Location = new System.Drawing.Point(4, 22);
+			this.importTab.Name = "importTab";
+			this.importTab.Size = new System.Drawing.Size(456, 301);
+			this.importTab.TabIndex = 5;
+			this.importTab.Text = "Import";
+			this.importTab.VerticalScrollbarBarColor = true;
+			this.importTab.VerticalScrollbarHighlightOnWheel = false;
+			this.importTab.VerticalScrollbarSize = 10;
 			// 
-			// authcodeLabel
+			// importSteamguard
 			// 
-			this.authcodeLabel.Location = new System.Drawing.Point(18, 60);
-			this.authcodeLabel.Name = "authcodeLabel";
-			this.authcodeLabel.Size = new System.Drawing.Size(80, 25);
-			this.authcodeLabel.TabIndex = 2;
-			this.authcodeLabel.Text = "Code";
+			this.importSteamguard.Location = new System.Drawing.Point(4, 243);
+			this.importSteamguard.MaxLength = 32767;
+			this.importSteamguard.Multiline = true;
+			this.importSteamguard.Name = "importSteamguard";
+			this.importSteamguard.PasswordChar = '\0';
+			this.importSteamguard.ScrollBars = System.Windows.Forms.ScrollBars.None;
+			this.importSteamguard.SelectedText = "";
+			this.importSteamguard.Size = new System.Drawing.Size(449, 55);
+			this.importSteamguard.TabIndex = 11;
+			this.importSteamguard.UseSelectable = true;
 			// 
-			// authcodeButton
+			// metroLabel4
 			// 
-			this.authcodeButton.Location = new System.Drawing.Point(104, 101);
-			this.authcodeButton.Name = "authcodeButton";
-			this.authcodeButton.Size = new System.Drawing.Size(110, 24);
-			this.authcodeButton.TabIndex = 1;
-			this.authcodeButton.Text = "Continue";
-			this.authcodeButton.UseSelectable = true;
-			this.authcodeButton.Click += new System.EventHandler(this.authcodeButton_Click);
+			this.metroLabel4.Location = new System.Drawing.Point(4, 213);
+			this.metroLabel4.Name = "metroLabel4";
+			this.metroLabel4.Size = new System.Drawing.Size(449, 26);
+			this.metroLabel4.TabIndex = 10;
+			this.metroLabel4.Text = "Inside the files folder, open SteamGuard-NNNNNNNNNN";
 			// 
-			// authcodeField
+			// importUuid
 			// 
-			this.authcodeField.Location = new System.Drawing.Point(104, 60);
-			this.authcodeField.MaxLength = 32767;
-			this.authcodeField.Name = "authcodeField";
-			this.authcodeField.PasswordChar = '\0';
-			this.authcodeField.ScrollBars = System.Windows.Forms.ScrollBars.None;
-			this.authcodeField.SelectedText = "";
-			this.authcodeField.Size = new System.Drawing.Size(206, 22);
-			this.authcodeField.TabIndex = 0;
-			this.authcodeField.UseSelectable = true;
+			this.importUuid.Location = new System.Drawing.Point(4, 184);
+			this.importUuid.MaxLength = 32767;
+			this.importUuid.Multiline = true;
+			this.importUuid.Name = "importUuid";
+			this.importUuid.PasswordChar = '\0';
+			this.importUuid.ScrollBars = System.Windows.Forms.ScrollBars.None;
+			this.importUuid.SelectedText = "";
+			this.importUuid.Size = new System.Drawing.Size(449, 22);
+			this.importUuid.TabIndex = 9;
+			this.importUuid.UseSelectable = true;
+			// 
+			// metroLabel2
+			// 
+			this.metroLabel2.Location = new System.Drawing.Point(4, 154);
+			this.metroLabel2.Name = "metroLabel2";
+			this.metroLabel2.Size = new System.Drawing.Size(449, 26);
+			this.metroLabel2.TabIndex = 8;
+			this.metroLabel2.Text = "Inside the shared_prefs folder, open steam_uuid.xml";
+			// 
+			// metroLabel3
+			// 
+			this.metroLabel3.Location = new System.Drawing.Point(4, 12);
+			this.metroLabel3.Name = "metroLabel3";
+			this.metroLabel3.Size = new System.Drawing.Size(449, 140);
+			this.metroLabel3.TabIndex = 7;
+			this.metroLabel3.Text = resources.GetString("metroLabel3.Text");
 			// 
 			// closeButton
 			// 
@@ -597,11 +676,12 @@
 			this.captchaGroup.ResumeLayout(false);
 			this.captchaGroup.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.captchaBox)).EndInit();
+			this.authTab.ResumeLayout(false);
 			this.confirmTab.ResumeLayout(false);
 			this.confirmTab.PerformLayout();
 			this.addedTab.ResumeLayout(false);
 			this.addedTab.PerformLayout();
-			this.authTab.ResumeLayout(false);
+			this.importTab.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.steamIcon)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.steamAuthenticatorIcon)).EndInit();
 			this.ResumeLayout(false);
@@ -653,5 +733,11 @@
 		private MetroFramework.Controls.MetroCheckBox revocationCheckbox;
 		private MetroFramework.Controls.MetroLabel revocationcodeLabel;
 		private MetroFramework.Controls.MetroCheckBox revocationcode2Copy;
+		private MetroFramework.Controls.MetroTabPage importTab;
+		private MetroFramework.Controls.MetroLabel metroLabel2;
+		private MetroFramework.Controls.MetroLabel metroLabel3;
+		private MetroFramework.Controls.MetroTextBox importUuid;
+		private MetroFramework.Controls.MetroTextBox importSteamguard;
+		private MetroFramework.Controls.MetroLabel metroLabel4;
 	}
 }

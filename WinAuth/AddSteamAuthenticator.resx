@@ -117,4 +117,11 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="metroLabel3.Text" xml:space="preserve">
+    <value>You can import your SteamGuard authenticator from a rooted Android device. Navigate to the folder
+
+  /data/data/com.valvesoftware.android.steam.community
+
+and then find and open the following two files and copy their contents into the fields below.</value>
+  </data>
 </root>
