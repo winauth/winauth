@@ -465,7 +465,7 @@ namespace WinAuth
 				var result = m_steam.ConfirmTrade(trade.Id, trade.Key, true);
 				if (result == false)
 				{
-					WinAuthForm.ErrorDialog(this, "Trade cannot be accepted");
+					WinAuthForm.ErrorDialog(this, "Trade cannot be confirmed");
 				}
 				else
 				{
@@ -476,7 +476,7 @@ namespace WinAuth
 					button = FindControl<MetroButton>(tabs.SelectedTab, "tradeReject_" + trade.Id);
 					button.Visible = false;
 					MetroLabel status = FindControl<MetroLabel>(tabs.SelectedTab, "tradeStatus_" + trade.Id);
-					status.Text = "Accepted";
+					status.Text = "Confirmed";
 					status.Visible = true;
 				}
 			}
@@ -504,7 +504,7 @@ namespace WinAuth
 				var result = m_steam.ConfirmTrade(trade.Id, trade.Key, false);
 				if (result == false)
 				{
-					WinAuthForm.ErrorDialog(this, "Trade cannot be rejected");
+					WinAuthForm.ErrorDialog(this, "Trade cannot be cancelled");
 				}
 				else
 				{
@@ -515,7 +515,7 @@ namespace WinAuth
 					button = FindControl<MetroButton>(tabs.SelectedTab, "tradeReject_" + trade.Id);
 					button.Visible = false;
 					MetroLabel status = FindControl<MetroLabel>(tabs.SelectedTab, "tradeStatus_" + trade.Id);
-					status.Text = "Rejected";
+					status.Text = "Cancelled";
 					status.Visible = true;
 				}
 			}

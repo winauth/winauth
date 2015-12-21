@@ -1133,7 +1133,7 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Show Recovery Code and Steam Data.
+        ///   Looks up a localized string similar to Show SteamGuard and Recovery Code.
         /// </summary>
         internal static string ShowRevocation {
             get {

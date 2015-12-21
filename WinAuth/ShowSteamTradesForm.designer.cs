@@ -37,6 +37,7 @@
 			this.cancelButton = new MetroFramework.Controls.MetroButton();
 			this.tabs = new MetroFramework.Controls.MetroTabControl();
 			this.loginTab = new MetroFramework.Controls.MetroTabPage();
+			this.rememberPermBox = new MetroFramework.Controls.MetroCheckBox();
 			this.rememberBox = new MetroFramework.Controls.MetroCheckBox();
 			this.captchaGroup = new System.Windows.Forms.Panel();
 			this.captchaBox = new System.Windows.Forms.PictureBox();
@@ -55,7 +56,6 @@
 			this.tradesEmptyLabel = new MetroFramework.Controls.MetroLabel();
 			this.browserContainer = new System.Windows.Forms.Panel();
 			this.closeButton = new MetroFramework.Controls.MetroButton();
-			this.rememberPermBox = new MetroFramework.Controls.MetroCheckBox();
 			this.tabs.SuspendLayout();
 			this.loginTab.SuspendLayout();
 			this.captchaGroup.SuspendLayout();
@@ -151,7 +151,7 @@
 			this.tabs.ItemSize = new System.Drawing.Size(120, 18);
 			this.tabs.Location = new System.Drawing.Point(15, 63);
 			this.tabs.Name = "tabs";
-			this.tabs.SelectedIndex = 0;
+			this.tabs.SelectedIndex = 1;
 			this.tabs.Size = new System.Drawing.Size(464, 406);
 			this.tabs.TabIndex = 0;
 			this.tabs.UseSelectable = true;
@@ -183,6 +183,17 @@
 			this.loginTab.VerticalScrollbarBarColor = true;
 			this.loginTab.VerticalScrollbarHighlightOnWheel = false;
 			this.loginTab.VerticalScrollbarSize = 10;
+			// 
+			// rememberPermBox
+			// 
+			this.rememberPermBox.AutoSize = true;
+			this.rememberPermBox.Location = new System.Drawing.Point(224, 97);
+			this.rememberPermBox.Name = "rememberPermBox";
+			this.rememberPermBox.Size = new System.Drawing.Size(95, 15);
+			this.rememberPermBox.TabIndex = 2;
+			this.rememberPermBox.Text = "permanently?";
+			this.rememberPermBox.UseSelectable = true;
+			this.rememberPermBox.Visible = false;
 			// 
 			// rememberBox
 			// 
@@ -275,7 +286,7 @@
 			this.tradesContainer.Controls.Add(this.tradesEmptyLabel);
 			this.tradesContainer.Location = new System.Drawing.Point(5, 5);
 			this.tradesContainer.Name = "tradesContainer";
-			this.tradesContainer.Size = new System.Drawing.Size(440, 230);
+			this.tradesContainer.Size = new System.Drawing.Size(440, 193);
 			this.tradesContainer.TabIndex = 5;
 			// 
 			// tradePanelMaster
@@ -332,7 +343,7 @@
 			this.tradeReject.Name = "tradeReject";
 			this.tradeReject.Size = new System.Drawing.Size(75, 23);
 			this.tradeReject.TabIndex = 1;
-			this.tradeReject.Text = "Reject";
+			this.tradeReject.Text = "Cancel";
 			this.tradeReject.UseSelectable = true;
 			this.tradeReject.Click += new System.EventHandler(this.tradeReject_Click);
 			// 
@@ -344,7 +355,7 @@
 			this.tradeAccept.Name = "tradeAccept";
 			this.tradeAccept.Size = new System.Drawing.Size(75, 23);
 			this.tradeAccept.TabIndex = 0;
-			this.tradeAccept.Text = "Accept";
+			this.tradeAccept.Text = "Confirm";
 			this.tradeAccept.UseSelectable = true;
 			this.tradeAccept.Click += new System.EventHandler(this.tradeAccept_Click);
 			// 
@@ -376,9 +387,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.browserContainer.BackColor = System.Drawing.SystemColors.Window;
-			this.browserContainer.Location = new System.Drawing.Point(5, 241);
+			this.browserContainer.Location = new System.Drawing.Point(5, 204);
 			this.browserContainer.Name = "browserContainer";
-			this.browserContainer.Size = new System.Drawing.Size(440, 145);
+			this.browserContainer.Size = new System.Drawing.Size(440, 182);
 			this.browserContainer.TabIndex = 5;
 			// 
 			// closeButton
@@ -393,17 +404,6 @@
 			this.closeButton.UseSelectable = true;
 			this.closeButton.Visible = false;
 			this.closeButton.Click += new System.EventHandler(this.closeButton_Click);
-			// 
-			// rememberPermBox
-			// 
-			this.rememberPermBox.AutoSize = true;
-			this.rememberPermBox.Location = new System.Drawing.Point(224, 97);
-			this.rememberPermBox.Name = "rememberPermBox";
-			this.rememberPermBox.Size = new System.Drawing.Size(95, 15);
-			this.rememberPermBox.TabIndex = 2;
-			this.rememberPermBox.Text = "permanently?";
-			this.rememberPermBox.UseSelectable = true;
-			this.rememberPermBox.Visible = false;
 			// 
 			// ShowSteamTradesForm
 			// 

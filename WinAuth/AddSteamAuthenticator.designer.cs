@@ -68,12 +68,23 @@
 			this.revocationcode2Label = new MetroFramework.Controls.MetroLabel();
 			this.revocationcode2Field = new WinAuth.SecretTextBox();
 			this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
-			this.importTab = new MetroFramework.Controls.MetroTabPage();
+			this.importAndroidTab = new MetroFramework.Controls.MetroTabPage();
 			this.importSteamguard = new MetroFramework.Controls.MetroTextBox();
 			this.metroLabel4 = new MetroFramework.Controls.MetroLabel();
 			this.importUuid = new MetroFramework.Controls.MetroTextBox();
 			this.metroLabel2 = new MetroFramework.Controls.MetroLabel();
 			this.metroLabel3 = new MetroFramework.Controls.MetroLabel();
+			this.importSDATab = new MetroFramework.Controls.MetroTabPage();
+			this.metroLabel8 = new MetroFramework.Controls.MetroLabel();
+			this.metroLabel9 = new MetroFramework.Controls.MetroLabel();
+			this.metroLabel7 = new MetroFramework.Controls.MetroLabel();
+			this.metroLabel6 = new MetroFramework.Controls.MetroLabel();
+			this.importSDAList = new System.Windows.Forms.ListBox();
+			this.importSDAPassword = new MetroFramework.Controls.MetroTextBox();
+			this.importSDAPath = new MetroFramework.Controls.MetroTextBox();
+			this.metroLabel5 = new MetroFramework.Controls.MetroLabel();
+			this.importSDALoad = new MetroFramework.Controls.MetroButton();
+			this.importSDABrowse = new MetroFramework.Controls.MetroButton();
 			this.closeButton = new MetroFramework.Controls.MetroButton();
 			this.steamIcon = new System.Windows.Forms.PictureBox();
 			this.steamAuthenticatorIcon = new System.Windows.Forms.PictureBox();
@@ -84,7 +95,8 @@
 			this.authTab.SuspendLayout();
 			this.confirmTab.SuspendLayout();
 			this.addedTab.SuspendLayout();
-			this.importTab.SuspendLayout();
+			this.importAndroidTab.SuspendLayout();
+			this.importSDATab.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.steamIcon)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.steamAuthenticatorIcon)).BeginInit();
 			this.SuspendLayout();
@@ -243,7 +255,8 @@
 			this.tabs.Controls.Add(this.authTab);
 			this.tabs.Controls.Add(this.confirmTab);
 			this.tabs.Controls.Add(this.addedTab);
-			this.tabs.Controls.Add(this.importTab);
+			this.tabs.Controls.Add(this.importAndroidTab);
+			this.tabs.Controls.Add(this.importSDATab);
 			this.tabs.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
 			this.tabs.ItemSize = new System.Drawing.Size(120, 18);
 			this.tabs.Location = new System.Drawing.Point(15, 180);
@@ -541,24 +554,24 @@
     "have copied down your revocation code so you can remove your authenticator from " +
     "your Steam account in the future.\r\n";
 			// 
-			// importTab
+			// importAndroidTab
 			// 
-			this.importTab.Controls.Add(this.importSteamguard);
-			this.importTab.Controls.Add(this.metroLabel4);
-			this.importTab.Controls.Add(this.importUuid);
-			this.importTab.Controls.Add(this.metroLabel2);
-			this.importTab.Controls.Add(this.metroLabel3);
-			this.importTab.HorizontalScrollbarBarColor = true;
-			this.importTab.HorizontalScrollbarHighlightOnWheel = false;
-			this.importTab.HorizontalScrollbarSize = 10;
-			this.importTab.Location = new System.Drawing.Point(4, 22);
-			this.importTab.Name = "importTab";
-			this.importTab.Size = new System.Drawing.Size(456, 301);
-			this.importTab.TabIndex = 5;
-			this.importTab.Text = "Import";
-			this.importTab.VerticalScrollbarBarColor = true;
-			this.importTab.VerticalScrollbarHighlightOnWheel = false;
-			this.importTab.VerticalScrollbarSize = 10;
+			this.importAndroidTab.Controls.Add(this.importSteamguard);
+			this.importAndroidTab.Controls.Add(this.metroLabel4);
+			this.importAndroidTab.Controls.Add(this.importUuid);
+			this.importAndroidTab.Controls.Add(this.metroLabel2);
+			this.importAndroidTab.Controls.Add(this.metroLabel3);
+			this.importAndroidTab.HorizontalScrollbarBarColor = true;
+			this.importAndroidTab.HorizontalScrollbarHighlightOnWheel = false;
+			this.importAndroidTab.HorizontalScrollbarSize = 10;
+			this.importAndroidTab.Location = new System.Drawing.Point(4, 22);
+			this.importAndroidTab.Name = "importAndroidTab";
+			this.importAndroidTab.Size = new System.Drawing.Size(456, 301);
+			this.importAndroidTab.TabIndex = 5;
+			this.importAndroidTab.Text = "Import Android";
+			this.importAndroidTab.VerticalScrollbarBarColor = true;
+			this.importAndroidTab.VerticalScrollbarHighlightOnWheel = false;
+			this.importAndroidTab.VerticalScrollbarSize = 10;
 			// 
 			// importSteamguard
 			// 
@@ -579,11 +592,11 @@
 			this.metroLabel4.Name = "metroLabel4";
 			this.metroLabel4.Size = new System.Drawing.Size(449, 26);
 			this.metroLabel4.TabIndex = 10;
-			this.metroLabel4.Text = "Inside the files folder, open SteamGuard-NNNNNNNNNN";
+			this.metroLabel4.Text = "From the files folder, paste contents of \'SteamGuard-NNNNNNNNNN\'";
 			// 
 			// importUuid
 			// 
-			this.importUuid.Location = new System.Drawing.Point(4, 184);
+			this.importUuid.Location = new System.Drawing.Point(4, 182);
 			this.importUuid.MaxLength = 32767;
 			this.importUuid.Multiline = true;
 			this.importUuid.Name = "importUuid";
@@ -600,15 +613,131 @@
 			this.metroLabel2.Name = "metroLabel2";
 			this.metroLabel2.Size = new System.Drawing.Size(449, 26);
 			this.metroLabel2.TabIndex = 8;
-			this.metroLabel2.Text = "Inside the shared_prefs folder, open steam_uuid.xml";
+			this.metroLabel2.Text = "From the shared_prefs folder, paste contents of \'steam_uuid.xml\'";
 			// 
 			// metroLabel3
 			// 
 			this.metroLabel3.Location = new System.Drawing.Point(4, 12);
 			this.metroLabel3.Name = "metroLabel3";
-			this.metroLabel3.Size = new System.Drawing.Size(449, 140);
+			this.metroLabel3.Size = new System.Drawing.Size(449, 124);
 			this.metroLabel3.TabIndex = 7;
 			this.metroLabel3.Text = resources.GetString("metroLabel3.Text");
+			// 
+			// importSDATab
+			// 
+			this.importSDATab.Controls.Add(this.metroLabel8);
+			this.importSDATab.Controls.Add(this.metroLabel9);
+			this.importSDATab.Controls.Add(this.metroLabel7);
+			this.importSDATab.Controls.Add(this.metroLabel6);
+			this.importSDATab.Controls.Add(this.importSDAList);
+			this.importSDATab.Controls.Add(this.importSDAPassword);
+			this.importSDATab.Controls.Add(this.importSDAPath);
+			this.importSDATab.Controls.Add(this.metroLabel5);
+			this.importSDATab.Controls.Add(this.importSDALoad);
+			this.importSDATab.Controls.Add(this.importSDABrowse);
+			this.importSDATab.HorizontalScrollbarBarColor = true;
+			this.importSDATab.HorizontalScrollbarHighlightOnWheel = false;
+			this.importSDATab.HorizontalScrollbarSize = 10;
+			this.importSDATab.Location = new System.Drawing.Point(4, 22);
+			this.importSDATab.Name = "importSDATab";
+			this.importSDATab.Size = new System.Drawing.Size(456, 301);
+			this.importSDATab.TabIndex = 6;
+			this.importSDATab.Text = "Import SDA";
+			this.importSDATab.VerticalScrollbarBarColor = true;
+			this.importSDATab.VerticalScrollbarHighlightOnWheel = false;
+			this.importSDATab.VerticalScrollbarSize = 10;
+			// 
+			// metroLabel8
+			// 
+			this.metroLabel8.Location = new System.Drawing.Point(3, 107);
+			this.metroLabel8.Name = "metroLabel8";
+			this.metroLabel8.Size = new System.Drawing.Size(259, 27);
+			this.metroLabel8.TabIndex = 12;
+			this.metroLabel8.Text = "2. Enter your password (if you have one):";
+			// 
+			// metroLabel9
+			// 
+			this.metroLabel9.Location = new System.Drawing.Point(4, 148);
+			this.metroLabel9.Name = "metroLabel9";
+			this.metroLabel9.Size = new System.Drawing.Size(60, 27);
+			this.metroLabel9.TabIndex = 12;
+			this.metroLabel9.Text = "3. Click";
+			// 
+			// metroLabel7
+			// 
+			this.metroLabel7.Location = new System.Drawing.Point(151, 148);
+			this.metroLabel7.Name = "metroLabel7";
+			this.metroLabel7.Size = new System.Drawing.Size(301, 27);
+			this.metroLabel7.TabIndex = 12;
+			this.metroLabel7.Text = "and choose which account to import.";
+			// 
+			// metroLabel6
+			// 
+			this.metroLabel6.Location = new System.Drawing.Point(3, 41);
+			this.metroLabel6.Name = "metroLabel6";
+			this.metroLabel6.Size = new System.Drawing.Size(449, 28);
+			this.metroLabel6.TabIndex = 12;
+			this.metroLabel6.Text = "1. Select the manifest.json file where your maFiles are located.";
+			// 
+			// importSDAList
+			// 
+			this.importSDAList.FormattingEnabled = true;
+			this.importSDAList.Location = new System.Drawing.Point(4, 178);
+			this.importSDAList.Name = "importSDAList";
+			this.importSDAList.Size = new System.Drawing.Size(449, 82);
+			this.importSDAList.TabIndex = 11;
+			// 
+			// importSDAPassword
+			// 
+			this.importSDAPassword.Location = new System.Drawing.Point(268, 107);
+			this.importSDAPassword.MaxLength = 32767;
+			this.importSDAPassword.Name = "importSDAPassword";
+			this.importSDAPassword.PasswordChar = '*';
+			this.importSDAPassword.ScrollBars = System.Windows.Forms.ScrollBars.None;
+			this.importSDAPassword.SelectedText = "";
+			this.importSDAPassword.Size = new System.Drawing.Size(184, 22);
+			this.importSDAPassword.TabIndex = 10;
+			this.importSDAPassword.UseSelectable = true;
+			// 
+			// importSDAPath
+			// 
+			this.importSDAPath.Location = new System.Drawing.Point(4, 70);
+			this.importSDAPath.MaxLength = 32767;
+			this.importSDAPath.Name = "importSDAPath";
+			this.importSDAPath.PasswordChar = '\0';
+			this.importSDAPath.ScrollBars = System.Windows.Forms.ScrollBars.None;
+			this.importSDAPath.SelectedText = "";
+			this.importSDAPath.Size = new System.Drawing.Size(368, 22);
+			this.importSDAPath.TabIndex = 10;
+			this.importSDAPath.UseSelectable = true;
+			// 
+			// metroLabel5
+			// 
+			this.metroLabel5.Location = new System.Drawing.Point(4, 12);
+			this.metroLabel5.Name = "metroLabel5";
+			this.metroLabel5.Size = new System.Drawing.Size(449, 29);
+			this.metroLabel5.TabIndex = 8;
+			this.metroLabel5.Text = "You can import an authenticator from SteamDesktopAuthenticator.";
+			// 
+			// importSDALoad
+			// 
+			this.importSDALoad.Location = new System.Drawing.Point(70, 147);
+			this.importSDALoad.Name = "importSDALoad";
+			this.importSDALoad.Size = new System.Drawing.Size(75, 23);
+			this.importSDALoad.TabIndex = 1;
+			this.importSDALoad.Text = "Load";
+			this.importSDALoad.UseSelectable = true;
+			this.importSDALoad.Click += new System.EventHandler(this.importSDALoad_Click);
+			// 
+			// importSDABrowse
+			// 
+			this.importSDABrowse.Location = new System.Drawing.Point(378, 70);
+			this.importSDABrowse.Name = "importSDABrowse";
+			this.importSDABrowse.Size = new System.Drawing.Size(75, 23);
+			this.importSDABrowse.TabIndex = 1;
+			this.importSDABrowse.Text = "Browse...";
+			this.importSDABrowse.UseSelectable = true;
+			this.importSDABrowse.Click += new System.EventHandler(this.importSDABrowse_Click);
 			// 
 			// closeButton
 			// 
@@ -681,7 +810,8 @@
 			this.confirmTab.PerformLayout();
 			this.addedTab.ResumeLayout(false);
 			this.addedTab.PerformLayout();
-			this.importTab.ResumeLayout(false);
+			this.importAndroidTab.ResumeLayout(false);
+			this.importSDATab.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.steamIcon)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.steamAuthenticatorIcon)).EndInit();
 			this.ResumeLayout(false);
@@ -733,11 +863,22 @@
 		private MetroFramework.Controls.MetroCheckBox revocationCheckbox;
 		private MetroFramework.Controls.MetroLabel revocationcodeLabel;
 		private MetroFramework.Controls.MetroCheckBox revocationcode2Copy;
-		private MetroFramework.Controls.MetroTabPage importTab;
+		private MetroFramework.Controls.MetroTabPage importAndroidTab;
 		private MetroFramework.Controls.MetroLabel metroLabel2;
 		private MetroFramework.Controls.MetroLabel metroLabel3;
 		private MetroFramework.Controls.MetroTextBox importUuid;
 		private MetroFramework.Controls.MetroTextBox importSteamguard;
 		private MetroFramework.Controls.MetroLabel metroLabel4;
+		private MetroFramework.Controls.MetroTabPage importSDATab;
+		private MetroFramework.Controls.MetroLabel metroLabel5;
+		private MetroFramework.Controls.MetroTextBox importSDAPath;
+		private MetroFramework.Controls.MetroButton importSDABrowse;
+		private System.Windows.Forms.ListBox importSDAList;
+		private MetroFramework.Controls.MetroLabel metroLabel7;
+		private MetroFramework.Controls.MetroLabel metroLabel6;
+		private MetroFramework.Controls.MetroLabel metroLabel8;
+		private MetroFramework.Controls.MetroTextBox importSDAPassword;
+		private MetroFramework.Controls.MetroLabel metroLabel9;
+		private MetroFramework.Controls.MetroButton importSDALoad;
 	}
 }

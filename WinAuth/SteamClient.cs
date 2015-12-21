@@ -42,6 +42,8 @@ namespace WinAuth
 		/// URLs for all mobile services
 		/// </summary>
 		private const string COMMUNITY_BASE = "https://steamcommunity.com";
+		private static string WEBAPI_BASE = "https://api.steampowered.com";
+		private static string GETWGTOKEN = WEBAPI_BASE + "/IMobileAuthService/GetWGToken/v0001";
 
 		/// <summary>
 		/// Default mobile user agent
@@ -372,6 +374,45 @@ namespace WinAuth
 			}
 
 			return true;
+		}
+
+		/// <summary>
+		/// Refresh the login session cookies from the OAuth code
+		/// </summary>
+		/// <returns>true if successful</returns>
+		public bool Refresh()
+		{
+			var data = new NameValueCollection();
+			data.Add("access_token", this.Session.OAuthToken);
+			string response = GetString(GETWGTOKEN, "POST", data);
+			if (string.IsNullOrEmpty(response) == true)
+			{
+				return false;
+			}
+
+			try
+			{
+				var json = JObject.Parse(response);
+				var token = json.SelectToken("response.token");
+				if (token == null)
+				{
+					return false;
+				}
+				this.Session.Cookies.Add(new Cookie("steamLogin", this.Session.SteamId + "||" + token.Value<string>(), "/", ".steamcommunity.com"));
+
+				token = json.SelectToken("response.token_secure");
+				if (token == null)
+				{
+					return false;
+				}
+				this.Session.Cookies.Add(new Cookie("steamLoginSecure", this.Session.SteamId + "||" + token.Value<string>(), "/", ".steamcommunity.com"));
+
+				return true;
+			}
+			catch (Exception)
+			{
+				return false;
+			}
 		}
 
 		/// <summary>
