@@ -91,6 +91,7 @@ namespace WinAuth
 			browserContainer.Height = 0;
 			tradesContainer.Height += m_browserHeight;
 
+			m_tabPages.Clear();
 			for (var i = 0; i < tabs.TabPages.Count; i++)
 			{
 				m_tabPages.Add(tabs.TabPages[i].Name, tabs.TabPages[i]);
@@ -98,15 +99,7 @@ namespace WinAuth
 
 			m_steam = new SteamClient(this.Authenticator, Authenticator.SessionData);
 
-			if (m_steam.IsLoggedIn() == true)
-			{
-				Process();
-			}
-			else
-			{
-				ShowTab("loginTab");
-				usernameField.Focus();
-			}
+			Init();
 		}
 
 		/// <summary>
@@ -300,6 +293,22 @@ namespace WinAuth
 		#region Private methods
 
 		/// <summary>
+		/// Initialise the new Steam session or from saved data
+		/// </summary>
+		private void Init()
+		{
+			if (m_steam.IsLoggedIn() == true)
+			{
+				Process();
+			}
+			else
+			{
+				ShowTab("loginTab");
+				usernameField.Focus();
+			}
+		}
+
+		/// <summary>
 		/// Process the enrolling calling the authenticator method, checking the state and displaying appropriate tab
 		/// </summary>
 		private void Process(string username = null, string password = null, string captchaId = null, string captchaText = null)
@@ -374,7 +383,26 @@ namespace WinAuth
 						Authenticator.PermSession = (rememberBox.Checked == true && rememberPermBox.Checked == true);
 					}
 
-					m_trades = m_steam.GetConfirmations();
+					try
+					{
+						m_trades = m_steam.GetConfirmations();
+					}
+					catch (SteamClient.InvalidSteamRequestException ex)
+					{
+						// likely a bad session so try a refresh first
+						try
+						{
+							m_steam.Refresh();
+							m_trades = m_steam.GetConfirmations();
+						}
+						catch (Exception)
+						{
+							// reset and show normal login
+							m_steam.Clear();
+							Init();
+							return;
+						}
+					}
 
 					Cursor.Current = cursor;
 
@@ -383,7 +411,7 @@ namespace WinAuth
 					tab.SuspendLayout();
 					tradesContainer.Controls.Remove(this.tradePanelMaster);
 
-					for (var row=0; row<m_trades.Count; row++)
+					for (var row = 0; row < m_trades.Count; row++)
 					{
 						var trade = m_trades[row];
 
@@ -415,7 +443,7 @@ namespace WinAuth
 
 						MetroButton tradeRejectButton = FindControl<MetroButton>(tradePanel, "tradeReject");
 						tradeRejectButton.Tag = trade.Id;
-            tradeRejectButton.Click += tradeReject_Click;
+						tradeRejectButton.Click += tradeReject_Click;
 
 						tradePanel.Top = tradePanel.Height * row;
 
@@ -443,6 +471,10 @@ namespace WinAuth
 					{
 						break;
 					}
+				}
+				finally
+				{
+					Cursor.Current = cursor;
 				}
 			} while (true);
 		}
