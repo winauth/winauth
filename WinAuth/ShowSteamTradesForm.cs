@@ -56,7 +56,10 @@ namespace WinAuth
 		/// </summary>
 		public WinAuthAuthenticator Authenticator { get; set; }
 
-		//private DateTime? _pollSetTime;
+		/// <summary>
+		/// If been warned about auto
+		/// </summary>
+		private bool AutoWarned;
 
 		/// <summary>
 		/// Steam authenticator
@@ -385,6 +388,34 @@ namespace WinAuth
 			Init();
 		}
 
+		/// <summary>
+		/// Change the poller action
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void pollAction_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			// display autoconfirm warning
+			if (m_loaded == true
+				&& pollAction.SelectedValue != null
+				&& pollAction.SelectedValue is SteamClient.PollerAction
+				&& (SteamClient.PollerAction)pollAction.SelectedValue == SteamClient.PollerAction.AutoConfirm
+				&& AutoWarned == false)
+			{
+				if (WinAuthForm.ConfirmDialog(this, "WARNING: Using auto-confirm will automatically confirm all new Confirmations on your "
+					+ "account. Do not use this unless you want to ignore trade confirmations." + Environment.NewLine + Environment.NewLine
+					+ "This WILL remove items from your inventory." + Environment.NewLine + Environment.NewLine
+					+ "Are you sure you want to continue?", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+				{
+					pollAction.SelectedIndex = 0;
+				}
+				else
+				{
+					AutoWarned = true;
+				}
+			}
+		}
+
 		#endregion
 
 		#region Private methods
@@ -585,6 +616,11 @@ namespace WinAuth
 								if (item.Value == steam.Session.Confirmations.Action)
 								{
 									selected = i;
+
+									if (steam.Session.Confirmations.Action == SteamClient.PollerAction.AutoConfirm)
+									{
+										AutoWarned = true;
+									}
 									break;
 								}
 							}
@@ -852,8 +888,8 @@ namespace WinAuth
 			}
 		}
 
-		#endregion
 
+		#endregion
 
 	}
 }

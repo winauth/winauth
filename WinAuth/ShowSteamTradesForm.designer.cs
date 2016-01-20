@@ -319,6 +319,7 @@
 			this.pollAction.Size = new System.Drawing.Size(173, 25);
 			this.pollAction.TabIndex = 8;
 			this.pollAction.UseSelectable = true;
+			this.pollAction.SelectedIndexChanged += new System.EventHandler(this.pollAction_SelectedIndexChanged);
 			// 
 			// pollCheckbox
 			// 
