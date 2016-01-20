@@ -1263,7 +1263,7 @@ namespace WinAuth
     public static string PGPDecrypt(string armoredCipher, string armoredPrivateKey, string keyPassword)
     {
       // decode the private key
-      PgpPrivateKey privateKey = null;
+      Dictionary<long, PgpPrivateKey> privateKeys = new Dictionary<long, PgpPrivateKey>();
       using (MemoryStream ms = new MemoryStream(Encoding.ASCII.GetBytes(armoredPrivateKey)))
       {
         using (Stream dis = PgpUtilities.GetDecoderStream(ms))
@@ -1273,8 +1273,7 @@ namespace WinAuth
           {
             foreach (PgpSecretKey key in keyring.GetSecretKeys())
             {
-              privateKey = key.ExtractPrivateKey(keyPassword != null ? keyPassword.ToCharArray() : null);
-              break;
+							privateKeys.Add(key.KeyId, key.ExtractPrivateKey(keyPassword != null ? keyPassword.ToCharArray() : null));
             }
           }
         }
@@ -1293,7 +1292,7 @@ namespace WinAuth
             {
               foreach (PgpPublicKeyEncryptedData pked in ((PgpEncryptedDataList)message).GetEncryptedDataObjects())
               {
-                message = new PgpObjectFactory(pked.GetDataStream(privateKey)).NextPgpObject();
+								message = new PgpObjectFactory(pked.GetDataStream(privateKeys[pked.KeyId])).NextPgpObject();
               }
             }
             if (message is PgpCompressedData)
