@@ -537,6 +537,7 @@
 			this.Text = "Steam Confirmations";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ShowSteamTradesForm_FormClosing);
 			this.Load += new System.EventHandler(this.ShowSteamTradesForm_Load);
+			this.Shown += new System.EventHandler(this.ShowSteamTradesForm_Shown);
 			this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ShowSteamTradesForm_KeyPress);
 			this.tabs.ResumeLayout(false);
 			this.loginTab.ResumeLayout(false);

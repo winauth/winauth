@@ -130,6 +130,16 @@ namespace WinAuth
 		}
 
 		/// <summary>
+		/// Set focus when loading
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void ShowSteamTradesForm_Shown(object sender, EventArgs e)
+		{
+			this.usernameField.Focus();
+		}
+
+		/// <summary>
 		/// If we close after adding, make sure we save it
 		/// </summary>
 		/// <param name="sender"></param>
@@ -843,7 +853,8 @@ namespace WinAuth
 			tabs.SelectedTab = tabs.TabPages[name];
 			if (name == "loginTab")
 			{
-				usernameField.Focus();
+				// oddity with MetroFrame controls in have to set focus away and back to field to make it stick
+				this.Invoke((MethodInvoker)delegate { this.passwordField.Focus(); this.usernameField.Focus(); });
 			}
 
 			return tabs.SelectedTab;
