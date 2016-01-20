@@ -106,7 +106,6 @@ namespace WinAuth
 			this.secretCodeField.CausesValidation = false;
 			this.secretCodeField.Location = new System.Drawing.Point(23, 361);
 			this.secretCodeField.MaxLength = 32767;
-			this.secretCodeField.Multiline = true;
 			this.secretCodeField.Name = "secretCodeField";
 			this.secretCodeField.PasswordChar = '\0';
 			this.secretCodeField.ScrollBars = System.Windows.Forms.ScrollBars.None;

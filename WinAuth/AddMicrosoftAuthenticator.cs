@@ -209,9 +209,27 @@ namespace WinAuth
 			icon3RadioButton.Checked = true;
 		}
 
-#endregion
+		#endregion
 
-#region Private methods
+		#region Private methods
+
+		/// <summary>
+		/// Check if a filename is valid and such a file exists
+		/// </summary>
+		/// <param name="filename">filename to check</param>
+		/// <returns>true if valid and exists</returns>
+		private bool IsValidFile(string filename)
+		{
+			try
+			{
+				// check path is valid
+				new FileInfo(filename);
+				return File.Exists(filename);
+			}
+			catch (Exception) { }
+
+			return false;
+		}
 
 		/// <summary>
 		/// Verify and create the authenticator if needed
@@ -219,7 +237,106 @@ namespace WinAuth
 		/// <returns>true is successful</returns>
 		private bool verifyAuthenticator(string privatekey)
 		{
+			if (string.IsNullOrEmpty(privatekey) == true)
+			{
+				return false;
+			}
+
 			this.Authenticator.Name = nameField.Text;
+
+			string authtype = "totp";
+
+			// if this is a URL, pull it down
+			Uri uri;
+			Match match;
+			if (Regex.IsMatch(privatekey, "https?://.*") == true && Uri.TryCreate(privatekey, UriKind.Absolute, out uri) == true)
+			{
+				try
+				{
+					var request = (HttpWebRequest)WebRequest.Create(uri);
+					request.AllowAutoRedirect = true;
+					request.Timeout = 20000;
+					request.UserAgent = "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)";
+					using (var response = (HttpWebResponse)request.GetResponse())
+					{
+						if (response.StatusCode == HttpStatusCode.OK && response.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase) == true)
+						{
+							using (Bitmap bitmap = (Bitmap)Bitmap.FromStream(response.GetResponseStream()))
+							{
+								IBarcodeReader reader = new BarcodeReader();
+								var result = reader.Decode(bitmap);
+								if (result != null)
+								{
+									privatekey = HttpUtility.UrlDecode(result.Text);
+								}
+							}
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					WinAuthForm.ErrorDialog(this.Owner, "Cannot load QR code image from " + privatekey, ex);
+					return false;
+				}
+			}
+			else if ((match = Regex.Match(privatekey, @"data:image/([^;]+);base64,(.*)", RegexOptions.IgnoreCase)).Success == true)
+			{
+				byte[] imagedata = Convert.FromBase64String(match.Groups[2].Value);
+				using (MemoryStream ms = new MemoryStream(imagedata))
+				{
+					using (Bitmap bitmap = (Bitmap)Bitmap.FromStream(ms))
+					{
+						IBarcodeReader reader = new BarcodeReader();
+						var result = reader.Decode(bitmap);
+						if (result != null)
+						{
+							privatekey = HttpUtility.UrlDecode(result.Text);
+						}
+					}
+				}
+			}
+			else if (IsValidFile(privatekey) == true)
+			{
+				// assume this is the image file
+				using (Bitmap bitmap = (Bitmap)Bitmap.FromFile(privatekey))
+				{
+					IBarcodeReader reader = new BarcodeReader();
+					var result = reader.Decode(bitmap);
+					if (result != null)
+					{
+						privatekey = result.Text;
+					}
+				}
+			}
+
+			// check for otpauth://, e.g. "otpauth://totp/dc3bf64c-2fd4-40fe-a8cf-83315945f08b@blockchain.info?secret=IHZJDKAEEC774BMUK3GX6SA"
+			match = Regex.Match(privatekey, @"otpauth://([^/]+)/([^?]+)\?(.*)", RegexOptions.IgnoreCase);
+			if (match.Success == true)
+			{
+				authtype = match.Groups[1].Value; // @todo we only handle totp (not hotp)
+				if (string.Compare(authtype, "totp", true) != 0)
+				{
+					WinAuthForm.ErrorDialog(this.Owner, "Only time-based (TOTP) authenticators are supported when adding a Google Authenticator. Use the general \"Add Authenticator\" for counter-based (HOTP) authenticators.");
+					return false;
+				}
+
+				string label = match.Groups[2].Value;
+				if (string.IsNullOrEmpty(label) == false)
+				{
+					this.Authenticator.Name = this.nameField.Text = label;
+				}
+
+				NameValueCollection qs = WinAuthHelper.ParseQueryString(match.Groups[3].Value);
+				privatekey = qs["secret"] ?? privatekey;
+			}
+
+			// just get the hex chars
+			privatekey = Regex.Replace(privatekey, @"[^0-9a-z]", "", RegexOptions.IgnoreCase);
+			if (privatekey.Length == 0)
+			{
+				WinAuthForm.ErrorDialog(this.Owner, "The secret code is not valid");
+				return false;
+			}
 
 			try
 			{
