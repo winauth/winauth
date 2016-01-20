@@ -282,6 +282,8 @@ namespace WinAuth
 					passwordPanel.Visible = true;
 					this.passwordErrorLabel.Text = strings.InvalidPassword;
 					this.passwordErrorLabel.Tag = DateTime.Now.AddSeconds(3);
+					// oddity with MetroFrame controls in have to set focus away and back to field to make it stick
+					this.Invoke((MethodInvoker)delegate { this.passwordButton.Focus(); this.passwordField.Focus(); });
 					this.passwordTimer.Enabled = true;
 					return;
 				}
@@ -1854,11 +1856,7 @@ namespace WinAuth
 				this.passwordTimer.Enabled = false;
 				this.passwordErrorLabel.Tag = null;
 				this.passwordErrorLabel.Text = string.Empty;
-
-				// oddity with MetroFrame controls in have to set focus away and back to field to make it stick
-				this.Invoke((MethodInvoker)delegate { this.passwordButton.Focus(); this.passwordField.Focus(); });
 			}
-
 		}
 
 		/// <summary>
