@@ -162,9 +162,14 @@ namespace WinAuth
 		public bool PermSession { get; set; }
 
 		/// <summary>
-		/// Revocation code
+		/// 
 		/// </summary>
-		//public string RevocationCode { get; set; }
+		public string PollData { get; set; }
+
+		/// <summary>
+		/// Current Steam client instance
+		/// </summary>
+		public SteamClient Client { get; protected set; }
 
 		#endregion
 
@@ -189,11 +194,19 @@ namespace WinAuth
 		{
 			get
 			{
+				if (PermSession && this.Client != null && this.Client != null)
+				{
+					this.SessionData = this.Client.Session.ToString();
+				}
+				else
+				{
+					this.SessionData = null;
+				}
+
 				// this is the key |  serial | deviceid
 				return base.SecretData
 					+ "|" + Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(Serial))
 					+ "|" + Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(DeviceId))
-					//+ "|" + Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(RevocationCode));
 					+ "|" + Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(SteamData))
 					+ "|" + (PermSession && string.IsNullOrEmpty(SessionData) == false ? Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(SessionData)) : string.Empty);
 			}
@@ -206,7 +219,6 @@ namespace WinAuth
 					base.SecretData = value;
 					Serial = (parts.Length > 1 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[1])) : null);
 					DeviceId = (parts.Length > 2 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[2])) : null);
-					//RevocationCode = (parts.Length > 3 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[3])) : string.Empty);
 					SteamData = (parts.Length > 3 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[3])) : string.Empty);
 					if (string.IsNullOrEmpty(SteamData) == false && SteamData[0] != '{')
 					{
@@ -225,11 +237,27 @@ namespace WinAuth
 					SecretKey = null;
 					Serial = null;
 					DeviceId = null;
-					//RevocationCode = null;
 					SteamData = null;
 					SessionData = null;
 					PermSession = false;
 				}
+			}
+		}
+
+		/// <summary>
+		/// Get (or create) the current Steam client for this Authenticator
+		/// </summary>
+		/// <returns>current or new SteamClient</returns>
+		public SteamClient GetClient()
+		{
+			lock (this)
+			{
+				if (this.Client == null)
+				{
+					this.Client = new SteamClient(this, this.SessionData);
+				}
+
+				return this.Client;
 			}
 		}
 
@@ -309,6 +337,11 @@ namespace WinAuth
 #if DEBUG
 				LogRequest(method, url, cookies, data, ex);
 #endif
+				if (ex is WebException && ((WebException)ex).Response != null && ((HttpWebResponse)((WebException)ex).Response).StatusCode == HttpStatusCode.Forbidden)
+				{
+					throw new UnauthorisedRequestException(ex);
+				}
+
 				throw new InvalidRequestException(ex.Message, ex);
 			}
 		}
@@ -332,8 +365,8 @@ namespace WinAuth
 					// get session
 					if (cookies.Count == 0)
 					{
-						cookies.Add(new Cookie("mobileClientVersion", "3067969+%282.1.3%29", "/", ".steamcommunity.com")); 
-            cookies.Add(new Cookie("mobileClient", "android", "/", ".steamcommunity.com"));
+						cookies.Add(new Cookie("mobileClientVersion", "3067969+%282.1.3%29", "/", ".steamcommunity.com"));
+						cookies.Add(new Cookie("mobileClient", "android", "/", ".steamcommunity.com"));
 						cookies.Add(new Cookie("steamid", "", "/", ".steamcommunity.com"));
 						cookies.Add(new Cookie("steamLogin", "", "/", ".steamcommunity.com"));
 						cookies.Add(new Cookie("Steam_Language", "english", "/", ".steamcommunity.com"));
@@ -377,7 +410,7 @@ namespace WinAuth
 					data.Add("loginfriendlyname", "#login_emailauth_friendlyname_mobile");
 					data.Add("captchagid", (state.CaptchaId != null ? state.CaptchaId : "-1"));
 					data.Add("captcha_text", (state.CaptchaText != null ? state.CaptchaText : "enter above characters"));
-					data.Add("emailsteamid", (state.EmailAuthText != null ? state.SteamId ?? string.Empty: string.Empty));
+					data.Add("emailsteamid", (state.EmailAuthText != null ? state.SteamId ?? string.Empty : string.Empty));
 					data.Add("rsatimestamp", rsaresponse.SelectToken("timestamp").Value<string>());
 					data.Add("remember_login", "false");
 					data.Add("oauth_client_id", "DE45CD61");
@@ -472,9 +505,10 @@ namespace WinAuth
 					data.Add("op", "has_phone");
 					data.Add("arg", "null");
 					data.Add("sessionid", sessionid);
+
 					response = Request(COMMUNITY_BASE + "/steamguard/phoneajax", "POST", data, cookies);
 					var jsonresponse = JObject.Parse(response);
-					var hasPhone = jsonresponse.SelectToken("has_phone").Value<Boolean>();
+					bool hasPhone = jsonresponse.SelectToken("has_phone").Value<Boolean>();
 					if (hasPhone == false)
 					{
 						state.OAuthToken = null; // force new login
@@ -606,6 +640,10 @@ namespace WinAuth
 				response = Request(WEBAPI_BASE + "/ITwoFactorService/SendEmail/v0001", "POST", data);
 
 				return true;
+			}
+			catch (UnauthorisedRequestException ex)
+			{
+				throw new InvalidEnrollResponseException("You are not allowed to add an authenticator. Have you enabled 'community-generated content' in Family View?", ex);
 			}
 			catch (InvalidRequestException ex)
 			{
@@ -757,44 +795,49 @@ namespace WinAuth
 		/// <param name="response">response body</param>
 		private static void LogRequest(string method, string url, CookieContainer cookies, NameValueCollection request, string response)
 		{
-			StringBuilder data = new StringBuilder();
-			if (cookies != null)
+			lock (typeof(Authenticator))
 			{
-				foreach (Cookie cookie in cookies.GetCookies(new Uri(url)))
+				StringBuilder data = new StringBuilder();
+				if (cookies != null)
 				{
-					if (data.Length == 0)
+					foreach (Cookie cookie in cookies.GetCookies(new Uri(url)))
 					{
-						data.Append("Cookies:");
+						if (data.Length == 0)
+						{
+							data.Append("Cookies:");
+						}
+						else
+						{
+							data.Append("&");
+						}
+						data.Append(cookie.Name + "=" + cookie.Value);
 					}
-					else
-					{
-						data.Append("&");
-					}
-					data.Append(cookie.Name + "=" + cookie.Value);
+					data.Append(" ");
 				}
-				data.Append(" ");
-			}
 
-			if (request != null)
-			{
-				foreach (var key in request.AllKeys)
+				if (request != null)
 				{
-					if (data.Length == 0)
+					foreach (var key in request.AllKeys)
 					{
-						data.Append("Req:");
+						if (data.Length == 0)
+						{
+							data.Append("Req:");
+						}
+						else
+						{
+							data.Append("&");
+						}
+						data.Append(key + "=" + request[key]);
 					}
-					else
-					{
-						data.Append("&");
-					}
-					data.Append(key + "=" + request[key]);
+					data.Append(" ");
 				}
-				data.Append(" ");
-			}
-			
-			string message = string.Format(@"{0} {1} {2} {3} {4}", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"), method, url, data.ToString(), (response != null ? response.Replace("\n", "\\n").Replace("\r", "") : string.Empty));
 
-			System.Diagnostics.Trace.TraceWarning(message);
+				string message = string.Format(@"{0} {1} {2} {3} {4}", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"), method, url, data.ToString(), (response != null ? response.Replace("\n", "\\n").Replace("\r", "") : string.Empty));
+
+				System.Diagnostics.Trace.TraceWarning(message);
+
+				File.AppendAllText(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "winauth.log"), message);
+			}
 		}
 #endif
 
@@ -806,6 +849,13 @@ namespace WinAuth
 			public InvalidRequestException(string msg = null, Exception ex = null) : base(msg, ex) { }
 		}
 
+		/// <summary>
+		/// 403 forbidden responses
+		/// </summary>
+		class UnauthorisedRequestException : InvalidRequestException
+		{
+			public UnauthorisedRequestException(Exception ex = null) : base("Unauthorised", ex) { }
+		}
 	}
 
 

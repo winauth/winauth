@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ShowSteamTradesForm));
 			this.loginButton = new MetroFramework.Controls.MetroButton();
 			this.loginTabLabel = new MetroFramework.Controls.MetroLabel();
 			this.captchaButton = new MetroFramework.Controls.MetroButton();
@@ -45,6 +46,11 @@
 			this.passwordLabel = new MetroFramework.Controls.MetroLabel();
 			this.usernameLabel = new MetroFramework.Controls.MetroLabel();
 			this.tradesTab = new MetroFramework.Controls.MetroTabPage();
+			this.pollPanel = new System.Windows.Forms.Panel();
+			this.pollAction = new MetroFramework.Controls.MetroComboBox();
+			this.pollCheckbox = new MetroFramework.Controls.MetroCheckBox();
+			this.pollNumeric = new System.Windows.Forms.NumericUpDown();
+			this.pollMinuesLabel = new MetroFramework.Controls.MetroLabel();
 			this.tradesContainer = new System.Windows.Forms.Panel();
 			this.tradePanelMaster = new System.Windows.Forms.Panel();
 			this.tradeSep = new System.Windows.Forms.PictureBox();
@@ -56,11 +62,15 @@
 			this.tradesEmptyLabel = new MetroFramework.Controls.MetroLabel();
 			this.browserContainer = new System.Windows.Forms.Panel();
 			this.closeButton = new MetroFramework.Controls.MetroButton();
+			this.refreshButton = new MetroFramework.Controls.MetroButton();
+			this.logoutButton = new MetroFramework.Controls.MetroButton();
 			this.tabs.SuspendLayout();
 			this.loginTab.SuspendLayout();
 			this.captchaGroup.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.captchaBox)).BeginInit();
 			this.tradesTab.SuspendLayout();
+			this.pollPanel.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.pollNumeric)).BeginInit();
 			this.tradesContainer.SuspendLayout();
 			this.tradePanelMaster.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.tradeSep)).BeginInit();
@@ -259,6 +269,7 @@
 			// tradesTab
 			// 
 			this.tradesTab.AutoScroll = true;
+			this.tradesTab.Controls.Add(this.pollPanel);
 			this.tradesTab.Controls.Add(this.tradesContainer);
 			this.tradesTab.Controls.Add(this.browserContainer);
 			this.tradesTab.HorizontalScrollbar = true;
@@ -275,6 +286,82 @@
 			this.tradesTab.VerticalScrollbarBarColor = true;
 			this.tradesTab.VerticalScrollbarHighlightOnWheel = false;
 			this.tradesTab.VerticalScrollbarSize = 10;
+			// 
+			// pollPanel
+			// 
+			this.pollPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.pollPanel.BackColor = System.Drawing.SystemColors.Window;
+			this.pollPanel.Controls.Add(this.pollAction);
+			this.pollPanel.Controls.Add(this.pollCheckbox);
+			this.pollPanel.Controls.Add(this.pollNumeric);
+			this.pollPanel.Controls.Add(this.pollMinuesLabel);
+			this.pollPanel.Location = new System.Drawing.Point(5, 343);
+			this.pollPanel.Name = "pollPanel";
+			this.pollPanel.Size = new System.Drawing.Size(440, 43);
+			this.pollPanel.TabIndex = 8;
+			this.pollPanel.Visible = false;
+			// 
+			// pollAction
+			// 
+			this.pollAction.FontSize = MetroFramework.MetroComboBoxSize.Small;
+			this.pollAction.FontWeight = MetroFramework.MetroComboBoxWeight.Light;
+			this.pollAction.FormattingEnabled = true;
+			this.pollAction.ItemHeight = 19;
+			this.pollAction.Items.AddRange(new object[] {
+            "Show a notification",
+            "Show the Confirmations",
+            "Auto-confirm",
+            "Auto-cancel"});
+			this.pollAction.Location = new System.Drawing.Point(250, 5);
+			this.pollAction.Name = "pollAction";
+			this.pollAction.Size = new System.Drawing.Size(173, 25);
+			this.pollAction.TabIndex = 8;
+			this.pollAction.UseSelectable = true;
+			// 
+			// pollCheckbox
+			// 
+			this.pollCheckbox.AutoSize = true;
+			this.pollCheckbox.FontSize = MetroFramework.MetroCheckBoxSize.Medium;
+			this.pollCheckbox.FontWeight = MetroFramework.MetroCheckBoxWeight.Light;
+			this.pollCheckbox.Location = new System.Drawing.Point(3, 6);
+			this.pollCheckbox.Name = "pollCheckbox";
+			this.pollCheckbox.Size = new System.Drawing.Size(96, 19);
+			this.pollCheckbox.TabIndex = 5;
+			this.pollCheckbox.Text = "Check every";
+			this.pollCheckbox.UseSelectable = true;
+			// 
+			// pollNumeric
+			// 
+			this.pollNumeric.Location = new System.Drawing.Point(105, 8);
+			this.pollNumeric.Maximum = new decimal(new int[] {
+            10080,
+            0,
+            0,
+            0});
+			this.pollNumeric.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.pollNumeric.Name = "pollNumeric";
+			this.pollNumeric.Size = new System.Drawing.Size(53, 20);
+			this.pollNumeric.TabIndex = 6;
+			this.pollNumeric.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+			// 
+			// pollMinuesLabel
+			// 
+			this.pollMinuesLabel.AutoSize = true;
+			this.pollMinuesLabel.Location = new System.Drawing.Point(164, 6);
+			this.pollMinuesLabel.Name = "pollMinuesLabel";
+			this.pollMinuesLabel.Size = new System.Drawing.Size(80, 19);
+			this.pollMinuesLabel.TabIndex = 7;
+			this.pollMinuesLabel.Text = "minutes and";
 			// 
 			// tradesContainer
 			// 
@@ -389,7 +476,7 @@
 			this.browserContainer.BackColor = System.Drawing.SystemColors.Window;
 			this.browserContainer.Location = new System.Drawing.Point(5, 204);
 			this.browserContainer.Name = "browserContainer";
-			this.browserContainer.Size = new System.Drawing.Size(440, 182);
+			this.browserContainer.Size = new System.Drawing.Size(440, 148);
 			this.browserContainer.TabIndex = 5;
 			// 
 			// closeButton
@@ -405,6 +492,31 @@
 			this.closeButton.Visible = false;
 			this.closeButton.Click += new System.EventHandler(this.closeButton_Click);
 			// 
+			// refreshButton
+			// 
+			this.refreshButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.refreshButton.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("refreshButton.BackgroundImage")));
+			this.refreshButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+			this.refreshButton.Location = new System.Drawing.Point(24, 489);
+			this.refreshButton.Name = "refreshButton";
+			this.refreshButton.Size = new System.Drawing.Size(23, 23);
+			this.refreshButton.TabIndex = 4;
+			this.refreshButton.UseSelectable = true;
+			this.refreshButton.Visible = false;
+			this.refreshButton.Click += new System.EventHandler(this.refreshButton_Click);
+			// 
+			// logoutButton
+			// 
+			this.logoutButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.logoutButton.Location = new System.Drawing.Point(53, 489);
+			this.logoutButton.Name = "logoutButton";
+			this.logoutButton.Size = new System.Drawing.Size(75, 23);
+			this.logoutButton.TabIndex = 4;
+			this.logoutButton.Text = "Forget me";
+			this.logoutButton.UseSelectable = true;
+			this.logoutButton.Visible = false;
+			this.logoutButton.Click += new System.EventHandler(this.logoutButton_Click);
+			// 
 			// ShowSteamTradesForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -413,6 +525,8 @@
 			this.CancelButton = this.cancelButton;
 			this.ClientSize = new System.Drawing.Size(501, 535);
 			this.Controls.Add(this.tabs);
+			this.Controls.Add(this.refreshButton);
+			this.Controls.Add(this.logoutButton);
 			this.Controls.Add(this.closeButton);
 			this.Controls.Add(this.cancelButton);
 			this.KeyPreview = true;
@@ -430,6 +544,9 @@
 			this.captchaGroup.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.captchaBox)).EndInit();
 			this.tradesTab.ResumeLayout(false);
+			this.pollPanel.ResumeLayout(false);
+			this.pollPanel.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.pollNumeric)).EndInit();
 			this.tradesContainer.ResumeLayout(false);
 			this.tradePanelMaster.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.tradeSep)).EndInit();
@@ -468,5 +585,12 @@
 		private System.Windows.Forms.Panel tradesContainer;
 		private MetroFramework.Controls.MetroCheckBox rememberBox;
 		private MetroFramework.Controls.MetroCheckBox rememberPermBox;
+		private MetroFramework.Controls.MetroButton refreshButton;
+		private MetroFramework.Controls.MetroButton logoutButton;
+		private MetroFramework.Controls.MetroLabel pollMinuesLabel;
+		private System.Windows.Forms.NumericUpDown pollNumeric;
+		private MetroFramework.Controls.MetroCheckBox pollCheckbox;
+		private System.Windows.Forms.Panel pollPanel;
+		private MetroFramework.Controls.MetroComboBox pollAction;
 	}
 }

@@ -10,7 +10,15 @@ The latest stable version is WinAuth 3.3 and is available to download from this 
 
 ----
 
-##WinAuth 3.3
+##WinAuth 3.4 BETA (latest development)
+
+Please download 3.3. if you are just looking for WinAuth and not wanting to test the latest features.
+
+This version adds support for Steam trading confirmations, importing from Android files and SteamDesktopAuthenticator.
+
+<img src="https://winauth.com/wp-content/uploads/2013/07/steamconf1.png" alt="WinAuth 3.4 Steam Trading">
+
+##WinAuth 3.3 (latest stable)
 
 WinAuth provides an alternative solution to combine various two-factor authenticator services in one convenient place.
 

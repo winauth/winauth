@@ -13,7 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <AssemblyVersion>3.4.3.63</AssemblyVersion>
+    <AssemblyVersion>3.4.10.310</AssemblyVersion>
     <PrimaryVersionType>AssemblyVersionAttribute</PrimaryVersionType>
     <AssemblyInfoFilePath>Properties\AssemblyInfo.cs</AssemblyInfoFilePath>
     <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
@@ -196,6 +196,12 @@
     <Compile Include="AddMicrosoftAuthenticator.designer.cs">
       <DependentUpon>AddMicrosoftAuthenticator.cs</DependentUpon>
     </Compile>
+    <Compile Include="Notification.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Notification.Designer.cs">
+      <DependentUpon>Notification.cs</DependentUpon>
+    </Compile>
     <Compile Include="ShowSteamTradesForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -283,7 +289,6 @@
       <DependentUpon>SetShortcutKeyForm.cs</DependentUpon>
     </Compile>
     <Compile Include="SingleGlobalInstance.cs" />
-    <Compile Include="SteamClient.cs" />
     <Compile Include="UnprotectPasswordForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -371,6 +376,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AddMicrosoftAuthenticator.resx">
       <DependentUpon>AddMicrosoftAuthenticator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Notification.resx">
+      <DependentUpon>Notification.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ShowSteamTradesForm.resx">
       <DependentUpon>ShowSteamTradesForm.cs</DependentUpon>

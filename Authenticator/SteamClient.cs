@@ -25,25 +25,30 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Web;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
 namespace WinAuth
 {
 	/// <summary>
 	/// SteamClient for logging and getting/accepting/rejecting trade confirmations
 	/// </summary>
-	public class SteamClient
+	public class SteamClient : IDisposable
 	{
 		/// <summary>
 		/// URLs for all mobile services
 		/// </summary>
 		private const string COMMUNITY_BASE = "https://steamcommunity.com";
 		private static string WEBAPI_BASE = "https://api.steampowered.com";
-		private static string GETWGTOKEN = WEBAPI_BASE + "/IMobileAuthService/GetWGToken/v0001";
+		private static string API_GETWGTOKEN = WEBAPI_BASE + "/IMobileAuthService/GetWGToken/v0001";
+		private static string API_LOGOFF = WEBAPI_BASE + "/ISteamWebUserPresenceOAuth/Logoff/v0001";
+		private static string API_LOGON = WEBAPI_BASE + "/ISteamWebUserPresenceOAuth/Logon/v0001";
+		private static string API_POLLSTATUS = WEBAPI_BASE + "/ISteamWebUserPresenceOAuth/PollStatus/v0001";
 
 		/// <summary>
 		/// Default mobile user agent
@@ -57,7 +62,123 @@ namespace WinAuth
 		private static Regex _tradeConfidRegex = new Regex(@"data-confid\s*=\s*""([^""]+)""", RegexOptions.Singleline | RegexOptions.IgnoreCase);
 		private static Regex _tradeKeyRegex = new Regex(@"data-key\s*=\s*""([^""]+)""", RegexOptions.Singleline | RegexOptions.IgnoreCase);
 		private static Regex _tradePlayerRegex = new Regex("\"mobileconf_list_entry_icon\"(.*?)src=\"([^\"]+)\"", RegexOptions.Singleline | RegexOptions.IgnoreCase);
-		private static Regex _tradeDetailsRegex = new Regex(@"""mobileconf_list_entry_description"".*?<div>([^<]*)</div>\s*<div>([^<]*)</div>\s*<div>([^<]*)</div>\s*</div>", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+		private static Regex _tradeDetailsRegex = new Regex("\"mobileconf_list_entry_description\".*?<div>([^<]*)</div>[^<]*<div>([^<]*)</div>[^<]*<div>([^<]*)</div>[^<]*</div>", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+
+		/// <summary>
+		/// Number of Confirmation retries
+		/// </summary>
+		private const int DEFAULT_CONFIRMATIONPOLLER_RETRIES = 3;
+
+		/// <summary>
+		/// Action for Confirmation polling
+		/// </summary>
+		public enum PollerAction
+		{
+			None = 0,
+			Notify = 1,
+			AutoConfirm = 2
+		}
+
+		/// <summary>
+		/// Hold the Confirmation polling data
+		/// </summary>
+		public class ConfirmationPoller
+		{
+			/// <summary>
+			/// Seconds between polls
+			/// </summary>
+			public int Duration;
+
+			/// <summary>
+			/// Action for new Confirmation
+			/// </summary>
+			public PollerAction Action;
+
+			/// <summary>
+			/// List of current Confirmations ids
+			/// </summary>
+			public List<string> Ids;
+
+			/// <summary>
+			/// Create new ConfirmationPoller object
+			/// </summary>
+			public ConfirmationPoller()
+			{
+			}
+
+			/// <summary>
+			/// Create a JSON string of the object
+			/// </summary>
+			/// <returns></returns>
+			public override string ToString()
+			{
+				if (Duration == 0)
+				{
+					return "null";
+				}
+				else
+				{
+					List<string> props = new List<string>();
+
+					props.Add("\"duration\":" + this.Duration);
+					props.Add("\"action\":" + (int)this.Action);
+					if (this.Ids != null)
+					{
+						props.Add("\"ids\":[" + (this.Ids.Count != 0 ? "\"" + string.Join("\",\"", this.Ids) + "\"" : string.Empty) + "]");
+					}
+
+					return "{" + string.Join(",", props) + "}";
+				}
+			}
+
+			/// <summary>
+			/// Create a new ConfirmationPoller from a JSON string
+			/// </summary>
+			/// <param name="json">JSON string</param>
+			/// <returns>new ConfirmationPoller or null</returns>
+			public static ConfirmationPoller FromJSON(string json)
+			{
+				if (string.IsNullOrEmpty(json) == true || json == "null")
+				{
+					return null;
+				}
+				var poller = FromJSON(JObject.Parse(json));
+				return (poller.Duration != 0 ? poller : null);
+			}
+
+			/// <summary>
+			/// Create a new ConfirmationPoller from a JToken
+			/// </summary>
+			/// <param name="tokens">existing JKToken</param>
+			/// <returns></returns>
+			public static ConfirmationPoller FromJSON(JToken tokens)
+			{
+				if (tokens == null)
+				{
+					return null;
+				}
+
+				var poller = new ConfirmationPoller();
+
+				var token = tokens.SelectToken("duration");
+				if (token != null)
+				{
+					poller.Duration = token.Value<int>();
+				}
+				token = tokens.SelectToken("action");
+				if (token != null)
+				{
+					poller.Action = (PollerAction)token.Value<int>();
+				}
+				token = tokens.SelectToken("ids");
+				if (token != null)
+				{
+					poller.Ids = token.ToObject<List<string>>();
+				}
+
+				return (poller.Duration != 0 ? poller : null);
+			}
+		}
 
 		/// <summary>
 		/// A class for a single confirmation
@@ -94,6 +215,21 @@ namespace WinAuth
 			public string OAuthToken;
 
 			/// <summary>
+			/// UMQ id
+			/// </summary>
+			public string UmqId;
+
+			/// <summary>
+			/// Message id
+			/// </summary>
+			public int MessageId;
+
+			/// <summary>
+			/// Current polling state
+			/// </summary>
+			public ConfirmationPoller Confirmations;
+
+			/// <summary>
 			/// Create Session instance
 			/// </summary>
 			public SteamSession()
@@ -109,7 +245,14 @@ namespace WinAuth
 			{
 				if (string.IsNullOrEmpty(json) == false)
 				{
-					this.FromJson(json);
+					try
+					{
+						this.FromJson(json);
+					}
+					catch (Exception )
+					{
+						// invalid json
+					}
 				}
 			}
 
@@ -119,7 +262,9 @@ namespace WinAuth
 			public void Clear()
 			{
 				this.OAuthToken = null;
+				this.UmqId = null;
 				this.Cookies = new CookieContainer();
+				this.Confirmations = null;
 			}
 
 			/// <summary>
@@ -128,9 +273,12 @@ namespace WinAuth
 			/// <returns></returns>
 			public override string ToString()
 			{
-				return "{\"steamid\":\"" + this.SteamId + "\","
+				return "{\"steamid\":\"" + (this.SteamId ?? string.Empty) + "\","
 					+ "\"cookies\":\"" + this.Cookies.GetCookieHeader(new Uri(COMMUNITY_BASE + "/")) + "\","
-					+ "\"oauthtoken\":\"" + this.OAuthToken + "\"}";
+					+ "\"oauthtoken\":\"" + (this.OAuthToken ?? string.Empty) + "\","
+					// + "\"umqid\":\"" + (this.UmqId ?? string.Empty) + "\","
+					+ "\"confs\":" + (this.Confirmations != null ? this.Confirmations.ToString() : "null")
+					+ "}";
 			}
 
 			/// <summary>
@@ -149,7 +297,7 @@ namespace WinAuth
 				if (token != null)
 				{
 					this.Cookies = new CookieContainer();
-					
+
 					var match = Regex.Match(token.Value<string>(), @"([^=]+)=([^;]*);?", RegexOptions.Singleline);
 					while (match.Success == true)
 					{
@@ -162,6 +310,16 @@ namespace WinAuth
 				if (token != null)
 				{
 					this.OAuthToken = token.Value<string>();
+				}
+				//token = tokens.SelectToken("umqid");
+				//if (token != null)
+				//{
+				//	this.UmqId = token.Value<string>();
+				//}
+				token = tokens.SelectToken("confs");
+				if (token != null)
+				{
+					this.Confirmations = ConfirmationPoller.FromJSON(token);
 				}
 			}
 		}
@@ -186,7 +344,7 @@ namespace WinAuth
 		/// <summary>
 		/// Current authenticator
 		/// </summary>
-		private SteamAuthenticator Authenticator;
+		public SteamAuthenticator Authenticator;
 
 		/// <summary>
 		/// Saved Html from GetConfirmations used as template for GetDetails
@@ -199,12 +357,73 @@ namespace WinAuth
 		private string ConfirmationsQuery;
 
 		/// <summary>
+		/// Cancellation token for poller
+		/// </summary>
+		private CancellationTokenSource _pollerCancellation;
+
+		/// <summary>
+		/// Number of Confirmation retries
+		/// </summary>
+		public int ConfirmationPollerRetries = DEFAULT_CONFIRMATIONPOLLER_RETRIES;
+
+		/// <summary>
 		/// Create a new SteamClient
 		/// </summary>
 		public SteamClient(SteamAuthenticator auth, string session = null)
 		{
 			this.Authenticator = auth;
 			this.Session = new SteamSession(session);
+
+			if (this.Session.Confirmations != null)
+			{
+				if (this.IsLoggedIn() == false)
+				{
+					this.Session.Confirmations = null;
+				}
+				else
+				{
+					Task.Factory.StartNew(() =>
+					{
+						Refresh();
+						PollConfirmations(this.Session.Confirmations);
+					});
+				}
+			}
+		}
+
+		/// <summary>
+		/// Finalizer
+		/// </summary>
+		~SteamClient()
+		{
+			Dispose(false);
+		}
+
+		/// <summary>
+		/// Dispose the object
+		/// </summary>
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Dispose this object
+		/// </summary>
+		/// <param name="disposing"></param>
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				// clear resources
+			}
+
+			if (_pollerCancellation != null)
+			{
+				_pollerCancellation.Cancel();
+				_pollerCancellation = null;
+			}
 		}
 
 		/// <summary>
@@ -371,9 +590,44 @@ namespace WinAuth
 				{
 					this.Session.SteamId = oauthjson.SelectToken("steamid").Value<string>();
 				}
+
+				//// perform UMQ login
+				//data.Clear();
+				//data.Add("access_token", this.Session.OAuthToken);
+				//response = GetString(API_LOGON, "POST", data);
+				//loginresponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
+				//if (loginresponse.ContainsKey("umqid") == true)
+				//{
+				//	this.Session.UmqId = (string)loginresponse["umqid"];
+				//	if (loginresponse.ContainsKey("message") == true)
+				//	{
+				//		this.Session.MessageId = Convert.ToInt32(loginresponse["message"]);
+				//	}
+				//}
 			}
 
 			return true;
+		}
+
+		/// <summary>
+		/// Logout of the current session
+		/// </summary>
+		public void Logout()
+		{
+			if (string.IsNullOrEmpty(this.Session.OAuthToken) == false)
+			{
+				PollConfirmationsStop();
+
+				if (string.IsNullOrEmpty(this.Session.UmqId) == false)
+				{
+					var data = new NameValueCollection();
+					data.Add("access_token", this.Session.OAuthToken);
+					data.Add("umqid", this.Session.UmqId);
+					GetString(API_LOGOFF, "POST", data);
+				}
+			}
+
+			Clear();
 		}
 
 		/// <summary>
@@ -384,7 +638,7 @@ namespace WinAuth
 		{
 			var data = new NameValueCollection();
 			data.Add("access_token", this.Session.OAuthToken);
-			string response = GetString(GETWGTOKEN, "POST", data);
+			string response = GetString(API_GETWGTOKEN, "POST", data);
 			if (string.IsNullOrEmpty(response) == true)
 			{
 				return false;
@@ -407,11 +661,204 @@ namespace WinAuth
 				}
 				this.Session.Cookies.Add(new Cookie("steamLoginSecure", this.Session.SteamId + "||" + token.Value<string>(), "/", ".steamcommunity.com"));
 
+				// perform UMQ login
+				//response = GetString(API_LOGON, "POST", data);
+				//var loginresponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
+				//if (loginresponse.ContainsKey("umqid") == true)
+				//{
+				//	this.Session.UmqId = (string)loginresponse["umqid"];
+				//	if (loginresponse.ContainsKey("message") == true)
+				//	{
+				//		this.Session.MessageId = Convert.ToInt32(loginresponse["message"]);
+				//	}
+				//}
+
 				return true;
 			}
 			catch (Exception)
 			{
 				return false;
+			}
+		}
+
+		/// <summary>
+		/// Perform a UMQ login
+		/// </summary>
+		/// <returns></returns>
+		private bool UmqLogin()
+		{
+			if (IsLoggedIn() == false)
+			{
+				return false;
+			}
+
+			var data = new NameValueCollection();
+			data.Add("access_token", this.Session.OAuthToken);
+			var response = GetString(API_LOGON, "POST", data);
+			var loginresponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
+			if (loginresponse.ContainsKey("umqid") == true)
+			{
+				this.Session.UmqId = (string)loginresponse["umqid"];
+				if (loginresponse.ContainsKey("message") == true)
+				{
+					this.Session.MessageId = Convert.ToInt32(loginresponse["message"]);
+				}
+
+				return true;
+			}
+
+			return false;
+		}
+
+		/// <summary>
+		/// Stop the current poller
+		/// </summary>
+		protected void PollConfirmationsStop()
+		{
+			// kill any existing poller
+			if (_pollerCancellation != null)
+			{
+				_pollerCancellation.Cancel();
+				_pollerCancellation = null;
+			}
+			this.Session.Confirmations = null;
+		}
+
+		/// <summary>
+		/// Start a new poller
+		/// </summary>
+		/// <param name="poller"></param>
+		public void PollConfirmations(ConfirmationPoller poller)
+		{
+			PollConfirmationsStop();
+
+			if (poller == null || poller.Duration <= 0)
+			{
+				return;
+			}
+
+			if (this.Session.Confirmations == null)
+			{
+				this.Session.Confirmations = new ConfirmationPoller();
+			}
+			this.Session.Confirmations = poller;
+
+			_pollerCancellation = new CancellationTokenSource();
+			var token = _pollerCancellation.Token;
+			Task.Factory.StartNew(() => PollConfirmations(token), token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+		}
+
+		/// <summary>
+		/// Delegate for Confirmation event
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="newconfirmation">new Confirmation</param>
+		/// <param name="action">action to be taken</param>
+		public delegate void ConfirmationDelegate(object sender, Confirmation newconfirmation, PollerAction action);
+
+		/// <summary>
+		/// Delegate for Confirmation error
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="message">error message</param>
+		/// <param name="ex">optional exception</param>
+		public delegate void ConfirmationErrorDelegate(object sender, string message, Exception ex);
+
+		/// <summary>
+		/// Event fired for new Confirmation
+		/// </summary>
+		public event ConfirmationDelegate ConfirmationEvent;
+
+		/// <summary>
+		/// Event fired for error on polling
+		/// </summary>
+		public event ConfirmationErrorDelegate ConfirmationErrorEvent;
+
+		/// <summary>
+		/// Confirmation polling task
+		/// </summary>
+		/// <param name="cancel"></param>
+		public async void PollConfirmations(CancellationToken cancel)
+		{
+			lock (this.Session.Confirmations)
+			{
+				if (this.Session.Confirmations.Ids == null)
+				{
+					try
+					{
+						// this will update the session
+						GetConfirmations();
+					}
+					catch (InvalidSteamRequestException)
+					{
+						// ignore in case of Steam timeout
+					}
+				}
+			}
+
+			try
+			{
+				int retryCount = 0;
+				while (!cancel.IsCancellationRequested)
+				{
+					await Task.Delay(this.Session.Confirmations.Duration * 60 * 1000, cancel);
+					if (cancel.IsCancellationRequested == true)
+					{
+						break;
+					}
+
+					try
+					{
+						List<string> currentIds;
+						lock (this.Session.Confirmations)
+						{
+							currentIds = this.Session.Confirmations.Ids;
+						}
+
+						var confs = GetConfirmations();
+
+						// check for new ids
+						List<string> newIds;
+						if (currentIds == null)
+						{
+							newIds = confs.Select(t => t.Id).ToList();
+						}
+						else
+						{
+							newIds = confs.Select(t => t.Id).Except(currentIds).ToList();
+						}
+
+						// fire events if subscriber
+						if (ConfirmationEvent != null && newIds.Count() != 0)
+						{
+							foreach (var confId in newIds)
+							{
+								var newConf = confs.Where(t => t.Id == confId).FirstOrDefault();
+								if (newConf != null)
+								{
+									ConfirmationEvent(this, newConf, this.Session.Confirmations.Action);
+								}
+							}
+						}
+
+						retryCount = 0;
+					}
+					catch (TaskCanceledException)
+					{
+						throw;
+					}
+					catch (Exception ex)
+					{
+						retryCount++;
+						if (retryCount >= ConfirmationPollerRetries)
+						{
+							ConfirmationErrorEvent(this, "Failed to read confirmations", ex);
+						}
+					}
+				}
+			}
+			catch (TaskCanceledException)
+			{
 			}
 		}
 
@@ -488,6 +935,14 @@ namespace WinAuth
 				match = match.NextMatch();
 			}
 
+			if (this.Session.Confirmations != null)
+			{
+				lock (this.Session.Confirmations)
+				{
+					this.Session.Confirmations.Ids = trades.Select(c => c.Id).ToList();
+				}
+			}
+
 			return trades;
 		}
 
@@ -553,15 +1008,44 @@ namespace WinAuth
 			data.Add("cid", id);
 			data.Add("ck", key);
 
-			string response = GetString(COMMUNITY_BASE + "/mobileconf/ajaxop", "GET", data);
-			if (string.IsNullOrEmpty(response) == true)
+			try
 			{
-				this.Error = "Blank response";
+				string response = GetString(COMMUNITY_BASE + "/mobileconf/ajaxop", "GET", data);
+				if (string.IsNullOrEmpty(response) == true)
+				{
+					this.Error = "Blank response";
+					return false;
+				}
+
+				var success = JObject.Parse(response).SelectToken("success");
+				if (success == null || success.Value<bool>() == false)
+				{
+					this.Error = "Failed";
+					return false;
+				}
+
+				if (this.Session.Confirmations != null)
+				{
+					lock (this.Session.Confirmations)
+					{
+						if (this.Session.Confirmations.Ids.Contains(id) == true)
+						{
+							this.Session.Confirmations.Ids.Remove(id);
+						}
+					}
+				}
+
+				return true;
+			}
+			catch (InvalidSteamRequestException ex)
+			{
+#if DEBUG
+				this.Error = ex.Message + Environment.NewLine + ex.StackTrace;
+#else
+				this.Error = ex.Message;
+#endif
 				return false;
 			}
-
-			var success = JObject.Parse(response).SelectToken("success");
-			return (success != null && success.Value<bool>() == true);
 		}
 
 		/// <summary>
@@ -599,7 +1083,7 @@ namespace WinAuth
 			return Convert.ToBase64String(hash, Base64FormattingOptions.None);
 		}
 
-		#region Web Request
+#region Web Request
 
 		/// <summary>
 		/// Get binary data web request
@@ -645,69 +1129,174 @@ namespace WinAuth
 		/// <returns>returned data</returns>
 		protected byte[] Request(string url, string method, NameValueCollection data, NameValueCollection headers)
 		{
-			// create form-encoded data for query or body
-			string query = (data == null ? string.Empty : string.Join("&", Array.ConvertAll(data.AllKeys, key => String.Format("{0}={1}", HttpUtility.UrlEncode(key), HttpUtility.UrlEncode(data[key])))));
-			if (string.Compare(method, "GET", true) == 0)
+			// ensure only one request per account at a time
+			lock (this)
 			{
-				url += (url.IndexOf("?") == -1 ? "?" : "&") + query;
-			}
-
-			// call the server
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-			request.Method = method;
-			request.Accept = "text/javascript, text/html, application/xml, text/xml, */*";
-			request.ServicePoint.Expect100Continue = false;
-			request.UserAgent = USERAGENT;
-			request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
-			request.Referer = COMMUNITY_BASE;
-			if (headers != null)
-			{
-				request.Headers.Add(headers);
-			}
-
-			request.CookieContainer = this.Session.Cookies;
-
-			if (string.Compare(method, "POST", true) == 0)
-			{
-				request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
-				request.ContentLength = query.Length;
-
-				StreamWriter requestStream = new StreamWriter(request.GetRequestStream());
-				requestStream.Write(query);
-				requestStream.Close();
-			}
-
-			try
-			{
-				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+				// create form-encoded data for query or body
+				string query = (data == null ? string.Empty : string.Join("&", Array.ConvertAll(data.AllKeys, key => String.Format("{0}={1}", HttpUtility.UrlEncode(key), HttpUtility.UrlEncode(data[key])))));
+				if (string.Compare(method, "GET", true) == 0)
 				{
-					// OK?
-					if (response.StatusCode != HttpStatusCode.OK)
-					{
-						throw new InvalidSteamRequestException(string.Format("{0}: {1}", (int)response.StatusCode, response.StatusDescription));
-					}
+					url += (url.IndexOf("?") == -1 ? "?" : "&") + query;
+				}
 
-					// load the response
-					using (MemoryStream ms = new MemoryStream())
+				// call the server
+				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+				request.Method = method;
+				request.Accept = "text/javascript, text/html, application/xml, text/xml, */*";
+				request.ServicePoint.Expect100Continue = false;
+				request.UserAgent = USERAGENT;
+				request.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
+				request.Referer = COMMUNITY_BASE;
+				if (headers != null)
+				{
+					request.Headers.Add(headers);
+				}
+
+				request.CookieContainer = this.Session.Cookies;
+
+				if (string.Compare(method, "POST", true) == 0)
+				{
+					request.ContentType = "application/x-www-form-urlencoded; charset=UTF-8";
+					request.ContentLength = query.Length;
+
+					StreamWriter requestStream = new StreamWriter(request.GetRequestStream());
+					requestStream.Write(query);
+					requestStream.Close();
+				}
+
+				try
+				{
+					using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
 					{
-						byte[] buffer = new byte[4096];
-						int read;
-						while ((read = response.GetResponseStream().Read(buffer, 0, 4096)) > 0)
+#if DEBUG
+						string s = response.ToString();
+						LogRequest(method, url, request.CookieContainer, data, response);
+#endif
+
+						// OK?
+						if (response.StatusCode != HttpStatusCode.OK)
 						{
-							ms.Write(buffer, 0, read);
+							throw new InvalidSteamRequestException(string.Format("{0}: {1}", (int)response.StatusCode, response.StatusDescription));
 						}
 
-						return ms.ToArray();
+						// load the response
+						using (MemoryStream ms = new MemoryStream())
+						{
+							byte[] buffer = new byte[4096];
+							int read;
+							while ((read = response.GetResponseStream().Read(buffer, 0, 4096)) > 0)
+							{
+								ms.Write(buffer, 0, read);
+							}
+
+							byte[] responsedata = ms.ToArray();
+
+#if DEBUG
+							LogRequest(method, url, request.CookieContainer, data, responsedata != null && responsedata.Length != 0 ? Encoding.UTF8.GetString(responsedata) : string.Empty);
+#endif
+
+							return responsedata;
+						}
 					}
 				}
-			}
-			catch (Exception ex)
-			{
-				throw new InvalidSteamRequestException(ex.Message, ex);
+				catch (Exception ex)
+				{
+#if DEBUG
+					LogRequest(method, url, request.CookieContainer, data, ex);
+#endif
+					if (ex is WebException && ((WebException)ex).Response != null && ((HttpWebResponse)((WebException)ex).Response).StatusCode == HttpStatusCode.Forbidden)
+					{
+						throw new UnauthorisedSteamRequestException(ex);
+					}
+					throw new InvalidSteamRequestException(ex.Message, ex);
+				}
 			}
 		}
 
-		#endregion
+#if DEBUG
+		/// <summary>
+		/// Log an exception from a Request
+		/// </summary>
+		/// <param name="method">Get or POST</param>
+		/// <param name="url">Request URL</param>
+		/// <param name="cookies">cookie container</param>
+		/// <param name="request">Request data</param>
+		/// <param name="ex">Thrown exception</param>
+		private static void LogRequest(string method, string url, CookieContainer cookies, NameValueCollection request, Exception ex)
+		{
+			LogRequest(method, url, cookies, request, ex.Message + Environment.NewLine + ex.StackTrace);
+		}
+
+		/// <summary>
+		/// Log a non 200 Request response
+		/// </summary>
+		/// <param name="method">Get or POST</param>
+		/// <param name="url">Request URL</param>
+		/// <param name="cookies">cookie container</param>
+		/// <param name="request">Request data</param>
+		/// <param name="response">HttpWebResponse object</param>
+		private static void LogRequest(string method, string url, CookieContainer cookies, NameValueCollection request, HttpWebResponse response)
+		{
+			LogRequest(method, url, cookies, request, response.StatusCode.ToString() + " " + response.StatusDescription);
+		}
+
+		/// <summary>
+		/// Log a normal response
+		/// </summary>
+		/// <param name="method">Get or POST</param>
+		/// <param name="url">Request URL</param>
+		/// <param name="cookies">cookie container</param>
+		/// <param name="request">Request data</param>
+		/// <param name="response">response body</param>
+		private static void LogRequest(string method, string url, CookieContainer cookies, NameValueCollection request, string response)
+		{
+			lock (typeof(Authenticator))
+			{
+				StringBuilder data = new StringBuilder();
+				if (cookies != null)
+				{
+					foreach (Cookie cookie in cookies.GetCookies(new Uri(url)))
+					{
+						if (data.Length == 0)
+						{
+							data.Append("Cookies:");
+						}
+						else
+						{
+							data.Append("&");
+						}
+						data.Append(cookie.Name + "=" + cookie.Value);
+					}
+					data.Append(" ");
+				}
+
+				if (request != null)
+				{
+					foreach (var key in request.AllKeys)
+					{
+						if (data.Length == 0)
+						{
+							data.Append("Req:");
+						}
+						else
+						{
+							data.Append("&");
+						}
+						data.Append(key + "=" + request[key]);
+					}
+					data.Append(" ");
+				}
+
+				string message = string.Format(@"{0} {1} {2} {3} {4}", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"), method, url, data.ToString(), (response != null ? response.Replace("\n", "\\n").Replace("\r", "") : string.Empty));
+
+				System.Diagnostics.Trace.TraceWarning(message);
+
+				File.AppendAllText(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "winauth.log"), message);
+			}
+		}
+#endif
+
+#endregion
 
 		/// <summary>
 		/// Convert a hex string into a byte array. E.g. "001f406a" -> byte[] {0x00, 0x1f, 0x40, 0x6a}
@@ -742,6 +1331,11 @@ namespace WinAuth
 		public class InvalidSteamRequestException : ApplicationException
 		{
 			public InvalidSteamRequestException(string msg = null, Exception ex = null) : base(msg, ex) { }
+		}
+
+		public class UnauthorisedSteamRequestException : InvalidSteamRequestException
+		{
+			public UnauthorisedSteamRequestException(Exception ex = null) : base("Unauthorised", ex) { }
 		}
 
 	}

@@ -36,7 +36,7 @@ using Newtonsoft.Json.Linq;
 namespace WinAuth
 {
 	/// <summary>
-	/// Form class for create a new Battle.net authenticator
+	/// Show Steam trade confirmations
 	/// </summary>
 	public partial class ShowSteamTradesForm : ResourceForm
 	{
@@ -52,9 +52,22 @@ namespace WinAuth
 		}
 
 		/// <summary>
+		/// Authenticator
+		/// </summary>
+		public WinAuthAuthenticator Authenticator { get; set; }
+
+		//private DateTime? _pollSetTime;
+
+		/// <summary>
 		/// Steam authenticator
 		/// </summary>
-		public SteamAuthenticator Authenticator { get; set; }
+		public SteamAuthenticator AuthenticatorData
+		{
+			get
+			{
+				return this.Authenticator != null ? this.Authenticator.AuthenticatorData as SteamAuthenticator : null;
+			}
+		}
 
 		/// <summary>
 		/// Trade info state
@@ -62,14 +75,14 @@ namespace WinAuth
 		private List<SteamClient.Confirmation> m_trades;
 
 		/// <summary>
-		/// Steam client
-		/// </summary>
-		private SteamClient m_steam;
-
-		/// <summary>
 		/// Saved height of browser for showing details
 		/// </summary>
 		private int m_browserHeight;
+
+		/// <summary>
+		/// When form has been loaded
+		/// </summary>
+		private bool m_loaded;
 
 		/// <summary>
 		/// Set of tab pages taken from the tab control so we can hide and show them
@@ -91,15 +104,26 @@ namespace WinAuth
 			browserContainer.Height = 0;
 			tradesContainer.Height += m_browserHeight;
 
+			this.pollAction.Items.Clear();
+
+			BindingList<object> items = new BindingList<object>();
+			items.Add(new { Text = "Show Notification", Value = SteamClient.PollerAction.Notify });
+			items.Add(new { Text = "Auto-Confirm", Value = SteamClient.PollerAction.AutoConfirm });
+
+			this.pollAction.DataSource = items;
+			this.pollAction.DisplayMember = "Text";
+			this.pollAction.ValueMember = "Value";
+			this.pollAction.SelectedIndex = 0;
+
 			m_tabPages.Clear();
 			for (var i = 0; i < tabs.TabPages.Count; i++)
 			{
 				m_tabPages.Add(tabs.TabPages[i].Name, tabs.TabPages[i]);
 			}
 
-			m_steam = new SteamClient(this.Authenticator, Authenticator.SessionData);
-
 			Init();
+
+			m_loaded = true;
 		}
 
 		/// <summary>
@@ -109,6 +133,9 @@ namespace WinAuth
 		/// <param name="e"></param>
 		private void ShowSteamTradesForm_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			// update poller
+			SetPolling();
+
 			this.DialogResult = System.Windows.Forms.DialogResult.OK;
 		}
 
@@ -153,7 +180,7 @@ namespace WinAuth
 				return;
 			}
 
-			Process(usernameField.Text.Trim(), passwordField.Text.Trim(), m_steam.CaptchaId, captchacodeField.Text.Trim());
+			Process(usernameField.Text.Trim(), passwordField.Text.Trim(), this.AuthenticatorData.GetClient().CaptchaId, captchacodeField.Text.Trim());
 		}
 
 		/// <summary>
@@ -197,7 +224,7 @@ namespace WinAuth
 					case "loginTab":
 						e.Handled = true;
 
-						if (m_steam.RequiresCaptcha == true)
+						if (this.AuthenticatorData.GetClient().RequiresCaptcha == true)
 						{
 							captchaButton_Click(sender, new EventArgs());
 						}
@@ -262,7 +289,7 @@ namespace WinAuth
 				Cursor.Current = Cursors.WaitCursor;
 				Application.DoEvents();
 
-				browser.Text = m_steam.GetConfirmationDetails(trade);
+				browser.Text = this.AuthenticatorData.GetClient().GetConfirmationDetails(trade);
 			}
 			catch (Exception ex)
 			{
@@ -274,18 +301,88 @@ namespace WinAuth
 			}
 		}
 
+		/// <summary>
+		/// Click the Accept trade button
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void tradeAccept_Click(object sender, EventArgs e)
 		{
-			MetroButton button = sender as MetroButton;
-			string tradeId = button.Tag as string;
-			AcceptTrade(tradeId);
+			var cursor = Cursor.Current;
+			try
+			{
+				Cursor.Current = Cursors.WaitCursor;
+
+				MetroButton button = sender as MetroButton;
+				string tradeId = button.Tag as string;
+				AcceptTrade(tradeId);
+			}
+			finally
+			{
+				Cursor.Current = cursor;
+			}
 		}
 
+		/// <summary>
+		/// Click the Reject trade button
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void tradeReject_Click(object sender, EventArgs e)
 		{
-			MetroButton button = sender as MetroButton;
-			string tradeId = button.Tag as string;
-			RejectTrade(tradeId);
+			var cursor = Cursor.Current;
+			try
+			{
+				Cursor.Current = Cursors.WaitCursor;
+
+				MetroButton button = sender as MetroButton;
+				string tradeId = button.Tag as string;
+				RejectTrade(tradeId);
+			}
+			finally
+			{
+				Cursor.Current = cursor;
+			}
+		}
+
+		/// <summary>
+		/// Check the remember me login box
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void rememberBox_CheckedChanged(object sender, EventArgs e)
+		{
+			rememberPermBox.Visible = rememberBox.Checked;
+		}
+
+		/// <summary>
+		/// Refresh the list
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void refreshButton_Click(object sender, EventArgs e)
+		{
+			Process();
+		}
+
+		/// <summary>
+		/// Logout of session
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void logoutButton_Click(object sender, EventArgs e)
+		{
+			var steam = this.AuthenticatorData.GetClient();
+			steam.Logout();
+
+			if (String.IsNullOrEmpty(AuthenticatorData.SessionData) == false)
+			{
+				AuthenticatorData.SessionData = null;
+				AuthenticatorData.PermSession = false;
+				this.Authenticator.MarkChanged();
+			}
+
+			Init();
 		}
 
 		#endregion
@@ -297,14 +394,19 @@ namespace WinAuth
 		/// </summary>
 		private void Init()
 		{
-			if (m_steam.IsLoggedIn() == true)
+			if (this.AuthenticatorData.GetClient().IsLoggedIn() == true)
 			{
 				Process();
 			}
 			else
 			{
 				ShowTab("loginTab");
-				usernameField.Focus();
+
+				this.closeButton.Visible = false;
+				this.cancelButton.Visible = true;
+				this.refreshButton.Visible = false;
+				this.logoutButton.Visible = false;
+				this.pollPanel.Visible = false;
 			}
 		}
 
@@ -318,31 +420,33 @@ namespace WinAuth
 				var cursor = Cursor.Current;
 				try
 				{
+					//Application.DoEvents();
 					Cursor.Current = Cursors.WaitCursor;
-					Application.DoEvents();
 
-					if (m_steam.IsLoggedIn() == false)
+					var steam = this.AuthenticatorData.GetClient();
+
+					if (steam.IsLoggedIn() == false)
 					{
-						if (m_steam.Login(username, password, captchaId, captchaText) == false)
+						if (steam.Login(username, password, captchaId, captchaText) == false)
 						{
-							if (m_steam.Error == "Incorrect Login")
+							if (steam.Error == "Incorrect Login")
 							{
 								WinAuthForm.ErrorDialog(this, "Invalid username or password", null, MessageBoxButtons.OK);
 								return;
 							}
-							if (m_steam.Requires2FA == true)
+							if (steam.Requires2FA == true)
 							{
 								WinAuthForm.ErrorDialog(this, "Invalid authenticator code: are you sure this is the current authenticator for your account?", null, MessageBoxButtons.OK);
 								return;
 							}
 
-							if (m_steam.RequiresCaptcha == true)
+							if (steam.RequiresCaptcha == true)
 							{
-								WinAuthForm.ErrorDialog(this, (string.IsNullOrEmpty(m_steam.Error) == false ? m_steam.Error : "Please enter the captcha"), null, MessageBoxButtons.OK);
+								WinAuthForm.ErrorDialog(this, (string.IsNullOrEmpty(steam.Error) == false ? steam.Error : "Please enter the captcha"), null, MessageBoxButtons.OK);
 
 								using (var web = new WebClient())
 								{
-									byte[] data = web.DownloadData(m_steam.CaptchaUrl);
+									byte[] data = web.DownloadData(steam.CaptchaUrl);
 
 									using (var ms = new MemoryStream(data))
 									{
@@ -359,9 +463,9 @@ namespace WinAuth
 							loginButton.Enabled = true;
 							captchaGroup.Visible = false;
 
-							if (string.IsNullOrEmpty(m_steam.Error) == false)
+							if (string.IsNullOrEmpty(steam.Error) == false)
 							{
-								WinAuthForm.ErrorDialog(this, m_steam.Error, null, MessageBoxButtons.OK);
+								WinAuthForm.ErrorDialog(this, steam.Error, null, MessageBoxButtons.OK);
 								return;
 							}
 
@@ -376,29 +480,33 @@ namespace WinAuth
 							return;
 						}
 
-						if (rememberBox.Checked == true)
-						{
-							Authenticator.SessionData = m_steam.Session.ToString();
-						}
-						Authenticator.PermSession = (rememberBox.Checked == true && rememberPermBox.Checked == true);
+						AuthenticatorData.SessionData = (rememberBox.Checked == true ? steam.Session.ToString() : null);
+						AuthenticatorData.PermSession = (rememberBox.Checked == true && rememberPermBox.Checked == true);
+						this.Authenticator.MarkChanged();
 					}
 
 					try
 					{
-						m_trades = m_steam.GetConfirmations();
+						m_trades = steam.GetConfirmations();
 					}
-					catch (SteamClient.InvalidSteamRequestException ex)
+					catch (SteamClient.UnauthorisedSteamRequestException)
+					{
+						// Family view is probably on
+						WinAuthForm.ErrorDialog(this, "You are not allowed to view confirmations. Have you enabled 'community-generated content' in Family View?", null, MessageBoxButtons.OK);
+						return;
+					}
+					catch (SteamClient.InvalidSteamRequestException)
 					{
 						// likely a bad session so try a refresh first
 						try
 						{
-							m_steam.Refresh();
-							m_trades = m_steam.GetConfirmations();
+							steam.Refresh();
+							m_trades = steam.GetConfirmations();
 						}
 						catch (Exception)
 						{
 							// reset and show normal login
-							m_steam.Clear();
+							steam.Clear();
 							Init();
 							return;
 						}
@@ -461,6 +569,35 @@ namespace WinAuth
 					this.closeButton.Location = this.cancelButton.Location;
 					this.closeButton.Visible = true;
 					this.cancelButton.Visible = false;
+					this.refreshButton.Visible = true;
+					if (string.IsNullOrEmpty(AuthenticatorData.SessionData) == false)
+					{
+						this.logoutButton.Visible = true;
+
+						if (steam.Session.Confirmations != null)
+						{
+							this.pollCheckbox.Checked = true;
+							this.pollNumeric.Value = Convert.ToDecimal(steam.Session.Confirmations.Duration);
+							int selected = 0;
+							for (var i = 0; i < pollAction.Items.Count; i++)
+							{
+								dynamic item = pollAction.Items[i];
+								if (item.Value == steam.Session.Confirmations.Action)
+								{
+									selected = i;
+									break;
+								}
+							}
+							this.pollAction.SelectedIndex = selected;
+						}
+						else
+						{
+							this.pollCheckbox.Checked = false;
+							this.pollAction.SelectedIndex = 0;
+						}
+
+						this.pollPanel.Visible = true;
+					}
 
 					break;
 				}
@@ -494,7 +631,7 @@ namespace WinAuth
 					return;
 				}
 
-				var result = m_steam.ConfirmTrade(trade.Id, trade.Key, true);
+				var result = this.AuthenticatorData.GetClient().ConfirmTrade(trade.Id, trade.Key, true);
 				if (result == false)
 				{
 					WinAuthForm.ErrorDialog(this, "Trade cannot be confirmed");
@@ -533,7 +670,7 @@ namespace WinAuth
 					return;
 				}
 
-				var result = m_steam.ConfirmTrade(trade.Id, trade.Key, false);
+				var result = this.AuthenticatorData.GetClient().ConfirmTrade(trade.Id, trade.Key, false);
 				if (result == false)
 				{
 					WinAuthForm.ErrorDialog(this, "Trade cannot be cancelled");
@@ -613,7 +750,7 @@ namespace WinAuth
 					continue;
 				}
 
-				object value = pi.GetValue(control);
+				object value = pi.GetValue(control, (object[])null);
 				if (value != null && value.GetType().IsValueType == false)
 				{
 					if (value is ICloneable)
@@ -629,7 +766,7 @@ namespace WinAuth
 						}
 					}
 				}
-				pi.SetValue(clone, value);
+				pi.SetValue(clone, value, (object[])null);
 			}
 
 			// copy child controls
@@ -668,16 +805,55 @@ namespace WinAuth
 			}
 
 			tabs.SelectedTab = tabs.TabPages[name];
+			if (name == "loginTab")
+			{
+				usernameField.Focus();
+			}
 
 			return tabs.SelectedTab;
     }
 
+		/// <summary>
+		/// Set the new polling
+		/// </summary>
+		private void SetPolling()
+		{
+			// ignore setup changes
+			if (m_loaded == false || pollAction.SelectedValue == null)
+			{
+				return;
+			}
+
+			var steam = this.AuthenticatorData.GetClient();
+			int timeInMins = (pollCheckbox.Checked == true && steam.IsLoggedIn() == true ? (int)pollNumeric.Value : 0);
+
+			var p = new SteamClient.ConfirmationPoller
+			{
+				Duration = (pollCheckbox.Checked == true && steam.IsLoggedIn() == true ? (int)pollNumeric.Value : 0),
+				Action = (SteamClient.PollerAction)pollAction.SelectedValue
+			};
+			if (p.Duration != 0)
+			{
+				if (steam.Session.Confirmations == null || steam.Session.Confirmations.Duration != p.Duration || steam.Session.Confirmations.Action != p.Action)
+				{
+					steam.PollConfirmations(p);
+					AuthenticatorData.SessionData = steam.Session.ToString();
+					this.Authenticator.MarkChanged();
+				}
+			}
+			else
+			{
+				if (steam.Session.Confirmations != null)
+				{
+					steam.PollConfirmations(null);
+					AuthenticatorData.SessionData = steam.Session.ToString();
+					this.Authenticator.MarkChanged();
+				}
+			}
+		}
 
 		#endregion
 
-		private void rememberBox_CheckedChanged(object sender, EventArgs e)
-		{
-			rememberPermBox.Visible = rememberBox.Checked;
-		}
+
 	}
 }

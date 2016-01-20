@@ -122,6 +122,6 @@
 
 Whilst this information does include information about your authenticator, it is only used by the WinAuth develoepers solely for the purposes of investigating bugs and issues. It does not include any personal or identifying information and has been encrypted using PGP so that it cannot be read by anyone else.
 
-If you are happy to provide this information, please copy the text below and go to https://code.google.com/p/winauth/issues and register a new Issue.</value>
+If you are happy to provide this information, please copy the text below and go to https://github.com/winauth/winauth/issues and register a new Issue.</value>
   </data>
 </root>

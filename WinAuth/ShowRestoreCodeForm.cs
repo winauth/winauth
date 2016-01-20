@@ -123,7 +123,7 @@ namespace WinAuth
 			catch (Exception ex2)
 			{
 				e.Result = "Oops. An error (" + ex2.Message + ") occured whilst validating your restore code."
-						+ "Please log a ticket at http://code.google.com/p/winauth so we can fix this.";
+						+ "Please log a ticket at https://github.com/winauth/winauth/issues so we can fix this.";
 			}
 		}
 

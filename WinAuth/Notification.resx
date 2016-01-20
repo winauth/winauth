@@ -117,15 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="errorLabel.Text" xml:space="preserve">
-    <value>An error has occured in WinAuth.
-
-{0}
-
-Some diagnostic information has been recorded and saved that might help track down issues in WinAuth.
-
-It would help if you can submit this information so we can investigate the crash and try and fix the issue. This information does include information about your authenticators but is only used by the WinAuth developers solely for the purpose of investigating bugs and error reports. It does not include any personal or identifying information. Any information sent has been encrypted using PGP and cannot be read by anyone else.
-
-If you are happy to send this information please either click Send Error Report or you can click Show Details and manually copy the text and file a bug report at https://github.com/winauth/winauth/issues</value>
-  </data>
+  <metadata name="lifeTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
 </root>
