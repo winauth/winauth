@@ -609,7 +609,7 @@ namespace WinAuth
 					}
 
 					JArray entries = manifest["entries"] as JArray;
-					if (entries == null || entries.Count<object>() == 0)
+					if (entries == null || entries.Count == 0)
 					{
 						throw new ApplicationException("SteamDesktopAuthenticator has no SteamGuard authenticators");
 					}
@@ -684,7 +684,12 @@ namespace WinAuth
 			{
 				byte[] ciphertext = Convert.FromBase64String(data);
 
+#if NETFX_4
 				using (Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(password, Convert.FromBase64String(salt), ImportedSDAEntry.PBKDF2_ITERATIONS))
+#endif
+#if NETFX_3
+				Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(password, Convert.FromBase64String(salt), ImportedSDAEntry.PBKDF2_ITERATIONS);
+#endif
 				{
 					byte[] key = pbkdf2.GetBytes(ImportedSDAEntry.KEY_SIZE_BYTES);
 
@@ -874,7 +879,7 @@ namespace WinAuth
 		}
 
 
-		#endregion
+#endregion
 
 	}
 }

@@ -300,9 +300,24 @@ namespace WinAuth
 					try
 					{
 						byte[] data = ms.ToArray();
+
+						// getting instance of zerod files, so do some sanity checks
+						if (data.Length == 0 || data[0] == 0)
+						{
+							throw new ApplicationException("Zero data when saving config");
+						}
+
 						using (FileStream fs = new FileStream(config.Filename, FileMode.Create, FileAccess.Write, FileShare.None))
 						{
 							fs.Write(data, 0, data.Length);
+							fs.Flush();
+						}
+
+						// read it back
+						var verify = File.ReadAllBytes(config.Filename);
+						if (verify.Length != data.Length || verify.SequenceEqual(data) == false)
+						{
+							throw new ApplicationException("Save config doesn't compare with memory: " + Convert.ToBase64String(data));
 						}
 					}
 					catch (UnauthorizedAccessException )
@@ -1117,7 +1132,12 @@ namespace WinAuth
 						}
 						if (key.GetSubKeyNames().Contains(valuekey) == true)
 						{
+#if NETFX_4
 							key.DeleteSubKeyTree(valuekey, false);
+#endif
+#if NETFX_3
+							key.DeleteSubKeyTree(valuekey);
+#endif
 						}
 
 						// if the parent now has no values, we can remove it too
@@ -1134,9 +1154,9 @@ namespace WinAuth
 			}
 		}
 
-		#endregion
+#endregion
 
-		#region PGP functions
+#region PGP functions
 
 		/// <summary>
     /// Build a PGP key pair
@@ -1318,7 +1338,7 @@ namespace WinAuth
       }
 		}
 
-		#endregion
+#endregion
 
 	}
 

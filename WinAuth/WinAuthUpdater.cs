@@ -138,10 +138,20 @@ namespace WinAuth
 			}
 
 			Version version;
+#if NETFX_4
 			if (Version.TryParse(Config.ReadSetting(WINAUTHREGKEY_LATESTVERSION, string.Empty), out version) == true)
 			{
 				_latestVersion = version;
 			}
+#endif
+#if NETFX_3
+			try
+			{
+				version = new Version(Config.ReadSetting(WINAUTHREGKEY_LATESTVERSION, string.Empty));
+				_latestVersion = version;
+			}
+			catch (Exception) { }
+#endif
 		}
 
 		#region Properties
@@ -180,10 +190,22 @@ namespace WinAuth
 			get
 			{
 				Version version;
+#if NETFX_4
 				if (Version.TryParse(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion, out version) == false)
 				{
 					throw new InvalidOperationException("Cannot get Assembly version information");
 				}
+#endif
+#if NETFX_3
+				try
+				{
+					version = new Version(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion);
+				}
+				catch (Exception)
+				{
+					throw new InvalidOperationException("Cannot get Assembly version information");
+				}
+#endif
 				return version;
 			}
 		}
@@ -366,8 +388,19 @@ namespace WinAuth
 			XmlDocument xml = new XmlDocument();
 			xml.LoadXml(result);
 			var node = xml.SelectSingleNode("//version");
-			Version version;
-			if (node != null && Version.TryParse(node.InnerText, out version) == true)
+
+			Version version = null;
+#if NETFX_4
+			Version.TryParse(node.InnerText, out version);
+#endif
+#if NETFX_3
+			try
+			{
+				version = new Version(FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion);
+			}
+			catch (Exception) { }
+#endif
+			if (node != null && version != null)
 			{
 				WinAuthVersionInfo latestversion = new WinAuthVersionInfo(version);
 
@@ -406,7 +439,8 @@ namespace WinAuth
 			if (interval != null)
 			{
 				// write into regisry
-				Config.WriteSetting(WINAUTHREGKEY_CHECKFREQUENCY, interval.Value.ToString("c"));
+				
+				Config.WriteSetting(WINAUTHREGKEY_CHECKFREQUENCY, string.Format("{0}:{1:00}:{2:00}", interval.Value.TotalHours, interval.Value.Minutes, interval.Value.Seconds)); // toString("c") is Net4
 
 				// if last update not set, set to now
 				if (Config.ReadSetting(WINAUTHREGKEY_LASTCHECK) == null)

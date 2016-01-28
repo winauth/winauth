@@ -29,7 +29,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+#if NETFX_4
 using System.Threading.Tasks;
+#endif
 using System.Xml;
 using System.Web;
 using System.Windows.Forms;
@@ -57,7 +59,7 @@ namespace WinAuth
       InitializeComponent();
     }
 
-    #region Properties
+#region Properties
 
 		/// <summary>
 		/// The current winauth config
@@ -148,7 +150,7 @@ namespace WinAuth
 		/// </summary>
 		private object m_deviceArrivalMutex = new object();
 
-    #endregion
+#endregion
 
 		/// <summary>
 		/// Load the main form
@@ -235,13 +237,14 @@ namespace WinAuth
 			passwordPanel.Visible = false;
 			yubiPanel.Visible = false;
 
+#if NETFX_4
 			Task.Factory.StartNew<Tuple<WinAuthConfig, Exception>>(() =>
 			{
 				try
 				{
 					// use previous config if we have one
 					WinAuthConfig config = WinAuthHelper.LoadConfig(this, configFile, password);
-					return new Tuple<WinAuthConfig,Exception>(config, null);
+					return new Tuple<WinAuthConfig, Exception>(config, null);
 				}
 				catch (Exception ex)
 				{
@@ -323,6 +326,89 @@ namespace WinAuth
 
 				InitializeForm();
 			}, TaskScheduler.FromCurrentSynchronizationContext());
+#endif
+#if NETFX_3
+			WinAuthConfig config;
+			try
+			{
+				// use previous config if we have one
+				config = WinAuthHelper.LoadConfig(this, configFile, password);
+				if (config == null)
+				{
+					System.Diagnostics.Process.GetCurrentProcess().Kill();
+					return;
+				}
+
+				// check for a v2 config file if this is a new config
+				if (config.Count == 0 && string.IsNullOrEmpty(config.Filename) == true)
+				{
+					_existingv2Config = WinAuthHelper.GetLastV2Config();
+				}
+
+				this.Config = config;
+				this.Config.OnConfigChanged += new ConfigChangedHandler(OnConfigChanged);
+
+				if (config.Upgraded == true)
+				{
+					SaveConfig(true);
+					// display warning
+					WinAuthForm.ErrorDialog(this, string.Format(strings.ConfigUpgraded, WinAuthConfig.CURRENTVERSION));
+				}
+
+				InitializeForm();
+			}
+			catch (Exception ex)
+			{
+				if (ex is WinAuthInvalidNewerConfigException)
+				{
+					MessageBox.Show(this, ex.Message, WinAuthMain.APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Error);
+					System.Diagnostics.Process.GetCurrentProcess().Kill();
+					return;
+				}
+				else if (ex is EncrpytedSecretDataException)
+				{
+					loadingPanel.Visible = false;
+					passwordPanel.Visible = true;
+					yubiPanel.Visible = false;
+
+					this.passwordButton.Focus();
+					this.passwordField.Focus();
+
+					return;
+				}
+				else if (ex is BadYubiKeyException)
+				{
+					loadingPanel.Visible = false;
+					passwordPanel.Visible = false;
+					yubiPanel.Visible = true;
+					this.yubiLabel.Text = strings.YubikeyInsert;
+					return;
+				}
+				else if (ex is BadPasswordException)
+				{
+					loadingPanel.Visible = false;
+					yubiPanel.Visible = false;
+					passwordPanel.Visible = true;
+					this.passwordErrorLabel.Text = strings.InvalidPassword;
+					this.passwordErrorLabel.Tag = DateTime.Now.AddSeconds(3);
+					// oddity with MetroFrame controls in have to set focus away and back to field to make it stick
+					this.Invoke((MethodInvoker)delegate { this.passwordButton.Focus(); this.passwordField.Focus(); });
+					this.passwordTimer.Enabled = true;
+					return;
+				}
+				else // if (ex is Exception)
+				{
+					if (ErrorDialog(this, strings.UnknownError + ": " + ex.Message, ex, MessageBoxButtons.RetryCancel) == System.Windows.Forms.DialogResult.Cancel)
+					{
+						this.Close();
+						return;
+					}
+					loadConfig(password);
+					return;
+				}
+			};
+#endif
+
 		}
 
 		/// <summary>
@@ -629,11 +715,12 @@ namespace WinAuth
 			_listoffset = new Rectangle(authenticatorList.Left, authenticatorList.Top, (this.Width - authenticatorList.Width), (this.Height - authenticatorList.Height));
 
 			// set the shadow type (change in config for compatibility)
-			MetroFormShadowType shadow;
-			if (Enum.TryParse<MetroFormShadowType>(this.Config.ShadowType, true, out shadow) == true)
+			try
 			{
+				MetroFormShadowType shadow = (MetroFormShadowType)Enum.Parse(typeof(MetroFormShadowType), this.Config.ShadowType, true);
 				this.ShadowType = shadow;
 			}
+			catch (Exception) { }
 
 			// set positions
 			if (this.Config.Position.IsEmpty == false)
@@ -868,7 +955,7 @@ namespace WinAuth
 			}
 		}
 
-		#region Steam Notifications
+#region Steam Notifications
 
 		/// <summary>
 		/// Unhook the Steam notifications
@@ -880,6 +967,7 @@ namespace WinAuth
 				return;
 			}
 
+#if NETFX_4
 			foreach (var auth in this.Config)
 			{
 				if (auth.AuthenticatorData != null && auth.AuthenticatorData is SteamAuthenticator && ((SteamAuthenticator)auth.AuthenticatorData).Client != null)
@@ -889,6 +977,7 @@ namespace WinAuth
 					client.ConfirmationErrorEvent -= SteamClient_ConfirmationErrorEvent;
 				}
 			}
+#endif
 		}
 
 		/// <summary>
@@ -902,6 +991,7 @@ namespace WinAuth
 				return;
 			}
 
+#if NETFX_4
 			// do async as setting up clients can take time (Task.Factory.StartNew wait for UI so need to use new Thread(...))
 			new Thread(new ThreadStart(() =>
 			{
@@ -915,6 +1005,7 @@ namespace WinAuth
 					}
 				}
 			})).Start();
+#endif
 		}
 
 		/// <summary>
@@ -1032,7 +1123,7 @@ namespace WinAuth
 			});
 		}
 
-		#endregion
+#endregion
 
 		/// <summary>
 		/// General Windows Message handler

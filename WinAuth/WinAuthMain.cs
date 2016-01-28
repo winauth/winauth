@@ -32,11 +32,11 @@ using WinAuth.Resources;
 
 namespace WinAuth
 {
-  /// <summary>
-  /// Class that launches the main form
-  /// </summary>
-  static class WinAuthMain
-  {
+	/// <summary>
+	/// Class that launches the main form
+	/// </summary>
+	static class WinAuthMain
+	{
     /// <summary>
     /// Name of this application used for %USEPATH%\[name] folder
     /// </summary>
@@ -151,10 +151,10 @@ namespace WinAuth
 
 		public static ResourceManager StringResources = new ResourceManager(typeof(WinAuth.Resources.strings).FullName, typeof(WinAuth.Resources.strings).Assembly);
 
-    /// <summary>
-    /// The main entry point for the application.
-    /// </summary>
-    [STAThread]
+		/// <summary>
+		/// The main entry point for the application.
+		/// </summary>
+		[STAThread]
     static void Main()
     {
 			try
@@ -207,7 +207,7 @@ namespace WinAuth
 				// fallback
 				MessageBox.Show(string.Format(strings.AlreadyRunning, APPLICATION_NAME), APPLICATION_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 			}
-    }
+		}
 
 		static void OnThreadException(object sender, System.Threading.ThreadExceptionEventArgs e)
 		{
@@ -222,7 +222,7 @@ namespace WinAuth
 		public static void LogException(Exception ex)
 		{
 			// add catch for unknown application exceptions to try and get closer to bug
-			StringBuilder capture = new StringBuilder();
+			StringBuilder capture = new StringBuilder(DateTime.Now.ToString("u") + " ");
 			//
 			try
 			{
@@ -234,12 +234,7 @@ namespace WinAuth
 					e = e.InnerException;
 				}
 				//
-				string dir = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuthMain.APPLICATION_NAME);
-				if (Directory.Exists(dir) == false)
-				{
-					dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-				}
-				File.WriteAllText(Path.Combine(dir, "winauth.log"), capture.ToString());
+				LogMessage(capture.ToString());
 			}
 			catch (Exception) { }
 
@@ -260,10 +255,34 @@ namespace WinAuth
 			catch (Exception) { }
 		}
 
+		/// <summary>
+		/// Log a message into the winauth.log file
+		/// </summary>
+		/// <param name="msg">messagae to be logged</param>
+		public static void LogMessage(string msg)
+		{
+			if (msg == null)
+			{
+				return;
+			}
+
+			try
+			{
+				string dir = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), WinAuthMain.APPLICATION_NAME);
+				if (Directory.Exists(dir) == false)
+				{
+					dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+				}
+				File.AppendAllText(Path.Combine(dir, "winauth.log"), msg = DateTime.Now.ToString("u") + " " + msg);
+			}
+			catch (Exception) { }
+		}
+
 		private static WinAuthForm _form;
 
 		private static void main()
 		{
+#if NETFX_4
 			// Fix #226: set to use TLS1.2
 			try
 			{
@@ -273,6 +292,7 @@ namespace WinAuth
 			{
 				// not 4.5 installed - we could prompt, but not for now
 			}
+#endif
 
 			// Issue #53: set a default culture
 			if (System.Threading.Thread.CurrentThread.CurrentCulture == null || System.Threading.Thread.CurrentThread.CurrentUICulture == null)

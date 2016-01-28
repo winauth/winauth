@@ -42,7 +42,18 @@ namespace WinAuth
 	{
 		[DllImport("wininet.dll", CharSet = CharSet.Auto, SetLastError = true)]		
 		static extern bool InternetSetCookie(string lpszUrlName, string lpszCookieName, string lpszCookieData);
-		
+
+		class PollerActionItem
+		{
+			public string Text;
+			public SteamClient.PollerAction Value;
+
+			public override string ToString()
+			{
+				return this.Text;
+			}
+		}
+	
 		/// <summary>
 		/// Form instantiation
 		/// </summary>
@@ -110,12 +121,12 @@ namespace WinAuth
 			this.pollAction.Items.Clear();
 
 			BindingList<object> items = new BindingList<object>();
-			items.Add(new { Text = "Show Notification", Value = SteamClient.PollerAction.Notify });
-			items.Add(new { Text = "Auto-Confirm", Value = SteamClient.PollerAction.AutoConfirm });
+			items.Add(new PollerActionItem { Text = "Show Notification", Value = SteamClient.PollerAction.Notify });
+			items.Add(new PollerActionItem { Text = "Auto-Confirm", Value = SteamClient.PollerAction.AutoConfirm });
 
 			this.pollAction.DataSource = items;
 			this.pollAction.DisplayMember = "Text";
-			this.pollAction.ValueMember = "Value";
+			//this.pollAction.ValueMember = "Value";
 			this.pollAction.SelectedIndex = 0;
 
 			m_tabPages.Clear();
@@ -426,9 +437,9 @@ namespace WinAuth
 			}
 		}
 
-		#endregion
+#endregion
 
-		#region Private methods
+#region Private methods
 
 		/// <summary>
 		/// Initialise the new Steam session or from saved data
@@ -622,8 +633,8 @@ namespace WinAuth
 							int selected = 0;
 							for (var i = 0; i < pollAction.Items.Count; i++)
 							{
-								dynamic item = pollAction.Items[i];
-								if (item.Value == steam.Session.Confirmations.Action)
+								var item = pollAction.Items[i] as PollerActionItem;
+								if (item != null && item.Value == steam.Session.Confirmations.Action)
 								{
 									selected = i;
 
@@ -865,6 +876,7 @@ namespace WinAuth
 		/// </summary>
 		private void SetPolling()
 		{
+#if NETFX_4
 			// ignore setup changes
 			if (m_loaded == false || pollAction.SelectedValue == null)
 			{
@@ -877,7 +889,7 @@ namespace WinAuth
 			var p = new SteamClient.ConfirmationPoller
 			{
 				Duration = (pollCheckbox.Checked == true && steam.IsLoggedIn() == true ? (int)pollNumeric.Value : 0),
-				Action = (SteamClient.PollerAction)pollAction.SelectedValue
+				Action = ((PollerActionItem)pollAction.SelectedValue).Value
 			};
 			if (p.Duration != 0)
 			{
@@ -897,10 +909,10 @@ namespace WinAuth
 					this.Authenticator.MarkChanged();
 				}
 			}
+#endif
 		}
-
 
 		#endregion
 
 	}
-}
+	}

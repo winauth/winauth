@@ -1,0 +1,609 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DC7B671F-E320-4A26-842D-F5AC5CF99887}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WinAuth</RootNamespace>
+    <AssemblyName>WinAuth</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <AssemblyVersion>3.4.11.381</AssemblyVersion>
+    <PrimaryVersionType>AssemblyVersionAttribute</PrimaryVersionType>
+    <AssemblyInfoFilePath>Properties\AssemblyInfo.cs</AssemblyInfoFilePath>
+    <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
+    <UpdateAssemblyFileVersion>True</UpdateAssemblyFileVersion>
+    <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
+    <AssemblyVersionSettings>None.None.IncrementOnDemandWithReset.Increment</AssemblyVersionSettings>
+    <AssemblyFileVersionSettings>None.None.IncrementOnDemandWithReset.Increment</AssemblyFileVersionSettings>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <PublishUrl>f:\cdm\Projects\WinAuth\winauth.com\downloads\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Web</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Background</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>true</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>false</MapFileExtensions>
+    <InstallUrl>https://winauth.com/downloads/</InstallUrl>
+    <UpdateUrl>https://winauth.com/downloads/</UpdateUrl>
+    <SupportUrl>https://winauth.com</SupportUrl>
+    <ErrorReportUrl>https://code.google.com/p/winauth/issues/list</ErrorReportUrl>
+    <TargetCulture>en</TargetCulture>
+    <ProductName>WinAuth</ProductName>
+    <PublisherName>Colin Mackie</PublisherName>
+    <MinimumRequiredVersion>3.0.10.0</MinimumRequiredVersion>
+    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
+    <WebPage>publish.htm</WebPage>
+    <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
+    <ApplicationRevision>2</ApplicationRevision>
+    <ApplicationVersion>3.3.7.2</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <CreateDesktopShortcut>true</CreateDesktopShortcut>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DefineConstants Condition="$([System.Version]::Parse('$(TargetFrameworkVersion.Substring(1))').CompareTo($([System.Version]::Parse('4.5.1')))) &gt;= 0">$(DefineConstants);NETFX_451</DefineConstants>
+    <DefineConstants Condition="$([System.Version]::Parse('$(TargetFrameworkVersion.Substring(1))').CompareTo($([System.Version]::Parse('4.5'))))   &gt;= 0">$(DefineConstants);NETFX_45</DefineConstants>
+    <DefineConstants Condition="$([System.Version]::Parse('$(TargetFrameworkVersion.Substring(1))').CompareTo($([System.Version]::Parse('4.0'))))   &gt;= 0">$(DefineConstants);NETFX_40</DefineConstants>
+    <DefineConstants Condition="$([System.Version]::Parse('$(TargetFrameworkVersion.Substring(1))').CompareTo($([System.Version]::Parse('3.5'))))   &gt;= 0">$(DefineConstants);NETFX_35</DefineConstants>
+    <DefineConstants Condition="$([System.Version]::Parse('$(TargetFrameworkVersion.Substring(1))').CompareTo($([System.Version]::Parse('3.0'))))   &gt;= 0">$(DefineConstants);NETFX_30</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Net3.5\bin\Debug\</OutputPath>
+    <IntermediateOutputPath>..\Net3.5\obj\Debug\</IntermediateOutputPath>
+    <DefineConstants>TRACE;DEBUG;NETFX_3</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Net3.5\bin\Release\</OutputPath>
+    <IntermediateOutputPath>..\Net3.5\obj\Release\</IntermediateOutputPath>
+    <DefineConstants>TRACE;NETFX_3</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>WinAuth.WinAuthMain</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>winauth.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>F61975099D14D6E0C04E21747F96A289F5AA9989</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup Condition="Exists('$(MSBuildProjectDirectory)codesign.pfx')">
+    <ManifestKeyFile>codesign.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup Condition="Exists('$(MSBuildProjectDirectory)codesign.pfx')">
+    <SignManifests>true</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestTimestampUrl>http://timestamp.verisign.com/scripts/timestamp.dll</ManifestTimestampUrl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\Net3.5\bin\x64\Debug\</OutputPath>
+    <IntermediateOutputPath>..\Net3.5\obj\x64\Debug\</IntermediateOutputPath>
+    <DefineConstants>TRACE;DEBUG;NETFX_3</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>..\Net3.5\x64\bin\Release\</OutputPath>
+    <IntermediateOutputPath>..\Net3.5\x64\obj\Release\</IntermediateOutputPath>
+    <DefineConstants>TRACE;NETFX_3</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto">
+      <HintPath>..\Net3.5\packages\BouncyCastle.1.7.0\lib\Net20\BouncyCastle.Crypto.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="HtmlRenderer">
+      <HintPath>..\Net3.5\packages\HtmlRenderer.Core.1.5.0.5\lib\net35-client\HtmlRenderer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="HtmlRenderer.WinForms">
+      <HintPath>..\Net3.5\packages\HtmlRenderer.WinForms.1.5.0.6\lib\net35-client\HtmlRenderer.WinForms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\Net3.5\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\Net3.5\packages\Newtonsoft.Json.6.0.8\lib\net35\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="zxing">
+      <HintPath>..\Net3.5\packages\ZXing.Net.0.14.0.1\lib\net35\zxing.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AboutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutForm.Designer.cs">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddGoogleAuthenticator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddGoogleAuthenticator.designer.cs">
+      <DependentUpon>AddGoogleAuthenticator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddGuildWarsAuthenticator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddGuildWarsAuthenticator.designer.cs">
+      <DependentUpon>AddGuildWarsAuthenticator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddMicrosoftAuthenticator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddMicrosoftAuthenticator.designer.cs">
+      <DependentUpon>AddMicrosoftAuthenticator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Notification.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Notification.Designer.cs">
+      <DependentUpon>Notification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ShowSteamTradesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ShowSteamTradesForm.designer.cs">
+      <DependentUpon>ShowSteamTradesForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddTrionAuthenticator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddTrionAuthenticator.designer.cs">
+      <DependentUpon>AddTrionAuthenticator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AuthenticatorListBox.cs" />
+    <Compile Include="BetaForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BetaForm.designer.cs">
+      <DependentUpon>BetaForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ChangePasswordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ChangePasswordForm.Designer.cs">
+      <DependentUpon>ChangePasswordForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddAuthenticator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddAuthenticator.designer.cs">
+      <DependentUpon>AddAuthenticator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddSteamAuthenticator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddSteamAuthenticator.designer.cs">
+      <DependentUpon>AddSteamAuthenticator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ShowSteamSecretForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ShowSteamSecretForm.designer.cs">
+      <DependentUpon>ShowSteamSecretForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GetPGPKeyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GetPGPKeyForm.designer.cs">
+      <DependentUpon>GetPGPKeyForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExportForm.Designer.cs">
+      <DependentUpon>ExportForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GetPasswordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GetPasswordForm.designer.cs">
+      <DependentUpon>GetPasswordForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HotKeySequence.cs" />
+    <Compile Include="DiagnosticForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DiagnosticForm.designer.cs">
+      <DependentUpon>DiagnosticForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExceptionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExceptionForm.designer.cs">
+      <DependentUpon>ExceptionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImportException.cs" />
+    <Compile Include="SetShortcutKeyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SetShortcutKeyForm.Designer.cs">
+      <DependentUpon>SetShortcutKeyForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SingleGlobalInstance.cs" />
+    <Compile Include="Tuple.cs" />
+    <Compile Include="UnprotectPasswordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UnprotectPasswordForm.designer.cs">
+      <DependentUpon>UnprotectPasswordForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GroupRadioButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HotKey.cs" />
+    <Compile Include="ISecretTextBox.cs" />
+    <Compile Include="AddBattleNetAuthenticator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddBattleNetAuthenticator.Designer.cs">
+      <DependentUpon>AddBattleNetAuthenticator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Keyboard.cs" />
+    <Compile Include="ResourceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="RegisteredAuthenticator.cs" />
+    <Compile Include="Resources\strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>strings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="SecretTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SetPasswordForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SetPasswordForm.Designer.cs">
+      <DependentUpon>SetPasswordForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ShowRestoreCodeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ShowRestoreCodeForm.designer.cs">
+      <DependentUpon>ShowRestoreCodeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ShowSecretKeyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ShowSecretKeyForm.designer.cs">
+      <DependentUpon>ShowSecretKeyForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ShowTrionSecretForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ShowTrionSecretForm.designer.cs">
+      <DependentUpon>ShowTrionSecretForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UpdateCheckForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UpdateCheckForm.Designer.cs">
+      <DependentUpon>UpdateCheckForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WinAPI.cs" />
+    <Compile Include="WinAuthAuthenticator.cs" />
+    <Compile Include="WinAuthConfig.cs" />
+    <Compile Include="WinAuthForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WinAuthForm.Designer.cs">
+      <DependentUpon>WinAuthForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WinAuthMain.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WinAuthHelper.cs" />
+    <Compile Include="WinAuthUpdater.cs" />
+    <EmbeddedResource Include="AboutForm.resx">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddBattleNetAuthenticator.resx">
+      <DependentUpon>AddBattleNetAuthenticator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddGoogleAuthenticator.resx">
+      <DependentUpon>AddGoogleAuthenticator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddGuildWarsAuthenticator.resx">
+      <DependentUpon>AddGuildWarsAuthenticator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddMicrosoftAuthenticator.resx">
+      <DependentUpon>AddMicrosoftAuthenticator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Notification.resx">
+      <DependentUpon>Notification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShowSteamTradesForm.resx">
+      <DependentUpon>ShowSteamTradesForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddTrionAuthenticator.resx">
+      <DependentUpon>AddTrionAuthenticator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BetaForm.resx">
+      <DependentUpon>BetaForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChangePasswordForm.resx">
+      <DependentUpon>ChangePasswordForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddAuthenticator.resx">
+      <DependentUpon>AddAuthenticator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddSteamAuthenticator.resx">
+      <DependentUpon>AddSteamAuthenticator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\strings.zh-CN.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShowSteamSecretForm.resx">
+      <DependentUpon>ShowSteamSecretForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GetPGPKeyForm.resx">
+      <DependentUpon>GetPGPKeyForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExportForm.resx">
+      <DependentUpon>ExportForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GetPasswordForm.resx">
+      <DependentUpon>GetPasswordForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DiagnosticForm.resx">
+      <DependentUpon>DiagnosticForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExceptionForm.resx">
+      <DependentUpon>ExceptionForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\strings.de.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SetShortcutKeyForm.resx">
+      <DependentUpon>SetShortcutKeyForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UnprotectPasswordForm.resx">
+      <DependentUpon>UnprotectPasswordForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>strings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SetPasswordForm.resx">
+      <DependentUpon>SetPasswordForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShowRestoreCodeForm.resx">
+      <DependentUpon>ShowRestoreCodeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShowSecretKeyForm.resx">
+      <DependentUpon>ShowSecretKeyForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShowTrionSecretForm.resx">
+      <DependentUpon>ShowTrionSecretForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UpdateCheckForm.resx">
+      <DependentUpon>UpdateCheckForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WinAuthForm.resx">
+      <DependentUpon>WinAuthForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="ClassDiagram1.cd" />
+    <None Include="packages.config" />
+    <None Include="packages.WinAuth-Net3.5.config" />
+    <None Include="Properties\app.manifest" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\BattleNetAuthenticatorIcon.png" />
+    <EmbeddedResource Include="Resources\GoogleAuthenticatorIcon.png" />
+    <EmbeddedResource Include="Resources\GuildWarsAuthenticatorIcon.png" />
+    <EmbeddedResource Include="Resources\RefreshIcon.png" />
+    <EmbeddedResource Include="Resources\MicrosoftAuthenticatorIcon.png" />
+    <None Include="Resources\OptionsIcon.png" />
+    <EmbeddedResource Include="Resources\TrionAuthenticatorIcon.png" />
+    <EmbeddedResource Include="Resources\RiftIcon.png" />
+    <None Include="Resources\trion.png" />
+    <None Include="Resources\battlenet.png" />
+    <EmbeddedResource Include="Resources\DiabloIcon.png" />
+    <EmbeddedResource Include="Resources\DefianceIcon.png" />
+    <EmbeddedResource Include="Resources\WarcraftIcon.png" />
+    <EmbeddedResource Include="Resources\GoogleIcon.png" />
+    <EmbeddedResource Include="Resources\ChromeIcon.png" />
+    <EmbeddedResource Include="Resources\ArenaNetIcon.png" />
+    <EmbeddedResource Include="Resources\Windows8Icon.png" />
+    <EmbeddedResource Include="Resources\Windows7Icon.png" />
+    <None Include="Resources\padlock-open.png" />
+    <None Include="Resources\padlock-closed.png" />
+    <None Include="Resources\BluePixel.png" />
+    <EmbeddedResource Include="Resources\RefreshIconWithLock.png" />
+    <EmbeddedResource Include="Resources\WinAuthIcon.png" />
+    <EmbeddedResource Include="Resources\BitcoinIcon.png" />
+    <EmbeddedResource Include="Resources\BitcoinGoldIcon.png" />
+    <EmbeddedResource Include="Resources\LitecoinIcon.png" />
+    <EmbeddedResource Include="Resources\BitcoinEuroIcon.png" />
+    <EmbeddedResource Include="Resources\TextIcon.png" />
+    <EmbeddedResource Include="Resources\AndroidIcon.png" />
+    <EmbeddedResource Include="Resources\AppleIcon.png" />
+    <EmbeddedResource Include="Resources\DropboxIcon.png" />
+    <EmbeddedResource Include="Resources\FacebookIcon.png" />
+    <EmbeddedResource Include="Resources\FlickrIcon.png" />
+    <EmbeddedResource Include="Resources\GitIcon.png" />
+    <EmbeddedResource Include="Resources\Google2Icon.png" />
+    <EmbeddedResource Include="Resources\InstagramIcon.png" />
+    <EmbeddedResource Include="Resources\LinkedinIcon.png" />
+    <EmbeddedResource Include="Resources\MacIcon.png" />
+    <EmbeddedResource Include="Resources\TwitterIcon.png" />
+    <EmbeddedResource Include="Resources\WordpressIcon.png" />
+    <EmbeddedResource Include="Resources\YahooIcon.png" />
+    <EmbeddedResource Include="Resources\DogeIcon.png" />
+    <EmbeddedResource Include="Resources\WindowsPhoneIcon.png" />
+    <EmbeddedResource Include="Resources\AppleWhiteIcon.png" />
+    <EmbeddedResource Include="Resources\AppleColorIcon.png" />
+    <EmbeddedResource Include="Resources\GitHubIcon.png" />
+    <EmbeddedResource Include="Resources\WildstarIcon.png" />
+    <EmbeddedResource Include="Resources\FirefallIcon.png" />
+    <EmbeddedResource Include="Resources\WinAuth2Icon.png" />
+    <EmbeddedResource Include="Resources\AmazonAWSIcon.png" />
+    <EmbeddedResource Include="Resources\AmazonIcon.png" />
+    <EmbeddedResource Include="Resources\RuneScapeIcon.png" />
+    <EmbeddedResource Include="Resources\EvernoteIcon.png" />
+    <EmbeddedResource Include="Resources\TeamviewerIcon.png" />
+    <EmbeddedResource Include="Resources\LastPassIcon.png" />
+    <EmbeddedResource Include="Resources\ArcheAgeIcon.png" />
+    <EmbeddedResource Include="Resources\GlyphIcon.png" />
+    <EmbeddedResource Include="Resources\SteamAuthenticatorIcon.png" />
+    <EmbeddedResource Include="Resources\SteamIcon.png" />
+    <None Include="images\spinner24.gif" />
+    <EmbeddedResource Include="Resources\SeedWords.txt" />
+    <EmbeddedResource Include="Resources\Swtor.png" />
+    <EmbeddedResource Include="Resources\SwtorEmpire.png" />
+    <EmbeddedResource Include="Resources\SwtorRepublic.png" />
+    <None Include="bin\Debug\WinAuth.YubiKey.x64.dll" />
+    <None Include="bin\Debug\WinAuth.YubiKey.x86.dll" />
+    <EmbeddedResource Include="Resources\GoogleAuthenticator2Icon.png" />
+    <Content Include="winauth.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.4.5">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 4.5</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Authenticator\Authenticator-Net3.5.csproj">
+      <Project>{eaf2d5ce-d817-453a-8a32-3d531570ae04}</Project>
+      <Name>Authenticator-Net3.5</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Third Party\InputSimulator\InputSimulator.csproj">
+      <Project>{3549cd6f-80f8-450f-b99e-cf0a736b1f2a}</Project>
+      <Name>InputSimulator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Third Party\MetroFramework\MetroFramework.Design\MetroFramework.Design.csproj">
+      <Project>{7316584d-9a16-4280-a8ab-6d45198c6e4d}</Project>
+      <Name>MetroFramework.Design</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Third Party\MetroFramework\MetroFramework\MetroFramework.csproj">
+      <Project>{bb41ac8b-cbed-4387-a7e0-4567edb3f57f}</Project>
+      <Name>MetroFramework</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

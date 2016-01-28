@@ -1037,13 +1037,11 @@ namespace WinAuth
 		public static string EncryptSequence(string data, PasswordTypes passwordType, string password, YubiKey yubi)
     {
 			// get hash of original
-			string salt;
-			using (var random = new RNGCryptoServiceProvider())
-			{
-				byte[] saltbytes = new byte[SALT_LENGTH];
-				random.GetBytes(saltbytes);
-				salt = ByteArrayToString(saltbytes);
-			}
+			var random = new RNGCryptoServiceProvider();
+			byte[] saltbytes = new byte[SALT_LENGTH];
+			random.GetBytes(saltbytes);
+			string salt = ByteArrayToString(saltbytes);
+
 			string hash;
 			using (var sha = new SHA256Managed())
 			{
@@ -1056,10 +1054,8 @@ namespace WinAuth
 				if (yubi.YubiData.Length == 0)
 				{
 					byte[] seed = new byte[SALT_LENGTH];
-					using (var random = new RNGCryptoServiceProvider())
-					{
-						random.GetBytes(seed);
-					}
+					random = new RNGCryptoServiceProvider();
+					random.GetBytes(seed);
 
 					// we encrypt the data using the hash of a random string from the YubiKey
 					int slot = ((passwordType & PasswordTypes.YubiKeySlot1) != 0 ? 1 : 2);
@@ -1297,9 +1293,9 @@ namespace WinAuth
 #endif
 		}
 
-		#endregion
+#endregion
 
-		#region ICloneable
+#region ICloneable
 
 		/// <summary>
 		/// Clone the current object
@@ -1311,7 +1307,7 @@ namespace WinAuth
 			return this.MemberwiseClone();
 		}
 
-		#endregion
+#endregion
 
 #if NETCF
 		/// <summary>

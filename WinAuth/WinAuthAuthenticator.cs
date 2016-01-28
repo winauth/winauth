@@ -456,12 +456,22 @@ namespace WinAuth
 			bool changed = false;
 
       Guid id;
-      if (Guid.TryParse(reader.GetAttribute("id"), out id) == true)
+#if NETFX_4
+			if (Guid.TryParse(reader.GetAttribute("id"), out id) == true)
       {
         Id = id;
       }
+#endif
+#if NETFX_3
+			try
+			{
+				id = new Guid(reader.GetAttribute("id"));
+				Id = id;
+			}
+			catch (Exception) { }
+#endif
 
-      string authenticatorType = reader.GetAttribute("type");
+			string authenticatorType = reader.GetAttribute("type");
       if (string.IsNullOrEmpty(authenticatorType) == false)
       {
         Type type = typeof(Authenticator).Assembly.GetType(authenticatorType, false, true);

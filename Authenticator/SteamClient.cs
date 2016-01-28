@@ -30,8 +30,10 @@ using System.Web;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+#if NETFX_4
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
+#endif
 
 namespace WinAuth
 {
@@ -124,10 +126,10 @@ namespace WinAuth
 					props.Add("\"action\":" + (int)this.Action);
 					if (this.Ids != null)
 					{
-						props.Add("\"ids\":[" + (this.Ids.Count != 0 ? "\"" + string.Join("\",\"", this.Ids) + "\"" : string.Empty) + "]");
+						props.Add("\"ids\":[" + (this.Ids.Count != 0 ? "\"" + string.Join("\",\"", this.Ids.ToArray()) + "\"" : string.Empty) + "]");
 					}
 
-					return "{" + string.Join(",", props) + "}";
+					return "{" + string.Join(",", props.ToArray()) + "}";
 				}
 			}
 
@@ -356,10 +358,12 @@ namespace WinAuth
 		/// </summary>
 		private string ConfirmationsQuery;
 
+#if NETFX_4
 		/// <summary>
 		/// Cancellation token for poller
 		/// </summary>
 		private CancellationTokenSource _pollerCancellation;
+#endif
 
 		/// <summary>
 		/// Number of Confirmation retries
@@ -374,6 +378,7 @@ namespace WinAuth
 			this.Authenticator = auth;
 			this.Session = new SteamSession(session);
 
+#if NETFX_4
 			if (this.Session.Confirmations != null)
 			{
 				if (this.IsLoggedIn() == false)
@@ -389,6 +394,7 @@ namespace WinAuth
 					});
 				}
 			}
+#endif
 		}
 
 		/// <summary>
@@ -419,11 +425,13 @@ namespace WinAuth
 				// clear resources
 			}
 
+#if NETFX_4
 			if (_pollerCancellation != null)
 			{
 				_pollerCancellation.Cancel();
 				_pollerCancellation = null;
 			}
+#endif
 		}
 
 		/// <summary>
@@ -616,8 +624,9 @@ namespace WinAuth
 		{
 			if (string.IsNullOrEmpty(this.Session.OAuthToken) == false)
 			{
+#if NETFX_4
 				PollConfirmationsStop();
-
+#endif
 				if (string.IsNullOrEmpty(this.Session.UmqId) == false)
 				{
 					var data = new NameValueCollection();
@@ -710,6 +719,7 @@ namespace WinAuth
 			return false;
 		}
 
+#if NETFX_4
 		/// <summary>
 		/// Stop the current poller
 		/// </summary>
@@ -722,7 +732,7 @@ namespace WinAuth
 				_pollerCancellation = null;
 			}
 			this.Session.Confirmations = null;
-		}
+	}
 
 		/// <summary>
 		/// Start a new poller
@@ -861,6 +871,7 @@ namespace WinAuth
 			{
 			}
 		}
+#endif
 
 		/// <summary>
 		/// Get the current trade Confirmations
