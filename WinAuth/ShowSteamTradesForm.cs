@@ -627,7 +627,7 @@ namespace WinAuth
 					{
 						this.logoutButton.Visible = true;
 
-#if NET_4
+#if NETFX_4
 						if (steam.Session.Confirmations != null)
 						{
 							this.pollCheckbox.Checked = true;
