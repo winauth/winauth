@@ -144,6 +144,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.Authenticator.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

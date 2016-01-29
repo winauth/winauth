@@ -14,7 +14,7 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <AssemblyVersion>3.4.11.381</AssemblyVersion>
+    <AssemblyVersion>3.4.13.1</AssemblyVersion>
     <PrimaryVersionType>AssemblyVersionAttribute</PrimaryVersionType>
     <AssemblyInfoFilePath>Properties\AssemblyInfo.cs</AssemblyInfoFilePath>
     <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
@@ -66,7 +66,7 @@
     <Optimize>false</Optimize>
     <OutputPath>..\Net3.5\bin\Debug\</OutputPath>
     <IntermediateOutputPath>..\Net3.5\obj\Debug\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;NETFX_3</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETFX_3,BETA</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>true</UseVSHostingProcess>
@@ -78,7 +78,7 @@
     <Optimize>true</Optimize>
     <OutputPath>..\Net3.5\bin\Release\</OutputPath>
     <IntermediateOutputPath>..\Net3.5\obj\Release\</IntermediateOutputPath>
-    <DefineConstants>TRACE;NETFX_3</DefineConstants>
+    <DefineConstants>TRACE;NETFX_3,BETA</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -126,7 +126,7 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\Net3.5\bin\x64\Debug\</OutputPath>
     <IntermediateOutputPath>..\Net3.5\obj\x64\Debug\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;NETFX_3</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETFX_3,BETA</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -135,7 +135,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>..\Net3.5\x64\bin\Release\</OutputPath>
     <IntermediateOutputPath>..\Net3.5\x64\obj\Release\</IntermediateOutputPath>
-    <DefineConstants>TRACE;NETFX_3</DefineConstants>
+    <DefineConstants>TRACE;NETFX_3,BETA</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>

@@ -45,7 +45,8 @@ namespace WinAuth
 		/// <summary>
 		/// URLs for all mobile services
 		/// </summary>
-		private const string COMMUNITY_BASE = "https://steamcommunity.com";
+		private const string COMMUNITY_DOMAIN = "steamcommunity.com";
+		private const string COMMUNITY_BASE = "https://" + COMMUNITY_DOMAIN;
 		private static string WEBAPI_BASE = "https://api.steampowered.com";
 		private static string API_GETWGTOKEN = WEBAPI_BASE + "/IMobileAuthService/GetWGToken/v0001";
 		private static string API_LOGOFF = WEBAPI_BASE + "/ISteamWebUserPresenceOAuth/Logoff/v0001";
@@ -202,7 +203,7 @@ namespace WinAuth
 		public class SteamSession
 		{
 			/// <summary>
-			/// USer's steam ID
+			/// User's steam ID
 			/// </summary>
 			public string SteamId;
 
@@ -303,10 +304,9 @@ namespace WinAuth
 					var match = Regex.Match(token.Value<string>(), @"([^=]+)=([^;]*);?", RegexOptions.Singleline);
 					while (match.Success == true)
 					{
-						this.Cookies.Add(new Cookie(match.Groups[1].Value.Trim(), match.Groups[2].Value.Trim(), "/", ".steamcommunity.com"));
+						this.Cookies.Add(new Cookie(match.Groups[1].Value.Trim(), match.Groups[2].Value.Trim(), "/", COMMUNITY_DOMAIN));
 						match = match.NextMatch();
 					}
-
 				}
 				token = tokens.SelectToken("oauthtoken");
 				if (token != null)
@@ -481,17 +481,17 @@ namespace WinAuth
 				// get session
 				if (this.Session.Cookies.Count == 0)
 				{
-					this.Session.Cookies.Add(new Cookie("mobileClientVersion", "3067969+%282.1.3%29", "/", ".steamcommunity.com"));
-					this.Session.Cookies.Add(new Cookie("mobileClient", "android", "/", ".steamcommunity.com"));
-					this.Session.Cookies.Add(new Cookie("steamid", "", "/", ".steamcommunity.com"));
-					this.Session.Cookies.Add(new Cookie("steamLogin", "", "/", ".steamcommunity.com"));
-					this.Session.Cookies.Add(new Cookie("Steam_Language", "english", "/", ".steamcommunity.com"));
-					this.Session.Cookies.Add(new Cookie("dob", "", "/", ".steamcommunity.com"));
+					this.Session.Cookies.Add(new Cookie("mobileClientVersion", "3067969+%282.1.3%29", "/", COMMUNITY_DOMAIN));
+					this.Session.Cookies.Add(new Cookie("mobileClient", "android", "/", COMMUNITY_DOMAIN));
+					this.Session.Cookies.Add(new Cookie("steamid", "", "/", COMMUNITY_DOMAIN));
+					this.Session.Cookies.Add(new Cookie("steamLogin", "", "/", COMMUNITY_DOMAIN));
+					this.Session.Cookies.Add(new Cookie("Steam_Language", "english", "/", COMMUNITY_DOMAIN));
+					this.Session.Cookies.Add(new Cookie("dob", "", "/", COMMUNITY_DOMAIN));
 
 					NameValueCollection headers = new NameValueCollection();
 					headers.Add("X-Requested-With", "com.valvesoftware.android.steam.community");
 
-					response = GetString("https://steamcommunity.com/login?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client", "GET", null, headers);
+					response = GetString(COMMUNITY_BASE + "/login?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client", "GET", null, headers);
 				}
 
 				// get the user's RSA key
@@ -534,7 +534,7 @@ namespace WinAuth
 				data.Add("oauth_client_id", "DE45CD61");
 				data.Add("oauth_scope", "read_profile write_profile read_client write_client");
 				data.Add("donotache", new DateTime().ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds.ToString());
-				response = GetString(COMMUNITY_BASE + "/login/dologin/", "POST", data);
+				response = GetString(COMMUNITY_BASE + "/mobilelogin/dologin/", "POST", data);
 				Dictionary<string, object> loginresponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
 
 				if (loginresponse.ContainsKey("emailsteamid") == true)
@@ -661,14 +661,14 @@ namespace WinAuth
 				{
 					return false;
 				}
-				this.Session.Cookies.Add(new Cookie("steamLogin", this.Session.SteamId + "||" + token.Value<string>(), "/", ".steamcommunity.com"));
+				this.Session.Cookies.Add(new Cookie("steamLogin", this.Session.SteamId + "||" + token.Value<string>(), "/", COMMUNITY_BASE));
 
 				token = json.SelectToken("response.token_secure");
 				if (token == null)
 				{
 					return false;
 				}
-				this.Session.Cookies.Add(new Cookie("steamLoginSecure", this.Session.SteamId + "||" + token.Value<string>(), "/", ".steamcommunity.com"));
+				this.Session.Cookies.Add(new Cookie("steamLoginSecure", this.Session.SteamId + "||" + token.Value<string>(), "/", COMMUNITY_BASE));
 
 				// perform UMQ login
 				//response = GetString(API_LOGON, "POST", data);

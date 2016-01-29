@@ -43,6 +43,7 @@ namespace WinAuth
 		[DllImport("wininet.dll", CharSet = CharSet.Auto, SetLastError = true)]		
 		static extern bool InternetSetCookie(string lpszUrlName, string lpszCookieName, string lpszCookieData);
 
+#if NETFX_4
 		class PollerActionItem
 		{
 			public string Text;
@@ -53,7 +54,8 @@ namespace WinAuth
 				return this.Text;
 			}
 		}
-	
+#endif
+		 
 		/// <summary>
 		/// Form instantiation
 		/// </summary>
@@ -103,7 +105,7 @@ namespace WinAuth
 		/// </summary>
 		private Dictionary<string, TabPage> m_tabPages = new Dictionary<string, TabPage>();
 
-		#region Form Events
+#region Form Events
 
 		/// <summary>
 		/// Load the form
@@ -118,6 +120,7 @@ namespace WinAuth
 			browserContainer.Height = 0;
 			tradesContainer.Height += m_browserHeight;
 
+#if NETFX_4
 			this.pollAction.Items.Clear();
 
 			BindingList<object> items = new BindingList<object>();
@@ -128,6 +131,7 @@ namespace WinAuth
 			this.pollAction.DisplayMember = "Text";
 			//this.pollAction.ValueMember = "Value";
 			this.pollAction.SelectedIndex = 0;
+#endif
 
 			m_tabPages.Clear();
 			for (var i = 0; i < tabs.TabPages.Count; i++)
@@ -611,10 +615,7 @@ namespace WinAuth
 
 						tradesContainer.Controls.Add(tradePanel);
 					}
-					if (m_trades.Count == 0)
-					{
-						tradesEmptyLabel.Visible = true;
-					}
+					tradesEmptyLabel.Visible = (m_trades.Count == 0);
 
 					tab.ResumeLayout();
 
@@ -626,6 +627,7 @@ namespace WinAuth
 					{
 						this.logoutButton.Visible = true;
 
+#if NET_4
 						if (steam.Session.Confirmations != null)
 						{
 							this.pollCheckbox.Checked = true;
@@ -654,6 +656,7 @@ namespace WinAuth
 						}
 
 						this.pollPanel.Visible = true;
+#endif
 					}
 
 					break;
@@ -912,7 +915,7 @@ namespace WinAuth
 #endif
 		}
 
-		#endregion
+#endregion
 
 	}
-	}
+}

@@ -1142,6 +1142,7 @@ namespace WinAuth
 				labelitem.Text += " (" + auth.HotKey.ToString() + ")";
 			}
 
+			ToolStripItem sepitem;
 			ToolStripMenuItem menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "setPasswordMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			menuitem.Text = (item.Authenticator.AuthenticatorData.PasswordType == Authenticator.PasswordTypes.Explicit ? strings.ChangeOrRemovePassword + "..." : strings.SetPassword + "...");
 
@@ -1161,7 +1162,7 @@ namespace WinAuth
 			menuitem.Visible = (auth.AuthenticatorData is SteamAuthenticator);
 			menuitem.Enabled = (auth.AuthenticatorData is SteamAuthenticator && string.IsNullOrEmpty(((SteamAuthenticator)auth.AuthenticatorData).SteamData) == false);
 			//
-			ToolStripItem sepitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "steamSeperator").FirstOrDefault() as ToolStripItem;
+			sepitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "steamSeperator").FirstOrDefault() as ToolStripItem;
 			sepitem.Visible = (auth.AuthenticatorData is SteamAuthenticator);
 			//
 			menuitem = menu.Items.Cast<ToolStripItem>().Where(i => i.Name == "showSteamTradesMenuItem").FirstOrDefault() as ToolStripMenuItem;
@@ -1743,9 +1744,9 @@ namespace WinAuth
 			return bmp;
 		}
 
-		#endregion
+#endregion
 
-		#region Owner Draw
+#region Owner Draw
 
 		/// <summary>
 		/// Calculate the maximum available label with based on the currnet control size
@@ -2024,6 +2025,6 @@ namespace WinAuth
       base.OnPaint(e);
 		}
 
-		#endregion
+#endregion
 	}
 }

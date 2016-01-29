@@ -14,7 +14,7 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <AssemblyVersion>3.4.11.388</AssemblyVersion>
+    <AssemblyVersion>3.4.13.3</AssemblyVersion>
     <PrimaryVersionType>AssemblyVersionAttribute</PrimaryVersionType>
     <AssemblyInfoFilePath>Properties\AssemblyInfo.cs</AssemblyInfoFilePath>
     <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
@@ -66,7 +66,7 @@
     <Optimize>false</Optimize>
     <OutputPath>..\Net4.5\bin\Debug\</OutputPath>
     <IntermediateOutputPath>..\Net4.5\obj\Debug\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;NETFX_4</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETFX_4,BETA</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>true</UseVSHostingProcess>
@@ -78,7 +78,7 @@
     <Optimize>true</Optimize>
     <OutputPath>..\Net4.5\bin\Release\</OutputPath>
     <IntermediateOutputPath>..\Net4.5\obj\Release\</IntermediateOutputPath>
-    <DefineConstants>TRACE;NETFX_4</DefineConstants>
+    <DefineConstants>TRACE;NETFX_4,BETA</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -126,7 +126,7 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\Net4.5\x64\bin\Debug\</OutputPath>
     <IntermediateOutputPath>..\Net4.5\x64\obj\Debug\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;NETFX_4</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETFX_4,BETA</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -136,7 +136,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>..\Net4.5\x64\bin\Release\</OutputPath>
     <IntermediateOutputPath>..\Net4.5\x64\obj\Release\</IntermediateOutputPath>
-    <DefineConstants>TRACE;NETFX_4</DefineConstants>
+    <DefineConstants>TRACE;NETFX_4,BETA</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -177,10 +177,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="Unity.Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Unity.Newtonsoft.Json.7.0.0.0\lib\net35-Client\Unity.Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="zxing, Version=0.14.0.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
       <HintPath>..\Net4.5\packages\ZXing.Net.0.14.0.1\lib\net40\zxing.dll</HintPath>
       <Private>True</Private>
