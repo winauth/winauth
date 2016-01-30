@@ -301,10 +301,12 @@ namespace WinAuth
 				{
 					this.Cookies = new CookieContainer();
 
+					// Net3.5 has a bug that prepends "." to domain, e.g. ".steamcommunity.com"
+					var uri = new Uri(COMMUNITY_BASE + "/");
 					var match = Regex.Match(token.Value<string>(), @"([^=]+)=([^;]*);?", RegexOptions.Singleline);
 					while (match.Success == true)
 					{
-						this.Cookies.Add(new Cookie(match.Groups[1].Value.Trim(), match.Groups[2].Value.Trim(), "/", COMMUNITY_DOMAIN));
+						this.Cookies.Add(uri, new Cookie(match.Groups[1].Value.Trim(), match.Groups[2].Value.Trim()));
 						match = match.NextMatch();
 					}
 				}
@@ -481,12 +483,14 @@ namespace WinAuth
 				// get session
 				if (this.Session.Cookies.Count == 0)
 				{
-					this.Session.Cookies.Add(new Cookie("mobileClientVersion", "3067969+%282.1.3%29", "/", COMMUNITY_DOMAIN));
-					this.Session.Cookies.Add(new Cookie("mobileClient", "android", "/", COMMUNITY_DOMAIN));
-					this.Session.Cookies.Add(new Cookie("steamid", "", "/", COMMUNITY_DOMAIN));
-					this.Session.Cookies.Add(new Cookie("steamLogin", "", "/", COMMUNITY_DOMAIN));
-					this.Session.Cookies.Add(new Cookie("Steam_Language", "english", "/", COMMUNITY_DOMAIN));
-					this.Session.Cookies.Add(new Cookie("dob", "", "/", COMMUNITY_DOMAIN));
+					// .Net3.5 has a bug in CookieContainer that prepends a "." to the domain, i.e. ".steamcommunity.com"
+					var cookieuri = new Uri(COMMUNITY_BASE + "/");
+					this.Session.Cookies.Add(cookieuri, new Cookie("mobileClientVersion", "3067969+%282.1.3%29"));
+					this.Session.Cookies.Add(cookieuri, new Cookie("mobileClient", "android"));
+					this.Session.Cookies.Add(cookieuri, new Cookie("steamid", ""));
+					this.Session.Cookies.Add(cookieuri, new Cookie("steamLogin", ""));
+					this.Session.Cookies.Add(cookieuri, new Cookie("Steam_Language", "english"));
+					this.Session.Cookies.Add(cookieuri, new Cookie("dob", ""));
 
 					NameValueCollection headers = new NameValueCollection();
 					headers.Add("X-Requested-With", "com.valvesoftware.android.steam.community");
@@ -661,14 +665,16 @@ namespace WinAuth
 				{
 					return false;
 				}
-				this.Session.Cookies.Add(new Cookie("steamLogin", this.Session.SteamId + "||" + token.Value<string>(), "/", COMMUNITY_BASE));
+
+				var cookieuri = new Uri(COMMUNITY_BASE + "/");
+				this.Session.Cookies.Add(cookieuri, new Cookie("steamLogin", this.Session.SteamId + "||" + token.Value<string>()));
 
 				token = json.SelectToken("response.token_secure");
 				if (token == null)
 				{
 					return false;
 				}
-				this.Session.Cookies.Add(new Cookie("steamLoginSecure", this.Session.SteamId + "||" + token.Value<string>(), "/", COMMUNITY_BASE));
+				this.Session.Cookies.Add(cookieuri, new Cookie("steamLoginSecure", this.Session.SteamId + "||" + token.Value<string>()));
 
 				// perform UMQ login
 				//response = GetString(API_LOGON, "POST", data);
@@ -1179,10 +1185,7 @@ namespace WinAuth
 				{
 					using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
 					{
-#if DEBUG
-						string s = response.ToString();
 						LogRequest(method, url, request.CookieContainer, data, response);
-#endif
 
 						// OK?
 						if (response.StatusCode != HttpStatusCode.OK)
@@ -1202,9 +1205,7 @@ namespace WinAuth
 
 							byte[] responsedata = ms.ToArray();
 
-#if DEBUG
 							LogRequest(method, url, request.CookieContainer, data, responsedata != null && responsedata.Length != 0 ? Encoding.UTF8.GetString(responsedata) : string.Empty);
-#endif
 
 							return responsedata;
 						}
@@ -1212,9 +1213,8 @@ namespace WinAuth
 				}
 				catch (Exception ex)
 				{
-#if DEBUG
 					LogRequest(method, url, request.CookieContainer, data, ex);
-#endif
+
 					if (ex is WebException && ((WebException)ex).Response != null && ((HttpWebResponse)((WebException)ex).Response).StatusCode == HttpStatusCode.Forbidden)
 					{
 						throw new UnauthorisedSteamRequestException(ex);
@@ -1224,7 +1224,6 @@ namespace WinAuth
 			}
 		}
 
-#if DEBUG
 		/// <summary>
 		/// Log an exception from a Request
 		/// </summary>
@@ -1248,7 +1247,9 @@ namespace WinAuth
 		/// <param name="response">HttpWebResponse object</param>
 		private static void LogRequest(string method, string url, CookieContainer cookies, NameValueCollection request, HttpWebResponse response)
 		{
+#if DEBUG
 			LogRequest(method, url, cookies, request, response.StatusCode.ToString() + " " + response.StatusDescription);
+#endif
 		}
 
 		/// <summary>
@@ -1300,12 +1301,16 @@ namespace WinAuth
 
 				string message = string.Format(@"{0} {1} {2} {3} {4}", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"), method, url, data.ToString(), (response != null ? response.Replace("\n", "\\n").Replace("\r", "") : string.Empty));
 
-				System.Diagnostics.Trace.TraceWarning(message);
+				//System.Diagnostics.Trace.TraceWarning(message);
 
-				File.AppendAllText(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "winauth.log"), message);
+				string dir = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WinAuth");
+				if (Directory.Exists(dir) == false)
+				{
+					dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+				}
+				File.AppendAllText(Path.Combine(dir, "winauth.log"), DateTime.Now.ToString("u") + " " + message + Environment.NewLine);
 			}
 		}
-#endif
 
 #endregion
 

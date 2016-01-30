@@ -273,7 +273,7 @@ namespace WinAuth
 				{
 					dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 				}
-				File.AppendAllText(Path.Combine(dir, "winauth.log"), msg = DateTime.Now.ToString("u") + " " + msg);
+				File.AppendAllText(Path.Combine(dir, "winauth.log"), DateTime.Now.ToString("u") + " " + msg + Environment.NewLine);
 			}
 			catch (Exception) { }
 		}

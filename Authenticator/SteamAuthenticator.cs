@@ -309,10 +309,7 @@ namespace WinAuth
 			try {
 				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
 				{
-#if DEBUG
-					string s = response.ToString();
 					LogRequest(method, url, cookies, data, response);
-#endif
 
 					// OK?
 					if (response.StatusCode != HttpStatusCode.OK)
@@ -324,19 +321,15 @@ namespace WinAuth
 					using (StreamReader responseStream = new StreamReader(response.GetResponseStream()))
 					{
 						string responseData = responseStream.ReadToEnd();
-#if DEBUG
 						LogRequest(method, url, cookies, data, responseData);
-#endif
-
 						return responseData;
 					}
 				}
 			}
 			catch (Exception ex)
 			{
-#if DEBUG
 				LogRequest(method, url, cookies, data, ex);
-#endif
+
 				if (ex is WebException && ((WebException)ex).Response != null && ((HttpWebResponse)((WebException)ex).Response).StatusCode == HttpStatusCode.Forbidden)
 				{
 					throw new UnauthorisedRequestException(ex);
@@ -758,7 +751,6 @@ namespace WinAuth
 			return "android:" + Guid.NewGuid().ToString();
 		}
 
-#if DEBUG
 		/// <summary>
 		/// Log an exception from a Request
 		/// </summary>
@@ -782,7 +774,10 @@ namespace WinAuth
 		/// <param name="response">HttpWebResponse object</param>
 		private static void LogRequest(string method, string url, CookieContainer cookies, NameValueCollection request, HttpWebResponse response)
 		{
+			// only log info if debug version
+#if DEBUG
 			LogRequest(method, url, cookies, request, response.StatusCode.ToString() + " " + response.StatusDescription);
+#endif
 		}
 
 		/// <summary>
@@ -834,12 +829,16 @@ namespace WinAuth
 
 				string message = string.Format(@"{0} {1} {2} {3} {4}", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"), method, url, data.ToString(), (response != null ? response.Replace("\n", "\\n").Replace("\r", "") : string.Empty));
 
-				System.Diagnostics.Trace.TraceWarning(message);
+				//System.Diagnostics.Trace.TraceWarning(message);
 
-				File.AppendAllText(Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "winauth.log"), message);
+				string dir = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WinAuth");
+				if (Directory.Exists(dir) == false)
+				{
+					dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+				}
+				File.AppendAllText(Path.Combine(dir, "winauth.log"), DateTime.Now.ToString("u") + " " + message + Environment.NewLine);
 			}
 		}
-#endif
 
 		/// <summary>
 		/// Our custom exception for the internal Http Request
