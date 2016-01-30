@@ -58,7 +58,7 @@ namespace WinAuth
 			// allowCopyCheckBox
 			// 
 			this.allowCopyCheckBox.AutoSize = true;
-			this.allowCopyCheckBox.Location = new System.Drawing.Point(23, 246);
+			this.allowCopyCheckBox.Location = new System.Drawing.Point(23, 266);
 			this.allowCopyCheckBox.Name = "allowCopyCheckBox";
 			this.allowCopyCheckBox.Size = new System.Drawing.Size(82, 15);
 			this.allowCopyCheckBox.TabIndex = 5;
@@ -73,14 +73,14 @@ namespace WinAuth
 			this.secretKeyField.Multiline = true;
 			this.secretKeyField.Name = "secretKeyField";
 			this.secretKeyField.SecretMode = false;
-			this.secretKeyField.Size = new System.Drawing.Size(361, 30);
+			this.secretKeyField.Size = new System.Drawing.Size(445, 50);
 			this.secretKeyField.SpaceOut = 0;
 			this.secretKeyField.TabIndex = 2;
 			// 
 			// qrImage
 			// 
 			this.qrImage.BackColor = System.Drawing.SystemColors.ControlDark;
-			this.qrImage.Location = new System.Drawing.Point(126, 317);
+			this.qrImage.Location = new System.Drawing.Point(160, 337);
 			this.qrImage.Name = "qrImage";
 			this.qrImage.Size = new System.Drawing.Size(150, 150);
 			this.qrImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -91,7 +91,7 @@ namespace WinAuth
 			// 
 			this.label4.Location = new System.Drawing.Point(23, 60);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(361, 147);
+			this.label4.Size = new System.Drawing.Size(445, 147);
 			this.label4.TabIndex = 1;
 			this.label4.Text = resources.GetString("label4.Text");
 			// 
@@ -99,7 +99,7 @@ namespace WinAuth
 			// 
 			this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnClose.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.btnClose.Location = new System.Drawing.Point(309, 467);
+			this.btnClose.Location = new System.Drawing.Point(393, 506);
 			this.btnClose.Name = "btnClose";
 			this.btnClose.Size = new System.Drawing.Size(75, 23);
 			this.btnClose.TabIndex = 4;
@@ -108,7 +108,7 @@ namespace WinAuth
 			// 
 			// metroLabel1
 			// 
-			this.metroLabel1.Location = new System.Drawing.Point(23, 281);
+			this.metroLabel1.Location = new System.Drawing.Point(23, 301);
 			this.metroLabel1.Name = "metroLabel1";
 			this.metroLabel1.Size = new System.Drawing.Size(361, 33);
 			this.metroLabel1.TabIndex = 1;
@@ -121,7 +121,7 @@ namespace WinAuth
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BorderStyle = MetroFramework.Forms.MetroFormBorderStyle.FixedSingle;
 			this.CancelButton = this.btnClose;
-			this.ClientSize = new System.Drawing.Size(407, 513);
+			this.ClientSize = new System.Drawing.Size(491, 552);
 			this.Controls.Add(this.allowCopyCheckBox);
 			this.Controls.Add(this.btnClose);
 			this.Controls.Add(this.secretKeyField);
