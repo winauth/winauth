@@ -39,6 +39,8 @@ using System.Windows.Forms;
 using MetroFramework;
 using MetroFramework.Forms;
 
+using NLog;
+
 using WinAuth.Resources;
 using System.Security;
 using System.Net;
@@ -185,6 +187,22 @@ namespace WinAuth
 							// set proxy [user[:pass]@]ip[:host]
 							i++;
 							proxy = args[i];
+							break;
+						case "-l":
+						case "--log":
+							i++;
+							FieldInfo fi = typeof(LogLevel).GetField(args[i], BindingFlags.Static | BindingFlags.IgnoreCase | BindingFlags.Public);
+							if (fi == null)
+							{
+								WinAuthForm.ErrorDialog(this, "Invalid parameter: log value: " + args[i] + " (must be error,info,debug,trace)");
+								System.Diagnostics.Process.GetCurrentProcess().Kill();
+							}
+							var loglevel = fi.GetValue(null) as LogLevel;
+							var target = NLog.LogManager.Configuration.AllTargets.Where(t => t.Name == null).FirstOrDefault();
+							if (target != null)
+							{
+								LogManager.Configuration.LoggingRules.Add(new NLog.Config.LoggingRule("*", loglevel, target));
+							}
 							break;
 						default:
               break;

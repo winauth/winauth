@@ -40,6 +40,8 @@ using Org.BouncyCastle.Crypto.Paddings;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Generators;
 
+using NLog;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -97,6 +99,11 @@ namespace WinAuth
 				'2', '3', '4', '5', '6', '7', '8', '9', 'B', 'C',
 				'D', 'F', 'G', 'H', 'J', 'K', 'M', 'N', 'P', 'Q',
 				'R', 'T', 'V', 'W', 'X', 'Y'};
+
+		/// <summary>
+		/// Create logger
+		/// </summary>
+		private static ILogger Logger = LogManager.GetCurrentClassLogger();
 
 		/// <summary>
 		/// Enrolling state
@@ -309,7 +316,7 @@ namespace WinAuth
 			try {
 				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
 				{
-					LogRequest(method, url, cookies, data, response);
+					LogRequest(method, url, cookies, data, response.StatusCode.ToString() + " " + response.StatusDescription);
 
 					// OK?
 					if (response.StatusCode != HttpStatusCode.OK)
@@ -328,7 +335,7 @@ namespace WinAuth
 			}
 			catch (Exception ex)
 			{
-				LogRequest(method, url, cookies, data, ex);
+				LogException(method, url, cookies, data, ex);
 
 				if (ex is WebException && ((WebException)ex).Response != null && ((HttpWebResponse)((WebException)ex).Response).StatusCode == HttpStatusCode.Forbidden)
 				{
@@ -759,25 +766,44 @@ namespace WinAuth
 		/// <param name="cookies">cookie container</param>
 		/// <param name="request">Request data</param>
 		/// <param name="ex">Thrown exception</param>
-		private static void LogRequest(string method, string url, CookieContainer cookies, NameValueCollection request, Exception ex)
+		private static void LogException(string method, string url, CookieContainer cookies, NameValueCollection request, Exception ex)
 		{
-			LogRequest(method, url, cookies, request, ex.Message + Environment.NewLine + ex.StackTrace);
-		}
+			StringBuilder data = new StringBuilder();
+			if (cookies != null)
+			{
+				foreach (Cookie cookie in cookies.GetCookies(new Uri(url)))
+				{
+					if (data.Length == 0)
+					{
+						data.Append("Cookies:");
+					}
+					else
+					{
+						data.Append("&");
+					}
+					data.Append(cookie.Name + "=" + cookie.Value);
+				}
+				data.Append(" ");
+			}
 
-		/// <summary>
-		/// Log a non 200 Request response
-		/// </summary>
-		/// <param name="method">Get or POST</param>
-		/// <param name="url">Request URL</param>
-		/// <param name="cookies">cookie container</param>
-		/// <param name="request">Request data</param>
-		/// <param name="response">HttpWebResponse object</param>
-		private static void LogRequest(string method, string url, CookieContainer cookies, NameValueCollection request, HttpWebResponse response)
-		{
-			// only log info if debug version
-#if DEBUG
-			LogRequest(method, url, cookies, request, response.StatusCode.ToString() + " " + response.StatusDescription);
-#endif
+			if (request != null)
+			{
+				foreach (var key in request.AllKeys)
+				{
+					if (data.Length == 0)
+					{
+						data.Append("Req:");
+					}
+					else
+					{
+						data.Append("&");
+					}
+					data.Append(key + "=" + request[key]);
+				}
+				data.Append(" ");
+			}
+
+			Logger.Error(ex, "{0}\t{1}\t{2}", method, url, data.ToString());
 		}
 
 		/// <summary>
@@ -790,54 +816,42 @@ namespace WinAuth
 		/// <param name="response">response body</param>
 		private static void LogRequest(string method, string url, CookieContainer cookies, NameValueCollection request, string response)
 		{
-			lock (typeof(Authenticator))
+			StringBuilder data = new StringBuilder();
+			if (cookies != null)
 			{
-				StringBuilder data = new StringBuilder();
-				if (cookies != null)
+				foreach (Cookie cookie in cookies.GetCookies(new Uri(url)))
 				{
-					foreach (Cookie cookie in cookies.GetCookies(new Uri(url)))
+					if (data.Length == 0)
 					{
-						if (data.Length == 0)
-						{
-							data.Append("Cookies:");
-						}
-						else
-						{
-							data.Append("&");
-						}
-						data.Append(cookie.Name + "=" + cookie.Value);
+						data.Append("Cookies:");
 					}
-					data.Append(" ");
-				}
-
-				if (request != null)
-				{
-					foreach (var key in request.AllKeys)
+					else
 					{
-						if (data.Length == 0)
-						{
-							data.Append("Req:");
-						}
-						else
-						{
-							data.Append("&");
-						}
-						data.Append(key + "=" + request[key]);
+						data.Append("&");
 					}
-					data.Append(" ");
+					data.Append(cookie.Name + "=" + cookie.Value);
 				}
-
-				string message = string.Format(@"{0} {1} {2} {3} {4}", DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"), method, url, data.ToString(), (response != null ? response.Replace("\n", "\\n").Replace("\r", "") : string.Empty));
-
-				//System.Diagnostics.Trace.TraceWarning(message);
-
-				string dir = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WinAuth");
-				if (Directory.Exists(dir) == false)
-				{
-					dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-				}
-				File.AppendAllText(Path.Combine(dir, "winauth.log"), DateTime.Now.ToString("u") + " " + message + Environment.NewLine);
+				data.Append(" ");
 			}
+
+			if (request != null)
+			{
+				foreach (var key in request.AllKeys)
+				{
+					if (data.Length == 0)
+					{
+						data.Append("Req:");
+					}
+					else
+					{
+						data.Append("&");
+					}
+					data.Append(key + "=" + request[key]);
+				}
+				data.Append(" ");
+			}
+
+			Logger.Info("{0}\t{1}\t{2}\t{3}", method, url, data.ToString(), (response != null ? response.Replace("\n", "\\n").Replace("\r", "") : string.Empty));
 		}
 
 		/// <summary>
