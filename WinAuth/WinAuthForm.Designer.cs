@@ -360,6 +360,7 @@
 			this.MinimumSize = new System.Drawing.Size(300, 180);
 			this.Name = "WinAuthForm";
 			this.Resizable = false;
+			this.ShadowType = MetroFormShadowType.None;
 			this.StyleManager = this.metroStyleManager;
 			this.Text = "WinAuth";
 			this.TopMost = true;
