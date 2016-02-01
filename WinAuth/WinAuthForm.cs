@@ -1343,6 +1343,72 @@ namespace WinAuth
 	  }
 
 		/// <summary>
+		/// Run an action on the authenticator
+		/// </summary>
+		/// <param name="auth">Authenticator to use</param>
+		/// <param name="action">Action to perform</param>
+		private void RunAction(WinAuthAuthenticator auth, WinAuthConfig.NotifyActions action)
+		{
+			// get the code
+			string code = null;
+			try
+			{
+				code = auth.CurrentCode;
+			}
+			catch (EncrpytedSecretDataException)
+			{
+				// if the authenticator is current protected we display the password window, get the code, and reprotect it
+				// with a bit of window jiggling to make sure we get focus and then put it back
+
+				// save the current window
+				var fgwindow = WinAPI.GetForegroundWindow();
+				Screen screen = Screen.FromHandle(fgwindow);
+				IntPtr activewindow = IntPtr.Zero;
+				if (this.Visible == true)
+				{
+					activewindow = WinAPI.SetActiveWindow(this.Handle);
+					BringToFront();
+				}
+
+				var item = authenticatorList.Items.Cast<AuthenticatorListitem>().Where(i => i.Authenticator == auth).FirstOrDefault();
+				code = authenticatorList.GetItemCode(item, screen);
+
+				// restore active window
+				if (activewindow != IntPtr.Zero)
+				{
+					WinAPI.SetActiveWindow(activewindow);
+				}
+				WinAPI.SetForegroundWindow(fgwindow);
+			}
+			if (code != null)
+			{
+				KeyboardSender keysend = new KeyboardSender(auth.HotKey != null ? auth.HotKey.Window : null);
+				string command = null;
+
+				if (action == WinAuthConfig.NotifyActions.CopyToClipboard)
+				{
+					command = "{COPY}";
+				}
+				else if (action == WinAuthConfig.NotifyActions.HotKey)
+				{
+					command = auth.HotKey != null ? auth.HotKey.Advanced : null;
+				}
+				else // if (this.Config.NotifyAction == WinAuthConfig.NotifyActions.Notification)
+				{
+					if (code.Length > 5)
+					{
+						code = code.Insert(code.Length / 2, " ");
+					}
+					notifyIcon.ShowBalloonTip(10000, auth.Name, code, ToolTipIcon.Info);
+				}
+				if (command != null)
+				{
+					keysend.SendKeys(this, command, code);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Put data into the clipboard
 		/// </summary>
 		/// <param name="data"></param>
@@ -1885,6 +1951,16 @@ namespace WinAuth
 		}
 
 		/// <summary>
+		/// Double click an item in the list
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="args"></param>
+		private void authenticatorList_DoubleClick(object source, AuthenticatorListDoubleClickEventArgs args)
+		{
+			RunAction(args.Authenticator, WinAuthConfig.NotifyActions.CopyToClipboard);
+		}
+
+		/// <summary>
 		/// Click in the main form
 		/// </summary>
 		/// <param name="sender"></param>
@@ -2112,6 +2188,7 @@ namespace WinAuth
 		private void loadNotifyMenu(ContextMenuStrip menu)
 		{
 			ToolStripMenuItem menuitem;
+			ToolStripMenuItem subitem;
 
 			menu.Items.Clear();
 
@@ -2139,17 +2216,38 @@ namespace WinAuth
 				var separator = new ToolStripSeparator();
 				separator.Name = "authenticatorOptionsSeparatorItem";
 				menu.Items.Add(separator);
-			}
 
-			if (this.Config != null)
-			{
-				menuitem = new ToolStripMenuItem(strings.MenuUseSystemTrayIcon);
-				menuitem.Name = "useSystemTrayIconOptionsMenuItem";
-				menuitem.Click += useSystemTrayIconOptionsMenuItem_Click;
+				menuitem = new ToolStripMenuItem(strings.DefaultAction);
+				menuitem.Name = "defaultActionOptionsMenuItem";
+				menu.Items.Add(menuitem);
+				subitem = new ToolStripMenuItem(strings.DefaultActionNotification);
+				subitem.Name = "defaultActionNotificationOptionsMenuItem";
+				subitem.Click += defaultActionNotificationOptionsMenuItem_Click;
+				menuitem.DropDownItems.Add(subitem);
+				subitem = new ToolStripMenuItem(strings.DefaultActionCopyToClipboard);
+				subitem.Name = "defaultActionCopyToClipboardOptionsMenuItem";
+				subitem.Click += defaultActionCopyToClipboardOptionsMenuItem_Click;
+				menuitem.DropDownItems.Add(subitem);
+				subitem = new ToolStripMenuItem(strings.DefaultActionHotkey);
+				subitem.Name = "defaultActionHotkeyOptionsMenuItem";
+				subitem.Click += defaultActionHotkeyOptionsMenuItem_Click;
+				menuitem.DropDownItems.Add(subitem);
 				menu.Items.Add(menuitem);
 
-				menu.Items.Add(new ToolStripSeparator());
+				separator = new ToolStripSeparator();
+				separator.Name = "authenticatorActionOptionsSeparatorItem";
+				menu.Items.Add(separator);
 			}
+
+			//if (this.Config != null)
+			//{
+			//	menuitem = new ToolStripMenuItem(strings.MenuUseSystemTrayIcon);
+			//	menuitem.Name = "useSystemTrayIconOptionsMenuItem";
+			//	menuitem.Click += useSystemTrayIconOptionsMenuItem_Click;
+			//	menu.Items.Add(menuitem);
+
+			//	menu.Items.Add(new ToolStripSeparator());
+			//}
 
 			menuitem = new ToolStripMenuItem(strings.MenuAbout + "...");
 			menuitem.Name = "aboutOptionsMenuItem";
@@ -2280,11 +2378,24 @@ namespace WinAuth
 				item.Visible = (this.Config.UseTrayIcon == true && this.Visible == false);
 			}
 
-			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "useSystemTrayIconOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "defaultActionOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
 			if (menuitem != null)
 			{
-				menuitem.Checked = this.Config.UseTrayIcon;
+				var subitem = menuitem.DropDownItems.Cast<ToolStripItem>().Where(t => t.Name == "defaultActionNotificationOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
+				subitem.Checked = (this.Config.NotifyAction == WinAuthConfig.NotifyActions.Notification);
+
+				subitem = menuitem.DropDownItems.Cast<ToolStripItem>().Where(t => t.Name == "defaultActionCopyToClipboardOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
+				subitem.Checked = (this.Config.NotifyAction == WinAuthConfig.NotifyActions.CopyToClipboard);
+
+				subitem = menuitem.DropDownItems.Cast<ToolStripItem>().Where(t => t.Name == "defaultActionHotkeyOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
+				subitem.Checked = (this.Config.NotifyAction == WinAuthConfig.NotifyActions.HotKey);
 			}
+
+			//menuitem = menu.Items.Cast<ToolStripItem>().Where(t => t.Name == "useSystemTrayIconOptionsMenuItem").FirstOrDefault() as ToolStripMenuItem;
+			//if (menuitem != null)
+			//{
+			//	menuitem.Checked = this.Config.UseTrayIcon;
+			//}
 		}
 
 		/// <summary>
@@ -2390,19 +2501,21 @@ namespace WinAuth
 			var item = authenticatorList.Items.Cast<AuthenticatorListitem>().Where(i => i.Authenticator == auth).FirstOrDefault();
 			if (item != null)
 			{
-				string code = authenticatorList.GetItemCode(item);
-				if (code != null)
-				{
-					if (auth.CopyOnCode)
-					{
-						auth.CopyCodeToClipboard(this, code);
-					}
-					if (code.Length > 5)
-					{
-						code = code.Insert(code.Length / 2, " ");
-					}
-					notifyIcon.ShowBalloonTip(10000, auth.Name, code, ToolTipIcon.Info);
-				}
+				RunAction(auth, this.Config.NotifyAction);
+
+				//string code = authenticatorList.GetItemCode(item);
+				//if (code != null)
+				//{
+				//	if (auth.CopyOnCode)
+				//	{
+				//		auth.CopyCodeToClipboard(this, code);
+				//	}
+				//	if (code.Length > 5)
+				//	{
+				//		code = code.Insert(code.Length / 2, " ");
+				//	}
+				//	notifyIcon.ShowBalloonTip(10000, auth.Name, code, ToolTipIcon.Info);
+				//}
 			}
 		}
 
@@ -2434,6 +2547,36 @@ namespace WinAuth
 		private void useSystemTrayIconOptionsMenuItem_Click(object sender, EventArgs e)
 		{
 			this.Config.UseTrayIcon = !this.Config.UseTrayIcon;
+		}
+		
+		/// <summary>
+		/// Click the default action options menu item
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void defaultActionNotificationOptionsMenuItem_Click(object sender, EventArgs e)
+		{
+			this.Config.NotifyAction = WinAuthConfig.NotifyActions.Notification;
+		}
+
+		/// <summary>
+		/// Click the default action options menu item
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void defaultActionCopyToClipboardOptionsMenuItem_Click(object sender, EventArgs e)
+		{
+			this.Config.NotifyAction = WinAuthConfig.NotifyActions.CopyToClipboard;
+		}
+
+		/// <summary>
+		/// Click the default action options menu item
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void defaultActionHotkeyOptionsMenuItem_Click(object sender, EventArgs e)
+		{
+			this.Config.NotifyAction = WinAuthConfig.NotifyActions.HotKey;
 		}
 
 		/// <summary>

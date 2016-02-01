@@ -141,9 +141,33 @@ namespace WinAuth
 	}
 
 	/// <summary>
+	/// Delegate for event when double click
+	/// </summary>
+	/// <param name="source"></param>
+	/// <param name="args"></param>
+	public delegate void AuthenticatorListDoubleClickHandler(object source, AuthenticatorListDoubleClickEventArgs args);
+
+	/// <summary>
+	/// Event arguments for double click
+	/// </summary>
+	public class AuthenticatorListDoubleClickEventArgs : EventArgs
+	{
+		public WinAuthAuthenticator Authenticator;
+
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public AuthenticatorListDoubleClickEventArgs(WinAuthAuthenticator auth)
+			: base()
+		{
+			Authenticator = auth;
+		}
+	}
+
+	/// <summary>
 	/// An owner draw listbox that displays wrapped authenticators
 	/// </summary>
-  public class AuthenticatorListBox : ListBox
+	public class AuthenticatorListBox : ListBox
   {
 		private const int MARGIN_LEFT = 4;
 		private const int MARGIN_TOP = 8;
@@ -179,6 +203,11 @@ namespace WinAuth
 		/// </summary>
 		[Category("Action")]
 		public event ScrollEventHandler Scrolled = null;
+
+		/// <summary>
+		/// Event handler for double click
+		/// </summary>
+		public new event AuthenticatorListDoubleClickHandler DoubleClick;
 
 		/// <summary>
 		/// Rename textbox
@@ -264,6 +293,19 @@ namespace WinAuth
 			int y = (e.Delta * this.ItemHeight) + MARGIN_TOP;
 			ScrollEventArgs sargs = new ScrollEventArgs(ScrollEventType.ThumbPosition, y, ScrollOrientation.VerticalScroll);
 			Scrolled(this, sargs);
+		}
+
+		/// <summary>
+		/// Copy the current code when double-clicking
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnMouseDoubleClick(MouseEventArgs e)
+		{
+			var item = this.CurrentItem;
+			if (item != null)
+			{
+				DoubleClick(this, new AuthenticatorListDoubleClickEventArgs(item.Authenticator));
+			}
 		}
 
 		#region Control Events

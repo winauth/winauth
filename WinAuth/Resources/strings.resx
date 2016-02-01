@@ -530,4 +530,16 @@ Now is a good time to make a backup. Click the Options icon and choose Export.</
   <data name="ConfirmTrades" xml:space="preserve">
     <value>Confirmations</value>
   </data>
+  <data name="DefaultAction" xml:space="preserve">
+    <value>Action</value>
+  </data>
+  <data name="DefaultActionCopyToClipboard" xml:space="preserve">
+    <value>Copy To Clipboard</value>
+  </data>
+  <data name="DefaultActionNotification" xml:space="preserve">
+    <value>Show Notification</value>
+  </data>
+  <data name="DefaultActionHotkey" xml:space="preserve">
+    <value>Simulate Hotkey</value>
+  </data>
 </root>

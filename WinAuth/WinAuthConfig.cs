@@ -49,10 +49,20 @@ namespace WinAuth
   {
     public static decimal CURRENTVERSION = decimal.Parse(System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString(2), System.Globalization.CultureInfo.InvariantCulture);
 
-    /// <summary>
-    /// Event handler fired when a config property is changed
-    /// </summary>
-    public event ConfigChangedHandler OnConfigChanged;
+		/// <summary>
+		/// Default actions for double-click or click system tray
+		/// </summary>
+		public enum NotifyActions
+		{
+			Notification = 0,
+			CopyToClipboard = 1,
+			HotKey = 2
+		}
+
+		/// <summary>
+		/// Event handler fired when a config property is changed
+		/// </summary>
+		public event ConfigChangedHandler OnConfigChanged;
 
     /// <summary>
     /// Current file name
@@ -129,10 +139,15 @@ namespace WinAuth
     /// </summary>
     private bool _useTrayIcon;
 
-    /// <summary>
-    /// Flag to set start with Windows
-    /// </summary>
-    private bool _startWithWindows;
+		/// <summary>
+		/// Default action when click in system tray
+		/// </summary>
+		private NotifyActions _notifyAction;
+
+		/// <summary>
+		/// Flag to set start with Windows
+		/// </summary>
+		private bool _startWithWindows;
 
 		/// <summary>
 		/// Flag to size form based on numebr authenticators
@@ -248,10 +263,29 @@ namespace WinAuth
       }
     }
 
-    /// <summary>
-    /// Get/set start with windows flag
-    /// </summary>
-    public bool StartWithWindows
+		/// <summary>
+		/// Default action when using the system tray or double-click
+		/// </summary>
+		public NotifyActions NotifyAction
+		{
+			get
+			{
+				return _notifyAction;
+			}
+			set
+			{
+				_notifyAction = value;
+				if (OnConfigChanged != null)
+				{
+					OnConfigChanged(this, new ConfigChangedEventArgs("NotifyAction"));
+				}
+			}
+		}
+
+		/// <summary>
+		/// Get/set start with windows flag
+		/// </summary>
+		public bool StartWithWindows
     {
       get
       {
@@ -705,6 +739,7 @@ namespace WinAuth
     {
       Version = CURRENTVERSION;
 			AutoSize = true;
+			NotifyAction = NotifyActions.Notification;
     }
 
 		public void OnWinAuthAuthenticatorChanged(WinAuthAuthenticator sender, WinAuthAuthenticatorChangedEventArgs e)
@@ -884,7 +919,18 @@ namespace WinAuth
               _useTrayIcon = reader.ReadElementContentAsBoolean();
               break;
 
-            case "startwithwindows":
+						case "notifyaction":
+							string s = reader.ReadElementContentAsString();
+							if (string.IsNullOrEmpty(s) == false)
+							{
+								try {
+									_notifyAction = (NotifyActions)Enum.Parse(typeof(NotifyActions), s, true);
+								}
+								catch (Exception) { }
+							}
+							break;
+
+						case "startwithwindows":
               _startWithWindows = reader.ReadElementContentAsBoolean();
               break;
 
@@ -1044,8 +1090,12 @@ namespace WinAuth
       writer.WriteStartElement("usetrayicon");
       writer.WriteValue(this.UseTrayIcon);
       writer.WriteEndElement();
-      //
-      writer.WriteStartElement("startwithwindows");
+			//
+			writer.WriteStartElement("notifyaction");
+			writer.WriteValue(Enum.GetName(typeof(NotifyActions), this.NotifyAction));
+			writer.WriteEndElement();
+			//
+			writer.WriteStartElement("startwithwindows");
       writer.WriteValue(this.StartWithWindows);
       writer.WriteEndElement();
 			//

@@ -314,6 +314,7 @@
 			this.authenticatorList.Visible = false;
 			this.authenticatorList.ItemRemoved += new WinAuth.AuthenticatorListItemRemovedHandler(this.authenticatorList_ItemRemoved);
 			this.authenticatorList.Reordered += new WinAuth.AuthenticatorListReorderedHandler(this.authenticatorList_Reordered);
+			this.authenticatorList.DoubleClick += new WinAuth.AuthenticatorListDoubleClickHandler(this.authenticatorList_DoubleClick);
 			// 
 			// metroStyleManager
 			// 
@@ -384,7 +385,7 @@
 
     }
 
-    #endregion
+		#endregion
 
 		private MetroFramework.Components.MetroStyleManager metroStyleManager;
 		private MetroFramework.Components.MetroStyleExtender metroStyleExtender;

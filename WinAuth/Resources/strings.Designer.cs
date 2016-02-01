@@ -763,6 +763,42 @@ namespace WinAuth.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Action.
+        /// </summary>
+        internal static string DefaultAction {
+            get {
+                return ResourceManager.GetString("DefaultAction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy To Clipboard.
+        /// </summary>
+        internal static string DefaultActionCopyToClipboard {
+            get {
+                return ResourceManager.GetString("DefaultActionCopyToClipboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Simulate Hotkey.
+        /// </summary>
+        internal static string DefaultActionHotkey {
+            get {
+                return ResourceManager.GetString("DefaultActionHotkey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show Notification.
+        /// </summary>
+        internal static string DefaultActionNotification {
+            get {
+                return ResourceManager.GetString("DefaultActionNotification", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Delete.
         /// </summary>
         internal static string Delete {
