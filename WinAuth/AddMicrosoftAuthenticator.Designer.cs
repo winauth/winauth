@@ -129,7 +129,7 @@ namespace WinAuth
 			this.step9Label.Name = "step9Label";
 			this.step9Label.Size = new System.Drawing.Size(425, 26);
 			this.step9Label.TabIndex = 1;
-			this.step9Label.Text = "9. Enter the follow code to verify it is working";
+			this.step9Label.Text = "9. Enter the following code to verify it is working.";
 			// 
 			// label2
 			// 
@@ -271,7 +271,7 @@ namespace WinAuth
 			this.step8Label.Name = "step8Label";
 			this.step8Label.Size = new System.Drawing.Size(51, 25);
 			this.step8Label.TabIndex = 11;
-			this.step8Label.Text = "8. Click";
+			this.step8Label.Text = "8. Click.";
 			// 
 			// AddMicrosoftAuthenticator
 			// 

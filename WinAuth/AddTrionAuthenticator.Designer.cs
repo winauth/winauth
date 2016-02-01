@@ -131,7 +131,7 @@
 			this.label1.Size = new System.Drawing.Size(431, 58);
 			this.label1.TabIndex = 0;
 			this.label1.Text = "1. Go to www.trionworlds.com and login to your account.\r\n2. Click the Security ta" +
-    "b, and \"Add the RIFT Moble Authenticator\". You must have already added your secr" +
+    "b, and \"Add the RIFT Mobile Authenticator\". You must have already added your secr" +
     "et questions and answers.";
 			// 
 			// restoreAnswer2Field

@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="label8.Text" xml:space="preserve">
-    <value>5. If you will ever need to restore your authenticator, you will need to provide your account email, password, secret answers and the device ID.
+    <value>5. If you will ever need to restore your authenticator, you will need to provide your account email, password, secret answers and the Device ID.
 
 6. Write this Device ID down and keep it somewhere safe.</value>
   </data>

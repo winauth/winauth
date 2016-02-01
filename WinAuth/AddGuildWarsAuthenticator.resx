@@ -119,8 +119,8 @@
   </resheader>
   <data name="step1Label.Text" xml:space="preserve">
     <value>1. Login to your GuildWars2 account.
-2. Click the "Security" option
-3. Click the "Set Up The App" button
+2. Click the "Security" option.
+3. Click the "Set Up The App" button.
 4. Optionally, add the app to your smartphone (if you want it there too). Click Next.
 5. Enter your Secret Code below</value>
   </data>

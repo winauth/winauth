@@ -118,12 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="label2.Text" xml:space="preserve">
-    <value>1. Login into your Microsoft account at account.live.com
-2. Click the Security Info option
+    <value>1. Login into your Microsoft account at account.live.com.
+2. Click the Security Info option.
 3. Click "Set up two-step verification". If you don't see it, you must first verify an alternative email address.
 4. Click Next.
 5. Select the Authenticator App. You could also download MIcrosoft's Authenticator app onto your smartphone so you can set it up on both.
-6. Click "I can't see the bar code" underneath the QR code image
+6. Click "I can't see the bar code" underneath the QR code image.
 7. Enter the Secret Key in the field below:</value>
   </data>
   <metadata name="newAuthenticatorTimer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

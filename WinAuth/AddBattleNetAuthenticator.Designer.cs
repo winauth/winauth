@@ -124,7 +124,7 @@
 			// 
 			// enrollAuthenticatorButton
 			// 
-			this.enrollAuthenticatorButton.Location = new System.Drawing.Point(69, 125);
+			this.enrollAuthenticatorButton.Location = new System.Drawing.Point(126, 125);
 			this.enrollAuthenticatorButton.Name = "enrollAuthenticatorButton";
 			this.enrollAuthenticatorButton.Size = new System.Drawing.Size(166, 23);
 			this.enrollAuthenticatorButton.TabIndex = 0;
@@ -147,9 +147,9 @@
 			// 
 			this.lnewLabel4.Location = new System.Drawing.Point(7, 126);
 			this.lnewLabel4.Name = "lnewLabel4";
-			this.lnewLabel4.Size = new System.Drawing.Size(51, 25);
+			this.lnewLabel4.Size = new System.Drawing.Size(66, 25);
 			this.lnewLabel4.TabIndex = 1;
-			this.lnewLabel4.Text = "4. Click";
+			this.lnewLabel4.Text = "4.";
 			// 
 			// label2
 			// 
@@ -419,7 +419,7 @@
 			// 
 			// newRestoreCodeField
 			// 
-			this.newRestoreCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.newRestoreCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
 			this.newRestoreCodeField.Location = new System.Drawing.Point(126, 257);
 			this.newRestoreCodeField.Multiline = true;
 			this.newRestoreCodeField.Name = "newRestoreCodeField";
@@ -430,7 +430,7 @@
 			// 
 			// newLoginCodeField
 			// 
-			this.newLoginCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.newLoginCodeField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
 			this.newLoginCodeField.Location = new System.Drawing.Point(126, 218);
 			this.newLoginCodeField.Multiline = true;
 			this.newLoginCodeField.Name = "newLoginCodeField";
@@ -441,7 +441,7 @@
 			// 
 			// newSerialNumberField
 			// 
-			this.newSerialNumberField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.newSerialNumberField.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
 			this.newSerialNumberField.Location = new System.Drawing.Point(126, 189);
 			this.newSerialNumberField.Multiline = true;
 			this.newSerialNumberField.Name = "newSerialNumberField";

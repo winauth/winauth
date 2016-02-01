@@ -444,7 +444,7 @@
 			this.revocationcodeText.Name = "revocationcodeText";
 			this.revocationcodeText.Size = new System.Drawing.Size(442, 65);
 			this.revocationcodeText.TabIndex = 17;
-			this.revocationcodeText.Text = "This is your Recovery code.  It can be used to remove the authenticator from yo" +
+			this.revocationcodeText.Text = "This is your Recovery code. It can be used to remove the authenticator from yo" +
     "ur account if you ever lose it. Please write it down now and put it somewhere sa" +
     "fe.";
 			// 
