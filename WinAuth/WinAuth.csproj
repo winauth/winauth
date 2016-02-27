@@ -14,7 +14,7 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <AssemblyVersion>3.4.16.21</AssemblyVersion>
+    <AssemblyVersion>3.4.17.2</AssemblyVersion>
     <PrimaryVersionType>AssemblyVersionAttribute</PrimaryVersionType>
     <AssemblyInfoFilePath>Properties\AssemblyInfo.cs</AssemblyInfoFilePath>
     <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
@@ -393,9 +393,11 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AddGuildWarsAuthenticator.resx">
       <DependentUpon>AddGuildWarsAuthenticator.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="AddMicrosoftAuthenticator.resx">
       <DependentUpon>AddMicrosoftAuthenticator.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Notification.resx">
       <DependentUpon>Notification.cs</DependentUpon>
