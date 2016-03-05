@@ -20,11 +20,7 @@ This version adds support for Steam trading confirmations, importing from Androi
 
 <img src="https://winauth.com/wp-content/uploads/2013/07/steamconf1.png" alt="WinAuth 3.4 Steam Trading">
 
-###Portable Version (Windows 7 / .Net 3.5)
-
-There is now also a .Net 3.5 build of WinAuth, which can be run on Windows 7 installations "out of the box".
-
-[WinAuth-3.4.18 BETA for .NET 3.5](https://winauth.com/downloads/3.x/WinAuth-3.4.18-NET35.zip)
+There is now also a [.Net 3.5 build of WinAuth](https://winauth.com/downloads/3.x/WinAuth-3.4.18-NET35.zip), which can be run on Windows 7 installations "out of the box".
 
 ##WinAuth 3.3 (latest stable)
 
