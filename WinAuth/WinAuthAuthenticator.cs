@@ -690,7 +690,7 @@ namespace WinAuth
 		/// See https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
 		/// </summary>
 		/// <returns>string</returns>
-		public virtual string ToUrl()
+		public virtual string ToUrl(bool compat = false)
 		{
 			string type = "totp";
 			string extraparams = string.Empty;
@@ -718,8 +718,11 @@ namespace WinAuth
 			}
 			else if (this.AuthenticatorData is SteamAuthenticator)
 			{
-				extraparams += "&deviceid=" + HttpUtility.UrlEncode(((SteamAuthenticator)this.AuthenticatorData).DeviceId);
-				extraparams += "&data=" + HttpUtility.UrlEncode(((SteamAuthenticator)this.AuthenticatorData).SteamData);
+				if (compat == false)
+				{
+					extraparams += "&deviceid=" + HttpUtility.UrlEncode(((SteamAuthenticator)this.AuthenticatorData).DeviceId);
+					extraparams += "&data=" + HttpUtility.UrlEncode(((SteamAuthenticator)this.AuthenticatorData).SteamData);
+				}
 			}
 			else if (this.AuthenticatorData is HOTPAuthenticator)
 			{
@@ -730,7 +733,7 @@ namespace WinAuth
 			string secret = HttpUtility.UrlEncode(Base32.getInstance().Encode(this.AuthenticatorData.SecretKey));
 
 			// add the skin
-			if (string.IsNullOrEmpty(this.Skin) == false)
+			if (string.IsNullOrEmpty(this.Skin) == false && compat == false)
 			{
 				if (this.Skin.StartsWith("base64:") == true)
 				{
