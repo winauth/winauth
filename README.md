@@ -16,11 +16,11 @@ Please download 3.3. if you are just looking for WinAuth and not wanting to test
 
 This version adds support for Steam trading confirmations, importing from Android files and SteamDesktopAuthenticator.
 
-[WinAuth-3.4.18 BETA](https://winauth.com/downloads/3.x/WinAuth-3.4.18.zip)
+[WinAuth-3.4.19 BETA](https://winauth.com/downloads/3.x/WinAuth-3.4.19.zip)
 
 <img src="https://winauth.com/wp-content/uploads/2013/07/steamconf1.png" alt="WinAuth 3.4 Steam Trading">
 
-There is now also a [.Net 3.5 build of WinAuth](https://winauth.com/downloads/3.x/WinAuth-3.4.18-NET35.zip), which can be run on Windows 7 installations "out of the box".
+There is now also a [.Net 3.5 build of WinAuth](https://winauth.com/downloads/3.x/WinAuth-3.4.19-NET35.zip), which can be run on Windows 7 installations "out of the box".
 
 ##WinAuth 3.3 (latest stable)
 
