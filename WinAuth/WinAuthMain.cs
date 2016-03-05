@@ -64,7 +64,11 @@ namespace WinAuth
 		/// <summary>
 		/// URL to get latest information
 		/// </summary>
+#if BETA
+		public const string WINAUTH_UPDATE_URL = "https://winauth.com/current-beta-version.xml";
+#else
 		public const string WINAUTH_UPDATE_URL = "https://winauth.com/current-version.xml";
+#endif
 
 		/// <summary>
 		/// Set of inbuilt icons and authenticator types

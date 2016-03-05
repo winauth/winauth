@@ -95,7 +95,11 @@ namespace WinAuth
 		/// <summary>
 		/// Registry key value name for the last version we found when we checked
 		/// </summary>
+#if BETA
+		protected const string WINAUTHREGKEY_LATESTVERSION = WinAuthHelper.WINAUTHREGKEY + "\\LatestBetaVersion";
+#else
 		protected const string WINAUTHREGKEY_LATESTVERSION = WinAuthHelper.WINAUTHREGKEY + "\\LatestVersion";
+#endif
 
 		/// <summary>
 		/// The interval for checking new versions. Null is never, Zero is each time, else a period.
@@ -232,7 +236,7 @@ namespace WinAuth
 			}
 		}
 
-		#endregion
+#endregion
 
 		/// <summary>
 		/// Start an AutoCheck thread that will periodically check for a new version and make a callback
@@ -410,7 +414,12 @@ namespace WinAuth
 				{
 					latestversion.Released = released;
 				}
+#if NETFX_4
 				node = xml.SelectSingleNode("//url");
+#endif
+#if NETFX_3
+				node = xml.SelectSingleNode("//url35");
+#endif
 				if (node != null && string.IsNullOrEmpty(node.InnerText) == false)
 				{
 					latestversion.Url = node.InnerText;
