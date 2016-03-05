@@ -877,6 +877,15 @@ namespace WinAuth
 						{
 							ConfirmationErrorEvent(this, "Failed to read confirmations", ex);
 						}
+						else
+						{
+							// try and reset the session
+							try
+							{
+								this.Refresh();
+							}
+							catch (Exception) { }
+						}
 					}
 				}
 			}
