@@ -985,7 +985,6 @@ namespace WinAuth
 				return;
 			}
 
-#if NETFX_4
 			foreach (var auth in this.Config)
 			{
 				if (auth.AuthenticatorData != null && auth.AuthenticatorData is SteamAuthenticator && ((SteamAuthenticator)auth.AuthenticatorData).Client != null)
@@ -995,7 +994,6 @@ namespace WinAuth
 					client.ConfirmationErrorEvent -= SteamClient_ConfirmationErrorEvent;
 				}
 			}
-#endif
 		}
 
 		/// <summary>
@@ -1023,6 +1021,17 @@ namespace WinAuth
 					}
 				}
 			})).Start();
+#endif
+#if NETFX_3
+			foreach (var auth in this.Config)
+			{
+				if (auth.AuthenticatorData != null && auth.AuthenticatorData is SteamAuthenticator)
+				{
+					var client = ((SteamAuthenticator)auth.AuthenticatorData).GetClient();
+					client.ConfirmationEvent += SteamClient_ConfirmationEvent;
+					client.ConfirmationErrorEvent += SteamClient_ConfirmationErrorEvent;
+				}
+			}
 #endif
 		}
 
@@ -1105,17 +1114,20 @@ namespace WinAuth
 
 			var auth = this.Config.Cast<WinAuthAuthenticator>().Where(a => a.AuthenticatorData is SteamAuthenticator && ((SteamAuthenticator)a.AuthenticatorData).Serial == steam.Authenticator.Serial).FirstOrDefault();
 
-			string title;
-			string message;
+			string title = null;
+			string message = null;
 			bool openOnClick = false;
 			int extraHeight = 0;
 
-			if (action == SteamClient.PollerAction.AutoConfirm)
+			if (action == SteamClient.PollerAction.AutoConfirm || action == SteamClient.PollerAction.SilentAutoConfirm)
 			{
 				if (steam.ConfirmTrade(newconfirmation.Id, newconfirmation.Key, true) == true)
 				{
-					title = "Confirmed";
-					message = string.Format("<h1>{0}</h1><table width=250 cellspacing=0 cellpadding=0 border=0><tr><td width=40><img src=\"{1}\" /></td><td width=210>{2}<br/>{3}</td></tr></table>", auth.Name, newconfirmation.Image, newconfirmation.Details, newconfirmation.Traded);
+					if (action != SteamClient.PollerAction.SilentAutoConfirm)
+					{
+						title = "Confirmed";
+						message = string.Format("<h1>{0}</h1><table width=250 cellspacing=0 cellpadding=0 border=0><tr><td width=40><img src=\"{1}\" /></td><td width=210>{2}<br/>{3}</td></tr></table>", auth.Name, newconfirmation.Image, newconfirmation.Details, newconfirmation.Traded);
+					}
 				}
 				else
 				{
@@ -1131,14 +1143,17 @@ namespace WinAuth
 				openOnClick = true;
 			}
 
-			// show the Notification window in the correct context
-			this.Invoke(new ShowNotificationCallback(ShowNotification), new object[] {
-				auth,
-				title,
-				message,
-				openOnClick,
-				extraHeight
-			});
+			if (title != null)
+			{
+				// show the Notification window in the correct context
+				this.Invoke(new ShowNotificationCallback(ShowNotification), new object[] {
+					auth,
+					title,
+					message,
+					openOnClick,
+					extraHeight
+				});
+			}
 		}
 
 #endregion

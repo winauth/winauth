@@ -444,9 +444,9 @@
 			this.revocationcodeText.Name = "revocationcodeText";
 			this.revocationcodeText.Size = new System.Drawing.Size(442, 65);
 			this.revocationcodeText.TabIndex = 17;
-			this.revocationcodeText.Text = "This is your Recovery code. It can be used to remove the authenticator from yo" +
-    "ur account if you ever lose it. Please write it down now and put it somewhere sa" +
-    "fe.";
+			this.revocationcodeText.Text = "This is your Recovery code. It can be used to remove the authenticator from your " +
+    "account if you ever lose it. Please write it down now and put it somewhere safe." +
+    "";
 			// 
 			// revocationcodeField
 			// 
@@ -551,8 +551,8 @@
 			this.metroLabel1.Size = new System.Drawing.Size(449, 90);
 			this.metroLabel1.TabIndex = 2;
 			this.metroLabel1.Text = "Your authenticator has been added to your Steam account.\r\n\r\nPlease make sure you " +
-    "have copied down your recovery code so you can remove your authenticator from " +
-    "your Steam account in the future.\r\n";
+    "have copied down your recovery code so you can remove your authenticator from yo" +
+    "ur Steam account in the future.\r\n";
 			// 
 			// importAndroidTab
 			// 

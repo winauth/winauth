@@ -43,7 +43,6 @@ namespace WinAuth
 		[DllImport("wininet.dll", CharSet = CharSet.Auto, SetLastError = true)]		
 		static extern bool InternetSetCookie(string lpszUrlName, string lpszCookieName, string lpszCookieData);
 
-#if NETFX_4
 		class PollerActionItem
 		{
 			public string Text;
@@ -54,7 +53,6 @@ namespace WinAuth
 				return this.Text;
 			}
 		}
-#endif
 		 
 		/// <summary>
 		/// Form instantiation
@@ -120,18 +118,17 @@ namespace WinAuth
 			browserContainer.Height = 0;
 			tradesContainer.Height += m_browserHeight;
 
-#if NETFX_4
 			this.pollAction.Items.Clear();
 
 			BindingList<object> items = new BindingList<object>();
 			items.Add(new PollerActionItem { Text = "Show Notification", Value = SteamClient.PollerAction.Notify });
 			items.Add(new PollerActionItem { Text = "Auto-Confirm", Value = SteamClient.PollerAction.AutoConfirm });
+			items.Add(new PollerActionItem { Text = "Auto-Confirm (silently)", Value = SteamClient.PollerAction.SilentAutoConfirm });
 
 			this.pollAction.DataSource = items;
 			this.pollAction.DisplayMember = "Text";
 			//this.pollAction.ValueMember = "Value";
 			this.pollAction.SelectedIndex = 0;
-#endif
 
 			m_tabPages.Clear();
 			for (var i = 0; i < tabs.TabPages.Count; i++)
@@ -424,7 +421,7 @@ namespace WinAuth
 			if (m_loaded == true
 				&& pollAction.SelectedValue != null
 				&& pollAction.SelectedValue is SteamClient.PollerAction
-				&& (SteamClient.PollerAction)pollAction.SelectedValue == SteamClient.PollerAction.AutoConfirm
+				&& ((SteamClient.PollerAction)pollAction.SelectedValue == SteamClient.PollerAction.AutoConfirm || (SteamClient.PollerAction)pollAction.SelectedValue == SteamClient.PollerAction.SilentAutoConfirm)
 				&& AutoWarned == false)
 			{
 				if (WinAuthForm.ConfirmDialog(this, "WARNING: Using auto-confirm will automatically confirm all new Confirmations on your "
@@ -627,7 +624,6 @@ namespace WinAuth
 					{
 						this.logoutButton.Visible = true;
 
-#if NETFX_4
 						if (steam.Session.Confirmations != null)
 						{
 							this.pollCheckbox.Checked = true;
@@ -640,7 +636,7 @@ namespace WinAuth
 								{
 									selected = i;
 
-									if (steam.Session.Confirmations.Action == SteamClient.PollerAction.AutoConfirm)
+									if (steam.Session.Confirmations.Action == SteamClient.PollerAction.AutoConfirm || steam.Session.Confirmations.Action == SteamClient.PollerAction.SilentAutoConfirm)
 									{
 										AutoWarned = true;
 									}
@@ -656,7 +652,6 @@ namespace WinAuth
 						}
 
 						this.pollPanel.Visible = true;
-#endif
 					}
 
 					break;
@@ -879,7 +874,6 @@ namespace WinAuth
 		/// </summary>
 		private void SetPolling()
 		{
-#if NETFX_4
 			// ignore setup changes
 			if (m_loaded == false || pollAction.SelectedValue == null)
 			{
@@ -912,7 +906,6 @@ namespace WinAuth
 					this.Authenticator.MarkChanged();
 				}
 			}
-#endif
 		}
 
 #endregion

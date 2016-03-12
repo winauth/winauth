@@ -210,6 +210,11 @@ namespace WinAuth
 					this.SessionData = null;
 				}
 
+				if (Client != null && Logger != null)
+				{
+					Logger.Debug("Steam data: {0}, Session:{1}", SteamData ?? string.Empty, SessionData ?? string.Empty);
+				}
+
 				// this is the key |  serial | deviceid
 				return base.SecretData
 					+ "|" + Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(Serial))
