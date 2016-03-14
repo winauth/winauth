@@ -371,16 +371,6 @@ namespace WinAuth
 		}
 
 		/// <summary>
-		/// Check the remember me login box
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		private void rememberBox_CheckedChanged(object sender, EventArgs e)
-		{
-			rememberPermBox.Visible = rememberBox.Checked;
-		}
-
-		/// <summary>
 		/// Refresh the list
 		/// </summary>
 		/// <param name="sender"></param>
@@ -403,7 +393,7 @@ namespace WinAuth
 			if (String.IsNullOrEmpty(AuthenticatorData.SessionData) == false)
 			{
 				AuthenticatorData.SessionData = null;
-				AuthenticatorData.PermSession = false;
+				//AuthenticatorData.PermSession = false;
 				this.Authenticator.MarkChanged();
 			}
 
@@ -534,7 +524,7 @@ namespace WinAuth
 						}
 
 						AuthenticatorData.SessionData = (rememberBox.Checked == true ? steam.Session.ToString() : null);
-						AuthenticatorData.PermSession = (rememberBox.Checked == true && rememberPermBox.Checked == true);
+						//AuthenticatorData.PermSession = (rememberBox.Checked == true && rememberPermBox.Checked == true);
 						this.Authenticator.MarkChanged();
 					}
 

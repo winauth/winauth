@@ -199,6 +199,7 @@ namespace WinAuth
 			public string Id;
 			public string Key;
 			public bool Offline;
+			public bool IsNew;
 			public string Image;
 			public string Details;
 			public string Traded;
@@ -683,16 +684,16 @@ namespace WinAuth
 		/// <returns>true if successful</returns>
 		public bool Refresh()
 		{
-			var data = new NameValueCollection();
-			data.Add("access_token", this.Session.OAuthToken);
-			string response = GetString(API_GETWGTOKEN, "POST", data);
-			if (string.IsNullOrEmpty(response) == true)
-			{
-				return false;
-			}
-
 			try
 			{
+				var data = new NameValueCollection();
+				data.Add("access_token", this.Session.OAuthToken);
+				string response = GetString(API_GETWGTOKEN, "POST", data);
+				if (string.IsNullOrEmpty(response) == true)
+				{
+					return false;
+				}
+
 				var json = JObject.Parse(response);
 				var token = json.SelectToken("response.token");
 				if (token == null)
@@ -759,6 +760,32 @@ namespace WinAuth
 			return false;
 		}
 
+		/// <summary>
+		/// Delegate for Confirmation event
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="newconfirmation">new Confirmation</param>
+		/// <param name="action">action to be taken</param>
+		public delegate void ConfirmationDelegate(object sender, Confirmation newconfirmation, PollerAction action);
+
+		/// <summary>
+		/// Delegate for Confirmation error
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="message">error message</param>
+		/// <param name="ex">optional exception</param>
+		public delegate void ConfirmationErrorDelegate(object sender, string message, Exception ex);
+
+		/// <summary>
+		/// Event fired for new Confirmation
+		/// </summary>
+		public event ConfirmationDelegate ConfirmationEvent;
+
+		/// <summary>
+		/// Event fired for error on polling
+		/// </summary>
+		public event ConfirmationErrorDelegate ConfirmationErrorEvent;
+
 #if NETFX_4
 		/// <summary>
 		/// Stop the current poller
@@ -799,95 +826,59 @@ namespace WinAuth
 		}
 
 		/// <summary>
-		/// Delegate for Confirmation event
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="newconfirmation">new Confirmation</param>
-		/// <param name="action">action to be taken</param>
-		public delegate void ConfirmationDelegate(object sender, Confirmation newconfirmation, PollerAction action);
-
-		/// <summary>
-		/// Delegate for Confirmation error
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="message">error message</param>
-		/// <param name="ex">optional exception</param>
-		public delegate void ConfirmationErrorDelegate(object sender, string message, Exception ex);
-
-		/// <summary>
-		/// Event fired for new Confirmation
-		/// </summary>
-		public event ConfirmationDelegate ConfirmationEvent;
-
-		/// <summary>
-		/// Event fired for error on polling
-		/// </summary>
-		public event ConfirmationErrorDelegate ConfirmationErrorEvent;
-
-		/// <summary>
 		/// Confirmation polling task
 		/// </summary>
 		/// <param name="cancel"></param>
 		public async void PollConfirmations(CancellationToken cancel)
 		{
-			lock (this.Session.Confirmations)
-			{
-				if (this.Session.Confirmations.Ids == null)
-				{
-					try
-					{
-						// this will update the session
-						GetConfirmations();
-					}
-					catch (InvalidSteamRequestException)
-					{
-						// ignore in case of Steam timeout
-					}
-				}
-			}
+			//lock (this.Session.Confirmations)
+			//{
+			//	if (this.Session.Confirmations.Ids == null)
+			//	{
+			//		try
+			//		{
+			//			// this will update the session
+			//			GetConfirmations();
+			//		}
+			//		catch (InvalidSteamRequestException)
+			//		{
+			//			// ignore in case of Steam timeout
+			//		}
+			//	}
+			//}
 
 			try
 			{
 				int retryCount = 0;
 				while (!cancel.IsCancellationRequested)
 				{
-					await Task.Delay(this.Session.Confirmations.Duration * 60 * 1000, cancel);
-					if (cancel.IsCancellationRequested == true)
-					{
-						break;
-					}
-
 					try
 					{
-						List<string> currentIds;
-						lock (this.Session.Confirmations)
-						{
-							currentIds = this.Session.Confirmations.Ids;
-						}
+						//List<string> currentIds;
+						//lock (this.Session.Confirmations)
+						//{
+						//	currentIds = this.Session.Confirmations.Ids;
+						//}
 
 						var confs = GetConfirmations();
 
 						// check for new ids
-						List<string> newIds;
-						if (currentIds == null)
-						{
-							newIds = confs.Select(t => t.Id).ToList();
-						}
-						else
-						{
-							newIds = confs.Select(t => t.Id).Except(currentIds).ToList();
-						}
+						//List<string> newIds;
+						//if (currentIds == null)
+						//{
+						//	newIds = confs.Select(t => t.Id).ToList();
+						//}
+						//else
+						//{
+						//	newIds = confs.Select(t => t.Id).Except(currentIds).ToList();
+						//}
 
 						// fire events if subscriber
-						if (ConfirmationEvent != null && newIds.Count() != 0)
+						if (ConfirmationEvent != null /* && newIds.Count() != 0 */)
 						{
-							foreach (var confId in newIds)
+							foreach (var conf in confs)
 							{
-								var newConf = confs.Where(t => t.Id == confId).FirstOrDefault();
-								if (newConf != null)
-								{
-									ConfirmationEvent(this, newConf, this.Session.Confirmations.Action);
-								}
+								ConfirmationEvent(this, conf, this.Session.Confirmations.Action);
 							}
 						}
 
@@ -914,6 +905,8 @@ namespace WinAuth
 							catch (Exception) { }
 						}
 					}
+
+					await Task.Delay(this.Session.Confirmations.Duration * 60 * 1000, cancel);
 				}
 			}
 			catch (TaskCanceledException)
@@ -965,134 +958,7 @@ namespace WinAuth
 			thread.IsBackground = true;
 			thread.Start(_pollerCancellation);
 		}
-#endif 
 
-		/// <summary>
-		/// Delegate for Confirmation event
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="newconfirmation">new Confirmation</param>
-		/// <param name="action">action to be taken</param>
-		public delegate void ConfirmationDelegate(object sender, Confirmation newconfirmation, PollerAction action);
-
-		/// <summary>
-		/// Delegate for Confirmation error
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="message">error message</param>
-		/// <param name="ex">optional exception</param>
-		public delegate void ConfirmationErrorDelegate(object sender, string message, Exception ex);
-
-		/// <summary>
-		/// Event fired for new Confirmation
-		/// </summary>
-		public event ConfirmationDelegate ConfirmationEvent;
-
-		/// <summary>
-		/// Event fired for error on polling
-		/// </summary>
-		public event ConfirmationErrorDelegate ConfirmationErrorEvent;
-
-		/// <summary>
-		/// Confirmation polling task
-		/// </summary>
-		/// <param name="cancel"></param>
-#if NETFX_4
-		public async void PollConfirmations(CancellationToken cancel)
-		{
-			lock (this.Session.Confirmations)
-			{
-				if (this.Session.Confirmations.Ids == null)
-				{
-					try
-					{
-						// this will update the session
-						GetConfirmations();
-					}
-					catch (InvalidSteamRequestException)
-					{
-						// ignore in case of Steam timeout
-					}
-				}
-			}
-
-			try
-			{
-				int retryCount = 0;
-				while (!cancel.IsCancellationRequested)
-				{
-					await Task.Delay(this.Session.Confirmations.Duration * 60 * 1000, cancel);
-					if (cancel.IsCancellationRequested == true)
-					{
-						break;
-					}
-
-					try
-					{
-						List<string> currentIds;
-						lock (this.Session.Confirmations)
-						{
-							currentIds = this.Session.Confirmations.Ids;
-						}
-
-						var confs = GetConfirmations();
-
-						// check for new ids
-						List<string> newIds;
-						if (currentIds == null)
-						{
-							newIds = confs.Select(t => t.Id).ToList();
-						}
-						else
-						{
-							newIds = confs.Select(t => t.Id).Except(currentIds).ToList();
-						}
-
-						// fire events if subscriber
-						if (ConfirmationEvent != null && newIds.Count() != 0)
-						{
-							foreach (var confId in newIds)
-							{
-								var newConf = confs.Where(t => t.Id == confId).FirstOrDefault();
-								if (newConf != null)
-								{
-									ConfirmationEvent(this, newConf, this.Session.Confirmations.Action);
-								}
-							}
-						}
-
-						retryCount = 0;
-					}
-					catch (TaskCanceledException)
-					{
-						throw;
-					}
-					catch (Exception ex)
-					{
-						retryCount++;
-						if (retryCount >= ConfirmationPollerRetries)
-						{
-							ConfirmationErrorEvent(this, "Failed to read confirmations", ex);
-						}
-						else
-						{
-							// try and reset the session
-							try
-							{
-								this.Refresh();
-							}
-							catch (Exception) { }
-						}
-					}
-				}
-			}
-			catch (TaskCanceledException)
-			{
-			}
-		}
-#endif
-
-#if NETFX_3
 		/// <summary>
 		/// Confirmation polling task
 		/// </summary>
@@ -1259,7 +1125,26 @@ namespace WinAuth
 			{
 				lock (this.Session.Confirmations)
 				{
-					this.Session.Confirmations.Ids = trades.Select(c => c.Id).ToList();
+					if (this.Session.Confirmations.Ids == null)
+					{
+						this.Session.Confirmations.Ids = new List<string>();
+					}
+					foreach (var conf in trades)
+					{
+						conf.IsNew = (this.Session.Confirmations.Ids.Contains(conf.Id) == false);
+						if (conf.IsNew == false)
+						{
+							this.Session.Confirmations.Ids.Add(conf.Id);
+						}
+					}
+					var newIds = trades.Select(t => t.Id).ToList();
+					foreach (var confId in this.Session.Confirmations.Ids.ToList())
+					{
+						if (newIds.Contains(confId) == false)
+						{
+							this.Session.Confirmations.Ids.Remove(confId);
+						}
+					}
 				}
 			}
 

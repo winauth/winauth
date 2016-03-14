@@ -1043,7 +1043,18 @@ namespace WinAuth
 		/// <param name="ex"></param>
 		private void SteamClient_ConfirmationErrorEvent(object sender, string message, Exception ex)
 		{
-			WinAuthForm.ErrorDialog(this, message, ex);
+			SteamClient steam = sender as SteamClient;
+			var auth = this.Config.Cast<WinAuthAuthenticator>().Where(a => a.AuthenticatorData is SteamAuthenticator && ((SteamAuthenticator)a.AuthenticatorData).Serial == steam.Authenticator.Serial).FirstOrDefault();
+
+			// show the Notification window in the correct context
+			this.Invoke(new ShowNotificationCallback(ShowNotification), new object[] {
+					auth,
+					auth.Name,
+					message,
+					false,
+					0
+				});
+			//WinAuthForm.ErrorDialog(this, message, ex);
 		}
 
 		/// <summary>
@@ -1106,9 +1117,9 @@ namespace WinAuth
 		/// Receive a new confirmation event from the SteamClient
 		/// </summary>
 		/// <param name="sender"></param>
-		/// <param name="newconfirmation"></param>
+		/// <param name="confirmation"></param>
 		/// <param name="action"></param>
-		private void SteamClient_ConfirmationEvent(object sender, SteamClient.Confirmation newconfirmation, SteamClient.PollerAction action)
+		private void SteamClient_ConfirmationEvent(object sender, SteamClient.Confirmation confirmation, SteamClient.PollerAction action)
 		{
 			SteamClient steam = sender as SteamClient;
 
@@ -1121,25 +1132,25 @@ namespace WinAuth
 
 			if (action == SteamClient.PollerAction.AutoConfirm || action == SteamClient.PollerAction.SilentAutoConfirm)
 			{
-				if (steam.ConfirmTrade(newconfirmation.Id, newconfirmation.Key, true) == true)
+				if (steam.ConfirmTrade(confirmation.Id, confirmation.Key, true) == true)
 				{
 					if (action != SteamClient.PollerAction.SilentAutoConfirm)
 					{
 						title = "Confirmed";
-						message = string.Format("<h1>{0}</h1><table width=250 cellspacing=0 cellpadding=0 border=0><tr><td width=40><img src=\"{1}\" /></td><td width=210>{2}<br/>{3}</td></tr></table>", auth.Name, newconfirmation.Image, newconfirmation.Details, newconfirmation.Traded);
+						message = string.Format("<h1>{0}</h1><table width=250 cellspacing=0 cellpadding=0 border=0><tr><td width=40><img src=\"{1}\" /></td><td width=210>{2}<br/>{3}</td></tr></table>", auth.Name, confirmation.Image, confirmation.Details, confirmation.Traded);
 					}
 				}
 				else
 				{
 					title = "Confirmation Failed";
-					message = string.Format("<h1>{0}</h1><table width=250 cellspacing=0 cellpadding=0 border=0><tr><td width=40><img src=\"{1}\" /></td><td width=210>{2}<br/>{3}<br/>Error: {4}</td></tr></table>", auth.Name, newconfirmation.Image, newconfirmation.Details, newconfirmation.Traded, steam.Error ?? "Unknown error");
+					message = string.Format("<h1>{0}</h1><table width=250 cellspacing=0 cellpadding=0 border=0><tr><td width=40><img src=\"{1}\" /></td><td width=210>{2}<br/>{3}<br/>Error: {4}</td></tr></table>", auth.Name, confirmation.Image, confirmation.Details, confirmation.Traded, steam.Error ?? "Unknown error");
 					extraHeight += 20;
 				}
 			}
-			else // if (action == SteamClient.PollerAction.Notify)
+			else if (confirmation.IsNew == true) // if (action == SteamClient.PollerAction.Notify)
 			{
 				title = "New Confirmation";
-				message = string.Format("<h1>{0}</h1><table width=250 cellspacing=0 cellpadding=0 border=0><tr valign=top><td width=40><img src=\"{1}\" /></td><td width=210>{2}<br/>{3}</td></tr></table>", auth.Name, newconfirmation.Image, newconfirmation.Details, newconfirmation.Traded);
+				message = string.Format("<h1>{0}</h1><table width=250 cellspacing=0 cellpadding=0 border=0><tr valign=top><td width=40><img src=\"{1}\" /></td><td width=210>{2}<br/>{3}</td></tr></table>", auth.Name, confirmation.Image, confirmation.Details, confirmation.Traded);
 				openOnClick = true;
 			}
 

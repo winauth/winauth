@@ -38,7 +38,6 @@
 			this.cancelButton = new MetroFramework.Controls.MetroButton();
 			this.tabs = new MetroFramework.Controls.MetroTabControl();
 			this.loginTab = new MetroFramework.Controls.MetroTabPage();
-			this.rememberPermBox = new MetroFramework.Controls.MetroCheckBox();
 			this.rememberBox = new MetroFramework.Controls.MetroCheckBox();
 			this.captchaGroup = new System.Windows.Forms.Panel();
 			this.captchaBox = new System.Windows.Forms.PictureBox();
@@ -161,7 +160,7 @@
 			this.tabs.ItemSize = new System.Drawing.Size(120, 18);
 			this.tabs.Location = new System.Drawing.Point(15, 63);
 			this.tabs.Name = "tabs";
-			this.tabs.SelectedIndex = 1;
+			this.tabs.SelectedIndex = 0;
 			this.tabs.Size = new System.Drawing.Size(464, 406);
 			this.tabs.TabIndex = 0;
 			this.tabs.UseSelectable = true;
@@ -170,7 +169,6 @@
 			// loginTab
 			// 
 			this.loginTab.BackColor = System.Drawing.SystemColors.Control;
-			this.loginTab.Controls.Add(this.rememberPermBox);
 			this.loginTab.Controls.Add(this.rememberBox);
 			this.loginTab.Controls.Add(this.captchaGroup);
 			this.loginTab.Controls.Add(this.loginButton);
@@ -194,17 +192,6 @@
 			this.loginTab.VerticalScrollbarHighlightOnWheel = false;
 			this.loginTab.VerticalScrollbarSize = 10;
 			// 
-			// rememberPermBox
-			// 
-			this.rememberPermBox.AutoSize = true;
-			this.rememberPermBox.Location = new System.Drawing.Point(224, 97);
-			this.rememberPermBox.Name = "rememberPermBox";
-			this.rememberPermBox.Size = new System.Drawing.Size(95, 15);
-			this.rememberPermBox.TabIndex = 2;
-			this.rememberPermBox.Text = "permanently?";
-			this.rememberPermBox.UseSelectable = true;
-			this.rememberPermBox.Visible = false;
-			// 
 			// rememberBox
 			// 
 			this.rememberBox.AutoSize = true;
@@ -214,7 +201,6 @@
 			this.rememberBox.TabIndex = 2;
 			this.rememberBox.Text = "remember me?";
 			this.rememberBox.UseSelectable = true;
-			this.rememberBox.CheckedChanged += new System.EventHandler(this.rememberBox_CheckedChanged);
 			// 
 			// captchaGroup
 			// 
@@ -586,7 +572,6 @@
 		private System.Windows.Forms.Panel browserContainer;
 		private System.Windows.Forms.Panel tradesContainer;
 		private MetroFramework.Controls.MetroCheckBox rememberBox;
-		private MetroFramework.Controls.MetroCheckBox rememberPermBox;
 		private MetroFramework.Controls.MetroButton refreshButton;
 		private MetroFramework.Controls.MetroButton logoutButton;
 		private MetroFramework.Controls.MetroLabel pollMinuesLabel;

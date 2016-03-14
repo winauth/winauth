@@ -166,7 +166,7 @@ namespace WinAuth
 		/// <summary>
 		/// Permanent JSON session
 		/// </summary>
-		public bool PermSession { get; set; }
+		//public bool PermSession { get; set; }
 
 		/// <summary>
 		/// 
@@ -201,7 +201,7 @@ namespace WinAuth
 		{
 			get
 			{
-				if (PermSession && this.Client != null && this.Client != null)
+				if (/*PermSession && */ this.Client != null && this.Client.Session != null)
 				{
 					this.SessionData = this.Client.Session.ToString();
 				}
@@ -210,9 +210,9 @@ namespace WinAuth
 					this.SessionData = null;
 				}
 
-				if (Client != null && Logger != null)
+				if (Logger != null)
 				{
-					Logger.Debug("Steam data: {0}, Session:{1}", SteamData ?? string.Empty, SessionData ?? string.Empty);
+					Logger.Debug("Get Steam data: {0}, Session:{1}", (SteamData ?? string.Empty).Replace("\n"," ").Replace("\r",""), (SessionData ?? string.Empty).Replace("\n", " ").Replace("\r", ""));
 				}
 
 				// this is the key |  serial | deviceid
@@ -220,7 +220,7 @@ namespace WinAuth
 					+ "|" + Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(Serial))
 					+ "|" + Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(DeviceId))
 					+ "|" + Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(SteamData))
-					+ "|" + (PermSession && string.IsNullOrEmpty(SessionData) == false ? Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(SessionData)) : string.Empty);
+					+ "|" + (/* PermSession && */ string.IsNullOrEmpty(SessionData) == false ? Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(SessionData)) : string.Empty);
 			}
 			set
 			{
@@ -232,17 +232,24 @@ namespace WinAuth
 					Serial = (parts.Length > 1 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[1])) : null);
 					DeviceId = (parts.Length > 2 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[2])) : null);
 					SteamData = (parts.Length > 3 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[3])) : string.Empty);
+
 					if (string.IsNullOrEmpty(SteamData) == false && SteamData[0] != '{')
 					{
 						// convert old recovation code into SteamData json
 						SteamData = "{\"revocation_code\":\"" + SteamData + "\"}";
 					}
 					string session = (parts.Length > 4 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[4])) : null);
+
+					if (Logger != null)
+					{
+						Logger.Debug("Set Steam data: {0}, Session:{1}", (SteamData ?? string.Empty).Replace("\n", " ").Replace("\r", ""), (SessionData ?? string.Empty).Replace("\n", " ").Replace("\r", ""));
+					}
+
 					if (string.IsNullOrEmpty(session) == false)
 					{
 						SessionData = session;
 					}
-					PermSession = (SessionData != null);
+					//PermSession = (SessionData != null);
 				}
 				else
 				{
@@ -251,7 +258,7 @@ namespace WinAuth
 					DeviceId = null;
 					SteamData = null;
 					SessionData = null;
-					PermSession = false;
+					//PermSession = false;
 				}
 			}
 		}
@@ -266,6 +273,10 @@ namespace WinAuth
 			{
 				if (this.Client == null)
 				{
+					if (Logger != null)
+					{
+						Logger.Debug("Create new SteamClient {0}", (this.SessionData ?? string.Empty).Replace("\n", " ").Replace("\r", ""));
+					}
 					this.Client = new SteamClient(this, this.SessionData);
 				}
 
