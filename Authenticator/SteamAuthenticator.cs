@@ -164,11 +164,6 @@ namespace WinAuth
 		public string SessionData { get; set; }
 
 		/// <summary>
-		/// Permanent JSON session
-		/// </summary>
-		//public bool PermSession { get; set; }
-
-		/// <summary>
 		/// 
 		/// </summary>
 		public string PollData { get; set; }
@@ -201,26 +196,22 @@ namespace WinAuth
 		{
 			get
 			{
-				if (/*PermSession && */ this.Client != null && this.Client.Session != null)
+				if (this.Client != null && this.Client.Session != null)
 				{
 					this.SessionData = this.Client.Session.ToString();
 				}
-				else
-				{
-					this.SessionData = null;
-				}
 
-				if (Logger != null)
-				{
-					Logger.Debug("Get Steam data: {0}, Session:{1}", (SteamData ?? string.Empty).Replace("\n"," ").Replace("\r",""), (SessionData ?? string.Empty).Replace("\n", " ").Replace("\r", ""));
-				}
+				//if (Logger != null)
+				//{
+				//	Logger.Debug("Get Steam data: {0}, Session:{1}", (SteamData ?? string.Empty).Replace("\n"," ").Replace("\r",""), (SessionData ?? string.Empty).Replace("\n", " ").Replace("\r", ""));
+				//}
 
 				// this is the key |  serial | deviceid
 				return base.SecretData
 					+ "|" + Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(Serial))
 					+ "|" + Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(DeviceId))
 					+ "|" + Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(SteamData))
-					+ "|" + (/* PermSession && */ string.IsNullOrEmpty(SessionData) == false ? Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(SessionData)) : string.Empty);
+					+ "|" + (string.IsNullOrEmpty(SessionData) == false ? Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes(SessionData)) : string.Empty);
 			}
 			set
 			{
@@ -240,16 +231,15 @@ namespace WinAuth
 					}
 					string session = (parts.Length > 4 ? Encoding.UTF8.GetString(Authenticator.StringToByteArray(parts[4])) : null);
 
-					if (Logger != null)
-					{
-						Logger.Debug("Set Steam data: {0}, Session:{1}", (SteamData ?? string.Empty).Replace("\n", " ").Replace("\r", ""), (SessionData ?? string.Empty).Replace("\n", " ").Replace("\r", ""));
-					}
+					//if (Logger != null)
+					//{
+					//	Logger.Debug("Set Steam data: {0}, Session:{1}", (SteamData ?? string.Empty).Replace("\n", " ").Replace("\r", ""), (SessionData ?? string.Empty).Replace("\n", " ").Replace("\r", ""));
+					//}
 
 					if (string.IsNullOrEmpty(session) == false)
 					{
 						SessionData = session;
 					}
-					//PermSession = (SessionData != null);
 				}
 				else
 				{
@@ -258,7 +248,6 @@ namespace WinAuth
 					DeviceId = null;
 					SteamData = null;
 					SessionData = null;
-					//PermSession = false;
 				}
 			}
 		}
@@ -273,10 +262,6 @@ namespace WinAuth
 			{
 				if (this.Client == null)
 				{
-					if (Logger != null)
-					{
-						Logger.Debug("Create new SteamClient {0}", (this.SessionData ?? string.Empty).Replace("\n", " ").Replace("\r", ""));
-					}
 					this.Client = new SteamClient(this, this.SessionData);
 				}
 
@@ -391,12 +376,12 @@ namespace WinAuth
 						NameValueCollection headers = new NameValueCollection();
 						headers.Add("X-Requested-With", "com.valvesoftware.android.steam.community");
 
-						response = Request("https://steamcommunity.com/login?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client", "GET", null, cookies, headers);
+						response = Request("https://steamcommunity.com/mobilelogin?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client", "GET", null, cookies, headers);
 					}
 
 					// get the user's RSA key
 					data.Add("username", state.Username);
-					response = Request(COMMUNITY_BASE + "/login/getrsakey", "POST", data, cookies);
+					response = Request(COMMUNITY_BASE + "/mobilelogin/getrsakey", "POST", data, cookies);
 					var rsaresponse = JObject.Parse(response);
 					if (rsaresponse.SelectToken("success").Value<bool>() != true)
 					{
@@ -432,7 +417,7 @@ namespace WinAuth
 					data.Add("oauth_client_id", "DE45CD61");
 					data.Add("oauth_scope", "read_profile write_profile read_client write_client");
 					data.Add("donotache", new DateTime().ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds.ToString());
-					response = Request(COMMUNITY_BASE + "/login/dologin/", "POST", data, cookies);
+					response = Request(COMMUNITY_BASE + "/mobilelogin/dologin/", "POST", data, cookies);
 					Dictionary<string, object> loginresponse = JsonConvert.DeserializeObject<Dictionary<string, object>>(response);
 
 					if (loginresponse.ContainsKey("emailsteamid") == true)
