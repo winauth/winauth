@@ -81,6 +81,11 @@ namespace WinAuth
 		private const int INVALID_ACTIVATION_CODE = 89;
 
 		/// <summary>
+		/// Time for http request when calling Sync in ms
+		/// </summary>
+		private const int SYNC_TIMEOUT = 5000;
+
+		/// <summary>
 		/// Steam issuer for KeyUri
 		/// </summary>
 		private const string STEAM_ISSUER = "Steam";
@@ -277,7 +282,7 @@ namespace WinAuth
 		/// <param name="data">Name-data pairs</param>
 		/// <param name="cookies">current cookie container</param>
 		/// <returns>response body</returns>
-		private string Request(string url, string method, NameValueCollection data = null, CookieContainer cookies = null, NameValueCollection headers = null)
+		private string Request(string url, string method, NameValueCollection data = null, CookieContainer cookies = null, NameValueCollection headers = null, int timeout = 0)
 		{
 			// create form-encoded data for query or body
 			string query = (data == null ? string.Empty : string.Join("&", Array.ConvertAll(data.AllKeys, key => String.Format("{0}={1}", HttpUtility.UrlEncode(key), HttpUtility.UrlEncode(data[key])))));
@@ -298,10 +303,13 @@ namespace WinAuth
 			{
 				request.Headers.Add(headers);
 			}
-
 			if (cookies != null)
 			{
 				request.CookieContainer = cookies;
+			}
+			if (timeout != 0)
+			{
+				request.Timeout = timeout;
 			}
 
 			if (string.Compare(method, "POST", true) == 0)
@@ -671,7 +679,7 @@ namespace WinAuth
 
 			try
 			{
-				var response = Request(SYNC_URL, "POST");
+				var response = Request(SYNC_URL, "POST", null, null, null, SYNC_TIMEOUT);
 				var json = JObject.Parse(response);
 
 				// get servertime in ms

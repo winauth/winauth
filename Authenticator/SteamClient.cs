@@ -531,12 +531,12 @@ namespace WinAuth
 					NameValueCollection headers = new NameValueCollection();
 					headers.Add("X-Requested-With", "com.valvesoftware.android.steam.community");
 
-					response = GetString(COMMUNITY_BASE + "/login?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client", "GET", null, headers);
+					response = GetString(COMMUNITY_BASE + "/mobilelogin?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client", "GET", null, headers);
 				}
 
 				// get the user's RSA key
 				data.Add("username", username);
-				response = GetString(COMMUNITY_BASE + "/login/getrsakey", "POST", data);
+				response = GetString(COMMUNITY_BASE + "/mobilelogin/getrsakey", "POST", data);
 				var rsaresponse = JObject.Parse(response);
 				if (rsaresponse.SelectToken("success").Value<bool>() != true)
 				{
