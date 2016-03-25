@@ -374,12 +374,12 @@ namespace WinAuth
 					// get session
 					if (cookies.Count == 0)
 					{
-						cookies.Add(new Cookie("mobileClientVersion", "3067969+%282.1.3%29", "/", ".steamcommunity.com"));
-						cookies.Add(new Cookie("mobileClient", "android", "/", ".steamcommunity.com"));
-						cookies.Add(new Cookie("steamid", "", "/", ".steamcommunity.com"));
-						cookies.Add(new Cookie("steamLogin", "", "/", ".steamcommunity.com"));
-						cookies.Add(new Cookie("Steam_Language", "english", "/", ".steamcommunity.com"));
-						cookies.Add(new Cookie("dob", "", "/", ".steamcommunity.com"));
+						cookies.Add(new Uri(COMMUNITY_BASE + "/"), new Cookie("mobileClientVersion", "3067969+%282.1.3%29"));
+						cookies.Add(new Uri(COMMUNITY_BASE + "/"), new Cookie("mobileClient", "android"));
+						cookies.Add(new Uri(COMMUNITY_BASE + "/"), new Cookie("steamid", ""));
+						cookies.Add(new Uri(COMMUNITY_BASE + "/"), new Cookie("steamLogin", ""));
+						cookies.Add(new Uri(COMMUNITY_BASE + "/"), new Cookie("Steam_Language", "english"));
+						cookies.Add(new Uri(COMMUNITY_BASE + "/"), new Cookie("dob", ""));
 
 						NameValueCollection headers = new NameValueCollection();
 						headers.Add("X-Requested-With", "com.valvesoftware.android.steam.community");
@@ -395,7 +395,6 @@ namespace WinAuth
 					{
 						throw new InvalidEnrollResponseException("Cannot get steam information for user: " + state.Username);
 					}
-					//state.SteamId = rsaresponse.SelectToken("steamid").Value<string>();
 
 					// encrypt password with RSA key
 					RNGCryptoServiceProvider random = new RNGCryptoServiceProvider();
@@ -482,7 +481,7 @@ namespace WinAuth
 					{
 						if (loginresponse.ContainsKey("oauth") == false)
 						{
-							state.Error = "No OAuth token in response";
+							state.Error = "Invalid response from Steam (No OAuth token)";
 						}
 						if (loginresponse.ContainsKey("message") == true)
 						{
