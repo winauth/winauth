@@ -305,7 +305,7 @@ namespace WinAuth
 
 		private static void main()
 		{
-#if NETFX_4
+#if NETFX_45
 			// Fix #226: set to use TLS1.2
 			try
 			{
