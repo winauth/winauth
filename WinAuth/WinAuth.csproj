@@ -563,6 +563,33 @@
     <None Include="bin\Debug\WinAuth.YubiKey.x64.dll" />
     <None Include="bin\Debug\WinAuth.YubiKey.x86.dll" />
     <EmbeddedResource Include="Resources\GoogleAuthenticator2Icon.png" />
+    <EmbeddedResource Include="Resources\BitBucketIcon.png" />
+    <EmbeddedResource Include="Resources\DigitalOceanIcon.png" />
+    <EmbeddedResource Include="Resources\DreamhostIcon.png" />
+    <EmbeddedResource Include="Resources\DropboxWhiteIcon.png" />
+    <EmbeddedResource Include="Resources\EA2Icon.png" />
+    <EmbeddedResource Include="Resources\EA3Icon.png" />
+    <EmbeddedResource Include="Resources\EAIcon.png" />
+    <EmbeddedResource Include="Resources\eBayIcon.png" />
+    <EmbeddedResource Include="Resources\GitHub2Icon.png" />
+    <EmbeddedResource Include="Resources\Gitlab2Icon.png" />
+    <EmbeddedResource Include="Resources\GitLabFox2Icon.png" />
+    <EmbeddedResource Include="Resources\GitlabFoxIon.png" />
+    <EmbeddedResource Include="Resources\GitLabIcon.png" />
+    <EmbeddedResource Include="Resources\GMailIcon.png" />
+    <EmbeddedResource Include="Resources\IFTTT2Icon.png" />
+    <EmbeddedResource Include="Resources\IFTTT3Icon.png" />
+    <EmbeddedResource Include="Resources\IFTTTIcon.png" />
+    <EmbeddedResource Include="Resources\ItchIcon.png" />
+    <EmbeddedResource Include="Resources\KickStarterIcon.png" />
+    <EmbeddedResource Include="Resources\NameIcon.png" />
+    <EmbeddedResource Include="Resources\OriginIcon.png" />
+    <EmbeddedResource Include="Resources\PayPalIcon.png" />
+    <EmbeddedResource Include="Resources\Tumblr2Icon.png" />
+    <EmbeddedResource Include="Resources\Tumblr3Icon.png" />
+    <EmbeddedResource Include="Resources\TumblrIcon.png" />
+    <EmbeddedResource Include="Resources\WinAuthIcon.gif" />
+    <EmbeddedResource Include="Resources\WordpressWhiteIcon.png" />
     <Content Include="winauth.ico" />
   </ItemGroup>
   <ItemGroup>
