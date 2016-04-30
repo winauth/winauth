@@ -930,11 +930,14 @@ namespace WinAuth
 						}
 					}
 
+					if (this.Session.Confirmations != null)
+					{
 #if NETFX_40
-					await Delay(this.Session.Confirmations.Duration * 60 * 1000, cancel);
+						await Delay(this.Session.Confirmations.Duration * 60 * 1000, cancel);
 #else
-					await Task.Delay(this.Session.Confirmations.Duration * 60 * 1000, cancel);
+						await Task.Delay(this.Session.Confirmations.Duration * 60 * 1000, cancel);
 #endif
+					}
 				}
 			}
 			catch (TaskCanceledException)
@@ -1160,7 +1163,7 @@ namespace WinAuth
 					foreach (var conf in trades)
 					{
 						conf.IsNew = (this.Session.Confirmations.Ids.Contains(conf.Id) == false);
-						if (conf.IsNew == false)
+						if (conf.IsNew == true)
 						{
 							this.Session.Confirmations.Ids.Add(conf.Id);
 						}
