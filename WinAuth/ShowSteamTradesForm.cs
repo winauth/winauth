@@ -561,6 +561,7 @@ namespace WinAuth
 
 					tab.SuspendLayout();
 					tradesContainer.Controls.Remove(this.tradePanelMaster);
+					tradesContainer.Controls.Clear();
 
 					for (var row = 0; row < m_trades.Count; row++)
 					{
