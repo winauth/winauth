@@ -63,6 +63,8 @@
 			this.closeButton = new MetroFramework.Controls.MetroButton();
 			this.refreshButton = new MetroFramework.Controls.MetroButton();
 			this.logoutButton = new MetroFramework.Controls.MetroButton();
+			this.confirmAllButton = new MetroFramework.Controls.MetroButton();
+			this.cancelAllButton = new MetroFramework.Controls.MetroButton();
 			this.tabs.SuspendLayout();
 			this.loginTab.SuspendLayout();
 			this.captchaGroup.SuspendLayout();
@@ -160,7 +162,7 @@
 			this.tabs.ItemSize = new System.Drawing.Size(120, 18);
 			this.tabs.Location = new System.Drawing.Point(15, 63);
 			this.tabs.Name = "tabs";
-			this.tabs.SelectedIndex = 0;
+			this.tabs.SelectedIndex = 1;
 			this.tabs.Size = new System.Drawing.Size(464, 406);
 			this.tabs.TabIndex = 0;
 			this.tabs.UseSelectable = true;
@@ -184,7 +186,7 @@
 			this.loginTab.Location = new System.Drawing.Point(4, 22);
 			this.loginTab.Name = "loginTab";
 			this.loginTab.Padding = new System.Windows.Forms.Padding(3);
-			this.loginTab.Size = new System.Drawing.Size(456, 380);
+			this.loginTab.Size = new System.Drawing.Size(456, 399);
 			this.loginTab.TabIndex = 0;
 			this.loginTab.Tag = "";
 			this.loginTab.Text = "Login";
@@ -285,7 +287,7 @@
 			this.pollPanel.Controls.Add(this.pollMinuesLabel);
 			this.pollPanel.Location = new System.Drawing.Point(5, 343);
 			this.pollPanel.Name = "pollPanel";
-			this.pollPanel.Size = new System.Drawing.Size(440, 43);
+			this.pollPanel.Size = new System.Drawing.Size(440, 82);
 			this.pollPanel.TabIndex = 8;
 			this.pollPanel.Visible = false;
 			// 
@@ -463,7 +465,7 @@
 			this.browserContainer.BackColor = System.Drawing.SystemColors.Window;
 			this.browserContainer.Location = new System.Drawing.Point(5, 204);
 			this.browserContainer.Name = "browserContainer";
-			this.browserContainer.Size = new System.Drawing.Size(440, 148);
+			this.browserContainer.Size = new System.Drawing.Size(440, 142);
 			this.browserContainer.TabIndex = 5;
 			// 
 			// closeButton
@@ -504,6 +506,28 @@
 			this.logoutButton.Visible = false;
 			this.logoutButton.Click += new System.EventHandler(this.logoutButton_Click);
 			// 
+			// confirmAllButton
+			// 
+			this.confirmAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.confirmAllButton.Location = new System.Drawing.Point(162, 489);
+			this.confirmAllButton.Name = "confirmAllButton";
+			this.confirmAllButton.Size = new System.Drawing.Size(75, 23);
+			this.confirmAllButton.TabIndex = 4;
+			this.confirmAllButton.Text = "Confirm All";
+			this.confirmAllButton.UseSelectable = true;
+			this.confirmAllButton.Click += new System.EventHandler(this.confirmAllButton_Click);
+			// 
+			// cancelAllButton
+			// 
+			this.cancelAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.cancelAllButton.Location = new System.Drawing.Point(243, 489);
+			this.cancelAllButton.Name = "cancelAllButton";
+			this.cancelAllButton.Size = new System.Drawing.Size(75, 23);
+			this.cancelAllButton.TabIndex = 4;
+			this.cancelAllButton.Text = "Cancel All";
+			this.cancelAllButton.UseSelectable = true;
+			this.cancelAllButton.Click += new System.EventHandler(this.cancelAllButton_Click);
+			// 
 			// ShowSteamTradesForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -513,6 +537,8 @@
 			this.ClientSize = new System.Drawing.Size(501, 535);
 			this.Controls.Add(this.tabs);
 			this.Controls.Add(this.refreshButton);
+			this.Controls.Add(this.cancelAllButton);
+			this.Controls.Add(this.confirmAllButton);
 			this.Controls.Add(this.logoutButton);
 			this.Controls.Add(this.closeButton);
 			this.Controls.Add(this.cancelButton);
@@ -579,5 +605,7 @@
 		private MetroFramework.Controls.MetroCheckBox pollCheckbox;
 		private System.Windows.Forms.Panel pollPanel;
 		private MetroFramework.Controls.MetroComboBox pollAction;
+		private MetroFramework.Controls.MetroButton confirmAllButton;
+		private MetroFramework.Controls.MetroButton cancelAllButton;
 	}
 }

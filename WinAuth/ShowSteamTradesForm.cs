@@ -28,6 +28,8 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using MetroFramework.Controls;
 using Newtonsoft.Json;
@@ -331,16 +333,17 @@ namespace WinAuth
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void tradeAccept_Click(object sender, EventArgs e)
+		private async void tradeAccept_Click(object sender, EventArgs e)
 		{
 			var cursor = Cursor.Current;
 			try
 			{
 				Cursor.Current = Cursors.WaitCursor;
+				Application.DoEvents();
 
 				MetroButton button = sender as MetroButton;
 				string tradeId = button.Tag as string;
-				AcceptTrade(tradeId);
+				await AcceptTrade(tradeId);
 			}
 			finally
 			{
@@ -353,16 +356,17 @@ namespace WinAuth
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void tradeReject_Click(object sender, EventArgs e)
+		private async void tradeReject_Click(object sender, EventArgs e)
 		{
 			var cursor = Cursor.Current;
 			try
 			{
 				Cursor.Current = Cursors.WaitCursor;
+				Application.DoEvents();
 
 				MetroButton button = sender as MetroButton;
 				string tradeId = button.Tag as string;
-				RejectTrade(tradeId);
+				await RejectTrade(tradeId);
 			}
 			finally
 			{
@@ -398,6 +402,150 @@ namespace WinAuth
 			}
 
 			Init();
+		}
+
+		CancellationTokenSource cancelComfirmAll;
+		CancellationTokenSource cancelCancelAll;
+
+		/// <summary>
+		/// Click the button to confirm all confirmations
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private async void confirmAllButton_Click(object sender, EventArgs e)
+		{
+			if (cancelComfirmAll != null)
+			{
+				confirmAllButton.Text = "Stopping";
+				cancelComfirmAll.Cancel();
+				return;
+			}
+
+			if (WinAuthForm.ConfirmDialog(this, "This will CONFIRM all your current trade confirmations." + Environment.NewLine + Environment.NewLine +
+				"There will be a few seconds delay between each one so please be patient." + Environment.NewLine + Environment.NewLine +
+				"Are you sure you want to continue?",
+				MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			{
+				return;
+			}
+
+			cancelComfirmAll = new CancellationTokenSource();
+
+			var cursor = Cursor.Current;
+			try
+			{
+				Cursor.Current = Cursors.WaitCursor;
+				Application.DoEvents();
+
+				confirmAllButton.Tag = confirmAllButton.Text;
+				confirmAllButton.Text = "Stop";
+				cancelAllButton.Enabled = false;
+				closeButton.Enabled = false;
+
+				var tradeIds = m_trades.Select(t => t.Id).Reverse().ToArray();
+				for (var i = tradeIds.Length - 1; i >= 0; i--)
+				{
+					if (cancelComfirmAll.IsCancellationRequested)
+					{
+						break;
+					}
+
+					var result = await AcceptTrade(tradeIds[i]);
+					if (result == false || cancelComfirmAll.IsCancellationRequested == true)
+					{
+						break;
+					}
+					if (i != 0)
+					{
+						await Task.Run(() => { Thread.Sleep(5000); }, cancelComfirmAll.Token);
+					}
+				}
+
+			}
+			finally
+			{
+				cancelComfirmAll = null;
+
+				confirmAllButton.Text = (string)confirmAllButton.Tag;
+
+				cancelAllButton.Enabled = true;
+				closeButton.Enabled = true;
+
+				this.Authenticator.MarkChanged();
+
+				Cursor.Current = cursor;
+			}
+		}
+
+
+		/// <summary>
+		/// Click the button to cancel all confirmations
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private async void cancelAllButton_Click(object sender, EventArgs e)
+		{
+			if (cancelCancelAll != null)
+			{
+				cancelAllButton.Text = "Stopping";
+				cancelCancelAll.Cancel();
+				return;
+			}
+
+			if (WinAuthForm.ConfirmDialog(this, "This will CANCEL all your current trade confirmations." + Environment.NewLine + Environment.NewLine +
+				"There will be a few seconds delay between each one so please be patient." + Environment.NewLine + Environment.NewLine +
+				"Are you sure you want to continue?",
+				MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+			{
+				return;
+			}
+
+			cancelCancelAll = new CancellationTokenSource();
+
+			var cursor = Cursor.Current;
+			try
+			{
+				Cursor.Current = Cursors.WaitCursor;
+				Application.DoEvents();
+
+				cancelAllButton.Tag = cancelAllButton.Text;
+				cancelAllButton.Text = "Stop";
+				confirmAllButton.Enabled = false;
+				closeButton.Enabled = false;
+
+				var tradeIds = m_trades.Select(t => t.Id).Reverse().ToArray();
+				for (var i=tradeIds.Length-1; i >= 0; i--)
+				{
+					if (cancelCancelAll.IsCancellationRequested)
+					{
+						break;
+					}
+
+					var result = await RejectTrade(tradeIds[i]);
+					if (result == false || cancelCancelAll.IsCancellationRequested == true)
+					{
+						break;
+					}
+					if (i != 0)
+					{
+						await Task.Run(() => { Thread.Sleep(5000); }, cancelCancelAll.Token);
+					}
+				}
+
+			}
+			finally
+			{
+				cancelCancelAll = null;
+
+				cancelAllButton.Text = (string)cancelAllButton.Tag;
+
+				confirmAllButton.Enabled = true;
+				closeButton.Enabled = true;
+
+				this.Authenticator.MarkChanged();
+
+				Cursor.Current = cursor;
+			}
 		}
 
 		/// <summary>
@@ -465,6 +613,7 @@ namespace WinAuth
 				{
 					//Application.DoEvents();
 					Cursor.Current = Cursors.WaitCursor;
+					Application.DoEvents();
 
 					var steam = this.AuthenticatorData.GetClient();
 
@@ -531,6 +680,12 @@ namespace WinAuth
 					try
 					{
 						m_trades = steam.GetConfirmations();
+
+						// save after get new trades
+						if (string.IsNullOrEmpty(AuthenticatorData.SessionData) == false)
+						{
+							this.Authenticator.MarkChanged();
+						}
 					}
 					catch (SteamClient.UnauthorisedSteamRequestException)
 					{
@@ -561,7 +716,13 @@ namespace WinAuth
 
 					tab.SuspendLayout();
 					tradesContainer.Controls.Remove(this.tradePanelMaster);
-					tradesContainer.Controls.Clear();
+					foreach (var control in tradesContainer.Controls.Cast<Control>().ToArray())
+					{
+						if (control is Panel)
+						{
+							tradesContainer.Controls.Remove(control);
+						}
+					}
 
 					for (var row = 0; row < m_trades.Count; row++)
 					{
@@ -604,6 +765,9 @@ namespace WinAuth
 						tradesContainer.Controls.Add(tradePanel);
 					}
 					tradesEmptyLabel.Visible = (m_trades.Count == 0);
+
+					confirmAllButton.Visible = (m_trades.Count != 0);
+					cancelAllButton.Visible = (m_trades.Count != 0);
 
 					tab.ResumeLayout();
 
@@ -666,38 +830,47 @@ namespace WinAuth
 		/// Accept the trade Confirmation
 		/// </summary>
 		/// <param name="tradeId">Id of Confirmation</param>
-		private void AcceptTrade(string tradeId)
+		private async Task<bool> AcceptTrade(string tradeId)
 		{
 			try
 			{
 				var trade = m_trades.Where(t => t.Id == tradeId).FirstOrDefault();
 				if (trade == null)
 				{
-					WinAuthForm.ErrorDialog(this, "Invalid trade");
-					return;
+					throw new ApplicationException("Invalid trade");
 				}
 
-				var result = this.AuthenticatorData.GetClient().ConfirmTrade(trade.Id, trade.Key, true);
+				var result = await Task.Factory.StartNew<bool>((t) =>
+				{
+					return this.AuthenticatorData.GetClient().ConfirmTrade(((SteamClient.Confirmation)t).Id, ((SteamClient.Confirmation)t).Key, true);
+				}, trade);
+				//var result = this.AuthenticatorData.GetClient().ConfirmTrade(trade.Id, trade.Key, true);
 				if (result == false)
 				{
-					WinAuthForm.ErrorDialog(this, "Trade cannot be confirmed");
+					throw new ApplicationException("Trade cannot be confirmed");
 				}
-				else
-				{
-					m_trades.Remove(trade);
 
-					MetroButton button = FindControl<MetroButton>(tabs.SelectedTab, "tradeAccept_" + trade.Id);
-					button.Visible = false;
-					button = FindControl<MetroButton>(tabs.SelectedTab, "tradeReject_" + trade.Id);
-					button.Visible = false;
-					MetroLabel status = FindControl<MetroLabel>(tabs.SelectedTab, "tradeStatus_" + trade.Id);
-					status.Text = "Confirmed";
-					status.Visible = true;
-				}
+				m_trades.Remove(trade);
+
+				MetroButton button = FindControl<MetroButton>(tabs.SelectedTab, "tradeAccept_" + trade.Id);
+				button.Visible = false;
+				button = FindControl<MetroButton>(tabs.SelectedTab, "tradeReject_" + trade.Id);
+				button.Visible = false;
+				MetroLabel status = FindControl<MetroLabel>(tabs.SelectedTab, "tradeStatus_" + trade.Id);
+				status.Text = "Confirmed";
+				status.Visible = true;
+
+				return true;
 			}
 			catch (InvalidTradesResponseException ex)
 			{
 				WinAuthForm.ErrorDialog(this, "Error trying to accept trade", ex, MessageBoxButtons.OK);
+				return false;
+			}
+			catch (ApplicationException ex)
+			{
+				WinAuthForm.ErrorDialog(this, ex.Message);
+				return false;
 			}
 		}
 
@@ -705,38 +878,47 @@ namespace WinAuth
 		/// Reject the trade Confirmation
 		/// </summary>
 		/// <param name="tradeId">ID of Confirmation</param>
-		private void RejectTrade(string tradeId)
+		private async Task<bool> RejectTrade(string tradeId)
 		{
 			try
 			{
 				var trade = m_trades.Where(t => t.Id == tradeId).FirstOrDefault();
 				if (trade == null)
 				{
-					WinAuthForm.ErrorDialog(this, "Invalid trade");
-					return;
+					throw new ApplicationException("Invalid trade");
 				}
 
-				var result = this.AuthenticatorData.GetClient().ConfirmTrade(trade.Id, trade.Key, false);
+				var result = await Task.Factory.StartNew<bool>((t) =>
+				{
+					return this.AuthenticatorData.GetClient().ConfirmTrade(((SteamClient.Confirmation)t).Id, ((SteamClient.Confirmation)t).Key, false);
+				}, trade);
+				//var result = this.AuthenticatorData.GetClient().ConfirmTrade(trade.Id, trade.Key, false);
 				if (result == false)
 				{
-					WinAuthForm.ErrorDialog(this, "Trade cannot be cancelled");
+					throw new ApplicationException("Trade cannot be cancelled");
 				}
-				else
-				{
-					m_trades.Remove(trade);
 
-					MetroButton button = FindControl<MetroButton>(tabs.SelectedTab, "tradeAccept_" + trade.Id);
-					button.Visible = false;
-					button = FindControl<MetroButton>(tabs.SelectedTab, "tradeReject_" + trade.Id);
-					button.Visible = false;
-					MetroLabel status = FindControl<MetroLabel>(tabs.SelectedTab, "tradeStatus_" + trade.Id);
-					status.Text = "Cancelled";
-					status.Visible = true;
-				}
+				m_trades.Remove(trade);
+
+				MetroButton button = FindControl<MetroButton>(tabs.SelectedTab, "tradeAccept_" + trade.Id);
+				button.Visible = false;
+				button = FindControl<MetroButton>(tabs.SelectedTab, "tradeReject_" + trade.Id);
+				button.Visible = false;
+				MetroLabel status = FindControl<MetroLabel>(tabs.SelectedTab, "tradeStatus_" + trade.Id);
+				status.Text = "Cancelled";
+				status.Visible = true;
+
+				return true;
 			}
 			catch (InvalidTradesResponseException ex)
 			{
 				WinAuthForm.ErrorDialog(this, "Error trying to reject trade", ex, MessageBoxButtons.OK);
+				return false;
+			}
+			catch (ApplicationException ex)
+			{
+				WinAuthForm.ErrorDialog(this, ex.Message);
+				return false;
 			}
 		}
 
@@ -899,7 +1081,7 @@ namespace WinAuth
 			}
 		}
 
-#endregion
+		#endregion
 
 	}
 }
