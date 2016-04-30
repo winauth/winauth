@@ -75,6 +75,11 @@ namespace WinAuth
 		private const int DEFAULT_CONFIRMATIONPOLLER_RETRIES = 3;
 
 		/// <summary>
+		/// Delay between trade confirmation events
+		/// </summary>
+		private const int CONFIRMATION_EVENT_DELAY = 5000;
+
+		/// <summary>
 		/// Action for Confirmation polling
 		/// </summary>
 		public enum PollerAction
@@ -786,6 +791,17 @@ namespace WinAuth
 		/// </summary>
 		public event ConfirmationErrorDelegate ConfirmationErrorEvent;
 
+#if NETFX_40
+		public static Task Delay(int milliseconds, CancellationToken cancel)
+		{
+			var tcs = new TaskCompletionSource<object>();
+			cancel.Register(() => tcs.TrySetCanceled());
+			Timer timer = new Timer(_ => tcs.TrySetResult(null));
+			timer.Change(milliseconds, -1);
+			return tcs.Task;
+		}
+#endif
+
 #if NETFX_4
 		/// <summary>
 		/// Stop the current poller
@@ -878,7 +894,15 @@ namespace WinAuth
 						{
 							foreach (var conf in confs)
 							{
+								if (cancel.IsCancellationRequested)
+								{
+									break;
+								}
+
 								ConfirmationEvent(this, conf, this.Session.Confirmations.Action);
+
+								// Issue#339: add a delay for any autoconfs or notifications
+								Thread.Sleep(CONFIRMATION_EVENT_DELAY);
 							}
 						}
 
@@ -906,7 +930,11 @@ namespace WinAuth
 						}
 					}
 
+#if NETFX_40
+					await Delay(this.Session.Confirmations.Duration * 60 * 1000, cancel);
+#else
 					await Task.Delay(this.Session.Confirmations.Duration * 60 * 1000, cancel);
+#endif
 				}
 			}
 			catch (TaskCanceledException)
@@ -1048,10 +1076,10 @@ namespace WinAuth
 		}
 #endif
 
-		/// <summary>
-		/// Get the current trade Confirmations
-		/// </summary>
-		/// <returns>list of Confirmation objects</returns>
+					/// <summary>
+					/// Get the current trade Confirmations
+					/// </summary>
+					/// <returns>list of Confirmation objects</returns>
 		public List<Confirmation> GetConfirmations()
 		{
 			long servertime = (SteamAuthenticator.CurrentTime + this.Authenticator.ServerTimeDiff) / 1000L;
