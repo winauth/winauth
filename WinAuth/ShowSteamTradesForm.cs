@@ -454,7 +454,6 @@ namespace WinAuth
 			}
 
 			if (WinAuthForm.ConfirmDialog(this, "This will CONFIRM all your current trade confirmations." + Environment.NewLine + Environment.NewLine +
-				"There will be a few seconds delay between each one so please be patient." + Environment.NewLine + Environment.NewLine +
 				"Are you sure you want to continue?",
 				MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
 			{
@@ -474,6 +473,7 @@ namespace WinAuth
 				cancelAllButton.Enabled = false;
 				closeButton.Enabled = false;
 
+				var rand = new Random();
 				var tradeIds = m_trades.Select(t => t.Id).Reverse().ToArray();
 				for (var i = tradeIds.Length - 1; i >= 0; i--)
 				{
@@ -482,6 +482,8 @@ namespace WinAuth
 						break;
 					}
 
+					DateTime start = DateTime.Now;
+
 					var result = await AcceptTrade(tradeIds[i]);
 					if (result == false || cancelComfirmAll.IsCancellationRequested == true)
 					{
@@ -489,7 +491,12 @@ namespace WinAuth
 					}
 					if (i != 0)
 					{
-						await Task.Run(() => { Thread.Sleep(5000); }, cancelComfirmAll.Token);
+						var duration = (int)DateTime.Now.Subtract(start).TotalMilliseconds;
+						var delay = SteamClient.CONFIRMATION_EVENT_DELAY + rand.Next(SteamClient.CONFIRMATION_EVENT_DELAY / 2); // delay is 100%-150% of CONFIRMATION_EVENT_DELAY
+						if (delay > duration)
+						{
+							await Task.Run(() => { Thread.Sleep(delay - duration); }, cancelComfirmAll.Token);
+						}
 					}
 				}
 
@@ -518,7 +525,6 @@ namespace WinAuth
 		private void confirmAllButton_Click(object sender, EventArgs e)
 		{
 			if (WinAuthForm.ConfirmDialog(this, "This will CONFIRM all your current trade confirmations." + Environment.NewLine + Environment.NewLine +
-				"There will be a few seconds delay between each one so please be patient." + Environment.NewLine + Environment.NewLine +
 				"Are you sure you want to continue?",
 				MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
 			{
@@ -534,9 +540,12 @@ namespace WinAuth
 				cancelAllButton.Enabled = false;
 				closeButton.Enabled = false;
 
+				var rand = new Random();
 				var tradeIds = m_trades.Select(t => t.Id).Reverse().ToArray();
 				for (var i = tradeIds.Length - 1; i >= 0; i--)
 				{
+					DateTime start = DateTime.Now;
+
 					var result = AcceptTrade(tradeIds[i]);
 					if (result == false)
 					{
@@ -544,7 +553,12 @@ namespace WinAuth
 					}
 					if (i != 0)
 					{
-						Thread.Sleep(5000);
+						var duration = (int)DateTime.Now.Subtract(start).TotalMilliseconds;
+						var delay = SteamClient.CONFIRMATION_EVENT_DELAY + rand.Next(SteamClient.CONFIRMATION_EVENT_DELAY / 2); // delay is 100%-150% of CONFIRMATION_EVENT_DELAY
+						if (delay > duration)
+						{
+							Thread.Sleep(delay - duration);
+						}
 					}
 				}
 
@@ -577,7 +591,6 @@ namespace WinAuth
 			}
 
 			if (WinAuthForm.ConfirmDialog(this, "This will CANCEL all your current trade confirmations." + Environment.NewLine + Environment.NewLine +
-				"There will be a few seconds delay between each one so please be patient." + Environment.NewLine + Environment.NewLine +
 				"Are you sure you want to continue?",
 				MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
 			{
@@ -597,6 +610,7 @@ namespace WinAuth
 				confirmAllButton.Enabled = false;
 				closeButton.Enabled = false;
 
+				var rand = new Random();
 				var tradeIds = m_trades.Select(t => t.Id).Reverse().ToArray();
 				for (var i=tradeIds.Length-1; i >= 0; i--)
 				{
@@ -605,6 +619,8 @@ namespace WinAuth
 						break;
 					}
 
+					DateTime start = DateTime.Now;
+
 					var result = await RejectTrade(tradeIds[i]);
 					if (result == false || cancelCancelAll.IsCancellationRequested == true)
 					{
@@ -612,7 +628,12 @@ namespace WinAuth
 					}
 					if (i != 0)
 					{
-						await Task.Run(() => { Thread.Sleep(5000); }, cancelCancelAll.Token);
+						var duration = (int)DateTime.Now.Subtract(start).TotalMilliseconds;
+						var delay = SteamClient.CONFIRMATION_EVENT_DELAY + rand.Next(SteamClient.CONFIRMATION_EVENT_DELAY / 2); // delay is 100%-150% of CONFIRMATION_EVENT_DELAY
+						if (delay > duration)
+						{
+							await Task.Run(() => { Thread.Sleep(delay - duration); }, cancelCancelAll.Token);
+						}
 					}
 				}
 
@@ -641,7 +662,6 @@ namespace WinAuth
 		private void cancelAllButton_Click(object sender, EventArgs e)
 		{
 			if (WinAuthForm.ConfirmDialog(this, "This will CANCEL all your current trade confirmations." + Environment.NewLine + Environment.NewLine +
-				"There will be a few seconds delay between each one so please be patient." + Environment.NewLine + Environment.NewLine +
 				"Are you sure you want to continue?",
 				MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) != DialogResult.Yes)
 			{
@@ -658,9 +678,12 @@ namespace WinAuth
 				confirmAllButton.Enabled = false;
 				closeButton.Enabled = false;
 
+				var rand = new Random();
 				var tradeIds = m_trades.Select(t => t.Id).Reverse().ToArray();
 				for (var i=tradeIds.Length-1; i >= 0; i--)
 				{
+					DateTime start = DateTime.Now;
+
 					var result = RejectTrade(tradeIds[i]);
 					if (result == false)
 					{
@@ -668,7 +691,12 @@ namespace WinAuth
 					}
 					if (i != 0)
 					{
-						Thread.Sleep(5000);
+						var duration = (int)DateTime.Now.Subtract(start).TotalMilliseconds;
+						var delay = SteamClient.CONFIRMATION_EVENT_DELAY + rand.Next(SteamClient.CONFIRMATION_EVENT_DELAY / 2); // delay is 100%-150% of CONFIRMATION_EVENT_DELAY
+						if (delay > duration)
+						{
+							Thread.Sleep(delay - duration);
+						}
 					}
 				}
 

@@ -14,7 +14,7 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <AssemblyVersion>3.4.23.4</AssemblyVersion>
+    <AssemblyVersion>3.4.25.8</AssemblyVersion>
     <PrimaryVersionType>AssemblyVersionAttribute</PrimaryVersionType>
     <AssemblyInfoFilePath>Properties\AssemblyInfo.cs</AssemblyInfoFilePath>
     <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
@@ -510,7 +510,6 @@
     <EmbeddedResource Include="Resources\DefianceIcon.png" />
     <EmbeddedResource Include="Resources\WarcraftIcon.png" />
     <EmbeddedResource Include="Resources\GoogleIcon.png" />
-    <EmbeddedResource Include="Resources\ChromeIcon.png" />
     <EmbeddedResource Include="Resources\ArenaNetIcon.png" />
     <EmbeddedResource Include="Resources\Windows8Icon.png" />
     <EmbeddedResource Include="Resources\Windows7Icon.png" />
@@ -590,6 +589,7 @@
     <EmbeddedResource Include="Resources\TumblrIcon.png" />
     <EmbeddedResource Include="Resources\WinAuthIcon.gif" />
     <EmbeddedResource Include="Resources\WordpressWhiteIcon.png" />
+    <EmbeddedResource Include="Resources\ChromeIcon.png" />
     <Content Include="winauth.ico" />
   </ItemGroup>
   <ItemGroup>

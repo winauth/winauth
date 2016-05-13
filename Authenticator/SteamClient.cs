@@ -77,7 +77,7 @@ namespace WinAuth
 		/// <summary>
 		/// Delay between trade confirmation events
 		/// </summary>
-		private const int CONFIRMATION_EVENT_DELAY = 5000;
+		public const int CONFIRMATION_EVENT_DELAY = 1000;
 
 		/// <summary>
 		/// Action for Confirmation polling
@@ -892,6 +892,7 @@ namespace WinAuth
 						// fire events if subscriber
 						if (ConfirmationEvent != null /* && newIds.Count() != 0 */)
 						{
+							var rand = new Random();
 							foreach (var conf in confs)
 							{
 								if (cancel.IsCancellationRequested)
@@ -899,10 +900,17 @@ namespace WinAuth
 									break;
 								}
 
+								DateTime start = DateTime.Now;
+
 								ConfirmationEvent(this, conf, this.Session.Confirmations.Action);
 
 								// Issue#339: add a delay for any autoconfs or notifications
-								Thread.Sleep(CONFIRMATION_EVENT_DELAY);
+								var delay = CONFIRMATION_EVENT_DELAY + rand.Next(CONFIRMATION_EVENT_DELAY/2); // delay is 100%-150% of CONFIRMATION_EVENT_DELAY
+								var duration = (int)DateTime.Now.Subtract(start).TotalMilliseconds;
+								if (delay > duration)
+								{
+									Thread.Sleep(delay - duration);
+								}
 							}
 						}
 
