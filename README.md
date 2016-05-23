@@ -6,38 +6,25 @@
 
 ##Download Latest Version
 
-The latest stable version is WinAuth 3.3 and is available to download from this source repository, or as a pre-compiled binary from [WinAuth downloads](https://winauth.com/download).
+The latest stable version is WinAuth 3.5 and is available to download from this source repository, or as a pre-compiled binary from [WinAuth downloads](https://winauth.com/download).
 
 ----
 
-##WinAuth 3.4 BETA (latest development)
-
-Please download 3.3. if you are just looking for WinAuth and not wanting to test the latest features.
-
-This version adds support for Steam trading confirmations, importing from Android files and SteamDesktopAuthenticator.
-
-[WinAuth-3.4.25 BETA](https://winauth.com/downloads/3.x/WinAuth-3.4.25.zip)
-
-<img src="https://winauth.com/wp-content/uploads/2013/07/steamconf1.png" alt="WinAuth 3.4 Steam Trading">
-
-There is now also a [.Net 3.5 build of WinAuth](https://winauth.com/downloads/3.x/WinAuth-3.4.19-NET35.zip), which can be run on Windows 7 installations "out of the box".
-
-##WinAuth 3.3 (latest stable)
+##WinAuth 3.5 (latest stable)
 
 WinAuth provides an alternative solution to combine various two-factor authenticator services in one convenient place.
 
-[Latest Version (WinAuth-3.3.7)](https://winauth.com/downloads/3.x/WinAuth-3.3.7.zip)
+[Latest Version (WinAuth-3.5.0)](https://winauth.com/downloads/3.x/WinAuth-3.5.0.zip)
+
+There is also a [.Net 3.5 build of WinAuth](https://winauth.com/downloads/3.x/WinAuth-3.5.0-NET35.zip) that can be run on Windows 7 installations "out of the box".
 
 <img src="https://winauth.com/images/winauth3-preview.png" alt="WinAuth3 Preview" />
-
-Updates:
-
-  * 3.3.7 - Issue [257](https://github.com/winauth/winauth/issues/257): Fix Steam change causing crash when creating new Steam authenticator. Added view of complete Steam data for exporting.
 
 Features include:
 
   * Support for time-based RFC 6238 authenticators (e.g. Google Authenticator) and HOTP counter-based authenticators
   * Supports Battle.net (World of Warcraft, Hearthstone, Heroes of the Storm, Diablo III), GuildWars 2, Trion / Glyph (Rift, ArcheAge), RuneScape, WildStar, SWTOR and Steam
+  * Supports Steam's SteamGuard and trading confirmations
   * Supports many Bitcoin trading websites such as Coinbase, Gemini, Circle, Bitstamp, BTC-e, Cryptsy
   * Displays multiple authenticators simultaneously
   * Codes displayed and refreshed automatically or on demand
@@ -75,29 +62,17 @@ To compile and build from source:
 
 ###New Features
 
-Version 3.3 includes the new SteamGuard Mobile Authenticator, integration with YubiKey to enhance your authenticator security and a HOTP implementation.
+Version 3.5 includes Steam trade confirmations.
 
-####Steam Guard
+<img src="https://winauth.com/wp-content/uploads/2013/07/steamconf1.png" alt="steamconf" class="aligncenter" />
 
-WinAuth can be registered as a new mobile device to create a Steam authenticator and displays the appropriate 5 character codes.
+If you registered SteamGuard with WinAuth 3.3.7 or earlier, you will need to remove it from your Steam account and add it again. This is because WinAuth 3.3 only kept information relevant to generating the SteamGuard authenticator codes, however, confirmations needs more information.
 
-<img src="https://winauth.com/wp-content/uploads/2013/07/steam.png" alt="WinAuth Supports Steam" />
+You can go into the normal Steam client, choose Account Details, then click "Manage Steam Guard". Click the Remove Authenticator button and enter the recovery code (aka revocation code - found from right-clicking in WinAuth).
 
-You MUST attach an SMS-capable phone number to your account before your activate your Steam authenticator, since the confirmation code are no longer sent by email, only over SMS.
+Once the new authenticator is added, you will have an extra option when right-clicking called "Confirmations...". This will login with your username/password and show your current trade confirmations. You can click to view more details, and use the buttons to accept or reject them.
 
-Please read about the [Steam Guard Mobile Authenticator](https://winauth.com/2015/06/11/steam-guard-mobile/) for more information.
-
-####YubiKey
-
-WinAuth can now be used with a YubiKey to further protect the data. This will help ensure the authenticators’ secret keys cannot be read by anyone even when they have physical access to your computer.
-
-<img src="https://winauth.com/wp-content/uploads/2013/07/yubi1.png" alt="Using YubiKey with WinAuth" />
-
-Clicking the options (cog) icon, and choosing "Change Protection...", has a new option to "Lock with a YubiKey". Ticking this will check your system for a compatible YubiKey and walk you through setting it up. You can either use an existing slot's configuration or have WinAuth generate a random secret to store on the YubiKey.
-
-You must keep your YubiKey plugged in while using WinAuth. There will be no way to recover your authenticator data if your YubiKey is lost or damaged without programming another YubiKey with the same secret, or restoring from backups.
-
-*YubiKey Standard / NEO 2.2.x or later is required.*
+If you choose "remember me", WinAuth will keep you logged in (does not keep your username/password) so you can quickly go into Confirmations again.
 
 ----
 
@@ -150,7 +125,7 @@ All trademarks are recognised, including but not limited to:
 
 ##Author
 
-WinAuth was written by Colin Mackie. Copyright (C) 2010-2015.
+WinAuth was written by Colin Mackie. Copyright (C) 2010-2016.
 
 Bitcoin donations can be sent to `1C4bMkMATViiWYsmJSDUx2MruWM785C36Y`
 

@@ -14,7 +14,7 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <AssemblyVersion>3.4.23.3</AssemblyVersion>
+    <AssemblyVersion>3.5.0.14</AssemblyVersion>
     <PrimaryVersionType>AssemblyVersionAttribute</PrimaryVersionType>
     <AssemblyInfoFilePath>Properties\AssemblyInfo.cs</AssemblyInfoFilePath>
     <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
@@ -66,7 +66,7 @@
     <Optimize>false</Optimize>
     <OutputPath>..\Net3.5\bin\Debug\</OutputPath>
     <IntermediateOutputPath>..\Net3.5\obj\Debug\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;NETFX_3,BETA</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETFX_3</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>true</UseVSHostingProcess>
@@ -78,7 +78,7 @@
     <Optimize>true</Optimize>
     <OutputPath>..\Net3.5\bin\Release\</OutputPath>
     <IntermediateOutputPath>..\Net3.5\obj\Release\</IntermediateOutputPath>
-    <DefineConstants>TRACE;NETFX_3,BETA</DefineConstants>
+    <DefineConstants>TRACE;NETFX_3</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -501,7 +501,6 @@
     <EmbeddedResource Include="Resources\DefianceIcon.png" />
     <EmbeddedResource Include="Resources\WarcraftIcon.png" />
     <EmbeddedResource Include="Resources\GoogleIcon.png" />
-    <EmbeddedResource Include="Resources\ChromeIcon.png" />
     <EmbeddedResource Include="Resources\ArenaNetIcon.png" />
     <EmbeddedResource Include="Resources\Windows8Icon.png" />
     <EmbeddedResource Include="Resources\Windows7Icon.png" />
@@ -554,6 +553,34 @@
     <None Include="bin\Debug\WinAuth.YubiKey.x64.dll" />
     <None Include="bin\Debug\WinAuth.YubiKey.x86.dll" />
     <EmbeddedResource Include="Resources\GoogleAuthenticator2Icon.png" />
+    <EmbeddedResource Include="Resources\BitBucketIcon.png" />
+    <EmbeddedResource Include="Resources\DigitalOceanIcon.png" />
+    <EmbeddedResource Include="Resources\DreamhostIcon.png" />
+    <EmbeddedResource Include="Resources\DropboxWhiteIcon.png" />
+    <EmbeddedResource Include="Resources\EA2Icon.png" />
+    <EmbeddedResource Include="Resources\EA3Icon.png" />
+    <EmbeddedResource Include="Resources\EAIcon.png" />
+    <EmbeddedResource Include="Resources\eBayIcon.png" />
+    <EmbeddedResource Include="Resources\GitHub2Icon.png" />
+    <EmbeddedResource Include="Resources\Gitlab2Icon.png" />
+    <EmbeddedResource Include="Resources\GitLabFox2Icon.png" />
+    <EmbeddedResource Include="Resources\GitlabFoxIon.png" />
+    <EmbeddedResource Include="Resources\GitLabIcon.png" />
+    <EmbeddedResource Include="Resources\GMailIcon.png" />
+    <EmbeddedResource Include="Resources\IFTTT2Icon.png" />
+    <EmbeddedResource Include="Resources\IFTTT3Icon.png" />
+    <EmbeddedResource Include="Resources\IFTTTIcon.png" />
+    <EmbeddedResource Include="Resources\ItchIcon.png" />
+    <EmbeddedResource Include="Resources\KickStarterIcon.png" />
+    <EmbeddedResource Include="Resources\NameIcon.png" />
+    <EmbeddedResource Include="Resources\OriginIcon.png" />
+    <EmbeddedResource Include="Resources\PayPalIcon.png" />
+    <EmbeddedResource Include="Resources\Tumblr2Icon.png" />
+    <EmbeddedResource Include="Resources\Tumblr3Icon.png" />
+    <EmbeddedResource Include="Resources\TumblrIcon.png" />
+    <EmbeddedResource Include="Resources\WinAuthIcon.gif" />
+    <EmbeddedResource Include="Resources\WordpressWhiteIcon.png" />
+    <EmbeddedResource Include="Resources\ChromeIcon.png" />
     <Content Include="winauth.ico" />
   </ItemGroup>
   <ItemGroup>
