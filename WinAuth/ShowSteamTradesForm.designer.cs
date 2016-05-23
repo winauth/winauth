@@ -186,7 +186,7 @@
 			this.loginTab.Location = new System.Drawing.Point(4, 22);
 			this.loginTab.Name = "loginTab";
 			this.loginTab.Padding = new System.Windows.Forms.Padding(3);
-			this.loginTab.Size = new System.Drawing.Size(456, 399);
+			this.loginTab.Size = new System.Drawing.Size(456, 380);
 			this.loginTab.TabIndex = 0;
 			this.loginTab.Tag = "";
 			this.loginTab.Text = "Login";
@@ -277,8 +277,7 @@
 			// 
 			// pollPanel
 			// 
-			this.pollPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+			this.pollPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.pollPanel.BackColor = System.Drawing.SystemColors.Window;
 			this.pollPanel.Controls.Add(this.pollAction);
