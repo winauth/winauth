@@ -55,8 +55,7 @@ To use:
 
 To compile and build from source:
   * Download source code file or clone project
-  * Requires Microsoft Visual Studio 2012 (previous versions will work, but you will need to create your own solution/project files)
-  * nuget is used for dependencies
+  * Requires Microsoft Visual Studio 2015
   * any other dependencies are included in the source tree in the 3rd Party folder
   * Use [ILMerge](http://research.microsoft.com/en-us/people/mbarnett/ilmerge.aspx ) to combine assemblies into one single exe file
 
