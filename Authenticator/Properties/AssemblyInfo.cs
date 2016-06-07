@@ -8,7 +8,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Authenticator")]
 [assembly: AssemblyDescription("Authenticator implementation")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCopyright("Copyright - Colin Mackie 2014")]
+[assembly: AssemblyProduct("WinAuth")]
+[assembly: AssemblyCopyright("Copyright © 2016. Colin Mackie. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

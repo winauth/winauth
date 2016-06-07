@@ -11,7 +11,7 @@ using System.Resources;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("WinAuth")]
-[assembly: AssemblyCopyright("Copyright © 2015. Colin Mackie. All rights reserved.")]
+[assembly: AssemblyCopyright("Copyright © 2016. Colin Mackie. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -33,6 +33,6 @@ using System.Resources;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.5.0.14")]
-[assembly: AssemblyFileVersion("3.5.0.14")]
+[assembly: AssemblyVersion("3.5.1.3")]
+[assembly: AssemblyFileVersion("3.5.1.3")]
 [assembly: NeutralResourcesLanguageAttribute("")]
