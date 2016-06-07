@@ -866,7 +866,7 @@ namespace WinAuth
 			try
 			{
 				int retryCount = 0;
-				while (!cancel.IsCancellationRequested)
+				while (!cancel.IsCancellationRequested && this.Session.Confirmations != null)
 				{
 					try
 					{
@@ -1024,7 +1024,7 @@ namespace WinAuth
 			try
 			{
 				int retryCount = 0;
-				while (!cancel.WaitOne(this.Session.Confirmations.Duration * 60 * 1000))
+				while (this.Session.Confirmations != null && !cancel.WaitOne(this.Session.Confirmations.Duration * 60 * 1000))
 				{
 					try
 					{
@@ -1087,10 +1087,10 @@ namespace WinAuth
 		}
 #endif
 
-					/// <summary>
-					/// Get the current trade Confirmations
-					/// </summary>
-					/// <returns>list of Confirmation objects</returns>
+		/// <summary>
+		/// Get the current trade Confirmations
+		/// </summary>
+		/// <returns>list of Confirmation objects</returns>
 		public List<Confirmation> GetConfirmations()
 		{
 			long servertime = (SteamAuthenticator.CurrentTime + this.Authenticator.ServerTimeDiff) / 1000L;
