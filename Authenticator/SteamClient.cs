@@ -539,6 +539,10 @@ namespace WinAuth
 					response = GetString(COMMUNITY_BASE + "/mobilelogin?oauth_client_id=DE45CD61&oauth_scope=read_profile%20write_profile%20read_client%20write_client", "GET", null, headers);
 				}
 
+				// Steam strips any non-ascii chars from username and password
+				username = Regex.Replace(username, @"[^\u0000-\u007F]", string.Empty);
+				password = Regex.Replace(password, @"[^\u0000-\u007F]", string.Empty);
+
 				// get the user's RSA key
 				data.Add("username", username);
 				response = GetString(COMMUNITY_BASE + "/mobilelogin/getrsakey", "POST", data);
