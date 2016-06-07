@@ -514,6 +514,7 @@
 			this.confirmAllButton.TabIndex = 4;
 			this.confirmAllButton.Text = "Confirm All";
 			this.confirmAllButton.UseSelectable = true;
+			this.confirmAllButton.Visible = false;
 			this.confirmAllButton.Click += new System.EventHandler(this.confirmAllButton_Click);
 			// 
 			// cancelAllButton
@@ -525,6 +526,7 @@
 			this.cancelAllButton.TabIndex = 4;
 			this.cancelAllButton.Text = "Cancel All";
 			this.cancelAllButton.UseSelectable = true;
+			this.cancelAllButton.Visible = false;
 			this.cancelAllButton.Click += new System.EventHandler(this.cancelAllButton_Click);
 			// 
 			// ShowSteamTradesForm

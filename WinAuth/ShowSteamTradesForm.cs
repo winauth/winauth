@@ -763,6 +763,8 @@ namespace WinAuth
 				this.refreshButton.Visible = false;
 				this.logoutButton.Visible = false;
 				this.pollPanel.Visible = false;
+				this.confirmAllButton.Visible = false;
+				this.cancelAllButton.Visible = false;
 			}
 		}
 
@@ -972,6 +974,8 @@ namespace WinAuth
 						}
 
 						this.pollPanel.Visible = true;
+						this.confirmAllButton.Visible = true;
+						this.cancelAllButton.Visible = true;
 					}
 
 					break;
