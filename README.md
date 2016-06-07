@@ -14,9 +14,9 @@ The latest stable version is WinAuth 3.5 and is available to download from this 
 
 WinAuth provides an alternative solution to combine various two-factor authenticator services in one convenient place.
 
-[Latest Version (WinAuth-3.5.0)](https://winauth.com/downloads/3.x/WinAuth-3.5.0.zip)
+[Latest Version (WinAuth-3.5.1)](https://winauth.com/downloads/3.x/WinAuth-3.5.1.zip)
 
-There is also a [.Net 3.5 build of WinAuth](https://winauth.com/downloads/3.x/WinAuth-3.5.0-NET35.zip) that can be run on Windows 7 installations "out of the box".
+There is also a [.Net 3.5 build of WinAuth](https://winauth.com/downloads/3.x/WinAuth-3.5.1-NET35.zip) that can be run on Windows 7 installations "out of the box".
 
 <img src="https://winauth.com/images/winauth3-preview.png" alt="WinAuth3 Preview" />
 
@@ -37,6 +37,10 @@ Features include:
   * Import and export in UriKeyFormat and from Authenticator Plus for Android 
 
 Visit [WinAuth.com](https://winauth.com) for more information.
+
+#### Updates
+
+  * 3.5.1 - Issue#366: fix spamming notifications when Steam is down. Hide confim/cancel all buttons on login.
 
 ###How To Use
 
