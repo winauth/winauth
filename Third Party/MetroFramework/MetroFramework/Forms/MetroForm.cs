@@ -478,7 +478,7 @@ namespace MetroFramework.Forms
         {
             //Point vPoint = PointToClient(new Point((int)lparam & 0xFFFF, (int)lparam >> 16 & 0xFFFF));
             //Point vPoint = PointToClient(new Point((Int16)lparam, (Int16)((int)lparam >> 16)));
-            Point vPoint = new Point((Int16)lparam, (Int16)((int)lparam >> 16));
+            Point vPoint = new Point((int)lparam.ToInt64() & 0xFFFF, (int)(lparam.ToInt64() >> 16) & 0xFFFF);
             int vPadding = Math.Max(Padding.Right, Padding.Bottom);
 
             if (Resizable)
