@@ -145,7 +145,7 @@ namespace WinAuth
 			{new Tuple<string,string>("Itch.io", "ItchIcon.png")},
 			{new Tuple<string,string>("KickStarter", "KickStarterIcon.png")},
 			{new Tuple<string,string>("LastPass", "LastPassIcon.png")},
-			{new Tuple<string,string>("Name.io", "NameIcon.png")},
+			{new Tuple<string,string>("Name.com", "NameIcon.png")},
 			{new Tuple<string,string>("Teamviewer", "TeamviewerIcon.png")},
 			{new Tuple<string,string>("s7", string.Empty)},
 			{new Tuple<string,string>("Amazon", "AmazonIcon.png")},
