@@ -1,0 +1,20 @@
+*.VC.db
+WinAuth.YubiKey/Debug
+WinAuth.YubiKey/Release
+WinAuth.YubiKey/x64/Debug
+WinAuth.YubiKey/x64/Release
+Authenticator/Resources
+Net4.5/.vs
+Net4.5/bin
+Net4.5/obj
+Net4.5/packages
+Net3.5/.vs
+Net3.5/bin
+Net3.5/obj
+Net3.5/packages
+Third Party/InputSimulator/bin
+Third Party/InputSimulator/obj
+Third Party/MetroFramework/MetroFramework.Design/bin
+Third Party/MetroFramework/MetroFramework.Design/obj
+Third Party/MetroFramework/MetroFramework/bin
+Third Party/MetroFramework/MetroFramework/obj
