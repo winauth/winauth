@@ -748,7 +748,7 @@ namespace WinAuth
 			}
 
 			var url = string.Format("otpauth://" + type + "/{0}?secret={1}&digits={2}{3}",
-				(string.IsNullOrEmpty(issuer) == false ? issuer + ":" + HttpUtility.UrlEncode(label) : HttpUtility.UrlEncode(label)),
+				(string.IsNullOrEmpty(issuer) == false ? HttpUtility.UrlPathEncode(issuer) + ":" + HttpUtility.UrlPathEncode(label) : HttpUtility.UrlPathEncode(label)),
 				secret,
 				this.AuthenticatorData.CodeDigits,
 				extraparams);
