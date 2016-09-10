@@ -169,7 +169,7 @@ namespace WinAuth
 									// we use an explicit password to encrypt data
 									if (string.IsNullOrEmpty(password) == true)
 									{
-										throw new EncrpytedSecretDataException();
+										throw new EncryptedSecretDataException();
 									}
 									data = Authenticator.Decrypt(data, password, (version >= (decimal)1.7)); // changed encrypted in 1.7
 									byte[] plain = Authenticator.StringToByteArray(data);
@@ -266,7 +266,7 @@ namespace WinAuth
                         // we use an explicit password to encrypt data
                         if (string.IsNullOrEmpty(password) == true)
                         {
-                          throw new EncrpytedSecretDataException();
+                          throw new EncryptedSecretDataException();
                         }
                         data = Authenticator.Decrypt(data, password, true);
                         byte[] plain = Authenticator.StringToByteArray(data);

@@ -462,7 +462,7 @@ namespace WinAuth
 			// check if data is protected
 			if (this.SecretKey == null && this.EncryptedData != null)
 			{
-				throw new EncrpytedSecretDataException();
+				throw new EncryptedSecretDataException();
 			}
 
 			// don't retry for 5 minutes

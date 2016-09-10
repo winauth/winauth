@@ -1949,7 +1949,7 @@ namespace WinAuth
 								code = code.Insert(code.Length / 2, " ");
 							}
 						}
-						catch (EncrpytedSecretDataException )
+						catch (EncryptedSecretDataException )
 						{
 							code = "- - - - - -";
 						}

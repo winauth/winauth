@@ -384,7 +384,7 @@ namespace WinAuth
 				{
 					AuthenticatorData.Sync();
 				}
-				catch (EncrpytedSecretDataException)
+				catch (EncryptedSecretDataException)
 				{
 					// reset lastsync to force sync on next decryption
 				}
@@ -555,7 +555,7 @@ namespace WinAuth
 								// we don't pass the password as they are locked till clicked
 								changed = this.AuthenticatorData.ReadXml(reader) || changed;
 							}
-							catch (EncrpytedSecretDataException )
+							catch (EncryptedSecretDataException )
 							{
 								// no action needed
 							}

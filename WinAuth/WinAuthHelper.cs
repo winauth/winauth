@@ -219,7 +219,7 @@ namespace WinAuth
 					SaveConfig(config);
 				}
 			}
-			catch (EncrpytedSecretDataException )
+			catch (EncryptedSecretDataException )
 			{
 				// we require a password
 				throw;

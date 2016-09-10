@@ -100,9 +100,9 @@ namespace WinAuth
 	/// <summary>
 	/// Config has been encryoted and we need a key
 	/// </summary>
-	public class EncrpytedSecretDataException : AuthenticatorException
+	public class EncryptedSecretDataException : AuthenticatorException
 	{
-		public EncrpytedSecretDataException() : base() { }
+		public EncryptedSecretDataException() : base() { }
 	}
 
 	/// <summary>
