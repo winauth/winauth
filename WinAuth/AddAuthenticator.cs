@@ -80,6 +80,7 @@ namespace WinAuth
         {
             nameField.Text = this.Authenticator.Name;
             codeField.SecretMode = true;
+            cmbHMACType.SelectedIndex = 0;
         }
 
         /// <summary>
@@ -318,6 +319,20 @@ namespace WinAuth
             this.Authenticator.Name = nameField.Text;
 
             int digits = (this.Authenticator.AuthenticatorData != null ? this.Authenticator.AuthenticatorData.CodeDigits : GoogleAuthenticator.DEFAULT_CODE_DIGITS);
+            HMACTypes hmacType = HMACTypes.SHA1;
+
+            switch (cmbHMACType.SelectedIndex)
+            {
+                case 0:
+                    hmacType = HMACTypes.SHA1;
+                    break;
+                case 1:
+                    hmacType = HMACTypes.SHA256;
+                    break;
+                case 2:
+                    hmacType = HMACTypes.SHA512;
+                    break;
+            }
 
             string authtype = timeBasedRadio.Checked == true ? TOTP : HOTP;
 
@@ -419,11 +434,29 @@ namespace WinAuth
                     label = issuer + (string.IsNullOrEmpty(label) == false ? " (" + label + ")" : string.Empty);
                 }
                 serial = qs["serial"];
-
                 if (string.IsNullOrEmpty(label) == false)
                 {
                     this.Authenticator.Name = this.nameField.Text = label;
                 }
+                if (qs["algorithm"] != null)
+                {
+                    switch (qs["algorithm"].ToUpper())
+                    {
+                        case "SHA1":
+                            cmbHMACType.SelectedIndex = 0;
+                            hmacType = HMACTypes.SHA1;
+                            break;
+                        case "SHA256":
+                            cmbHMACType.SelectedIndex = 1;
+                            hmacType = HMACTypes.SHA256;
+                            break;
+                        case "SHA512":
+                            cmbHMACType.SelectedIndex = 2;
+                            hmacType = HMACTypes.SHA512;
+                            break;
+                    }
+                }
+
             }
 
             // just get the hex chars
@@ -472,7 +505,7 @@ namespace WinAuth
                     else
                     {
                         auth = new GoogleAuthenticator();
-                        ((GoogleAuthenticator)auth).Enroll(privatekey);
+                        ((GoogleAuthenticator)auth).Enroll(privatekey, hmacType);
                     }
                     timer.Enabled = true;
                     codeProgress.Visible = true;

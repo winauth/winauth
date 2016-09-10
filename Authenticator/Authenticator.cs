@@ -50,6 +50,16 @@ using OpenNETCF.Security.Cryptography;
 namespace WinAuth
 {
     /// <summary>
+    /// HMAC hashing algorithm types
+    /// </summary>
+    public enum HMACTypes
+    {
+        SHA1 = 0,
+        SHA256 = 1,
+        SHA512 = 2
+    }
+
+    /// <summary>
     /// Class that implements base RFC 4226 an RFC 6238 authenticator
     /// </summary>
     public abstract class Authenticator : ICloneable
@@ -91,6 +101,8 @@ namespace WinAuth
             YubiKeySlot1 = 8,
             YubiKeySlot2 = 16
         }
+
+        public const HMACTypes DEFAULT_HMAC_TYPE = HMACTypes.SHA1;
 
         #region Authenticator data
 
@@ -142,6 +154,11 @@ namespace WinAuth
         public int CodeDigits { get; set; }
 
         /// <summary>
+        /// Hashing algorithm used for OTP generation (default is SHA1)
+        /// </summary>
+        public HMACTypes HMACType { get; set; }
+
+        /// <summary>
         /// Name of issuer
         /// </summary>
         public virtual string Issuer { get; set; }
@@ -154,7 +171,7 @@ namespace WinAuth
             get
             {
                 // this is the secretkey
-                return Authenticator.ByteArrayToString(SecretKey) + "\t" + this.CodeDigits.ToString();
+                return Authenticator.ByteArrayToString(SecretKey) + "\t" + this.CodeDigits.ToString() + "\t" + this.HMACType.ToString();
             }
             set
             {
@@ -168,6 +185,10 @@ namespace WinAuth
                         if (int.TryParse(parts[1], out digits) == true)
                         {
                             CodeDigits = digits;
+                        }
+                        if (parts.Length > 2)
+                        {
+                            HMACType = (HMACTypes)Enum.Parse(typeof(HMACTypes), parts[2]);
                         }
                     }
                 }
@@ -240,14 +261,16 @@ namespace WinAuth
         public Authenticator()
         {
             CodeDigits = DEFAULT_CODE_DIGITS;
+            HMACType = DEFAULT_HMAC_TYPE;
         }
 
         /// <summary>
         /// Create a new Authenticator object
         /// </summary>
-        public Authenticator(int codeDigits)
+        public Authenticator(int codeDigits, HMACTypes hmacType = HMACTypes.SHA1)
         {
             CodeDigits = codeDigits;
+            HMACType = hmacType;
         }
 
         /// <summary>
@@ -270,7 +293,21 @@ namespace WinAuth
                 }
             }
 
-            HMac hmac = new HMac(new Sha1Digest());
+            HMac hmac;
+            switch (HMACType)
+            {
+                case HMACTypes.SHA1:
+                    hmac = new HMac(new Sha1Digest());
+                    break;
+                case HMACTypes.SHA256:
+                    hmac = new HMac(new Sha256Digest());
+                    break;
+                case HMACTypes.SHA512:
+                    hmac = new HMac(new Sha512Digest());
+                    break;
+                default:
+                    throw new InvalidHMACAlgorithmException();
+            }
             hmac.Init(new KeyParameter(SecretKey));
 
             byte[] codeIntervalArray = BitConverter.GetBytes(CodeInterval);
@@ -284,7 +321,7 @@ namespace WinAuth
             hmac.DoFinal(mac, 0);
 
             // the last 4 bits of the mac say where the code starts (e.g. if last 4 bit are 1100, we start at byte 12)
-            int start = mac[19] & 0x0f;
+            int start = mac.Last() & 0x0f;
 
             // extract those 4 bytes
             byte[] bytes = new byte[4];

@@ -92,9 +92,10 @@ namespace WinAuth
 
     /// <summary>
     /// Enroll the authenticator with the server.
-    public void Enroll(string b32key)
+    public void Enroll(string b32key, HMACTypes hmacType = HMACTypes.SHA1)
     {
       SecretKey = Base32.getInstance().Decode(b32key);
+      HMACType = hmacType;
       Sync();
     }
 

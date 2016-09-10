@@ -669,6 +669,27 @@ namespace WinAuth
 							auth.CodeDigits = digits;
 						}
 						//
+						string hmacTypeString = query["algorithm"];
+						HMACTypes hmacType = Authenticator.DEFAULT_HMAC_TYPE;
+						if (hmacTypeString != null)
+						{
+							switch (hmacTypeString.ToUpper())
+							{
+								case "SHA1":
+									hmacType = HMACTypes.SHA1;
+									break;
+								case "SHA256":
+									hmacType = HMACTypes.SHA256;
+									break;
+								case "SHA512":
+									hmacType = HMACTypes.SHA512;
+									break;
+								default:
+									throw new ApplicationException("Unknown HMAC algorithm '" + hmacTypeString + "'");
+							}
+						}
+						auth.HMACType = hmacType;
+						//
 						if (label.Length != 0)
 						{
 							importedAuthenticator.Name = (issuer.Length != 0 ? issuer + " (" + label + ")" : label);

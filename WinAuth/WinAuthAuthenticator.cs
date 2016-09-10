@@ -712,6 +712,19 @@ namespace WinAuth
                 extraparams += "&issuer=" + HttpUtility.UrlEncode(issuer);
             }
 
+            switch (this.AuthenticatorData.HMACType)
+            {
+                case HMACTypes.SHA1:
+                    // Default when unspecified.
+                    break;
+                case HMACTypes.SHA256:
+                    extraparams += "&algorithm=SHA256";
+                    break;
+                case HMACTypes.SHA512:
+                    extraparams += "&algorithm=SHA512";
+                    break;
+            }
+
             if (this.AuthenticatorData is BattleNetAuthenticator)
             {
                 extraparams += "&serial=" + HttpUtility.UrlEncode(((BattleNetAuthenticator)this.AuthenticatorData).Serial.Replace("-", ""));

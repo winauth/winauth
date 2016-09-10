@@ -57,6 +57,14 @@ namespace WinAuth
 		public InvalidConfigDataException() : base() {}
 	}
 
+    /// <summary>
+    /// Exception for invalid HMAC algorithm configuration
+    /// </summary>
+    public class InvalidHMACAlgorithmException : AuthenticatorException
+    {
+        public InvalidHMACAlgorithmException() : base() {}
+    }
+
 	/// <summary>
 	/// Exception for invalid user decryption
 	/// </summary>
@@ -98,7 +106,7 @@ namespace WinAuth
 	}
 
 	/// <summary>
-	/// Config has been encryoted and we need a key
+	/// Config has been encrypted and we need a key
 	/// </summary>
 	public class EncryptedSecretDataException : AuthenticatorException
 	{
