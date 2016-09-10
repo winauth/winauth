@@ -1,17 +1,20 @@
 *.VC.db
+*.suo
+*.sdf
+*.opensdf
+*.csproj.user
+*.vcxproj.user
 WinAuth.YubiKey/Debug
 WinAuth.YubiKey/Release
 WinAuth.YubiKey/x64/Debug
 WinAuth.YubiKey/x64/Release
 Authenticator/Resources
-Net4.5/.vs
-Net4.5/bin
-Net4.5/obj
-Net4.5/packages
-Net3.5/.vs
-Net3.5/bin
-Net3.5/obj
-Net3.5/packages
+Net*/.vs
+Net*/bin
+Net*/obj
+Net*/x86
+Net*/x64
+Net*/packages
 Third Party/InputSimulator/bin
 Third Party/InputSimulator/obj
 Third Party/MetroFramework/MetroFramework.Design/bin
