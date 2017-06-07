@@ -171,8 +171,9 @@ namespace WinAuth
 			{new Tuple<string,string>("Twitter", "TwitterIcon.png")},
 			{new Tuple<string,string>("Wordpress", "WordpressIcon.png")},
 			{new Tuple<string,string>("Wordpress (B&W)", "WordpressWhiteIcon.png")},
-			{new Tuple<string,string>("Yahoo", "YahooIcon.png")}
-		};
+			{new Tuple<string,string>("Yahoo", "YahooIcon.png")},
+      {new Tuple<string,string>("Okta", "OktaVerifyAuthenticatorIcon.png")}
+    };
 
 		public static List<RegisteredAuthenticator> REGISTERED_AUTHENTICATORS = new List<RegisteredAuthenticator>
 		{
@@ -183,7 +184,8 @@ namespace WinAuth
 			new RegisteredAuthenticator {Name="Battle.Net", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.BattleNet, Icon="BattleNetAuthenticatorIcon.png"},
 			new RegisteredAuthenticator {Name="Guild Wars 2", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.GuildWars, Icon="GuildWarsAuthenticatorIcon.png"},
 			new RegisteredAuthenticator {Name="Glyph / Trion", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Trion, Icon="GlyphIcon.png"},
-			new RegisteredAuthenticator {Name="Steam", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Steam, Icon="SteamAuthenticatorIcon.png"}
+			new RegisteredAuthenticator {Name="Steam", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.Steam, Icon="SteamAuthenticatorIcon.png"},
+			new RegisteredAuthenticator {Name="Okta Verify", AuthenticatorType=RegisteredAuthenticator.AuthenticatorTypes.OktaVerify, Icon="OktaVerifyAuthenticatorIcon.png"}
 		};
 
 		public static ResourceManager StringResources = new ResourceManager(typeof(WinAuth.Resources.strings).FullName, typeof(WinAuth.Resources.strings).Assembly);

@@ -1799,6 +1799,23 @@ namespace WinAuth
 					form.Authenticator = winauthauthenticator;
 					added = (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK);
 				}
+				else if (registeredauth.AuthenticatorType == RegisteredAuthenticator.AuthenticatorTypes.OktaVerify)
+				{
+					// create the Okta Verify authenticator
+					int existing = 0;
+					string name;
+					do
+					{
+						name = "Okta" + (existing != 0 ? " (" + existing + ")" : string.Empty);
+						existing++;
+					} while (authenticatorList.Items.Cast<AuthenticatorListitem>().Where(a => a.Authenticator.Name == name).Count() != 0);
+					winauthauthenticator.Name = name;
+					winauthauthenticator.AutoRefresh = false;
+
+					AddOktaVerifyAuthenticator form = new AddOktaVerifyAuthenticator();
+					form.Authenticator = winauthauthenticator;
+					added = (form.ShowDialog(this) == System.Windows.Forms.DialogResult.OK);
+				}
 				else
 				{
 					throw new NotImplementedException(strings.AuthenticatorNotImplemented + ": " + registeredauth.AuthenticatorType.ToString());

@@ -125,6 +125,7 @@
     <Compile Include="BattleNetAuthenticator.cs" />
     <Compile Include="Authenticator.cs" />
     <Compile Include="Base32.cs" />
+    <Compile Include="OktaVerifyAuthenticator.cs" />
     <Compile Include="SteamClient.cs" />
     <Compile Include="HIDDevice.cs" />
     <Compile Include="HOTPAuthenticator.cs" />
