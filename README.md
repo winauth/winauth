@@ -1,16 +1,16 @@
-#Windows Authenticator
+# Windows Authenticator
 
 *WinAuth is a portable, open-source Authenticator for Windows that provides counter or time-based RFC 6238 authenticators and common implementations, such as the Google Authenticator. WinAuth can be used with many Bitcoin trading websites as well as games, supporting Battle.net (World of Warcraft, Hearthstone, Heroes of the Storm, Diablo), Guild Wars 2, Glyph (Rift and ArcheAge), WildStar, RuneScape, SWTOR and Steam.*
 
 ----
 
-##Download Latest Version
+## Download Latest Version
 
 The latest stable version is WinAuth 3.5 and is available to download from this source repository, or as a pre-compiled binary from [WinAuth downloads](https://winauth.com/download).
 
 ----
 
-##WinAuth 3.5 (latest stable)
+## WinAuth 3.5 (latest stable)
 
 WinAuth provides an alternative solution to combine various two-factor authenticator services in one convenient place.
 
@@ -42,7 +42,7 @@ Visit [WinAuth.com](https://winauth.com) for more information.
 
   * 3.5.1 - Issue#366: fix spamming notifications when Steam is down. Hide confim/cancel all buttons on login.
 
-###How To Use
+### How To Use
 
 Use the following link to download the latest version of WinAuth, or go to the [downloads](https://winauth.com/download) page on winauth.com.
 
@@ -63,7 +63,7 @@ To compile and build from source:
   * any other dependencies are included in the source tree in the 3rd Party folder
   * Use [ILMerge](http://research.microsoft.com/en-us/people/mbarnett/ilmerge.aspx ) to combine assemblies into one single exe file
 
-###New Features
+### New Features
 
 Version 3.5 includes Steam trade confirmations.
 
@@ -79,9 +79,9 @@ If you choose "remember me", WinAuth will keep you logged in (does not keep your
 
 ----
 
-##COMMON QUESTIONS
+## COMMON QUESTIONS
 
-####Is it secure? Is it safe?
+#### Is it secure? Is it safe?
 
 All authenticators just provide another layer of security. None are 100% effective.
 
@@ -93,7 +93,7 @@ A rooted-Android phone can have your secret key read off it by an app with acces
 
 WinAuth stores you secret key in an encrypted file on your computer. Whilst it cannot therefore provide the same security as a separate physical device, as much as possible has been done to protect the key on your machine. As above, physical access to your machine would be the only way to compromise any authenticator.
 
-####I'm concerned this might be a virus / malware / keylogger
+#### I'm concerned this might be a virus / malware / keylogger
 
 WinAuth has been around and used since mid-2010 and has been downloaded by thousands of users.
 
@@ -103,17 +103,17 @@ No personal information is sent out to any other 3rd party servers. It never eve
 
 There are no other executables installed on your machine. There is no installer doing things you are unable to monitor. WinAuth is portable so you can just run it from anywhere.
 
-####I found WinAuth on another website, is it the same thing?
+#### I found WinAuth on another website, is it the same thing?
 
 WinAuth source code is uploaded to GitHub at http://github.com/winauth/winauth and pre-built binaries and installers are on [winauth.com](https://winauth.com). It had been hosted using Google Code at https://code.google.com/p/winauth, but has been moved to GiHub since Google Code is being closed down. It is not published anywhere else, so please do not download any other programs claiming to be WinAuth.
 
-####Where does WinAuth save my authenticator information?
+#### Where does WinAuth save my authenticator information?
 
 Unlike some other authenticator applications, WinAuth does not store/send your information to any 3rd party servers. Your authenticator information is saved by default in your account roaming profile, i.e. c:\Users\<username>\AppData\Roaming\WinAuth. However, this file can be moved anywhere and passed into WinAuth when run.
 
 ----
 
-##More Information
+## More Information
 
 All trademarks are recognised, including but not limited to:
 
@@ -126,7 +126,7 @@ All trademarks are recognised, including but not limited to:
 
 ----
 
-##Author
+## Author
 
 WinAuth was written by Colin Mackie. Copyright (C) 2010-2016.
 
@@ -134,7 +134,7 @@ Bitcoin donations can be sent to `1C4bMkMATViiWYsmJSDUx2MruWM785C36Y`
 
 ----
 
-##License
+## License
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
