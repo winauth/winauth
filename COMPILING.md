@@ -14,6 +14,6 @@
 
 ### Building
 
-1. Open the solution files `Net4.5\WinAuth.sln` or `Net3.5\WinAuth-Net3.5.sln` in Visual Studio.
+1. Open the solution file `Net4.5\WinAuth.sln` or `Net3.5\WinAuth-Net3.5.sln` in Visual Studio.
 2. Visual Studio > Build > Build Solution.
 3. If successful, the executable location should be `bin\Debug\WinAuth.exe` in the solution directory.
