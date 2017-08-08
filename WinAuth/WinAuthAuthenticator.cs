@@ -747,6 +747,11 @@ namespace WinAuth
 				}
 			}
 
+      if (this.AuthenticatorData.Period != Authenticator.DEFAULT_PERIOD)
+      {
+        extraparams += "&period=" + this.AuthenticatorData.Period;
+      }
+
 			var url = string.Format("otpauth://" + type + "/{0}?secret={1}&digits={2}{3}",
 				(string.IsNullOrEmpty(issuer) == false ? issuer + ":" + HttpUtility.UrlEncode(label) : HttpUtility.UrlEncode(label)),
 				secret,

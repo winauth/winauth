@@ -80,6 +80,11 @@ namespace WinAuth
 		public const int DEFAULT_CODE_DIGITS = 6;
 
 		/// <summary>
+		/// Default period of 30s
+		/// </summary>
+		public const int DEFAULT_PERIOD = 30;
+
+		/// <summary>
 		/// Type of password to use to encrypt secret data
 		/// </summary>
 		public enum PasswordTypes
@@ -142,6 +147,11 @@ namespace WinAuth
 		public int CodeDigits { get; set; }
 
 		/// <summary>
+		/// Period in seconds for next code
+		/// </summary>
+		public int Period { get; set; }
+
+		/// <summary>
 		/// Name of issuer
 		/// </summary>
 		public virtual string Issuer { get; set; }
@@ -154,7 +164,7 @@ namespace WinAuth
 			get
 			{
 				// this is the secretkey
-				return Authenticator.ByteArrayToString(SecretKey) + "\t" + this.CodeDigits.ToString();
+				return Authenticator.ByteArrayToString(SecretKey) + "\t" + this.CodeDigits.ToString() + "\t" + this.Period.ToString();
 			}
 			set
 			{
@@ -170,8 +180,16 @@ namespace WinAuth
 							CodeDigits = digits;
 						}
 					}
-				}
-				else
+          if (parts.Length > 2)
+          {
+            int period;
+            if (int.TryParse(parts[2], out period) == true)
+            {
+              Period = period;
+            }
+          }
+        }
+        else
 				{
 					SecretKey = null;
 				}
@@ -202,7 +220,7 @@ namespace WinAuth
 			get
 			{
 				// calculate the code interval; the server's time div 30,000
-				return (CurrentTime + ServerTimeDiff) / 30000L;
+				return (CurrentTime + ServerTimeDiff) / ((long)this.Period * 1000L);
 			}
 		}
 
@@ -240,12 +258,13 @@ namespace WinAuth
 		public Authenticator()
 		{
 			CodeDigits = DEFAULT_CODE_DIGITS;
+			Period = DEFAULT_PERIOD;
 		}
 
 		/// <summary>
 		/// Create a new Authenticator object
 		/// </summary>
-		public Authenticator(int codeDigits)
+		public Authenticator(int codeDigits) : this()
 		{
 			CodeDigits = codeDigits;
 		}
@@ -262,7 +281,7 @@ namespace WinAuth
 			{
 				if (interval > 0)
 				{
-					ServerTimeDiff = (interval * 30000L) - CurrentTime;
+					ServerTimeDiff = (interval * ((long)this.Period * 1000L)) - CurrentTime;
 				}
 				else
 				{

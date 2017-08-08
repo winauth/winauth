@@ -369,9 +369,10 @@ namespace WinAuth
 				int y = (this.ItemHeight * index) - (this.TopIndex * this.ItemHeight);
 				if (auth.AutoRefresh == true)
 				{
-					// for autorefresh we repaint the pie or the code too
-					int tillUpdate = (int)((auth.AuthenticatorData.ServerTime % 30000) / 1000L);
-					if (item.LastUpdate == DateTime.MinValue || tillUpdate == 0)
+          // for autorefresh we repaint the pie or the code too
+          //int tillUpdate = (int)((auth.AuthenticatorData.ServerTime % ((long)auth.AuthenticatorData.Period * 1000L)) / 1000L);
+          int tillUpdate = (int)Math.Round((decimal)((auth.AuthenticatorData.ServerTime % ((long)auth.AuthenticatorData.Period * 1000L)) / 1000L) * (360M / (decimal)auth.AuthenticatorData.Period));
+          if (item.LastUpdate == DateTime.MinValue || tillUpdate == 0)
 					{
 						this.Invalidate(new Rectangle(0, y, this.Width, this.ItemHeight), false);
 						item.LastUpdate = DateTime.Now;
@@ -1976,8 +1977,9 @@ namespace WinAuth
 						{
 							using (var piepen = new Pen(SystemColors.ActiveCaption))
 							{
-								//int y = (this.TopIndex * this.ItemHeight) + e.Bounds.y
-								int tillUpdate = ((int)((auth.AuthenticatorData.ServerTime % 30000) / 1000L) + 1) * 12;
+                //int y = (this.TopIndex * this.ItemHeight) + e.Bounds.y
+                //int tillUpdate = ((int)((auth.AuthenticatorData.ServerTime % 30000) / 1000L) + 1) * 12;
+                int tillUpdate = (int)Math.Round((decimal)((auth.AuthenticatorData.ServerTime % ((long)auth.AuthenticatorData.Period * 1000L)) / 1000L) * (360M / (decimal)auth.AuthenticatorData.Period));
 								e.Graphics.DrawPie(piepen, e.Bounds.X + e.Bounds.Width - (MARGIN_RIGHT + ICON_WIDTH), e.Bounds.Y + MARGIN_TOP + PIE_MARGIN, PIE_WIDTH, PIE_HEIGHT, PIE_STARTANGLE, PIE_SWEEPANGLE);
 								e.Graphics.FillPie(piebrush, e.Bounds.X + e.Bounds.Width - (MARGIN_RIGHT + ICON_WIDTH), e.Bounds.Y + MARGIN_TOP + PIE_MARGIN, PIE_WIDTH, PIE_HEIGHT, PIE_STARTANGLE, tillUpdate);
 							}
