@@ -1,0 +1,23 @@
+*.VC.db
+*.suo
+*.sdf
+*.opensdf
+*.csproj.user
+*.vcxproj.user
+WinAuth.YubiKey/Debug
+WinAuth.YubiKey/Release
+WinAuth.YubiKey/x64/Debug
+WinAuth.YubiKey/x64/Release
+Authenticator/Resources
+Net*/.vs
+Net*/bin
+Net*/obj
+Net*/x86
+Net*/x64
+Net*/packages
+Third Party/InputSimulator/bin
+Third Party/InputSimulator/obj
+Third Party/MetroFramework/MetroFramework.Design/bin
+Third Party/MetroFramework/MetroFramework.Design/obj
+Third Party/MetroFramework/MetroFramework/bin
+Third Party/MetroFramework/MetroFramework/obj

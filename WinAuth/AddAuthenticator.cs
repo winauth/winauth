@@ -319,18 +319,18 @@ namespace WinAuth
             this.Authenticator.Name = nameField.Text;
 
             int digits = (this.Authenticator.AuthenticatorData != null ? this.Authenticator.AuthenticatorData.CodeDigits : GoogleAuthenticator.DEFAULT_CODE_DIGITS);
-            HMACTypes hmacType = HMACTypes.SHA1;
+            Authenticator.HMACTypes hmacType = WinAuth.Authenticator.HMACTypes.SHA1;
 
             switch (cmbHMACType.SelectedIndex)
             {
                 case 0:
-                    hmacType = HMACTypes.SHA1;
+                    hmacType = WinAuth.Authenticator.HMACTypes.SHA1;
                     break;
                 case 1:
-                    hmacType = HMACTypes.SHA256;
+                    hmacType = WinAuth.Authenticator.HMACTypes.SHA256;
                     break;
                 case 2:
-                    hmacType = HMACTypes.SHA512;
+                    hmacType = WinAuth.Authenticator.HMACTypes.SHA512;
                     break;
             }
 
@@ -444,15 +444,15 @@ namespace WinAuth
                     {
                         case "SHA1":
                             cmbHMACType.SelectedIndex = 0;
-                            hmacType = HMACTypes.SHA1;
+                            hmacType = WinAuth.Authenticator.HMACTypes.SHA1;
                             break;
                         case "SHA256":
                             cmbHMACType.SelectedIndex = 1;
-                            hmacType = HMACTypes.SHA256;
+                            hmacType = WinAuth.Authenticator.HMACTypes.SHA256;
                             break;
                         case "SHA512":
                             cmbHMACType.SelectedIndex = 2;
-                            hmacType = HMACTypes.SHA512;
+                            hmacType = WinAuth.Authenticator.HMACTypes.SHA512;
                             break;
                     }
                 }
