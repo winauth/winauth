@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (C) 2013 Colin Mackie.
+ * Copyright (C) 2017 Colin Mackie.
  * This software is distributed under the terms of the GNU General Public License.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,30 +18,21 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using System.Net;
+using System.Security.Cryptography;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace WinAuth
 {
-	public class RegisteredAuthenticator
-	{
-		public enum AuthenticatorTypes
-		{
-			None = 0,
-			BattleNet,
-			Google,
-			GuildWars,
-			Trion,
-			Microsoft,
-			RFC6238_TIME,
-			RFC6238_COUNTER,
-			Steam,
-			OktaVerify
-		}
-
-		public string Name;
-		public AuthenticatorTypes AuthenticatorType;
-		public string Icon;
-		public List<RegisteredAuthenticator> Children = new List<RegisteredAuthenticator>();
-	}
+    /// <summary>
+    /// Class that implements Okta Verify authenticator, which is just a Google Authenticator
+    /// </summary>
+    public class OktaVerifyAuthenticator : GoogleAuthenticator
+    {
+    }
 }
