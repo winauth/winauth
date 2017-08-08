@@ -14,7 +14,7 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <AssemblyVersion>3.5.1.11</AssemblyVersion>
+    <AssemblyVersion>3.5.1.14</AssemblyVersion>
     <PrimaryVersionType>AssemblyVersionAttribute</PrimaryVersionType>
     <AssemblyInfoFilePath>Properties\AssemblyInfo.cs</AssemblyInfoFilePath>
     <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
@@ -227,6 +227,7 @@
     <Compile Include="Notification.Designer.cs">
       <DependentUpon>Notification.cs</DependentUpon>
     </Compile>
+    <Compile Include="Properties\Resources.Designer.cs" />
     <Compile Include="ShowSteamTradesForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -485,8 +486,6 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
-    <None Include="ClassDiagram1.cd" />
-    <None Include="packages.config" />
     <None Include="packages.WinAuth.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">

@@ -59,15 +59,15 @@ namespace WinAuth
 		/// <summary>
 		/// URL to post error reports
 		/// </summary>
-		public const string WINAUTH_BUG_URL = "https://winauth.com/bug";
+		public const string WINAUTH_BUG_URL = "https://api.winauth.com/bug";
 
 		/// <summary>
 		/// URL to get latest information
 		/// </summary>
 #if BETA
-		public const string WINAUTH_UPDATE_URL = "https://winauth.com/current-beta-version.xml";
+		public const string WINAUTH_UPDATE_URL = "https://updates.winauth.com/current-beta-version.xml";
 #else
-		public const string WINAUTH_UPDATE_URL = "https://winauth.com/current-version.xml";
+		public const string WINAUTH_UPDATE_URL = "https://updates.winauth.com/current-version.xml";
 #endif
 
 		/// <summary>
@@ -281,7 +281,7 @@ namespace WinAuth
 			LogException(e.ExceptionObject as Exception);
 		}
 
-		public static void LogException(Exception ex)
+		public static void LogException(Exception ex, bool silently = false)
 		{
 			// add catch for unknown application exceptions to try and get closer to bug
 			//StringBuilder capture = new StringBuilder(DateTime.Now.ToString("u") + " ");
@@ -299,20 +299,23 @@ namespace WinAuth
 			//}
 			//catch (Exception) { }
 
-			Logger.Error(ex);
-
 			try
 			{
-				ExceptionForm report = new ExceptionForm();
-				report.ErrorException = ex;
-				report.TopMost = true;
-				if (_form != null && _form.Config != null)
+				Logger.Error(ex);
+
+				if (silently == false)
 				{
-					report.Config = _form.Config;
-				}
-				if (report.ShowDialog() == DialogResult.Cancel)
-				{
-					Process.GetCurrentProcess().Kill();
+					ExceptionForm report = new ExceptionForm();
+					report.ErrorException = ex;
+					report.TopMost = true;
+					if (_form != null && _form.Config != null)
+					{
+						report.Config = _form.Config;
+					}
+					if (report.ShowDialog() == DialogResult.Cancel)
+					{
+						Process.GetCurrentProcess().Kill();
+					}
 				}
 			}
 			catch (Exception) { }

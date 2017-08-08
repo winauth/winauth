@@ -105,7 +105,7 @@ namespace WinAuth
 		/// The interval for checking new versions. Null is never, Zero is each time, else a period.
 		/// </summary>
 		private TimeSpan? _autocheckInterval;
-		
+
 		/// <summary>
 		/// The last known new version
 		/// </summary>
@@ -467,5 +467,4 @@ namespace WinAuth
 			_autocheckInterval = interval;
 		}
 	}
-
 }

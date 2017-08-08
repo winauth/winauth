@@ -541,20 +541,22 @@ namespace WinAuth
 					}
 
 					// get the actual authenticator and ensure it is synced
-					WinAuthAuthenticator importedAuthenticator = config[0];
-					importedAuthenticator.Sync();
-
-					// make sure there isn't a name clash
-					int rename = 0;
-					string importedName = importedAuthenticator.Name;
-					while (this.Config.Where(a => a.Name == importedName).Count() != 0)
+					List<WinAuthAuthenticator> imported = new List<WinAuthAuthenticator>();
+					foreach (var importedAuthenticator in config)
 					{
-						importedName = importedAuthenticator.Name + " (" + (++rename) + ")";
-					}
-					importedAuthenticator.Name = importedName;
+						importedAuthenticator.Sync();
 
-					// save off any new authenticators as a backup
-					WinAuthHelper.SaveToRegistry(this.Config, importedAuthenticator);
+						// make sure there isn't a name clash
+						int rename = 0;
+						string importedName = importedAuthenticator.Name;
+						while (this.Config.Where(a => a.Name == importedName).Count() != 0)
+						{
+							importedName = importedAuthenticator.Name + " (" + (++rename) + ")";
+						}
+						importedAuthenticator.Name = importedName;
+
+						imported.Add(importedAuthenticator);
+					}
 
 					// first time we prompt for protection and set out main settings from imported config
 					if (this.Config.Count == 0)
@@ -576,10 +578,16 @@ namespace WinAuth
 						}
 					}
 
-					// add to main list
-					this.Config.Add(importedAuthenticator);
+					foreach (var auth in imported)
+					{
+						// save off any new authenticators as a backup
+						WinAuthHelper.SaveToRegistry(this.Config, auth);
+
+						// add to main list
+						this.Config.Add(auth);
+						loadAuthenticatorList(auth);
+					}
 					SaveConfig(true);
-					loadAuthenticatorList(importedAuthenticator);
 
 					// reset UI
 					setAutoSize();
@@ -839,7 +847,7 @@ namespace WinAuth
 			else
 			{
 				// save it in a few seconds so we can batch up saves
-				_saveConfigTime = DateTime.Now.AddSeconds(3);
+				_saveConfigTime = DateTime.Now.AddSeconds(1);
 			}
 		}
 
@@ -1041,20 +1049,24 @@ namespace WinAuth
 		/// <param name="sender"></param>
 		/// <param name="message"></param>
 		/// <param name="ex"></param>
-		private void SteamClient_ConfirmationErrorEvent(object sender, string message, Exception ex)
+		private void SteamClient_ConfirmationErrorEvent(object sender, string message, SteamClient.PollerAction action, Exception ex)
 		{
 			SteamClient steam = sender as SteamClient;
 			var auth = this.Config.Cast<WinAuthAuthenticator>().Where(a => a.AuthenticatorData is SteamAuthenticator && ((SteamAuthenticator)a.AuthenticatorData).Serial == steam.Authenticator.Serial).FirstOrDefault();
 
-			// show the Notification window in the correct context
-			this.Invoke(new ShowNotificationCallback(ShowNotification), new object[] {
-					auth,
-					auth.Name,
-					message,
-					false,
-					0
-				});
-			//WinAuthForm.ErrorDialog(this, message, ex);
+			WinAuthMain.LogException(ex, true);
+
+			if (action != SteamClient.PollerAction.SilentAutoConfirm)
+			{
+				// show the Notification window in the correct context
+				this.Invoke(new ShowNotificationCallback(ShowNotification), new object[] {
+						auth,
+						auth.Name,
+						message,
+						false,
+						0
+					});
+			}
 		}
 
 		/// <summary>
@@ -1541,9 +1553,9 @@ namespace WinAuth
 		/// </summary>
 		/// <param name="latest"></param>
 		private void NewVersionAvailable(Version latest)
-		{
-			if (Updater != null && Updater.IsAutoCheck == true && latest != null && latest > Updater.CurrentVersion)
 			{
+			if (Updater != null && Updater.IsAutoCheck == true && latest != null && latest > Updater.CurrentVersion)
+				{
 				this.Invoke((MethodInvoker)delegate { newVersionLink.Text = "New version " + latest.ToString(3) + " available"; newVersionLink.Visible = true; });
 			}
 			else

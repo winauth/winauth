@@ -783,7 +783,7 @@ namespace WinAuth
 		/// <param name="sender"></param>
 		/// <param name="message">error message</param>
 		/// <param name="ex">optional exception</param>
-		public delegate void ConfirmationErrorDelegate(object sender, string message, Exception ex);
+		public delegate void ConfirmationErrorDelegate(object sender, string message, PollerAction action, Exception ex);
 
 		/// <summary>
 		/// Event fired for new Confirmation
@@ -929,7 +929,7 @@ namespace WinAuth
 						retryCount++;
 						if (retryCount >= ConfirmationPollerRetries)
 						{
-							ConfirmationErrorEvent(this, "Failed to read confirmations", ex);
+							ConfirmationErrorEvent(this, "Failed to read confirmations", this.Session.Confirmations.Action, ex);
 						}
 						else
 						{
@@ -1071,7 +1071,7 @@ namespace WinAuth
 						retryCount++;
 						if (retryCount >= ConfirmationPollerRetries)
 						{
-							ConfirmationErrorEvent(this, "Failed to read confirmations", ex);
+							ConfirmationErrorEvent(this, "Failed to read confirmations", this.Session.Confirmations.Action, ex);
 						}
 						else
 						{
