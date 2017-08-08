@@ -34,52 +34,52 @@ using WinAuth.Resources;
 
 namespace WinAuth
 {
-	public interface IWinAuthAuthenticatorChangedListener
-	{
-		void OnWinAuthAuthenticatorChanged(WinAuthAuthenticator sender, WinAuthAuthenticatorChangedEventArgs e);
-	}
+  public interface IWinAuthAuthenticatorChangedListener
+  {
+    void OnWinAuthAuthenticatorChanged(WinAuthAuthenticator sender, WinAuthAuthenticatorChangedEventArgs e);
+  }
 
-	/// <summary>
-	/// Wrapper for real authenticator data used to save to file with other application information
-	/// </summary>
+  /// <summary>
+  /// Wrapper for real authenticator data used to save to file with other application information
+  /// </summary>
   public class WinAuthAuthenticator : ICloneable
   {
     /// <summary>
     /// Event handler fired when property is changed
     /// </summary>
-		public event WinAuthAuthenticatorChangedHandler OnWinAuthAuthenticatorChanged;
+    public event WinAuthAuthenticatorChangedHandler OnWinAuthAuthenticatorChanged;
 
-		/// <summary>
-		/// Unique Id of authenticator saved in config
-		/// </summary>
+    /// <summary>
+    /// Unique Id of authenticator saved in config
+    /// </summary>
     public Guid Id { get; set; }
 
-		/// <summary>
-		/// Index for authenticator when in sorted list
-		/// </summary>
-		public int Index { get; set; }
+    /// <summary>
+    /// Index for authenticator when in sorted list
+    /// </summary>
+    public int Index { get; set; }
 
-		/// <summary>
-		/// Actual authenticator data
-		/// </summary>
+    /// <summary>
+    /// Actual authenticator data
+    /// </summary>
     public Authenticator AuthenticatorData { get; set; }
 
-		/// <summary>
-		/// When this authenticator was created
-		/// </summary>
+    /// <summary>
+    /// When this authenticator was created
+    /// </summary>
     public DateTime Created { get; set; }
 
-		private string _name;
-		private string _skin;
+    private string _name;
+    private string _skin;
     private bool _autoRefresh;
     private bool _allowCopy;
     private bool _copyOnCode;
     private bool _hideSerial;
     private HotKey _hotkey;
 
-		/// <summary>
-		/// Create the authenticator wrapper
-		/// </summary>
+    /// <summary>
+    /// Create the authenticator wrapper
+    /// </summary>
     public WinAuthAuthenticator()
     {
       Id = Guid.NewGuid();
@@ -87,55 +87,55 @@ namespace WinAuth
       _autoRefresh = true;
     }
 
-		/// <summary>
-		/// Clone this authenticator
-		/// </summary>
-		/// <returns></returns>
+    /// <summary>
+    /// Clone this authenticator
+    /// </summary>
+    /// <returns></returns>
     public object Clone()
     {
       WinAuthAuthenticator clone = this.MemberwiseClone() as WinAuthAuthenticator;
 
       clone.Id = Guid.NewGuid();
-			clone.OnWinAuthAuthenticatorChanged = null;
+      clone.OnWinAuthAuthenticatorChanged = null;
       clone.AuthenticatorData = (this.AuthenticatorData != null ? this.AuthenticatorData.Clone() as Authenticator : null);
 
       return clone;
     }
 
-		/// <summary>
-		/// Mark this authenticator as having changed
-		/// </summary>
-		public void MarkChanged()
-		{
-			if (OnWinAuthAuthenticatorChanged != null)
-			{
-				OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
-			}
-		}
+    /// <summary>
+    /// Mark this authenticator as having changed
+    /// </summary>
+    public void MarkChanged()
+    {
+      if (OnWinAuthAuthenticatorChanged != null)
+      {
+        OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
+      }
+    }
 
-		/// <summary>
-		/// Get/set the name of this authenticator
-		/// </summary>
-		public string Name
-		{
-			get
-			{
-				return _name;
-			}
-			set
-			{
-				_name = value;
-				if (OnWinAuthAuthenticatorChanged != null)
-				{
-					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("Name"));
-				}
-			}
-		}
+    /// <summary>
+    /// Get/set the name of this authenticator
+    /// </summary>
+    public string Name
+    {
+      get
+      {
+        return _name;
+      }
+      set
+      {
+        _name = value;
+        if (OnWinAuthAuthenticatorChanged != null)
+        {
+          OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("Name"));
+        }
+      }
+    }
 
-		/// <summary>
-		/// Set the skin for the authenticator (used for Icon)
-		/// </summary>
-		public string Skin
+    /// <summary>
+    /// Set the skin for the authenticator (used for Icon)
+    /// </summary>
+    public string Skin
     {
       get
       {
@@ -146,7 +146,7 @@ namespace WinAuth
         _skin = value;
         if (OnWinAuthAuthenticatorChanged != null)
         {
-					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("Skin"));
+          OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("Skin"));
         }
       }
     }
@@ -158,29 +158,29 @@ namespace WinAuth
     {
       get
       {
-				if (this.AuthenticatorData != null && this.AuthenticatorData is HOTPAuthenticator)
-				{
-					return false;
-				}
-				else
-				{
-					return _autoRefresh;
-				}
+        if (this.AuthenticatorData != null && this.AuthenticatorData is HOTPAuthenticator)
+        {
+          return false;
+        }
+        else
+        {
+          return _autoRefresh;
+        }
       }
       set
       {
-				// HTOP must always be false
-				if (this.AuthenticatorData != null && this.AuthenticatorData is HOTPAuthenticator)
-				{
-					_autoRefresh = false;
-				}
-				else
-				{
-					_autoRefresh = value;
-				}
-				if (OnWinAuthAuthenticatorChanged != null)
+        // HTOP must always be false
+        if (this.AuthenticatorData != null && this.AuthenticatorData is HOTPAuthenticator)
         {
-					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("AutoRefresh"));
+          _autoRefresh = false;
+        }
+        else
+        {
+          _autoRefresh = value;
+        }
+        if (OnWinAuthAuthenticatorChanged != null)
+        {
+          OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("AutoRefresh"));
         }
       }
     }
@@ -197,9 +197,9 @@ namespace WinAuth
       set
       {
         _allowCopy = value;
-				if (OnWinAuthAuthenticatorChanged != null)
+        if (OnWinAuthAuthenticatorChanged != null)
         {
-					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("AllowCopy"));
+          OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("AllowCopy"));
         }
       }
     }
@@ -216,9 +216,9 @@ namespace WinAuth
       set
       {
         _copyOnCode = value;
-				if (OnWinAuthAuthenticatorChanged != null)
+        if (OnWinAuthAuthenticatorChanged != null)
         {
-					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("CopyOnCode"));
+          OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("CopyOnCode"));
         }
       }
     }
@@ -235,229 +235,229 @@ namespace WinAuth
       set
       {
         _hideSerial = value;
-				if (OnWinAuthAuthenticatorChanged != null)
+        if (OnWinAuthAuthenticatorChanged != null)
         {
-					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("HideSerial"));
+          OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("HideSerial"));
         }
       }
     }
 
-		/// <summary>
-		/// Get/set the ketkey
-		/// </summary>
-		public HotKey HotKey
-		{
-			get
-			{
-				//if (this.AuthenticatorData != null && _hotkey != null)
-				//{
-				//	_hotkey.Advanced = this.AuthenticatorData.Script;
-				//}
-				return _hotkey;
-			}
-			set
-			{
-				_hotkey = value;
-				//if (this.AuthenticatorData != null && _hotkey != null)
-				//{
-				//	AuthenticatorData.Script = _hotkey.Advanced;
-				//}
-				if (OnWinAuthAuthenticatorChanged != null)
-				{
-					OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("HotKey"));
-				}
-			}
-		}
+    /// <summary>
+    /// Get/set the ketkey
+    /// </summary>
+    public HotKey HotKey
+    {
+      get
+      {
+        //if (this.AuthenticatorData != null && _hotkey != null)
+        //{
+        //	_hotkey.Advanced = this.AuthenticatorData.Script;
+        //}
+        return _hotkey;
+      }
+      set
+      {
+        _hotkey = value;
+        //if (this.AuthenticatorData != null && _hotkey != null)
+        //{
+        //	AuthenticatorData.Script = _hotkey.Advanced;
+        //}
+        if (OnWinAuthAuthenticatorChanged != null)
+        {
+          OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("HotKey"));
+        }
+      }
+    }
 
-		//public HoyKeySequence AutoLogin
-		//{
-		//	get
-		//	{
-		//		string script = this.AuthenticatorData.Script;
-		//		if (string.IsNullOrEmpty(script) == true)
-		//		{
-		//			return null;
-		//		}
+    //public HoyKeySequence AutoLogin
+    //{
+    //	get
+    //	{
+    //		string script = this.AuthenticatorData.Script;
+    //		if (string.IsNullOrEmpty(script) == true)
+    //		{
+    //			return null;
+    //		}
 
-		//		HoyKeySequence hks = new HoyKeySequence();
-		//		using (XmlReader xr = XmlReader.Create(new StringReader(script)))
-		//		{
-		//			hks.ReadXml(xr);
-		//		}
-		//		return hks;
-		//	}
-		//	set
-		//	{
-		//		StringBuilder script = new StringBuilder();
-		//		if (value != null)
-		//		{
-		//			using (XmlWriter xw = XmlWriter.Create(script))
-		//			{
-		//				value.WriteXmlString(xw);
-		//			}
-		//		}
-		//		this.AuthenticatorData.Script = (script.Length != 0 ? script.ToString() : null);
+    //		HoyKeySequence hks = new HoyKeySequence();
+    //		using (XmlReader xr = XmlReader.Create(new StringReader(script)))
+    //		{
+    //			hks.ReadXml(xr);
+    //		}
+    //		return hks;
+    //	}
+    //	set
+    //	{
+    //		StringBuilder script = new StringBuilder();
+    //		if (value != null)
+    //		{
+    //			using (XmlWriter xw = XmlWriter.Create(script))
+    //			{
+    //				value.WriteXmlString(xw);
+    //			}
+    //		}
+    //		this.AuthenticatorData.Script = (script.Length != 0 ? script.ToString() : null);
 
-		//		if (OnWinAuthAuthenticatorChanged != null)
-		//		{
-		//			OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
-		//		}
-		//	}
-		//}
+    //		if (OnWinAuthAuthenticatorChanged != null)
+    //		{
+    //			OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs());
+    //		}
+    //	}
+    //}
 
-		public Bitmap Icon
-		{
-			get
-			{
-				if (string.IsNullOrEmpty(this.Skin) == false)
-				{
-					Stream stream;
-					if (this.Skin.StartsWith("base64:") == true)
-					{
-						byte[] bytes = Convert.FromBase64String(this.Skin.Substring(7));
-						stream = new MemoryStream(bytes, 0, bytes.Length);
-					}
-					else
-					{
-						stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("WinAuth.Resources." + this.Skin);
-					}
-					if (stream != null)
-					{
-						return new Bitmap(stream);
-					}
-				}
+    public Bitmap Icon
+    {
+      get
+      {
+        if (string.IsNullOrEmpty(this.Skin) == false)
+        {
+          Stream stream;
+          if (this.Skin.StartsWith("base64:") == true)
+          {
+            byte[] bytes = Convert.FromBase64String(this.Skin.Substring(7));
+            stream = new MemoryStream(bytes, 0, bytes.Length);
+          }
+          else
+          {
+            stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("WinAuth.Resources." + this.Skin);
+          }
+          if (stream != null)
+          {
+            return new Bitmap(stream);
+          }
+        }
 
-				if (AuthenticatorData == null)
-				{
-					return null;
-				}
+        if (AuthenticatorData == null)
+        {
+          return null;
+        }
 
-				return new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("WinAuth.Resources." + AuthenticatorData.GetType().Name + "Icon.png"));
-			}
-			set
-			{
-				if (value == null)
-				{
-					this.Skin = null;
-					return;
-				}
+        return new Bitmap(Assembly.GetExecutingAssembly().GetManifestResourceStream("WinAuth.Resources." + AuthenticatorData.GetType().Name + "Icon.png"));
+      }
+      set
+      {
+        if (value == null)
+        {
+          this.Skin = null;
+          return;
+        }
 
-				using (MemoryStream ms = new MemoryStream())
-				{
-					value.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-					this.Skin = "base64:" + Convert.ToBase64String(ms.ToArray());
-				}
-			}
-		}
+        using (MemoryStream ms = new MemoryStream())
+        {
+          value.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+          this.Skin = "base64:" + Convert.ToBase64String(ms.ToArray());
+        }
+      }
+    }
 
-		public string CurrentCode
-		{
-			get
-			{
-				if (this.AuthenticatorData == null)
-				{
-					return null;
-				}
+    public string CurrentCode
+    {
+      get
+      {
+        if (this.AuthenticatorData == null)
+        {
+          return null;
+        }
 
-				string code = this.AuthenticatorData.CurrentCode;
-		
-				if (this.AuthenticatorData is HOTPAuthenticator)
-				{
-					if (OnWinAuthAuthenticatorChanged != null)
-					{
-						OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("HOTP", this.AuthenticatorData));
-					}
-				}
+        string code = this.AuthenticatorData.CurrentCode;
 
-				return code;
-			}
-		}
+        if (this.AuthenticatorData is HOTPAuthenticator)
+        {
+          if (OnWinAuthAuthenticatorChanged != null)
+          {
+            OnWinAuthAuthenticatorChanged(this, new WinAuthAuthenticatorChangedEventArgs("HOTP", this.AuthenticatorData));
+          }
+        }
 
-		/// <summary>
-		/// Sync the current authenticator's time with its server
-		/// </summary>
-		public void Sync()
-		{
-			if (AuthenticatorData != null)
-			{
-				try
-				{
-					AuthenticatorData.Sync();
-				}
-				catch (EncrpytedSecretDataException)
-				{
-					// reset lastsync to force sync on next decryption
-				}
-			}
-		}
+        return code;
+      }
+    }
 
-		/// <summary>
-		/// Copy the current code to the clipboard
-		/// </summary>
-		public void CopyCodeToClipboard(Form form, string code = null, bool showError = false)
-		{
-			if (code == null)
-			{
-				code = this.CurrentCode;
-			}
+    /// <summary>
+    /// Sync the current authenticator's time with its server
+    /// </summary>
+    public void Sync()
+    {
+      if (AuthenticatorData != null)
+      {
+        try
+        {
+          AuthenticatorData.Sync();
+        }
+        catch (EncryptedSecretDataException)
+        {
+          // reset lastsync to force sync on next decryption
+        }
+      }
+    }
 
-			bool clipRetry = false;
-			do
-			{
-				bool failed = false;
-				// check if the clipboard is locked
-				IntPtr hWnd = WinAPI.GetOpenClipboardWindow();
-				if (hWnd != IntPtr.Zero)
-				{
-					int len = WinAPI.GetWindowTextLength(hWnd);
-					if (len == 0)
-					{
-						WinAuthMain.LogException(new ApplicationException("Clipboard in use by another process"));
-					}
-					else
-					{
-						StringBuilder sb = new StringBuilder(len + 1);
-						WinAPI.GetWindowText(hWnd, sb, sb.Capacity);
-						WinAuthMain.LogException(new ApplicationException("Clipboard in use by '" + sb.ToString() + "'"));
-					}
+    /// <summary>
+    /// Copy the current code to the clipboard
+    /// </summary>
+    public void CopyCodeToClipboard(Form form, string code = null, bool showError = false)
+    {
+      if (code == null)
+      {
+        code = this.CurrentCode;
+      }
 
-					failed = true;
-				}
-				else
-				{
-					// Issue#170: can still get error copying even though it works, so just increase retries and ignore error
-					try
-					{
-						Clipboard.Clear();
+      bool clipRetry = false;
+      do
+      {
+        bool failed = false;
+        // check if the clipboard is locked
+        IntPtr hWnd = WinAPI.GetOpenClipboardWindow();
+        if (hWnd != IntPtr.Zero)
+        {
+          int len = WinAPI.GetWindowTextLength(hWnd);
+          if (len == 0)
+          {
+            WinAuthMain.LogException(new ApplicationException("Clipboard in use by another process"));
+          }
+          else
+          {
+            StringBuilder sb = new StringBuilder(len + 1);
+            WinAPI.GetWindowText(hWnd, sb, sb.Capacity);
+            WinAuthMain.LogException(new ApplicationException("Clipboard in use by '" + sb.ToString() + "'"));
+          }
 
-						// add delay for clip error
-						System.Threading.Thread.Sleep(100);
+          failed = true;
+        }
+        else
+        {
+          // Issue#170: can still get error copying even though it works, so just increase retries and ignore error
+          try
+          {
+            Clipboard.Clear();
 
-						Clipboard.SetDataObject(code, true, 4, 250);
-					}
-					catch (ExternalException )
-					{
-					}
-				}
+            // add delay for clip error
+            System.Threading.Thread.Sleep(100);
 
-				if (failed == true && showError == true)
-				{
-					// only show an error the first time
-					clipRetry = (MessageBox.Show(form, strings.ClipboardInUse,
-						WinAuthMain.APPLICATION_NAME,
-						MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
-				}
-			}
-			while (clipRetry == true);
-		}
+            Clipboard.SetDataObject(code, true, 4, 250);
+          }
+          catch (ExternalException)
+          {
+          }
+        }
+
+        if (failed == true && showError == true)
+        {
+          // only show an error the first time
+          clipRetry = (MessageBox.Show(form, strings.ClipboardInUse,
+              WinAuthMain.APPLICATION_NAME,
+              MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes);
+        }
+      }
+      while (clipRetry == true);
+    }
 
     public bool ReadXml(XmlReader reader, string password)
     {
-			bool changed = false;
+      bool changed = false;
 
       Guid id;
 #if NETFX_4
-			if (Guid.TryParse(reader.GetAttribute("id"), out id) == true)
+      if (Guid.TryParse(reader.GetAttribute("id"), out id) == true)
       {
         Id = id;
       }
@@ -471,32 +471,32 @@ namespace WinAuth
 			catch (Exception) { }
 #endif
 
-			string authenticatorType = reader.GetAttribute("type");
+      string authenticatorType = reader.GetAttribute("type");
       if (string.IsNullOrEmpty(authenticatorType) == false)
       {
         Type type = typeof(Authenticator).Assembly.GetType(authenticatorType, false, true);
         this.AuthenticatorData = Activator.CreateInstance(type) as Authenticator;
       }
 
-			//string encrypted = reader.GetAttribute("encrypted");
-			//if (string.IsNullOrEmpty(encrypted) == false)
-			//{
-			//	// read the encrypted text from the node
-			//	string data = reader.ReadElementContentAsString();
-			//	// decrypt
-			//	Authenticator.PasswordTypes passwordType;
-			//	data = Authenticator.DecryptSequence(data, encrypted, password, out passwordType);
+      //string encrypted = reader.GetAttribute("encrypted");
+      //if (string.IsNullOrEmpty(encrypted) == false)
+      //{
+      //	// read the encrypted text from the node
+      //	string data = reader.ReadElementContentAsString();
+      //	// decrypt
+      //	Authenticator.PasswordTypes passwordType;
+      //	data = Authenticator.DecryptSequence(data, encrypted, password, out passwordType);
 
-			//	using (MemoryStream ms = new MemoryStream(Authenticator.StringToByteArray(data)))
-			//	{
-			//		reader = XmlReader.Create(ms);
-			//		ReadXml(reader, password);
-			//	}
-			//	this.PasswordType = passwordType;
-			//	this.Password = password;
+      //	using (MemoryStream ms = new MemoryStream(Authenticator.StringToByteArray(data)))
+      //	{
+      //		reader = XmlReader.Create(ms);
+      //		ReadXml(reader, password);
+      //	}
+      //	this.PasswordType = passwordType;
+      //	this.Password = password;
 
-			//	return;
-			//}
+      //	return;
+      //}
 
       reader.MoveToContent();
 
@@ -529,7 +529,7 @@ namespace WinAuth
               break;
 
             case "allowcopy":
-              _allowCopy= reader.ReadElementContentAsBoolean();
+              _allowCopy = reader.ReadElementContentAsBoolean();
               break;
 
             case "copyoncode":
@@ -544,40 +544,40 @@ namespace WinAuth
               _skin = reader.ReadElementContentAsString();
               break;
 
-						case "hotkey":
-							_hotkey = new WinAuth.HotKey();
-							_hotkey.ReadXml(reader);
-							break;
-
-						case "authenticatordata":
-							try
-							{
-								// we don't pass the password as they are locked till clicked
-								changed = this.AuthenticatorData.ReadXml(reader) || changed;
-							}
-							catch (EncrpytedSecretDataException )
-							{
-								// no action needed
-							}
-							catch (BadPasswordException)
-							{
-								// no action needed
-							}
+            case "hotkey":
+              _hotkey = new WinAuth.HotKey();
+              _hotkey.ReadXml(reader);
               break;
 
-						// v2
-						case "authenticator":
-							this.AuthenticatorData = Authenticator.ReadXmlv2(reader, password);
-							break;
-						// v2
-						case "autologin":
+            case "authenticatordata":
+              try
+              {
+                // we don't pass the password as they are locked till clicked
+                changed = this.AuthenticatorData.ReadXml(reader) || changed;
+              }
+              catch (EncryptedSecretDataException)
+              {
+                // no action needed
+              }
+              catch (BadPasswordException)
+              {
+                // no action needed
+              }
+              break;
+
+            // v2
+            case "authenticator":
+              this.AuthenticatorData = Authenticator.ReadXmlv2(reader, password);
+              break;
+            // v2
+            case "autologin":
               var hks = new HoyKeySequence();
               hks.ReadXml(reader, password);
               break;
-						// v2
-						case "servertimediff":
-							this.AuthenticatorData.ServerTimeDiff = reader.ReadElementContentAsLong();
-							break;
+            // v2
+            case "servertimediff":
+              this.AuthenticatorData.ServerTimeDiff = reader.ReadElementContentAsLong();
+              break;
 
 
             default:
@@ -592,7 +592,7 @@ namespace WinAuth
         }
       }
 
-			return changed;
+      return changed;
     }
 
     /// <summary>
@@ -608,34 +608,34 @@ namespace WinAuth
         writer.WriteAttributeString("type", this.AuthenticatorData.GetType().FullName);
       }
 
-			//if (this.PasswordType != Authenticator.PasswordTypes.None)
-			//{
-			//	string data;
+      //if (this.PasswordType != Authenticator.PasswordTypes.None)
+      //{
+      //	string data;
 
-			//	using (MemoryStream ms = new MemoryStream())
-			//	{
-			//		XmlWriterSettings settings = new XmlWriterSettings();
-			//		settings.Indent = true;
-			//		settings.Encoding = Encoding.UTF8;
-			//		using (XmlWriter encryptedwriter = XmlWriter.Create(ms, settings))
-			//		{
-			//			Authenticator.PasswordTypes savedpasswordType = PasswordType;
-			//			PasswordType = Authenticator.PasswordTypes.None;
-			//			WriteXmlString(encryptedwriter);
-			//			PasswordType = savedpasswordType;
-			//		}
-			//		//data = Encoding.UTF8.GetString(ms.ToArray());
-			//		data = Authenticator.ByteArrayToString(ms.ToArray());
-			//	}
+      //	using (MemoryStream ms = new MemoryStream())
+      //	{
+      //		XmlWriterSettings settings = new XmlWriterSettings();
+      //		settings.Indent = true;
+      //		settings.Encoding = Encoding.UTF8;
+      //		using (XmlWriter encryptedwriter = XmlWriter.Create(ms, settings))
+      //		{
+      //			Authenticator.PasswordTypes savedpasswordType = PasswordType;
+      //			PasswordType = Authenticator.PasswordTypes.None;
+      //			WriteXmlString(encryptedwriter);
+      //			PasswordType = savedpasswordType;
+      //		}
+      //		//data = Encoding.UTF8.GetString(ms.ToArray());
+      //		data = Authenticator.ByteArrayToString(ms.ToArray());
+      //	}
 
-			//	string encryptedTypes;
-			//	data = Authenticator.EncryptSequence(data, PasswordType, Password, out encryptedTypes);
-			//	writer.WriteAttributeString("encrypted", encryptedTypes);
-			//	writer.WriteString(data);
-			//	writer.WriteEndElement();
+      //	string encryptedTypes;
+      //	data = Authenticator.EncryptSequence(data, PasswordType, Password, out encryptedTypes);
+      //	writer.WriteAttributeString("encrypted", encryptedTypes);
+      //	writer.WriteString(data);
+      //	writer.WriteEndElement();
 
-			//	return;
-			//}
+      //	return;
+      //}
 
       writer.WriteStartElement("name");
       writer.WriteValue(this.Name ?? string.Empty);
@@ -664,11 +664,11 @@ namespace WinAuth
       writer.WriteStartElement("skin");
       writer.WriteValue(this.Skin ?? string.Empty);
       writer.WriteEndElement();
-			//
-			if (this.HotKey != null)
-			{
-				this.HotKey.WriteXmlString(writer);
-			}
+      //
+      if (this.HotKey != null)
+      {
+        this.HotKey.WriteXmlString(writer);
+      }
 
       // save the authenticator to the config file
       if (this.AuthenticatorData != null)
@@ -676,90 +676,95 @@ namespace WinAuth
         this.AuthenticatorData.WriteToWriter(writer);
 
         // save script with password and generated salt
-				//if (this.AutoLogin != null)
-				//{
-				//	this.AutoLogin.WriteXmlString(writer, this.AuthenticatorData.PasswordType, this.AuthenticatorData.Password);
-				//}
+        //if (this.AutoLogin != null)
+        //{
+        //	this.AutoLogin.WriteXmlString(writer, this.AuthenticatorData.PasswordType, this.AuthenticatorData.Password);
+        //}
       }
 
       writer.WriteEndElement();
     }
 
-		/// <summary>
-		/// Create a KeyUriFormat compatible URL
-		/// See https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
-		/// </summary>
-		/// <returns>string</returns>
-		public virtual string ToUrl(bool compat = false)
-		{
-			string type = "totp";
-			string extraparams = string.Empty;
+    /// <summary>
+    /// Create a KeyUriFormat compatible URL
+    /// See https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
+    /// </summary>
+    /// <returns>string</returns>
+    public virtual string ToUrl(bool compat = false)
+    {
+      string type = "totp";
+      string extraparams = string.Empty;
 
-			Match match;
-			string issuer = this.AuthenticatorData.Issuer;
-			string label = this.Name;
-			if (string.IsNullOrEmpty(issuer) == true && (match = Regex.Match(label, @"^([^\(]+)\s+\((.*?)\)(.*)")).Success == true)
-			{
-				issuer = match.Groups[1].Value;
-				label = match.Groups[2].Value + match.Groups[3].Value;
-			}
-			if (string.IsNullOrEmpty(issuer) == false && (match = Regex.Match(label, @"^" + issuer + @"\s+\((.*?)\)(.*)")).Success == true)
-			{
-				label = match.Groups[1].Value + match.Groups[2].Value;
-			}
-			if (string.IsNullOrEmpty(issuer) == false)
-			{
-				extraparams += "&issuer=" + HttpUtility.UrlEncode(issuer);
-			}
+      Match match;
+      string issuer = this.AuthenticatorData.Issuer;
+      string label = this.Name;
+      if (string.IsNullOrEmpty(issuer) == true && (match = Regex.Match(label, @"^([^\(]+)\s+\((.*?)\)(.*)")).Success == true)
+      {
+        issuer = match.Groups[1].Value;
+        label = match.Groups[2].Value + match.Groups[3].Value;
+      }
+      if (string.IsNullOrEmpty(issuer) == false && (match = Regex.Match(label, @"^" + issuer + @"\s+\((.*?)\)(.*)")).Success == true)
+      {
+        label = match.Groups[1].Value + match.Groups[2].Value;
+      }
+      if (string.IsNullOrEmpty(issuer) == false)
+      {
+        extraparams += "&issuer=" + HttpUtility.UrlEncode(issuer);
+      }
 
-			if (this.AuthenticatorData is BattleNetAuthenticator)
-			{
-				extraparams += "&serial=" + HttpUtility.UrlEncode(((BattleNetAuthenticator)this.AuthenticatorData).Serial.Replace("-", ""));
-			}
-			else if (this.AuthenticatorData is SteamAuthenticator)
-			{
-				if (compat == false)
-				{
-					extraparams += "&deviceid=" + HttpUtility.UrlEncode(((SteamAuthenticator)this.AuthenticatorData).DeviceId);
-					extraparams += "&data=" + HttpUtility.UrlEncode(((SteamAuthenticator)this.AuthenticatorData).SteamData);
-				}
-			}
-			else if (this.AuthenticatorData is HOTPAuthenticator)
-			{
-				type = "hotp";
-				extraparams += "&counter=" + ((HOTPAuthenticator)this.AuthenticatorData).Counter;
-			}
+      if (this.AuthenticatorData.HMACType != Authenticator.DEFAULT_HMAC_TYPE)
+      {
+        extraparams += "&algorithm=" + this.AuthenticatorData.HMACType.ToString();
+      }
 
-			string secret = HttpUtility.UrlEncode(Base32.getInstance().Encode(this.AuthenticatorData.SecretKey));
+      if (this.AuthenticatorData is BattleNetAuthenticator)
+      {
+        extraparams += "&serial=" + HttpUtility.UrlEncode(((BattleNetAuthenticator)this.AuthenticatorData).Serial.Replace("-", ""));
+      }
+      else if (this.AuthenticatorData is SteamAuthenticator)
+      {
+        if (compat == false)
+        {
+          extraparams += "&deviceid=" + HttpUtility.UrlEncode(((SteamAuthenticator)this.AuthenticatorData).DeviceId);
+          extraparams += "&data=" + HttpUtility.UrlEncode(((SteamAuthenticator)this.AuthenticatorData).SteamData);
+        }
+      }
+      else if (this.AuthenticatorData is HOTPAuthenticator)
+      {
+        type = "hotp";
+        extraparams += "&counter=" + ((HOTPAuthenticator)this.AuthenticatorData).Counter;
+      }
 
-			// add the skin
-			if (string.IsNullOrEmpty(this.Skin) == false && compat == false)
-			{
-				if (this.Skin.StartsWith("base64:") == true)
-				{
-					byte[] bytes = Convert.FromBase64String(this.Skin.Substring(7));
-					string icon32 = Base32.getInstance().Encode(bytes);
-					extraparams += "&icon=" + HttpUtility.UrlEncode("base64:" + icon32);
-				}
-				else
-				{
-					extraparams += "&icon=" + HttpUtility.UrlEncode(this.Skin.Replace("Icon.png", ""));
-				}
-			}
+      string secret = HttpUtility.UrlEncode(Base32.getInstance().Encode(this.AuthenticatorData.SecretKey));
+
+      // add the skin
+      if (string.IsNullOrEmpty(this.Skin) == false && compat == false)
+      {
+        if (this.Skin.StartsWith("base64:") == true)
+        {
+          byte[] bytes = Convert.FromBase64String(this.Skin.Substring(7));
+          string icon32 = Base32.getInstance().Encode(bytes);
+          extraparams += "&icon=" + HttpUtility.UrlEncode("base64:" + icon32);
+        }
+        else
+        {
+          extraparams += "&icon=" + HttpUtility.UrlEncode(this.Skin.Replace("Icon.png", ""));
+        }
+      }
 
       if (this.AuthenticatorData.Period != Authenticator.DEFAULT_PERIOD)
       {
         extraparams += "&period=" + this.AuthenticatorData.Period;
       }
 
-			var url = string.Format("otpauth://" + type + "/{0}?secret={1}&digits={2}{3}",
-				(string.IsNullOrEmpty(issuer) == false ? issuer + ":" + HttpUtility.UrlEncode(label) : HttpUtility.UrlEncode(label)),
-				secret,
-				this.AuthenticatorData.CodeDigits,
-				extraparams);
+      var url = string.Format("otpauth://" + type + "/{0}?secret={1}&digits={2}{3}",
+        (string.IsNullOrEmpty(issuer) == false ? issuer + ":" + HttpUtility.UrlEncode(label) : HttpUtility.UrlEncode(label)),
+        secret,
+        this.AuthenticatorData.CodeDigits,
+        extraparams);
 
-			return url;
-		}
+      return url;
+    }
 
   }
 
@@ -775,17 +780,17 @@ namespace WinAuth
   /// </summary>
   public class WinAuthAuthenticatorChangedEventArgs : EventArgs
   {
-		public string Property { get; private set; }
-		public Authenticator Authenticator { get; private set; }
+    public string Property { get; private set; }
+    public Authenticator Authenticator { get; private set; }
 
     /// <summary>
     /// Default constructor
     /// </summary>
     public WinAuthAuthenticatorChangedEventArgs(string property = null, Authenticator authenticator = null)
     {
-			Property = property;
-			Authenticator = authenticator;
+      Property = property;
+      Authenticator = authenticator;
     }
 
-	}
+  }
 }

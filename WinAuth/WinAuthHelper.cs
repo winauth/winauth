@@ -219,7 +219,7 @@ namespace WinAuth
 					SaveConfig(config);
 				}
 			}
-			catch (EncrpytedSecretDataException )
+			catch (EncryptedSecretDataException )
 			{
 				// we require a password
 				throw;
@@ -668,6 +668,12 @@ namespace WinAuth
 						{
 							auth.CodeDigits = digits;
 						}
+            //
+            Authenticator.HMACTypes hmactype;
+            if (Enum.TryParse<Authenticator.HMACTypes>(query["algorithm"], true, out hmactype) == true)
+            {
+              auth.HMACType = hmactype;
+            }
 						//
 						if (label.Length != 0)
 						{

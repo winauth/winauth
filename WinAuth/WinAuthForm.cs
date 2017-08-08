@@ -277,7 +277,7 @@ namespace WinAuth
 					System.Diagnostics.Process.GetCurrentProcess().Kill();
 					return;
 				}
-				else if (ex is EncrpytedSecretDataException)
+				else if (ex is EncryptedSecretDataException)
 				{
 					loadingPanel.Visible = false;
 					passwordPanel.Visible = true;
@@ -383,7 +383,7 @@ namespace WinAuth
 					System.Diagnostics.Process.GetCurrentProcess().Kill();
 					return;
 				}
-				else if (ex is EncrpytedSecretDataException)
+				else if (ex is EncryptedSecretDataException)
 				{
 					loadingPanel.Visible = false;
 					passwordPanel.Visible = true;
@@ -427,19 +427,19 @@ namespace WinAuth
 			};
 #endif
 
-		}
+    }
 
-		/// <summary>
-		/// Import authenticators from a file
-		/// 
-		/// *.xml = WinAuth v2
-		/// *.txt = plain text with KeyUriFormat per line (https://code.google.com/p/google-authenticator/wiki/KeyUriFormat)
-		/// *.zip = encrypted zip, containing import file
-		/// *.pgp = PGP encrypted, containing import file
-		/// 
-		/// </summary>
-		/// <param name="authenticatorFile">name import file</param>
-		private void importAuthenticator(string authenticatorFile)
+    /// <summary>
+    /// Import authenticators from a file
+    /// 
+    /// *.xml = WinAuth v2
+    /// *.txt = plain text with KeyUriFormat per line (https://code.google.com/p/google-authenticator/wiki/KeyUriFormat)
+    /// *.zip = encrypted zip, containing import file
+    /// *.pgp = PGP encrypted, containing import file
+    /// 
+    /// </summary>
+    /// <param name="authenticatorFile">name import file</param>
+    private void importAuthenticator(string authenticatorFile)
 		{
 			// call legacy import for v2 xml files
 			if (string.Compare(Path.GetExtension(authenticatorFile), ".xml", true) == 0)
@@ -591,7 +591,7 @@ namespace WinAuth
 					needPassword = false;
 					retry = false;
 				}
-				catch (EncrpytedSecretDataException)
+				catch (EncryptedSecretDataException)
 				{
 					needPassword = true;
 					invalidPassword = false;
@@ -1307,7 +1307,7 @@ namespace WinAuth
 			{
 				code = auth.CurrentCode;
 			}
-			catch (EncrpytedSecretDataException)
+			catch (EncryptedSecretDataException)
 			{
 				// if the authenticator is current protected we display the password window, get the code, and reprotect it
 				// with a bit of window jiggling to make sure we get focus and then put it back
@@ -1381,7 +1381,7 @@ namespace WinAuth
 			{
 				code = auth.CurrentCode;
 			}
-			catch (EncrpytedSecretDataException)
+			catch (EncryptedSecretDataException)
 			{
 				// if the authenticator is current protected we display the password window, get the code, and reprotect it
 				// with a bit of window jiggling to make sure we get focus and then put it back
