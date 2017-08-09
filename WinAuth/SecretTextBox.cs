@@ -146,7 +146,14 @@ namespace WinAuth
 						{
 							break;
 						}
-						sb.Append(m_text.Substring(i, m_spaceOut)).Append(" ");
+            if (i + m_spaceOut >= m_text.Length)
+            {
+              sb.Append(m_text.Substring(i));
+            }
+            else
+            {
+              sb.Append(m_text.Substring(i, m_spaceOut)).Append(" ");
+            }
 					}
 					text = sb.ToString().Trim();
 				}
