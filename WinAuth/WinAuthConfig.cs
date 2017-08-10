@@ -880,14 +880,23 @@ namespace WinAuth
 								this.PasswordType = Authenticator.DecodePasswordTypes(encrypted);
 								if (this.PasswordType != Authenticator.PasswordTypes.None)
 								{
-									string md5 = reader.GetAttribute("md5");
-									// read the encrypted text from the node
-									string data = reader.ReadElementContentAsString();
+                  HashAlgorithm hasher;
+									string hash = reader.GetAttribute("sha1");
+                  if (string.IsNullOrEmpty(hash) == false)
+                  {
+                    hasher = Authenticator.SafeHasher("SHA1");
+                  }
+                  else
+                  {
+                    // old version has md5
+                    hash = reader.GetAttribute("md5");
+                    hasher = Authenticator.SafeHasher("MD5");
+                  }
+                  // read the encrypted text from the node
+                  string data = reader.ReadElementContentAsString();
 
-									using (var hasher = new MD5CryptoServiceProvider())
-									{
-										hasher.ComputeHash(Authenticator.StringToByteArray(data));
-									}
+									hasher.ComputeHash(Authenticator.StringToByteArray(data));
+                  hasher.Dispose();
 
 									// decrypt
 									YubiKey yubi = null;
@@ -1181,11 +1190,11 @@ namespace WinAuth
 					data = ms.ToArray();
 				}
 
-				using (var hasher = new MD5CryptoServiceProvider())
+				using (var hasher = Authenticator.SafeHasher("SHA1"))
 				{
 					string encdata = Authenticator.EncryptSequence(Authenticator.ByteArrayToString(data), PasswordType, Password, this.Yubi);
 					string enchash = Authenticator.ByteArrayToString(hasher.ComputeHash(Authenticator.StringToByteArray(encdata)));
-					writer.WriteAttributeString("md5", enchash);
+					writer.WriteAttributeString("sha1", enchash);
 					writer.WriteString(encdata);
 				}
 		

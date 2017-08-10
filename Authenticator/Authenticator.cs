@@ -954,7 +954,8 @@ namespace WinAuth
       }
 
       // extract salt and hash
-      using (var sha = new SHA256Managed())
+      //using (var sha = new SHA256Managed())
+      using (var sha = SafeHasher("SHA256"))
       {
         // jump header
         int datastart = ENCRYPTION_HEADER.Length;
@@ -1081,6 +1082,35 @@ namespace WinAuth
       return data;
     }
 
+    /// <summary>
+    /// Downgrade SHA256 or MD5 to SHA1 to be FIPS compliant
+    /// </summary>
+    public static HashAlgorithm SafeHasher(string name)
+    {
+      try
+      {
+        if (name == "SHA512")
+        {
+          return SHA512.Create();
+        }
+        if (name == "SHA256")
+        {
+          return SHA256.Create();
+        }
+        if (name == "MD5")
+        {
+          return MD5.Create();
+        }
+
+        return SHA1.Create();
+      }
+      catch (Exception)
+      {
+        // FIPS only allows SHA1 before Windows 10
+        return SHA1.Create();
+      }
+    }
+
     public static string EncryptSequence(string data, PasswordTypes passwordType, string password, YubiKey yubi)
     {
       // get hash of original
@@ -1090,7 +1120,8 @@ namespace WinAuth
       string salt = ByteArrayToString(saltbytes);
 
       string hash;
-      using (var sha = new SHA256Managed())
+      //using (var sha = new SHA256Managed())
+      using (var sha = SafeHasher("SHA256"))
       {
         byte[] plain = StringToByteArray(salt + data);
         hash = ByteArrayToString(sha.ComputeHash(plain));

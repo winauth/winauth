@@ -334,7 +334,10 @@ namespace WinAuth
 
 						// move it to old file
 						File.Delete(config.Filename + ".bak");
-						File.Move(config.Filename, config.Filename + ".bak");
+            if (File.Exists(config.Filename) == true)
+            {
+              File.Move(config.Filename, config.Filename + ".bak");
+            }
 						File.Move(tempfile, config.Filename);
 					}
 					catch (UnauthorizedAccessException )
@@ -374,8 +377,8 @@ namespace WinAuth
 			{
 				return;
 			}
-
-			using (SHA256 sha = SHA256.Create())
+      
+			using (HashAlgorithm sha = Authenticator.SafeHasher("SHA256"))
 			{
 				// get a hash based on the authenticator key
 				string authkey = Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(wa.AuthenticatorData.SecretData)));
