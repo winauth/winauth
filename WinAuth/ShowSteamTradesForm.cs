@@ -44,7 +44,7 @@ namespace WinAuth
 	/// </summary>
 	public partial class ShowSteamTradesForm : ResourceForm
 	{
-		[DllImport("wininet.dll", CharSet = CharSet.Auto, SetLastError = true)]		
+		[DllImport("wininet.dll", CharSet = CharSet.Auto, SetLastError = true)]
 		static extern bool InternetSetCookie(string lpszUrlName, string lpszCookieName, string lpszCookieData);
 
 		class PollerActionItem
@@ -57,7 +57,7 @@ namespace WinAuth
 				return this.Text;
 			}
 		}
-		 
+
 		/// <summary>
 		/// Form instantiation
 		/// </summary>
@@ -901,7 +901,20 @@ namespace WinAuth
 
 						using (WebClient wc = new WebClient())
 						{
-							var imageData = wc.DownloadData(trade.Image);
+						    byte[] imageData = null;
+
+                            try
+						    {
+						        imageData = wc.DownloadData(trade.Image);
+                            }
+						    catch (WebException ex)
+						    {
+						        // ignore error 404 for missing images
+                                if (((HttpWebResponse)ex.Response).StatusCode != HttpStatusCode.NotFound)
+                                {
+                                    throw;
+                                }
+                            }
 							if (imageData != null && imageData.Length != 0)
 							{
 								using (MemoryStream ms = new MemoryStream(imageData))
