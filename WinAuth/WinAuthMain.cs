@@ -172,8 +172,8 @@ namespace WinAuth
 			{new Tuple<string,string>("Wordpress", "WordpressIcon.png")},
 			{new Tuple<string,string>("Wordpress (B&W)", "WordpressWhiteIcon.png")},
 			{new Tuple<string,string>("Yahoo", "YahooIcon.png")},
-      {new Tuple<string,string>("Okta", "OktaVerifyAuthenticatorIcon.png")}
-    };
+			{new Tuple<string,string>("Okta", "OktaVerifyAuthenticatorIcon.png")}
+		};
 
 		public static List<RegisteredAuthenticator> REGISTERED_AUTHENTICATORS = new List<RegisteredAuthenticator>
 		{
