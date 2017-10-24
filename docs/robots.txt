@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: 
+Disallow: /cgi-bin/
+Sitemap: http://www.winauth.com/sitemap.xml
+
