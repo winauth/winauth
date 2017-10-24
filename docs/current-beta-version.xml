@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<WinAuth>
+	<version>3.5.0</version>
+	<released>2016-05-24</released>
+	<url>https://winauth.com/downloads/3.x/WinAuth-3.5.0.zip</url>
+	<url35>https://winauth.com/downloads/3.x/WinAuth-3.5.0-NET35.zip</url35>
+	<changes></changes>
+</WinAuth>
