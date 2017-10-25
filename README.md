@@ -6,7 +6,7 @@
 
 ## Download Latest Version
 
-The latest stable version is WinAuth 3.5 and is available to download from this source repository, or as a pre-compiled binary from [WinAuth downloads](https://winauth.com/download).
+The latest stable version is WinAuth 3.5 and is available to download from this source repository, or as a pre-compiled binary from [Releases](https://github.com/winauth/winauth/releases).
 
 ----
 
@@ -14,11 +14,11 @@ The latest stable version is WinAuth 3.5 and is available to download from this 
 
 WinAuth provides an alternative solution to combine various two-factor authenticator services in one convenient place.
 
-[Latest Version (WinAuth-3.5.1)](https://winauth.com/downloads/3.x/WinAuth-3.5.1.zip)
+[Latest Version (WinAuth-3.5.1)](https://github.com/winauth/winauth/releases/download/3.5.1/WinAuth-3.5.1.zip)
 
-There is also a [.Net 3.5 build of WinAuth](https://winauth.com/downloads/3.x/WinAuth-3.5.1-NET35.zip) that can be run on Windows 7 installations "out of the box".
+There is also a [.Net 3.5 build of WinAuth](https://github.com/winauth/winauth/releases/download/3.5.1/WinAuth-3.5.1-NET35.zip) that can be run on Windows 7 installations "out of the box".
 
-<img src="https://winauth.com/images/winauth3-preview.png" alt="WinAuth3 Preview" />
+<img src="https://winauth.github.io/winauth/images/winauth3-preview.png " alt="WinAuth3 Preview" />
 
 Features include:
 
@@ -36,15 +36,13 @@ Features include:
   * Portable mode preventing changes to other files or registry settings
   * Import and export in UriKeyFormat and from Authenticator Plus for Android 
 
-Visit [WinAuth.com](https://winauth.com) for more information.
-
 #### Updates
 
   * 3.5.1 - Issue#366: fix spamming notifications when Steam is down. Hide confim/cancel all buttons on login.
 
 ### How To Use
 
-Use the following link to download the latest version of WinAuth, or go to the [downloads](https://winauth.com/download) page on winauth.com.
+Use the following link to download the latest version of WinAuth, or go to the [Releases](https://github.com/winauth/winauth/releases) page.
 
 Requires [Microsoft .Net 4.5](http://www.microsoft.com/en-us/download/details.aspx?id=30653)
 
@@ -67,7 +65,7 @@ To compile and build from source:
 
 Version 3.5 includes Steam trade confirmations.
 
-<img src="https://winauth.com/wp-content/uploads/2013/07/steamconf1.png" alt="steamconf" class="aligncenter" />
+<img src="https://winauth.github.io/winauth/images/2013/07/steamconf1.png" alt="steamconf" class="aligncenter" />
 
 If you registered SteamGuard with WinAuth 3.3.7 or earlier, you will need to remove it from your Steam account and add it again. This is because WinAuth 3.3 only kept information relevant to generating the SteamGuard authenticator codes, however, confirmations needs more information.
 
@@ -105,7 +103,7 @@ There are no other executables installed on your machine. There is no installer 
 
 #### I found WinAuth on another website, is it the same thing?
 
-WinAuth source code is uploaded to GitHub at http://github.com/winauth/winauth and pre-built binaries and installers are on [winauth.com](https://winauth.com). It had been hosted using Google Code at https://code.google.com/p/winauth, but has been moved to GiHub since Google Code is being closed down. It is not published anywhere else, so please do not download any other programs claiming to be WinAuth.
+WinAuth source code is uploaded to GitHub at http://github.com/winauth/winauth and pre-built binaries are int [releases](https://github.com/winauth/winauth/releases). It is not published anywhere else, so please do not download any other programs claiming to be WinAuth.
 
 #### Where does WinAuth save my authenticator information?
 
@@ -128,7 +126,7 @@ All trademarks are recognised, including but not limited to:
 
 ## Author
 
-WinAuth was written by Colin Mackie. Copyright (C) 2010-2016.
+WinAuth was written by Colin Mackie. Copyright (C) 2010-2017.
 
 Bitcoin donations can be sent to `1C4bMkMATViiWYsmJSDUx2MruWM785C36Y`
 

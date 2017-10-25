@@ -2,7 +2,7 @@
 <WinAuth>
 	<version>3.5.1</version>
 	<released>2016-06-07</released>
-	<url>https://winauth.com/downloads/3.x/WinAuth-3.5.1.zip</url>
-	<url35>https://winauth.com/downloads/3.x/WinAuth-3.5.1-NET35.zip</url35>
+	<url>https://github.com/winauth/winauth/releases/download/3.5.1/WinAuth-3.5.1.zip</url>
+	<url35>https://github.com/winauth/winauth/releases/download/3.5.1/WinAuth-3.5.1-NET35.zip</url35>
 	<changes></changes>
 </WinAuth>
