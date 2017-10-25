@@ -209,6 +209,12 @@
     <Compile Include="AddMicrosoftAuthenticator.designer.cs">
       <DependentUpon>AddMicrosoftAuthenticator.cs</DependentUpon>
     </Compile>
+    <Compile Include="AddOktaVerifyAuthenticator.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddOktaVerifyAuthenticator.Designer.cs">
+      <DependentUpon>AddOktaVerifyAuthenticator.cs</DependentUpon>
+    </Compile>
     <Compile Include="Notification.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -390,6 +396,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AddMicrosoftAuthenticator.resx">
       <DependentUpon>AddMicrosoftAuthenticator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddOktaVerifyAuthenticator.resx">
+      <DependentUpon>AddOktaVerifyAuthenticator.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Notification.resx">
       <DependentUpon>Notification.cs</DependentUpon>
@@ -581,6 +590,7 @@
     <EmbeddedResource Include="Resources\WinAuthIcon.gif" />
     <EmbeddedResource Include="Resources\WordpressWhiteIcon.png" />
     <EmbeddedResource Include="Resources\ChromeIcon.png" />
+    <EmbeddedResource Include="Resources\OktaVerifyAuthenticatorIcon.png" />
     <Content Include="winauth.ico" />
   </ItemGroup>
   <ItemGroup>
