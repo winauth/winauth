@@ -4,15 +4,19 @@
 
 ----
 
-## Download Latest Version
+## Download Latest Beta Version
 
-The latest stable version is WinAuth 3.5 and is available to download from this source repository, or as a pre-compiled binary from [Releases](https://github.com/winauth/winauth/releases).
+The latest beta version is WinAuth 3.6 and is available from the [releases](https://github.com/winauth/winauth/releases) page. Please do not use this version unless you are testing new features.
+
+This will likely be the last version of WinAuth when released as 3.7. It has reached the end of its useful life and requires a massive UI overhaul. My thanks to everyone who has used WinAuth, provided fixes and useful suggestions.
 
 ----
 
-## WinAuth 3.5 (latest stable)
+## Download Latest Stable Version (WinAuth 3.5)
 
 WinAuth provides an alternative solution to combine various two-factor authenticator services in one convenient place.
+
+This is the latest stable version and can be downloaded from the [releases](https://github.com/winauth/winauth/releases) page, or directly from:
 
 [Latest Version (WinAuth-3.5.1)](https://github.com/winauth/winauth/releases/download/3.5.1/WinAuth-3.5.1.zip)
 
