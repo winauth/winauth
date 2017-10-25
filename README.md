@@ -18,7 +18,7 @@ WinAuth provides an alternative solution to combine various two-factor authentic
 
 There is also a [.Net 3.5 build of WinAuth](https://github.com/winauth/winauth/releases/download/3.5.1/WinAuth-3.5.1-NET35.zip) that can be run on Windows 7 installations "out of the box".
 
-<img src="https://winauth.github.io/winauth/images/winauth3-preview.png " alt="WinAuth3 Preview" />
+<img src="https://winauth.github.io/winauth/images/winauth3-preview.png" alt="WinAuth3 Preview" />
 
 Features include:
 
@@ -103,7 +103,7 @@ There are no other executables installed on your machine. There is no installer 
 
 #### I found WinAuth on another website, is it the same thing?
 
-WinAuth source code is uploaded to GitHub at http://github.com/winauth/winauth and pre-built binaries are int [releases](https://github.com/winauth/winauth/releases). It is not published anywhere else, so please do not download any other programs claiming to be WinAuth.
+WinAuth source code is uploaded to GitHub at http://github.com/winauth/winauth and pre-built binaries are in [releases](https://github.com/winauth/winauth/releases). It is not published anywhere else, so please do not download any other programs claiming to be WinAuth.
 
 #### Where does WinAuth save my authenticator information?
 
