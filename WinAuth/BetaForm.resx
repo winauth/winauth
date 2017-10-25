@@ -120,7 +120,7 @@
   <data name="betaLabel.Text" xml:space="preserve">
     <value>Whilst every effort has been made to ensure your authenticator data cannot become corrupt, errors can happen.
 
-If this is your first time running WinAuth, make sure you keep an unencrypted backup and write down the SERIAL number or SECRET keys. You may instead want to use the current stable version that can be downloaded from https://winauth.com.
+If this is your first time running WinAuth, make sure you keep an unencrypted backup and write down the SERIAL number or SECRET keys. You may instead want to use the current stable version.
 
 If you have used WinAuth before and have an existing authenticator, please make an UNENCRYPTED copy of your current authenticator files. You should also write down your SECRET keys. Cancel this dialog and run the previous version of WinAuth. Either click the options button (cog) and choose "Export...", or use "Change Protection..." and remove your password before taking a copy of your winauth.xml file.
 

@@ -366,8 +366,7 @@ All other trademarks are the property of their respective owners.</value>
 Some diagnostic information has been recorded and saved that might help track down issues in WinAuth.
 
 It would help if you can submit this information so we can investigate the crash and try and fix the issue. This information does include information about your authenticators but is only used by the WinAuth developers solely for the purpose of investigating bugs and error reports. It does not include any personal or identifying information. Any information sent has been encrypted using PGP and cannot be read by anyone else.
-
-If you are happy to send this information please either click Send Error Report or you can click Show Details and manually copy the text and file a bug report at https://winauth.com/bug.</value>
+</value>
   </data>
 	<data name="_ExceptionForm_quitButton_" xml:space="preserve">
     <value>退出</value>

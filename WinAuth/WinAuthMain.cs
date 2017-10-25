@@ -56,18 +56,13 @@ namespace WinAuth
     /// </summary>
     public const string WINAUTHBACKUP_EMAIL = "winauth@gmail.com";
 
-		/// <summary>
-		/// URL to post error reports
-		/// </summary>
-		public const string WINAUTH_BUG_URL = "https://api.winauth.com/bug";
-
-		/// <summary>
-		/// URL to get latest information
-		/// </summary>
+    /// <summary>
+    /// URL to get latest information
+    /// </summary>
 #if BETA
-		public const string WINAUTH_UPDATE_URL = "https://updates.winauth.com/current-beta-version.xml";
+		public const string WINAUTH_UPDATE_URL = "https://raw.githubusercontent.com/winauth/winauth/master/docs/current-beta-version.xml";
 #else
-		public const string WINAUTH_UPDATE_URL = "https://updates.winauth.com/current-version.xml";
+    public const string WINAUTH_UPDATE_URL = "https://raw.githubusercontent.com/winauth/winauth/master/docs/current-version.xml";
 #endif
 
 		/// <summary>
