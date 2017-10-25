@@ -896,10 +896,12 @@ namespace WinAuth
                   string data = reader.ReadElementContentAsString();
 
 									hasher.ComputeHash(Authenticator.StringToByteArray(data));
+#if !NETFX_3
                   hasher.Dispose();
+#endif
 
-									// decrypt
-									YubiKey yubi = null;
+                  // decrypt
+                  YubiKey yubi = null;
 									if ((this.PasswordType & (Authenticator.PasswordTypes.YubiKeySlot1 | Authenticator.PasswordTypes.YubiKeySlot2)) != 0 /* && this.Yubi == null */)
 									{
 										yubi = YubiKey.CreateInstance();

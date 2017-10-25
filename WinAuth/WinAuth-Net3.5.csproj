@@ -14,7 +14,7 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <AssemblyVersion>3.5.1.3</AssemblyVersion>
+    <AssemblyVersion>3.6.2.30</AssemblyVersion>
     <PrimaryVersionType>AssemblyVersionAttribute</PrimaryVersionType>
     <AssemblyInfoFilePath>Properties\AssemblyInfo.cs</AssemblyInfoFilePath>
     <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
@@ -66,7 +66,7 @@
     <Optimize>false</Optimize>
     <OutputPath>..\Net3.5\bin\Debug\</OutputPath>
     <IntermediateOutputPath>..\Net3.5\obj\Debug\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;NETFX_3</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETFX_3,BETA</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>true</UseVSHostingProcess>
@@ -78,7 +78,7 @@
     <Optimize>true</Optimize>
     <OutputPath>..\Net3.5\bin\Release\</OutputPath>
     <IntermediateOutputPath>..\Net3.5\obj\Release\</IntermediateOutputPath>
-    <DefineConstants>TRACE;NETFX_3</DefineConstants>
+    <DefineConstants>TRACE;NETFX_3,BETA</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>

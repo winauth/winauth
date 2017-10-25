@@ -705,12 +705,21 @@ namespace WinAuth
 						}
 
             Authenticator.HMACTypes hmactype;
+#if NETFX_3
+            try
+            {
+              hmactype = (WinAuth.Authenticator.HMACTypes)Enum.Parse(typeof(WinAuth.Authenticator.HMACTypes), query["algorithm"], true);
+              auth.HMACType = hmactype;
+            }
+            catch (Exception) { }
+#else
             if (Enum.TryParse<Authenticator.HMACTypes>(query["algorithm"], true, out hmactype) == true)
             {
               auth.HMACType = hmactype;
             }
-						//
-						if (label.Length != 0)
+#endif
+            //
+            if (label.Length != 0)
 						{
 							importedAuthenticator.Name = (issuer.Length != 0 ? issuer + " (" + label + ")" : label);
 						}

@@ -309,10 +309,19 @@ namespace WinAuth
         }
 
         WinAuth.Authenticator.HMACTypes hmac;
+#if NETFX_3
+        try
+        {
+          hmac = (WinAuth.Authenticator.HMACTypes)Enum.Parse(typeof(WinAuth.Authenticator.HMACTypes), qs["algorithm"], true);
+          this.hashField.SelectedItem = hmac.ToString();
+        }
+        catch (Exception) { }
+#else
         if (Enum.TryParse<WinAuth.Authenticator.HMACTypes>(qs["algorithm"], true, out hmac) == true)
         {
           this.hashField.SelectedItem = hmac.ToString();
         }
+#endif
       }
     }
 
@@ -354,7 +363,15 @@ namespace WinAuth
       }
 
       WinAuth.Authenticator.HMACTypes hmac = WinAuth.Authenticator.HMACTypes.SHA1;
+#if NETFX_3
+      try
+      {
+        hmac = (WinAuth.Authenticator.HMACTypes)Enum.Parse(typeof(WinAuth.Authenticator.HMACTypes), (string)hashField.SelectedItem, true);
+      }
+      catch (Exception) { }
+#else
       Enum.TryParse<WinAuth.Authenticator.HMACTypes>((string)hashField.SelectedItem, out hmac);
+#endif
 
       string authtype = timeBasedRadio.Checked == true ? TOTP : HOTP;
 
@@ -473,10 +490,19 @@ namespace WinAuth
         }
         if (qs["algorithm"] != null)
         {
+#if NETFX_3
+          try
+          {
+            hmac = (WinAuth.Authenticator.HMACTypes)Enum.Parse(typeof(WinAuth.Authenticator.HMACTypes), qs["algorithm"], true);
+            hashField.SelectedItem = hmac.ToString();
+          }
+          catch (Exception) { }
+#else
           if (Enum.TryParse<WinAuth.Authenticator.HMACTypes>(qs["algorithm"], true, out hmac) == true)
           {
             hashField.SelectedItem = hmac.ToString();
           }
+#endif
         }
       }
 
@@ -585,7 +611,7 @@ namespace WinAuth
     }
 
 
-    #endregion
+#endregion
 
   }
 }
