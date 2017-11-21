@@ -899,28 +899,31 @@ namespace WinAuth
 						Panel tradePanel = Clone(this.tradePanelMaster, "_" + trade.Id) as Panel;
 						tradePanel.SuspendLayout();
 
-						using (WebClient wc = new WebClient())
+						if (!string.IsNullOrEmpty(trade.Image))
 						{
-						    byte[] imageData = null;
-
-                            try
-						    {
-						        imageData = wc.DownloadData(trade.Image);
-                            }
-						    catch (WebException ex)
-						    {
-						        // ignore error 404 for missing images
-                                if (((HttpWebResponse)ex.Response).StatusCode != HttpStatusCode.NotFound)
-                                {
-                                    throw;
-                                }
-                            }
-							if (imageData != null && imageData.Length != 0)
+							using (WebClient wc = new WebClient())
 							{
-								using (MemoryStream ms = new MemoryStream(imageData))
+								byte[] imageData = null;
+
+								try
 								{
-									PictureBox imageBox = FindControl<PictureBox>(tradePanel, "tradeImage");
-									imageBox.Image = Image.FromStream(ms);
+									imageData = wc.DownloadData(trade.Image);
+								}
+								catch (WebException ex)
+								{
+									// ignore error 404 for missing images
+									if (((HttpWebResponse)ex.Response).StatusCode != HttpStatusCode.NotFound)
+									{
+										throw;
+									}
+								}
+								if (imageData != null && imageData.Length != 0)
+								{
+									using (MemoryStream ms = new MemoryStream(imageData))
+									{
+										PictureBox imageBox = FindControl<PictureBox>(tradePanel, "tradeImage");
+										imageBox.Image = Image.FromStream(ms);
+									}
 								}
 							}
 						}
