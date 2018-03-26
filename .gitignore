@@ -6,8 +6,8 @@
 *.vcxproj.user
 WinAuth.YubiKey/Debug
 WinAuth.YubiKey/Release
-WinAuth.YubiKey/x64/Debug
-WinAuth.YubiKey/x64/Release
+WinAuth.YubiKey/x64
+WinAuth.YubiKey/ARM64
 Authenticator/Resources
 Net*/.vs
 Net*/bin

@@ -566,6 +566,7 @@
     <EmbeddedResource Include="Resources\Swtor.png" />
     <EmbeddedResource Include="Resources\SwtorEmpire.png" />
     <EmbeddedResource Include="Resources\SwtorRepublic.png" />
+    <None Include="bin\Debug\WinAuth.YubiKey.ARM64.dll" />
     <None Include="bin\Debug\WinAuth.YubiKey.x64.dll" />
     <None Include="bin\Debug\WinAuth.YubiKey.x86.dll" />
     <EmbeddedResource Include="Resources\GoogleAuthenticator2Icon.png" />
