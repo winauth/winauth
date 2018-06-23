@@ -765,7 +765,7 @@ namespace WinAuth
 
 						if (m_enroll.Requires2FA == true)
 						{
-							WinAuthForm.ErrorDialog(this, "It looks like you already have an authenticator added to you account", null, MessageBoxButtons.OK);
+							WinAuthForm.ErrorDialog(this, "It looks like you already have an authenticator added to your account", null, MessageBoxButtons.OK);
 							return;
 						}
 
