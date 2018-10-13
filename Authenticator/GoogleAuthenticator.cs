@@ -1,5 +1,5 @@
-﻿/*
- * Copyright (C) 2011 Colin Mackie.
+/*
+ * Copyright (C) 2011  Colin Mackie
  * This software is distributed under the terms of the GNU General Public License.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 using System;
@@ -55,20 +55,20 @@ namespace WinAuth
     /// </summary>
     private const int CODE_DIGITS = 6;
 
-		/// <summary>
-		/// Number of minutes to ignore syncing if network error
-		/// </summary>
-		private const int SYNC_ERROR_MINUTES = 5;
+    /// <summary>
+    /// Number of minutes to ignore syncing if network error
+    /// </summary>
+    private const int SYNC_ERROR_MINUTES = 5;
 
     /// <summary>
     /// URL used to sync time
     /// </summary>
     private const string TIME_SYNC_URL = "http://www.google.com";
 
-		/// <summary>
-		/// Time of last Sync error
-		/// </summary>
-		private static DateTime _lastSyncError = DateTime.MinValue;
+    /// <summary>
+    /// Time of last Sync error
+    /// </summary>
+    private static DateTime _lastSyncError = DateTime.MinValue;
 
     #region Authenticator data
 
@@ -101,66 +101,66 @@ namespace WinAuth
     /// <summary>
     /// Synchronise this authenticator's time with Google. We update our data record with the difference from our UTC time.
     /// </summary>
-		public override void Sync()
+    public override void Sync()
     {
-			// check if data is protected
-			if (this.SecretKey == null && this.EncryptedData != null)
-			{
-				throw new EncryptedSecretDataException();
-			}
+      // check if data is protected
+      if (this.SecretKey == null && this.EncryptedData != null)
+      {
+        throw new EncryptedSecretDataException();
+      }
 
-			// don't retry for 5 minutes
-			if (_lastSyncError >= DateTime.Now.AddMinutes(0 - SYNC_ERROR_MINUTES))
-			{
-				return;
-			}
+      // don't retry for 5 minutes
+      if (_lastSyncError >= DateTime.Now.AddMinutes(0 - SYNC_ERROR_MINUTES))
+      {
+        return;
+      }
 
-			try
-			{
-				// we use the Header response field from a request to www.google.come
-				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(TIME_SYNC_URL);
-				request.Method = "GET";
-				request.ContentType = "text/html";
-				request.Timeout = 5000;
-				// get response
-				using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-				{
-					// OK?
-					if (response.StatusCode != HttpStatusCode.OK)
-					{
-						throw new ApplicationException(string.Format("{0}: {1}", (int)response.StatusCode, response.StatusDescription));
-					}
+      try
+      {
+        // we use the Header response field from a request to www.google.com
+        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(TIME_SYNC_URL);
+        request.Method = "GET";
+        request.ContentType = "text/html";
+        request.Timeout = 5000;
+        // get response
+        using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+        {
+          // OK?
+          if (response.StatusCode != HttpStatusCode.OK)
+          {
+            throw new ApplicationException(string.Format("{0}: {1}", (int)response.StatusCode, response.StatusDescription));
+          }
 
-					string headerdate = response.Headers["Date"];
-					if (string.IsNullOrEmpty(headerdate) == false)
-					{
-						DateTime dt;
-						if (DateTime.TryParse(headerdate, out dt) == true)
-						{
-							// get as ms since epoch
-							long dtms = Convert.ToInt64((dt.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalMilliseconds);
+          string headerdate = response.Headers["Date"];
+          if (string.IsNullOrEmpty(headerdate) == false)
+          {
+            DateTime dt;
+            if (DateTime.TryParse(headerdate, out dt) == true)
+            {
+              // get as ms since epoch
+              long dtms = Convert.ToInt64((dt.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalMilliseconds);
 
-							// get the difference between the server time and our current time
-							long serverTimeDiff = dtms - CurrentTime;
+              // get the difference between the server time and our current time
+              long serverTimeDiff = dtms - CurrentTime;
 
-							// update the Data object
-							ServerTimeDiff = serverTimeDiff;
-							LastServerTime = DateTime.Now.Ticks;
-						}
-					}
+              // update the Data object
+              ServerTimeDiff = serverTimeDiff;
+              LastServerTime = DateTime.Now.Ticks;
+            }
+          }
 
-					// clear any sync error
-					_lastSyncError = DateTime.MinValue;
-				}
-			}
-			catch (WebException )
-			{
-				// don't retry for a while after error
-				_lastSyncError = DateTime.Now;
+          // clear any sync error
+          _lastSyncError = DateTime.MinValue;
+        }
+      }
+      catch (WebException)
+      {
+        // don't retry for a while after error
+        _lastSyncError = DateTime.Now;
 
-				// set to zero to force reset
-				ServerTimeDiff = 0;
-			}
+        // set to zero to force reset
+        ServerTimeDiff = 0;
+      }
     }
 
   }

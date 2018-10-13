@@ -1,5 +1,5 @@
-﻿/*
- * Copyright (C) 2011 Colin Mackie.
+/*
+ * Copyright (C) 2011  Colin Mackie
  * This software is distributed under the terms of the GNU General Public License.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 using System;
@@ -70,7 +70,7 @@ namespace WinAuth
     private const int PBKDF2_KEYSIZE = 256;
 
     /// <summary>
-    /// Version for encrpytion changes
+    /// Version for encryption changes
     /// </summary>
     private static string ENCRYPTION_HEADER = Authenticator.ByteArrayToString(Encoding.UTF8.GetBytes("WINAUTH3"));
 
@@ -137,7 +137,7 @@ namespace WinAuth
     public PasswordTypes PasswordType { get; private set; }
 
     /// <summary>
-    /// Password used to encrypt secretdata (if PasswordType == Explict)
+    /// Password used to encrypt secretdata (if PasswordType == Explicit)
     /// </summary>
     protected string Password { get; set; }
 
@@ -220,7 +220,7 @@ namespace WinAuth
     /// <summary>
     /// Advanced script saved with authenticator so it is also encrypted
     /// </summary>
-    //public string Script {get; set;}
+    //public string Script { get; set; }
 
     /// <summary>
     /// Get the server time since 1/1/70
@@ -269,7 +269,7 @@ namespace WinAuth
     /// </summary>
     static Authenticator()
     {
-      // Issue#71: remove the default .net expect header, which can cause issues (http://stackoverflow.com/questions/566437/)
+      // Issue#71: remove the default .net expect header, which can cause issues (https://stackoverflow.com/questions/566437/)
       System.Net.ServicePointManager.Expect100Continue = false;
     }
 
@@ -330,7 +330,7 @@ namespace WinAuth
       byte[] mac = new byte[hmac.GetMacSize()];
       hmac.DoFinal(mac, 0);
 
-      // the last 4 bits of the mac say where the code starts (e.g. if last 4 bit are 1100, we start at byte 12)
+      // the last 4 bits of the mac say where the code starts (e.g. if last 4 bits are 1100, we start at byte 12)
       int start = mac.Last() & 0x0f;
 
       // extract those 4 bytes
@@ -351,7 +351,7 @@ namespace WinAuth
     }
 
     /// <summary>
-    /// Synchorise this authenticator's time with server time. We update our data record with the difference from our UTC time.
+    /// Synchronise this authenticator's time with server time. We update our data record with the difference from our UTC time.
     /// </summary>
     public abstract void Sync();
 
@@ -391,8 +391,8 @@ namespace WinAuth
               break;
 
             //case "restorecodeverified":
-            //	authenticator.RestoreCodeVerified = reader.ReadElementContentAsBoolean();
-            //	break;
+            //  authenticator.RestoreCodeVerified = reader.ReadElementContentAsBoolean();
+            //  break;
 
             case "secretdata":
               string encrypted = reader.GetAttribute("encrypted");
@@ -502,7 +502,7 @@ namespace WinAuth
 
     public void SetEncryption(PasswordTypes passwordType, string password = null)
     {
-      // check if still encrpyted
+      // check if still encrypted
       if (this.RequiresPassword == true)
       {
         // have to decrypt to be able to re-encrypt
@@ -566,15 +566,15 @@ namespace WinAuth
         // check if the data has changed
         //if (this.SecretData != null)
         //{
-        //	using (SHA1 sha1 = SHA1.Create())
-        //	{
-        //		byte[] secretHash = sha1.ComputeHash(Encoding.UTF8.GetBytes(this.SecretData));
-        //		if (this.SecretHash == null || secretHash.SequenceEqual(this.SecretHash) == false)
-        //		{
-        //			// we need to encrypt changed secret data
-        //			SetEncryption(this.PasswordType, this.Password);
-        //		}
-        //	}
+        //  using (SHA1 sha1 = SHA1.Create())
+        //  {
+        //    byte[] secretHash = sha1.ComputeHash(Encoding.UTF8.GetBytes(this.SecretData));
+        //    if (this.SecretHash == null || secretHash.SequenceEqual(this.SecretHash) == false)
+        //    {
+        //      // we need to encrypt changed secret data
+        //      SetEncryption(this.PasswordType, this.Password);
+        //    }
+        //  }
         //}
 
         this.SecretData = null;
@@ -665,21 +665,21 @@ namespace WinAuth
         //// decrypt
         //try
         //{
-        //	string data = Authenticator.DecryptSequence(this.EncryptedData, passwordType, password);
-        //	using (MemoryStream ms = new MemoryStream(Authenticator.StringToByteArray(data)))
-        //	{
-        //		reader = XmlReader.Create(ms);
-        //		this.ReadXml(reader, password);
-        //	}
+        //  string data = Authenticator.DecryptSequence(this.EncryptedData, passwordType, password);
+        //  using (MemoryStream ms = new MemoryStream(Authenticator.StringToByteArray(data)))
+        //  {
+        //    reader = XmlReader.Create(ms);
+        //    this.ReadXml(reader, password);
+        //  }
         //}
         //catch (EncryptedSecretDataException)
         //{
-        //	this.RequiresPassword = true;
-        //	throw;
+        //  this.RequiresPassword = true;
+        //  throw;
         //}
         //finally
         //{
-        //	this.PasswordType = passwordType;
+        //  this.PasswordType = passwordType;
         //}
       }
 
@@ -782,22 +782,22 @@ namespace WinAuth
               //string data = this.EncryptedData;
               //if (data == null)
               //{
-              //	using (MemoryStream ms = new MemoryStream())
-              //	{
-              //		XmlWriterSettings settings = new XmlWriterSettings();
-              //		settings.Indent = true;
-              //		settings.Encoding = Encoding.UTF8;
-              //		using (XmlWriter encryptedwriter = XmlWriter.Create(ms, settings))
-              //		{
-              //			Authenticator.PasswordTypes savedpasswordType = PasswordType;
-              //			PasswordType = Authenticator.PasswordTypes.None;
-              //			WriteToWriter(encryptedwriter);
-              //			PasswordType = savedpasswordType;
-              //		}
-              //		data = Authenticator.ByteArrayToString(ms.ToArray());
-              //	}
+              //  using (MemoryStream ms = new MemoryStream())
+              //  {
+              //    XmlWriterSettings settings = new XmlWriterSettings();
+              //    settings.Indent = true;
+              //    settings.Encoding = Encoding.UTF8;
+              //    using (XmlWriter encryptedwriter = XmlWriter.Create(ms, settings))
+              //    {
+              //      Authenticator.PasswordTypes savedpasswordType = PasswordType;
+              //      PasswordType = Authenticator.PasswordTypes.None;
+              //      WriteToWriter(encryptedwriter);
+              //      PasswordType = savedpasswordType;
+              //    }
+              //    data = Authenticator.ByteArrayToString(ms.ToArray());
+              //  }
 
-              //	data = Authenticator.EncryptSequence(data, PasswordType, Password);
+              //  data = Authenticator.EncryptSequence(data, PasswordType, Password);
               //}
 
               writer.WriteString(this.EncryptedData);
@@ -866,12 +866,12 @@ namespace WinAuth
     /// Create a one-time pad by generating a random block and then taking a hash of that block as many times as needed.
     /// </summary>
     /// <param name="length">desired pad length</param>
-    /// <returns>array of bytes conatining random data</returns>
+    /// <returns>array of bytes containing random data</returns>
     protected internal static byte[] CreateOneTimePad(int length)
     {
       // There is a MITM vulnerability from using the standard Random call
-      // see https://docs.google.com/document/edit?id=1pf-YCgUnxR4duE8tr-xulE3rJ1Hw-Bm5aMk5tNOGU3E&hl=en
-      // in http://code.google.com/p/winauth/issues/detail?id=2
+      // see https://docs.google.com/document/edit?id=1pf-YCgUnxR4duE8tr-xulE3rJ1Hw-Bm5aMk5tNOGU3E
+      // in https://github.com/winauth/winauth/issues/2
       // so we switch out to use RNGCryptoServiceProvider instead of Random
 
       RNGCryptoServiceProvider random = new RNGCryptoServiceProvider();
@@ -947,7 +947,7 @@ namespace WinAuth
     /// <returns>decrypted string sequence</returns>
     public static string DecryptSequence(string data, PasswordTypes encryptedTypes, string password, YubiKey yubi, bool decode = false)
     {
-      // check for encrpytion header
+      // check for encryption header
       if (data.Length < ENCRYPTION_HEADER.Length || data.IndexOf(ENCRYPTION_HEADER) != 0)
       {
         return DecryptSequenceNoHash(data, encryptedTypes, password, yubi, decode);
@@ -995,7 +995,7 @@ namespace WinAuth
         // reverse order they were encrypted
         if ((encryptedTypes & PasswordTypes.Machine) != 0)
         {
-          // we are going to decrypt with the Windows local machine key
+          // we are going to decrypt with the Windows Local Machine key
           byte[] cipher = Authenticator.StringToByteArray(data);
           byte[] plain = ProtectedData.Unprotect(cipher, null, DataProtectionScope.LocalMachine);
           if (decode == true)
@@ -1173,7 +1173,7 @@ namespace WinAuth
       }
       if ((passwordType & PasswordTypes.Machine) != 0)
       {
-        // we encrypt the data using the Local Machine account key
+        // we encrypt the data using the Windows Local Machine account key
         byte[] plain = StringToByteArray(data);
         byte[] cipher = ProtectedData.Protect(plain, null, DataProtectionScope.LocalMachine);
         data = ByteArrayToString(cipher);
@@ -1201,7 +1201,7 @@ namespace WinAuth
 
       // build our PBKDF2 key
 #if NETCF
-			PBKDF2 kg = new PBKDF2(passwordBytes, saltbytes, PBKDF2_ITERATIONS);
+      PBKDF2 kg = new PBKDF2(passwordBytes, saltbytes, PBKDF2_ITERATIONS);
 #else
       Rfc2898DeriveBytes kg = new Rfc2898DeriveBytes(passwordBytes, saltbytes, PBKDF2_ITERATIONS);
 #endif
@@ -1259,7 +1259,7 @@ namespace WinAuth
 
         // build our PBKDF2 key
 #if NETCF
-			PBKDF2 kg = new PBKDF2(passwordBytes, saltbytes, 2000);
+      PBKDF2 kg = new PBKDF2(passwordBytes, saltbytes, 2000);
 #else
         Rfc2898DeriveBytes kg = new Rfc2898DeriveBytes(passwordBytes, saltBytes, PBKDF2_ITERATIONS);
 #endif
@@ -1356,16 +1356,16 @@ namespace WinAuth
     protected internal static bool LongTryParse(string s, out long val)
     {
 #if NETCF
-			try
-			{
-				val = long.Parse(s);
-				return true;
-			}
-			catch (Exception )
-			{
-				val = 0;
-				return false;
-			}
+      try
+      {
+        val = long.Parse(s);
+        return true;
+      }
+      catch (Exception)
+      {
+        val = 0;
+        return false;
+      }
 #else
       return long.TryParse(s, out val);
 #endif
@@ -1388,147 +1388,147 @@ namespace WinAuth
     #endregion
 
 #if NETCF
-		/// <summary>
-		/// Private class that implements PBKDF2 needed for older NETCF. Implemented from http://en.wikipedia.org/wiki/PBKDF2.
-		/// </summary>
-		private class PBKDF2
-		{
-			/// <summary>
-			/// Our digest
-			/// </summary>
-			private HMac m_mac;
+    /// <summary>
+    /// Private class that implements PBKDF2 needed for older NETCF. Implemented from https://en.wikipedia.org/wiki/PBKDF2.
+    /// </summary>
+    private class PBKDF2
+    {
+      /// <summary>
+      /// Our digest
+      /// </summary>
+      private HMac m_mac;
 
-			/// <summary>
-			/// Digest length
-			/// </summary>
-			private int m_hlen;
+      /// <summary>
+      /// Digest length
+      /// </summary>
+      private int m_hlen;
 
-			/// <summary>
-			/// Base password
-			/// </summary>
-			private byte[] m_password;
+      /// <summary>
+      /// Base password
+      /// </summary>
+      private byte[] m_password;
 
-			/// <summary>
-			/// Salt
-			/// </summary>
-			private byte[] m_salt;
+      /// <summary>
+      /// Salt
+      /// </summary>
+      private byte[] m_salt;
 
-			/// <summary>
-			/// Number of iterations
-			/// </summary>
-			private int m_iterations;
+      /// <summary>
+      /// Number of iterations
+      /// </summary>
+      private int m_iterations;
 
-			/// <summary>
-			/// Create a new PBKDF2 object
-			/// </summary>
-			public PBKDF2(byte[] password, byte[] salt, int iterations)
-			{
-				m_password = password;
-				m_salt = salt;
-				m_iterations = iterations;
+      /// <summary>
+      /// Create a new PBKDF2 object
+      /// </summary>
+      public PBKDF2(byte[] password, byte[] salt, int iterations)
+      {
+        m_password = password;
+        m_salt = salt;
+        m_iterations = iterations;
 
-				m_mac = new HMac(new Sha1Digest());
-				m_hlen = m_mac.GetMacSize();
-			}
+        m_mac = new HMac(new Sha1Digest());
+        m_hlen = m_mac.GetMacSize();
+      }
 
-			/// <summary>
-			/// Calculate F.
-			/// F(P,S,c,i) = U1 ^ U2 ^ ... ^ Uc
-			/// Where F is an xor of c iterations of chained PRF. First iteration of PRF uses master password P as PRF key and salt concatenated to i. Second and greater PRF uses P and output of previous PRF computation:
-			/// </summary>
-			/// <param name="P"></param>
-			/// <param name="S"></param>
-			/// <param name="c"></param>
-			/// <param name="i"></param>
-			/// <param name="DK"></param>
-			/// <param name="DKoffset"></param>
-			private void F(byte[] P, byte[] S, int c, byte[] i, byte[] DK, int DKoffset)
-			{
-				// first iteration (ses master password P as PRF key and salt concatenated to i)
-				byte[] buf = new byte[m_hlen];
-				ICipherParameters param = new KeyParameter(P);
-				m_mac.Init(param);
-				m_mac.BlockUpdate(S, 0, S.Length);
-				m_mac.BlockUpdate(i, 0, i.Length);
-				m_mac.DoFinal(buf, 0);
-				Array.Copy(buf, 0, DK, DKoffset, buf.Length);
+      /// <summary>
+      /// Calculate F.
+      /// F(P,S,c,i) = U1 ^ U2 ^ ... ^ Uc
+      /// Where F is an xor of c iterations of chained PRF. First iteration of PRF uses master password P as PRF key and salt concatenated to i. Second and greater PRF uses P and output of previous PRF computation:
+      /// </summary>
+      /// <param name="P"></param>
+      /// <param name="S"></param>
+      /// <param name="c"></param>
+      /// <param name="i"></param>
+      /// <param name="DK"></param>
+      /// <param name="DKoffset"></param>
+      private void F(byte[] P, byte[] S, int c, byte[] i, byte[] DK, int DKoffset)
+      {
+        // first iteration (ses master password P as PRF key and salt concatenated to i)
+        byte[] buf = new byte[m_hlen];
+        ICipherParameters param = new KeyParameter(P);
+        m_mac.Init(param);
+        m_mac.BlockUpdate(S, 0, S.Length);
+        m_mac.BlockUpdate(i, 0, i.Length);
+        m_mac.DoFinal(buf, 0);
+        Array.Copy(buf, 0, DK, DKoffset, buf.Length);
 
-				// remaining iterations (uses P and output of previous PRF computation)
-				for (int iter = 1; iter < c; iter++)
-				{
-					m_mac.Init(param);
-					m_mac.BlockUpdate(buf, 0, buf.Length);
-					m_mac.DoFinal(buf, 0);
+        // remaining iterations (uses P and output of previous PRF computation)
+        for (int iter = 1; iter < c; iter++)
+        {
+          m_mac.Init(param);
+          m_mac.BlockUpdate(buf, 0, buf.Length);
+          m_mac.DoFinal(buf, 0);
 
-					for (int j=buf.Length-1; j >= 0; j--)
-					{
-						DK[DKoffset + j] ^= buf[j];
-					}
-				}
-			}
+          for (int j=buf.Length-1; j >= 0; j--)
+          {
+            DK[DKoffset + j] ^= buf[j];
+          }
+        }
+      }
 
-			/// <summary>
-			/// Calculate a derived key of dkLen bytes long from our initial password and salt
-			/// </summary>
-			/// <param name="dkLen">Length of desired key to be returned</param>
-			/// <returns>derived key of dkLen bytes</returns>
-			public byte[] GetBytes(int dkLen)
-			{
-				// For each hLen-bit block Ti of derived key DK, computing is as follows:
-				//  DK = T1 || T2 || ... || Tdklen/hlen
-				//  Ti = F(P,S,c,i)
-				int chunks = (dkLen + m_hlen - 1) / m_hlen;
-				byte[] DK = new byte[chunks * m_hlen];
-				byte[] idata = new byte[4];
-				for (int i = 1; i <= chunks; i++)
-				{
-					idata[0] = (byte)((uint)i >> 24);
-					idata[1] = (byte)((uint)i >> 16);
-					idata[2] = (byte)((uint)i >> 8);
-					idata[3] = (byte)i; 
+      /// <summary>
+      /// Calculate a derived key of dkLen bytes long from our initial password and salt
+      /// </summary>
+      /// <param name="dkLen">Length of desired key to be returned</param>
+      /// <returns>derived key of dkLen bytes</returns>
+      public byte[] GetBytes(int dkLen)
+      {
+        // For each hLen-bit block Ti of derived key DK, computing is as follows:
+        //  DK = T1 || T2 || ... || Tdklen/hlen
+        //  Ti = F(P,S,c,i)
+        int chunks = (dkLen + m_hlen - 1) / m_hlen;
+        byte[] DK = new byte[chunks * m_hlen];
+        byte[] idata = new byte[4];
+        for (int i = 1; i <= chunks; i++)
+        {
+          idata[0] = (byte)((uint)i >> 24);
+          idata[1] = (byte)((uint)i >> 16);
+          idata[2] = (byte)((uint)i >> 8);
+          idata[3] = (byte)i; 
 
-					F(m_password, m_salt, m_iterations, idata, DK, (i-1) * m_hlen);
-				}
-				if (DK.Length > dkLen)
-				{
-					byte[] reduced = new byte[dkLen];
-					Array.Copy(DK, 0, reduced, 0, dkLen);
-					DK = reduced;
-				}
+          F(m_password, m_salt, m_iterations, idata, DK, (i-1) * m_hlen);
+        }
+        if (DK.Length > dkLen)
+        {
+          byte[] reduced = new byte[dkLen];
+          Array.Copy(DK, 0, reduced, 0, dkLen);
+          DK = reduced;
+        }
 
-				return DK;
-			}
-		}
+        return DK;
+      }
+    }
 
 #if NUNIT
-		/// Test against standard test vectors and one of our own of the correct iterations.
-		/// http://tools.ietf.org/html/draft-josefsson-pbkdf2-test-vectors-00
-		[Test]
-		public static void TestPBKDF2()
-		{
-			PBKDF2 kg;
-			byte[] DK;
+    /// Test against standard test vectors and one of our own of the correct iterations.
+    /// https://tools.ietf.org/html/draft-josefsson-pbkdf2-test-vectors-00
+    [Test]
+    public static void TestPBKDF2()
+    {
+      PBKDF2 kg;
+      byte[] DK;
 
-			byte[] tv1 = new byte[] { 0x0c, 0x60, 0xc8, 0x0f, 0x96, 0x1f, 0x0e, 0x71, 0xf3, 0xa9, 0xb5, 0x24, 0xaf, 0x60, 0x12, 0x06, 0x2f, 0xe0, 0x37, 0xa6 };
-			kg = new PBKDF2(Encoding.Default.GetBytes("password"), Encoding.Default.GetBytes("salt"), 1);
-			DK = kg.GetBytes(20);
-			Assert.AreEqual(DK, tv1);
+      byte[] tv1 = new byte[] { 0x0c, 0x60, 0xc8, 0x0f, 0x96, 0x1f, 0x0e, 0x71, 0xf3, 0xa9, 0xb5, 0x24, 0xaf, 0x60, 0x12, 0x06, 0x2f, 0xe0, 0x37, 0xa6 };
+      kg = new PBKDF2(Encoding.Default.GetBytes("password"), Encoding.Default.GetBytes("salt"), 1);
+      DK = kg.GetBytes(20);
+      Assert.AreEqual(DK, tv1);
 
-			byte[] tv2 = new byte[] { 0xea, 0x6c, 0x01, 0x4d, 0xc7, 0x2d, 0x6f, 0x8c, 0xcd, 0x1e, 0xd9, 0x2a, 0xce, 0x1d, 0x41, 0xf0, 0xd8, 0xde, 0x89, 0x57 };
-			kg = new PBKDF2(Encoding.Default.GetBytes("password"), Encoding.Default.GetBytes("salt"), 2);
-			DK = kg.GetBytes(20);
-			Assert.AreEqual(DK, tv2);
+      byte[] tv2 = new byte[] { 0xea, 0x6c, 0x01, 0x4d, 0xc7, 0x2d, 0x6f, 0x8c, 0xcd, 0x1e, 0xd9, 0x2a, 0xce, 0x1d, 0x41, 0xf0, 0xd8, 0xde, 0x89, 0x57 };
+      kg = new PBKDF2(Encoding.Default.GetBytes("password"), Encoding.Default.GetBytes("salt"), 2);
+      DK = kg.GetBytes(20);
+      Assert.AreEqual(DK, tv2);
 
-			byte[] tv3 = new byte[] { 0x4b, 0x00, 0x79, 0x01, 0xb7, 0x65, 0x48, 0x9a, 0xbe, 0xad, 0x49, 0xd9, 0x26, 0xf7, 0x21, 0xd0, 0x65, 0xa4, 0x29, 0xc1 };
-			kg = new PBKDF2(Encoding.Default.GetBytes("password"), Encoding.Default.GetBytes("salt"), 4096);
-			DK = kg.GetBytes(20);
-			Assert.AreEqual(DK, tv3);
+      byte[] tv3 = new byte[] { 0x4b, 0x00, 0x79, 0x01, 0xb7, 0x65, 0x48, 0x9a, 0xbe, 0xad, 0x49, 0xd9, 0x26, 0xf7, 0x21, 0xd0, 0x65, 0xa4, 0x29, 0xc1 };
+      kg = new PBKDF2(Encoding.Default.GetBytes("password"), Encoding.Default.GetBytes("salt"), 4096);
+      DK = kg.GetBytes(20);
+      Assert.AreEqual(DK, tv3);
 
-			byte[] tv4 = new byte[] { 0x2f, 0x25, 0x5b, 0x3a, 0x95, 0x46, 0x3c, 0x76, 0x62, 0x1f, 0x06, 0x80, 0xa2, 0xb3, 0x35, 0xad, 0x90, 0x3b, 0x85, 0xde };
-			kg = new PBKDF2(Encoding.Default.GetBytes("VXFr[24c=6(D8He"), Encoding.Default.GetBytes("salt"), 1000);
-			DK = kg.GetBytes(20);
-			Assert.AreEqual(DK, tv4);
-		}
+      byte[] tv4 = new byte[] { 0x2f, 0x25, 0x5b, 0x3a, 0x95, 0x46, 0x3c, 0x76, 0x62, 0x1f, 0x06, 0x80, 0xa2, 0xb3, 0x35, 0xad, 0x90, 0x3b, 0x85, 0xde };
+      kg = new PBKDF2(Encoding.Default.GetBytes("VXFr[24c=6(D8He"), Encoding.Default.GetBytes("salt"), 1000);
+      DK = kg.GetBytes(20);
+      Assert.AreEqual(DK, tv4);
+    }
 #endif
 
 #endif

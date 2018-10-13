@@ -42,13 +42,13 @@ Features include:
 
 #### Updates
 
-  * 3.5.1 - Issue#366: fix spamming notifications when Steam is down. Hide confim/cancel all buttons on login.
+  * 3.5.1 - Issue#366: fix spamming notifications when Steam is down. Hide confirm/cancel all buttons on login.
 
 ### How To Use
 
 Use the following link to download the latest version of WinAuth, or go to the [Releases](https://github.com/winauth/winauth/releases) page.
 
-Requires [Microsoft .Net 4.5](http://www.microsoft.com/en-us/download/details.aspx?id=30653)
+Requires [Microsoft .Net 4.5](https://www.microsoft.com/en-us/download/details.aspx?id=30653)
 
 To use:
   * Download the latest stable version of WinAuth
@@ -107,7 +107,7 @@ There are no other executables installed on your machine. There is no installer 
 
 #### I found WinAuth on another website, is it the same thing?
 
-WinAuth source code is uploaded to GitHub at http://github.com/winauth/winauth and pre-built binaries are in [releases](https://github.com/winauth/winauth/releases). It is not published anywhere else, so please do not download any other programs claiming to be WinAuth.
+WinAuth source code is uploaded to GitHub at https://github.com/winauth/winauth and pre-built binaries are in [releases](https://github.com/winauth/winauth/releases). It is not published anywhere else, so please do not download any other programs claiming to be WinAuth.
 
 #### Where does WinAuth save my authenticator information?
 
@@ -130,7 +130,7 @@ All trademarks are recognised, including but not limited to:
 
 ## Author
 
-WinAuth was written by Colin Mackie. Copyright (C) 2010-2017.
+WinAuth was written by Colin Mackie. Copyright (C) 2010-2018.
 
 Bitcoin donations can be sent to `1C4bMkMATViiWYsmJSDUx2MruWM785C36Y`
 
@@ -142,4 +142,4 @@ This program is free software: you can redistribute it and/or modify it under th
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License  along with this program.  If not, see http://www.gnu.org/licenses/.
+You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
