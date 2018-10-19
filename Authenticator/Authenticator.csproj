@@ -153,6 +153,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\WinAuth.YubiKey.ARM64.dll" />
     <EmbeddedResource Include="Resources\WinAuth.YubiKey.x64.dll" />
     <EmbeddedResource Include="Resources\WinAuth.YubiKey.x86.dll" />
   </ItemGroup>

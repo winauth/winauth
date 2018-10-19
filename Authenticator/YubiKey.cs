@@ -159,6 +159,11 @@ namespace WinAuth
 		private const string YUBI_LIBRARY_NAME_X64 = "WinAuth.YubiKey.x64.dll";
 
 		/// <summary>
+		/// Name of our native ARM64 YubiKey DLL
+		/// </summary>
+		private const string YUBI_LIBRARY_NAME_ARM64 = "WinAuth.YubiKey.ARM64.dll";
+
+		/// <summary>
 		/// Fix Status stuct returned from Yubkey DLLs
 		/// </summary>
 		public struct STATUS
@@ -340,7 +345,11 @@ namespace WinAuth
 			}
 
 			// load the library
+			string arch = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITECTURE");
 			var libraryname = (IntPtr.Size == 4 ? YUBI_LIBRARY_NAME_X86 : YUBI_LIBRARY_NAME_X64);
+
+			if (arch == "ARM64")
+				libraryname = YUBI_LIBRARY_NAME_ARM64;
 
 			// create temp file
 			_libraryPath = Path.GetTempFileName();
