@@ -1,17 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
-	<!-- 
-    Microsoft ResX Schema 
-    
+  <!--
+    Microsoft ResX Schema
+
     Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
     associated with the data types.
-    
+
     Example:
-    
+
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,481 +26,520 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-                
-    There are any number of "resheader" rows that contain simple 
+
+    There are any number of "resheader" rows that contain simple
     name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
     mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
     extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
     read any of the formats listed below.
-    
+
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-    
+
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
+    value   : The object must be serialized with
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
+    value   : The object must be serialized into a byte array
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-		<xsd:element name="root" msdata:IsDataSet="true">
-			<xsd:complexType>
-				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="metadata">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" />
-							</xsd:sequence>
-							<xsd:attribute name="name" use="required" type="xsd:string" />
-							<xsd:attribute name="type" type="xsd:string" />
-							<xsd:attribute name="mimetype" type="xsd:string" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="assembly">
-						<xsd:complexType>
-							<xsd:attribute name="alias" type="xsd:string" />
-							<xsd:attribute name="name" type="xsd:string" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="data">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-							<xsd:attribute ref="xml:space" />
-						</xsd:complexType>
-					</xsd:element>
-					<xsd:element name="resheader">
-						<xsd:complexType>
-							<xsd:sequence>
-								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-							</xsd:sequence>
-							<xsd:attribute name="name" type="xsd:string" use="required" />
-						</xsd:complexType>
-					</xsd:element>
-				</xsd:choice>
-			</xsd:complexType>
-		</xsd:element>
-	</xsd:schema>
-	<resheader name="resmimetype">
-		<value>text/microsoft-resx</value>
-	</resheader>
-	<resheader name="version">
-		<value>2.0</value>
-	</resheader>
-	<resheader name="reader">
-		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<resheader name="writer">
-		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-	</resheader>
-	<data name="AlreadyRunning" xml:space="preserve">
-    <value>{0} is already running.</value>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AlreadyRunning" xml:space="preserve">
+    <value>{0} 已在运行中。</value>
   </data>
-	<data name="AuthenticatorNotImplemented" xml:space="preserve">
-    <value>验证器未执行</value>
+  <data name="AuthenticatorNotImplemented" xml:space="preserve">
+    <value>验证器未实现</value>
   </data>
-	<data name="AuthenticatorSyncError" xml:space="preserve">
-    <value>Warning: unable to connect to {0} to set time correctly.
+  <data name="AuthenticatorSyncError" xml:space="preserve">
+    <value>警告：无法连接到 {0} 以正确设置时间。
 
-Your code may not be correct</value>
+您的验证码可能会不正确</value>
   </data>
-	<data name="AutoRefresh" xml:space="preserve">
+  <data name="AutoRefresh" xml:space="preserve">
     <value>自动刷新</value>
   </data>
-	<data name="CannotFindConfigurationFile" xml:space="preserve">
-    <value>无法找到您的配置文件</value>
+  <data name="CannotFindConfigurationFile" xml:space="preserve">
+    <value>无法找到配置文件</value>
   </data>
-	<data name="CannotLoadAuthenticator" xml:space="preserve">
-    <value>Unable to load authenticator from {0}</value>
+  <data name="CannotLoadAuthenticator" xml:space="preserve">
+    <value>无法从 {0} 加载验证器</value>
   </data>
-	<data name="ChangeOrRemovePassword" xml:space="preserve">
-    <value>更改或删除密码</value>
+  <data name="ChangeOrRemovePassword" xml:space="preserve">
+    <value>更改或移除密码</value>
   </data>
-	<data name="ClipboardInUse" xml:space="preserve">
-    <value>Unable to copy to the clipboard. Another application is probably using it.
+  <data name="ClipboardInUse" xml:space="preserve">
+    <value>无法复制到剪贴板，可能其他应用正在占用它。
 
-Try again?</value>
+要重试吗？</value>
   </data>
-	<data name="CopyCode" xml:space="preserve">
-    <value>复制代码</value>
+  <data name="CopyCode" xml:space="preserve">
+    <value>复制验证码</value>
   </data>
-	<data name="CopyOnNewCode" xml:space="preserve">
-    <value>Copy on New Code</value>
+  <data name="CopyOnNewCode" xml:space="preserve">
+    <value>自动复制新验证码</value>
   </data>
-	<data name="Delete" xml:space="preserve">
+  <data name="Delete" xml:space="preserve">
     <value>删除</value>
   </data>
-	<data name="DeleteAuthenticatorWarning" xml:space="preserve">
-    <value>Are you sure you want to delete this authenticator?
+  <data name="DeleteAuthenticatorWarning" xml:space="preserve">
+    <value>您确定要删除这个验证器吗？
 
-This will permanently remove it and you may no longer be able to access you account.</value>
+这会将其永久删除，您可能无法再登录您的帐户。</value>
   </data>
-	<data name="EnterPassword" xml:space="preserve">
+  <data name="EnterPassword" xml:space="preserve">
     <value>请输入密码</value>
   </data>
-	<data name="ErrorLoadingIconFile" xml:space="preserve">
-    <value>Error loading image file: {0}
+  <data name="ErrorLoadingIconFile" xml:space="preserve">
+    <value>加载图像文件错误：{0}
 
-Do you want to try again?</value>
+要重试吗？</value>
   </data>
-	<data name="ErrorOccured" xml:space="preserve">
-    <value>发生了错误</value>
+  <data name="ErrorOccured" xml:space="preserve">
+    <value>发生了一个错误</value>
   </data>
-	<data name="ErrorReportSubmitted" xml:space="preserve">
-    <value>谢谢。您的错误报告已提交。</value>
+  <data name="ErrorReportSubmitted" xml:space="preserve">
+    <value>谢谢，您的错误报告已提交。</value>
   </data>
-	<data name="ErrorSendingErrorReport" xml:space="preserve">
-    <value>无法发送错误报告</value>
+  <data name="ErrorSendingErrorReport" xml:space="preserve">
+    <value>无法发送您的错误报告</value>
   </data>
-	<data name="FileMustBeZip" xml:space="preserve">
-    <value>File must be a zip file</value>
+  <data name="FileMustBeZip" xml:space="preserve">
+    <value>文件必须为 zip 格式</value>
   </data>
-	<data name="HideDetails" xml:space="preserve">
-    <value>Hide Details</value>
+  <data name="HideDetails" xml:space="preserve">
+    <value>隐藏详情</value>
   </data>
-	<data name="HotKeyNotAvailable" xml:space="preserve">
-    <value>The shortuct key combination is already in use or not available</value>
+  <data name="HotKeyNotAvailable" xml:space="preserve">
+    <value>该快捷键已被占用或不可用</value>
   </data>
-	<data name="Icon" xml:space="preserve">
-    <value>Icon</value>
+  <data name="Icon" xml:space="preserve">
+    <value>图标</value>
   </data>
-	<data name="IconAuto" xml:space="preserve">
-    <value>Auto</value>
+  <data name="IconAuto" xml:space="preserve">
+    <value>自动</value>
   </data>
-	<data name="ImportError" xml:space="preserve">
-    <value>Error importing at line {0}:{1}</value>
+  <data name="ImportError" xml:space="preserve">
+    <value>导入第 {0} 行时错误：{1}</value>
   </data>
-	<data name="ImportInvalidUri" xml:space="preserve">
-    <value>Invalid authenticator at line {0}</value>
+  <data name="ImportInvalidUri" xml:space="preserve">
+    <value>第 {0} 行的验证器无效</value>
   </data>
-	<data name="InvalidPassword" xml:space="preserve">
-    <value>无效密码</value>
+  <data name="InvalidPassword" xml:space="preserve">
+    <value>密码无效</value>
   </data>
-	<data name="LoadIconImage" xml:space="preserve">
-    <value>读取一个图标</value>
+  <data name="LoadIconImage" xml:space="preserve">
+    <value>加载图标图像</value>
   </data>
-	<data name="LoadPreviousAuthenticator" xml:space="preserve">
-    <value>You have an authenticator from a previous version of WinAuth ({0}).
+  <data name="LoadPreviousAuthenticator" xml:space="preserve">
+    <value>您在旧版 WinAuth ({0}) 中有一个验证器。
 
-You can either import it now or use the 'Add' button to import it later.
+您可以现在导入它，或者稍后通过“添加”按钮导入它。
 
-Would you like to import your previous authenticator now?</value>
+现在立刻导入旧版验证器吗？</value>
   </data>
-	<data name="MenuAbout" xml:space="preserve">
+  <data name="MenuAbout" xml:space="preserve">
     <value>关于</value>
   </data>
-	<data name="MenuAlwaysOnTop" xml:space="preserve">
-    <value>总在最前</value>
+  <data name="MenuAlwaysOnTop" xml:space="preserve">
+    <value>总在顶部</value>
   </data>
-	<data name="MenuAutoSize" xml:space="preserve">
-    <value>Auto Size</value>
+  <data name="MenuAutoSize" xml:space="preserve">
+    <value>自动调整窗口尺寸</value>
   </data>
-	<data name="MenuChangeProtection" xml:space="preserve">
-    <value>修改保护设置</value>
+  <data name="MenuChangeProtection" xml:space="preserve">
+    <value>更改保护锁</value>
   </data>
-	<data name="MenuExit" xml:space="preserve">
+  <data name="MenuExit" xml:space="preserve">
     <value>退出</value>
   </data>
-	<data name="MenuExport" xml:space="preserve">
+  <data name="MenuExport" xml:space="preserve">
     <value>导出...</value>
   </data>
-	<data name="MenuImportText" xml:space="preserve">
+  <data name="MenuImportText" xml:space="preserve">
     <value>导入...</value>
   </data>
-	<data name="MenuImportWinauth" xml:space="preserve">
-    <value>导入WinAuth 2.x</value>
+  <data name="MenuImportWinauth" xml:space="preserve">
+    <value>从 WinAuth 2.x 导入</value>
   </data>
-	<data name="MenuOpen" xml:space="preserve">
+  <data name="MenuOpen" xml:space="preserve">
     <value>打开</value>
   </data>
-	<data name="MenuPortable" xml:space="preserve">
-    <value>Portable</value>
+  <data name="MenuPortable" xml:space="preserve">
+    <value>便携化</value>
   </data>
-	<data name="MenuStartWithWindows" xml:space="preserve">
-    <value>随Windows启动</value>
+  <data name="MenuStartWithWindows" xml:space="preserve">
+    <value>随 Windows 系统启动</value>
   </data>
-	<data name="MenuUpdates" xml:space="preserve">
+  <data name="MenuUpdates" xml:space="preserve">
     <value>检查更新...</value>
   </data>
-	<data name="MenuUseSystemTrayIcon" xml:space="preserve">
+  <data name="MenuUseSystemTrayIcon" xml:space="preserve">
     <value>使用系统托盘图标</value>
   </data>
-	<data name="MissingFile" xml:space="preserve">
-    <value>Select or enter a file</value>
+  <data name="MissingFile" xml:space="preserve">
+    <value>选择或输入一个文件</value>
   </data>
-	<data name="MissingPGPKey" xml:space="preserve">
-    <value>Please enter a PGP key</value>
+  <data name="MissingPGPKey" xml:space="preserve">
+    <value>请输入 PGP 密钥</value>
   </data>
-	<data name="Other" xml:space="preserve">
+  <data name="Other" xml:space="preserve">
     <value>其他</value>
   </data>
-	<data name="OverwritePortableConfigFile" xml:space="preserve">
-    <value>{0} already exists.
+  <data name="OverwritePortableConfigFile" xml:space="preserve">
+    <value>{0} 已存在。
 
-Do you want to overwrite it?</value>
+您要覆盖它吗？</value>
   </data>
-	<data name="PasswordsDontMatch" xml:space="preserve">
+  <data name="PasswordsDontMatch" xml:space="preserve">
     <value>密码不匹配</value>
   </data>
-	<data name="Rename" xml:space="preserve">
+  <data name="Rename" xml:space="preserve">
     <value>重命名</value>
   </data>
-	<data name="SetPassword" xml:space="preserve">
+  <data name="SetPassword" xml:space="preserve">
     <value>设置密码</value>
   </data>
-	<data name="ShortcutKey" xml:space="preserve">
+  <data name="ShortcutKey" xml:space="preserve">
     <value>快捷键</value>
   </data>
-	<data name="ShowCode" xml:space="preserve">
-    <value>显示代码</value>
+  <data name="ShowCode" xml:space="preserve">
+    <value>显示验证码</value>
   </data>
-	<data name="ShowSecretKey" xml:space="preserve">
+  <data name="ShowSecretKey" xml:space="preserve">
     <value>显示密钥</value>
   </data>
-	<data name="ShowSerialAndRestoreCode" xml:space="preserve">
-    <value>显示序列号和还原码</value>
+  <data name="ShowSerialAndRestoreCode" xml:space="preserve">
+    <value>显示序列号及恢复代码</value>
   </data>
-	<data name="ShowSerialKeyAndDeviceId" xml:space="preserve">
-    <value>Show Serial Key and Device ID</value>
+  <data name="ShowSerialKeyAndDeviceId" xml:space="preserve">
+    <value>显示序列号及设备 ID</value>
   </data>
-	<data name="SyncTime" xml:space="preserve">
+  <data name="SyncTime" xml:space="preserve">
     <value>同步时间</value>
   </data>
-	<data name="UnknownError" xml:space="preserve">
-    <value>发生未知错误</value>
+  <data name="UnknownError" xml:space="preserve">
+    <value>发生了一个未知错误</value>
   </data>
-	<data name="_AboutForm_" xml:space="preserve">
-    <value>关于验证器</value>
+  <data name="_AboutForm_" xml:space="preserve">
+    <value>关于 WinAuth</value>
   </data>
-	<data name="_AboutForm_aboutLabel_" xml:space="preserve">
-    <value>验证器 {0}
-Copyright {1}. Colin Mackie. All rights reserved.</value>
+  <data name="_AboutForm_aboutLabel_" xml:space="preserve">
+    <value>WinAuth {0}
+版权所有 {1}。Colin Mackie。保留所有权利。</value>
   </data>
-	<data name="_AboutForm_closeButton_" xml:space="preserve">
+  <data name="_AboutForm_closeButton_" xml:space="preserve">
     <value>关闭</value>
   </data>
-	<data name="_AboutForm_licenseLabel_" xml:space="preserve">
-    <value>授权</value>
+  <data name="_AboutForm_licenseLabel_" xml:space="preserve">
+    <value>许可</value>
   </data>
-	<data name="_AboutForm_reportButton" xml:space="preserve">
+  <data name="_AboutForm_reportButton" xml:space="preserve">
     <value>诊断...</value>
   </data>
-	<data name="_AboutForm_trademarkLabel_" xml:space="preserve">
+  <data name="_AboutForm_trademarkLabel_" xml:space="preserve">
     <value>Battle.net, World of Warcraft, StarCraft, Diablo, Mists of Pandaria, and all associated logos and designs are trademarks or registered trademarks of Blizzard Entertainment.
 
 NCsoft, the interlocking NC logo, ArenaNet, Guild Wars, Guild Wars Factions, Guild Wars Nightfall, Guild Wars: Eye of the North, Guild Wars 2, and all associated logos and designs are trademarks or registered trademarks of NCsoft Corporation.
 
+Valve, the Valve logo, Half-Life, the Half-Life logo, the Lambda logo, Steam, the Steam logo, Team Fortress, the Team Fortress logo, Opposing Force, Day of Defeat, the Day of Defeat logo, Counter-Strike, the Counter-Strike logo, Source, the Source logo, Counter-Strike: Condition Zero, Portal, the Portal logo, Dota, the Dota 2 logo, and Defense of the Ancients are trademarks and/or registered trademarks of Valve Corporation.
+
 All other trademarks are the property of their respective owners.</value>
   </data>
-	<data name="_ChangePasswordForm_" xml:space="preserve">
-    <value>保护</value>
+  <data name="_ChangePasswordForm_" xml:space="preserve">
+    <value>保护锁</value>
   </data>
-	<data name="_ChangePasswordForm_cancelButton_" xml:space="preserve">
+  <data name="_ChangePasswordForm_cancelButton_" xml:space="preserve">
     <value>取消</value>
   </data>
-	<data name="_ChangePasswordForm_introLabel_" xml:space="preserve">
-    <value>选择您想如何保护您的身份验证器。使用密码强烈建议，否则你的数据可能被读取并在计算机上窃取恶意软件的运行。</value>
+  <data name="_ChangePasswordForm_introLabel_" xml:space="preserve">
+    <value>选择您的验证器的保护措施。强烈建议您使用密码，否则您的数据可能会被计算机上的恶意软件窃取。</value>
   </data>
-	<data name="_ChangePasswordForm_machineCheckbox_" xml:space="preserve">
-    <value>加密为仅可用在此计算机上</value>
+  <data name="_ChangePasswordForm_machineCheckbox_" xml:space="preserve">
+    <value>加密，使其仅能在本机使用</value>
   </data>
-	<data name="_ChangePasswordForm_machineLabel_" xml:space="preserve">
-    <value>此外，还可以保护和利用内置的Windows帐户密码加密数据。这将锁定您的验证器到这台计算机或用户因此即使文件被复制，他们无法打开。你必须关闭此功能，如果你要格式化您的硬盘，重新安装Windows或删除用户帐户。</value>
+  <data name="_ChangePasswordForm_machineLabel_" xml:space="preserve">
+    <value>此外，您可以使用内置的 Windows 帐户加密来保护和加密数据。这会将您的验证器锁定到此计算机或用户，因此即使复制文件也无法打开它们。如果您要格式化磁盘、重新安装 Windows 或删除此用户帐户，就必须将其关闭。</value>
   </data>
-	<data name="_ChangePasswordForm_okButton_" xml:space="preserve">
+  <data name="_ChangePasswordForm_okButton_" xml:space="preserve">
     <value>确定</value>
   </data>
-	<data name="_ChangePasswordForm_passwordCheckbox_" xml:space="preserve">
-    <value>保护我自己的密码</value>
+  <data name="_ChangePasswordForm_passwordCheckbox_" xml:space="preserve">
+    <value>设置密码作为保护措施</value>
   </data>
-	<data name="_ChangePasswordForm_passwordFieldLabel_" xml:space="preserve">
+  <data name="_ChangePasswordForm_passwordFieldLabel_" xml:space="preserve">
     <value>密码</value>
   </data>
-	<data name="_ChangePasswordForm_passwordLabel_" xml:space="preserve">
-    <value>您的验证器将使用自己的密码进行加密，您需要输入密码才能打开验证器。如果您忘记了密码，您的验证器将无法访问。</value>
+  <data name="_ChangePasswordForm_passwordLabel_" xml:space="preserve">
+    <value>您的验证器将使用您自己的密码进行加密，您需要输入密码才能打开 WinAuth。如果您忘记密码并且没有备份，则无法访问验证器。</value>
   </data>
-	<data name="_ChangePasswordForm_userCheckbox_" xml:space="preserve">
-    <value>而且，只有通过此计算机上当前用户</value>
+  <data name="_ChangePasswordForm_userCheckbox_" xml:space="preserve">
+    <value>并且仅限当前用户使用</value>
   </data>
-	<data name="_ChangePasswordForm_verifyFieldLabel_" xml:space="preserve">
-    <value>确认</value>
+  <data name="_ChangePasswordForm_verifyFieldLabel_" xml:space="preserve">
+    <value>确认密码</value>
   </data>
-	<data name="_ExceptionForm_" xml:space="preserve">
-    <value>验证器错误</value>
+  <data name="_ExceptionForm_" xml:space="preserve">
+    <value>WinAuth 错误</value>
   </data>
-	<data name="_ExceptionForm_continueButton_" xml:space="preserve">
+  <data name="_ExceptionForm_continueButton_" xml:space="preserve">
     <value>继续</value>
   </data>
-	<data name="_ExceptionForm_detailsButton_" xml:space="preserve">
-    <value>显示详细信息</value>
+  <data name="_ExceptionForm_detailsButton_" xml:space="preserve">
+    <value>显示详情</value>
   </data>
-	<data name="_ExceptionForm_errorLabel_" xml:space="preserve">
-    <value>An error has occured in WinAuth.
+  <data name="_ExceptionForm_errorLabel_" xml:space="preserve">
+    <value>WinAuth 发生了一个错误。
 
 {0}
 
-Some diagnostic information has been recorded and saved that might help track down issues in WinAuth.
+我们已记录并保存了一些诊断信息，这可能有助于跟踪 WinAuth 中的问题。
 
-It would help if you can submit this information so we can investigate the crash and try and fix the issue. This information does include information about your authenticators but is only used by the WinAuth developers solely for the purpose of investigating bugs and error reports. It does not include any personal or identifying information. Any information sent has been encrypted using PGP and cannot be read by anyone else.
-</value>
+如果您可以提交此信息，这将有所帮助，以便我们可以调查崩溃并尝试解决问题。此信息确实包含有关您的验证器的信息，但仅供 WinAuth 开发人员使用，仅用于调查漏洞和错误报告。它不包括任何私人或身份信息。发送的任何信息都已使用 PGP 加密，其他任何人都无法读取。
+
+如果您愿意发送此信息，请点击“发送错误报告”，或者点击“显示详情”并手动复制文本并在此提交错误报告：https://github.com/winauth/winauth/issues。</value>
   </data>
-	<data name="_ExceptionForm_quitButton_" xml:space="preserve">
+  <data name="_ExceptionForm_quitButton_" xml:space="preserve">
     <value>退出</value>
   </data>
-	<data name="_ExceptionForm_reportButton_" xml:space="preserve">
+  <data name="_ExceptionForm_reportButton_" xml:space="preserve">
     <value>发送错误报告</value>
   </data>
-	<data name="_GetPasswordForm_" xml:space="preserve">
+  <data name="_GetPasswordForm_" xml:space="preserve">
     <value>输入密码</value>
   </data>
-	<data name="_GetPasswordForm_cancelButton_" xml:space="preserve">
+  <data name="_GetPasswordForm_cancelButton_" xml:space="preserve">
     <value>取消</value>
   </data>
-	<data name="_GetPasswordForm_okButton_" xml:space="preserve">
-    <value>确认</value>
+  <data name="_GetPasswordForm_okButton_" xml:space="preserve">
+    <value>确定</value>
   </data>
-	<data name="_GetPasswordForm_passwordField_" xml:space="preserve">
-    <value>password</value>
+  <data name="_GetPasswordForm_passwordField_" xml:space="preserve">
+    <value>密码</value>
   </data>
-	<data name="_GetPGPKeyForm_" xml:space="preserve">
-    <value>PGP Key</value>
+  <data name="_GetPGPKeyForm_" xml:space="preserve">
+    <value>PGP 密钥</value>
   </data>
-	<data name="_GetPGPKeyForm_browseButton_" xml:space="preserve">
+  <data name="_GetPGPKeyForm_browseButton_" xml:space="preserve">
     <value>浏览...</value>
   </data>
-	<data name="_GetPGPKeyForm_browseLabel_" xml:space="preserve">
-    <value>Or, select your key file</value>
+  <data name="_GetPGPKeyForm_browseLabel_" xml:space="preserve">
+    <value>或选择您的密钥文件</value>
   </data>
-	<data name="_GetPGPKeyForm_cancelButton_" xml:space="preserve">
+  <data name="_GetPGPKeyForm_cancelButton_" xml:space="preserve">
     <value>取消</value>
   </data>
-	<data name="_GetPGPKeyForm_invalidPassword_" xml:space="preserve">
-    <value>无效密码</value>
+  <data name="_GetPGPKeyForm_invalidPassword_" xml:space="preserve">
+    <value>密码无效</value>
   </data>
-	<data name="_GetPGPKeyForm_okButton_" xml:space="preserve">
+  <data name="_GetPGPKeyForm_okButton_" xml:space="preserve">
     <value>确定</value>
   </data>
-	<data name="_GetPGPKeyForm_passwordField_" xml:space="preserve">
+  <data name="_GetPGPKeyForm_passwordField_" xml:space="preserve">
     <value>可选密码</value>
   </data>
-	<data name="_GetPGPKeyForm_passwordLabel_" xml:space="preserve">
-    <value>If your key has a password</value>
+  <data name="_GetPGPKeyForm_passwordLabel_" xml:space="preserve">
+    <value>如果您的密钥是密码</value>
   </data>
-	<data name="_GetPGPKeyForm_pgpLabel_" xml:space="preserve">
-    <value>Enter or select your PGPkey</value>
+  <data name="_GetPGPKeyForm_pgpLabel_" xml:space="preserve">
+    <value>输入或选择您的 PGP 密钥</value>
   </data>
-	<data name="_SetPasswordForm_" xml:space="preserve">
+  <data name="_SetPasswordForm_" xml:space="preserve">
     <value>设置密码</value>
   </data>
-	<data name="_SetPasswordForm_cancelButton_" xml:space="preserve">
+  <data name="_SetPasswordForm_cancelButton_" xml:space="preserve">
     <value>取消</value>
   </data>
-	<data name="_SetPasswordForm_okButton_" xml:space="preserve">
+  <data name="_SetPasswordForm_okButton_" xml:space="preserve">
     <value>确定</value>
   </data>
-	<data name="_SetPasswordForm_passwordField_" xml:space="preserve">
+  <data name="_SetPasswordForm_passwordField_" xml:space="preserve">
     <value>密码</value>
   </data>
-	<data name="_SetPasswordForm_setPasswordLabel_" xml:space="preserve">
-    <value>输入密码以保护该验证或留空将其删除</value>
+  <data name="_SetPasswordForm_setPasswordLabel_" xml:space="preserve">
+    <value>输入密码以保护验证器，或者留空以删除密码</value>
   </data>
-	<data name="_SetPasswordForm_showCheckbox_" xml:space="preserve">
+  <data name="_SetPasswordForm_showCheckbox_" xml:space="preserve">
     <value>显示</value>
   </data>
-	<data name="_SetPasswordForm_verifyField_" xml:space="preserve">
-    <value>确认</value>
+  <data name="_SetPasswordForm_verifyField_" xml:space="preserve">
+    <value>确认密码</value>
   </data>
-	<data name="_SetShortcutKeyForm_" xml:space="preserve">
+  <data name="_SetShortcutKeyForm_" xml:space="preserve">
     <value>快捷键</value>
   </data>
-	<data name="_SetShortcutKeyForm_advancedLink_" xml:space="preserve">
+  <data name="_SetShortcutKeyForm_advancedLink_" xml:space="preserve">
     <value>更多信息</value>
   </data>
-	<data name="_SetShortcutKeyForm_advancedRadioButton_" xml:space="preserve">
+  <data name="_SetShortcutKeyForm_advancedRadioButton_" xml:space="preserve">
     <value>高级...</value>
   </data>
-	<data name="_SetShortcutKeyForm_advancedTextbox_tooltip" xml:space="preserve">
-    <value>&lt;strong&gt;Advanced&lt;/strong&gt;
-&lt;p&gt;You can use a mixture of text and commands to build up your string to be sent to your application.&lt;/p&gt;
-&lt;ul&gt;&lt;li&gt;{CODE} inserts the current code&lt;/li&gt;
-&lt;li&gt;{ENTER delay repeat} to send the ENTER key with optional delay in seconds and repeat count&lt;/li&gt;
-&lt;li&gt;{TAB  delay repeat} to send the TAB key&lt;/li&gt;
-&lt;li&gt;{COPY} to copy the code into the clipboard&lt;/li&gt;
-&lt;li&gt;{PASTE} to paste the clipboard contents into the active window&lt;/li&gt;
-&lt;li&gt;{EXIT} to exit WinAuth.&lt;/li&gt;&lt;/ul&gt;
-&lt;p&gt;For example, to login to an account you might use:&lt;/p&gt;
+  <data name="_SetShortcutKeyForm_advancedTextbox_tooltip" xml:space="preserve">
+    <value>&lt;strong&gt;高级&lt;/strong&gt;
+&lt;p&gt;您可以编写混合的文本和命令，来构建要发送到应用程序的字符串。&lt;/p&gt;
+&lt;ul&gt;&lt;li&gt;{CODE} 插入当前验证码&lt;/li&gt;
+&lt;li&gt;{ENTER 延迟秒数 重复次数} 发送回车键，延迟与重复次数是可选的&lt;/li&gt;
+&lt;li&gt;{TAB 延迟秒数 重复次数} 发送 Tab 键，延迟与重复次数是可选的&lt;/li&gt;
+&lt;li&gt;{COPY} 将当前验证码复制到剪贴板&lt;/li&gt;
+&lt;li&gt;{PASTE} 将剪贴板内的内容粘贴到当前窗口&lt;/li&gt;
+&lt;li&gt;{EXIT} 退出 WinAuth。&lt;/li&gt;&lt;/ul&gt;
+&lt;p&gt;例如，要登录到帐户，您可以使用：&lt;/p&gt;
 &lt;p&gt;my@email.com{TAB}password{ENTER 2000}{CODE}{ENTER}&lt;/p&gt;</value>
   </data>
-	<data name="_SetShortcutKeyForm_cancelButton_" xml:space="preserve">
+  <data name="_SetShortcutKeyForm_cancelButton_" xml:space="preserve">
     <value>取消</value>
   </data>
-	<data name="_SetShortcutKeyForm_injectRadioButton_" xml:space="preserve">
-    <value>Enter code into current window or one called...</value>
+  <data name="_SetShortcutKeyForm_injectRadioButton_" xml:space="preserve">
+    <value>在当前窗口或调用的窗口中输入验证码...</value>
   </data>
-	<data name="_SetShortcutKeyForm_introLabel_" xml:space="preserve">
-    <value>Select a shortcut key and action</value>
+  <data name="_SetShortcutKeyForm_introLabel_" xml:space="preserve">
+    <value>选择快捷键及其操作</value>
   </data>
-	<data name="_SetShortcutKeyForm_keyLabel_" xml:space="preserve">
-    <value>Key</value>
+  <data name="_SetShortcutKeyForm_keyLabel_" xml:space="preserve">
+    <value>按键</value>
   </data>
-	<data name="_SetShortcutKeyForm_notifyRadioButton_" xml:space="preserve">
-    <value>Show a notification</value>
+  <data name="_SetShortcutKeyForm_notifyRadioButton_" xml:space="preserve">
+    <value>显示通知</value>
   </data>
-	<data name="_SetShortcutKeyForm_okButton_" xml:space="preserve">
+  <data name="_SetShortcutKeyForm_okButton_" xml:space="preserve">
     <value>确定</value>
   </data>
-	<data name="_SetShortcutKeyForm_pasteRadioButton_" xml:space="preserve">
-    <value>复制验证码到剪切板</value>
+  <data name="_SetShortcutKeyForm_pasteRadioButton_" xml:space="preserve">
+    <value>复制验证码到剪贴板</value>
   </data>
-	<data name="_UnprotectPasswordForm_" xml:space="preserve">
+  <data name="_UnprotectPasswordForm_" xml:space="preserve">
     <value>{0}</value>
   </data>
-	<data name="_UnprotectPasswordForm_cancelButton_" xml:space="preserve">
+  <data name="_UnprotectPasswordForm_cancelButton_" xml:space="preserve">
     <value>取消</value>
   </data>
-	<data name="_UnprotectPasswordForm_okButton_" xml:space="preserve">
+  <data name="_UnprotectPasswordForm_okButton_" xml:space="preserve">
     <value>确定</value>
   </data>
-	<data name="_UnprotectPasswordForm_passwordField_" xml:space="preserve">
+  <data name="_UnprotectPasswordForm_passwordField_" xml:space="preserve">
     <value>密码</value>
   </data>
-	<data name="_WinAuthForm_addAuthenticatorButton_" xml:space="preserve">
+  <data name="_WinAuthForm_addAuthenticatorButton_" xml:space="preserve">
     <value>添加</value>
   </data>
-	<data name="_WinAuthForm_introLabel_" xml:space="preserve">
-    <value>点击添加按钮，创建或导入一个验证器</value>
+  <data name="_WinAuthForm_introLabel_" xml:space="preserve">
+    <value>点击“添加”按钮创建或导入验证器</value>
   </data>
-	<data name="_WinAuthForm_passwordButton_" xml:space="preserve">
-    <value>确认</value>
+  <data name="_WinAuthForm_passwordButton_" xml:space="preserve">
+    <value>确定</value>
   </data>
-	<data name="_WinAuthForm_passwordLabel_" xml:space="preserve">
+  <data name="_WinAuthForm_passwordLabel_" xml:space="preserve">
     <value>密码</value>
   </data>
-	<data name="MenuRememberPosition" xml:space="preserve">
-    <value>记住位置</value>
+  <data name="MenuRememberPosition" xml:space="preserve">
+    <value>记住窗口位置</value>
+  </data>
+  <data name="ShowRevocation" xml:space="preserve">
+    <value>显示 Steam 令牌及恢复代码</value>
+  </data>
+  <data name="YubikeyInsert" xml:space="preserve">
+    <value>请插入您的 YubiKey 或按下闪烁的按钮</value>
+  </data>
+  <data name="ConfigIsNewer" xml:space="preserve">
+    <value>您的验证器是由新版 WinAuth 保存的，无法导入。请使用 WinAuth {0} 或更新版本。</value>
+  </data>
+  <data name="UpgradeDotNet" xml:space="preserve">
+    <value>为了安全性，建议您将 Microsoft .Net 升级到 4.5 版本。
+
+您需要访问 Microsoft .Net 下载页面吗（在浏览器中打开）？</value>
+  </data>
+  <data name="ConfigUpgraded" xml:space="preserve">
+    <value>WinAuth 已将您的验证器升级到 {0} 版本。
+
+请勿运行旧版 WinAuth，这会导致它们被覆盖。
+
+建议您现在进行备份。点击设置图标并选择导出。</value>
+  </data>
+  <data name="ConfirmTrades" xml:space="preserve">
+    <value>确认</value>
+  </data>
+  <data name="DefaultAction" xml:space="preserve">
+    <value>操作</value>
+  </data>
+  <data name="DefaultActionCopyToClipboard" xml:space="preserve">
+    <value>复制到剪贴板</value>
+  </data>
+  <data name="DefaultActionNotification" xml:space="preserve">
+    <value>显示通知</value>
+  </data>
+  <data name="DefaultActionHotkey" xml:space="preserve">
+    <value>模拟热键</value>
   </data>
 </root>
